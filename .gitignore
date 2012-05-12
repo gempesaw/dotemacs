@@ -1,3 +1,8 @@
 /auto-save-list/*
 /backups/*
 *.elc
+history
+lastdir
+tramp
+cookies
+*~
