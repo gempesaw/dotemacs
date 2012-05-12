@@ -1,0 +1,2 @@
+alias copyphrase scp -i /Users/dgempesaw/pem/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/phrases/*/* /opt/HDEW/honeydew/phrases
+alias copyphrasesc2 scp -i /Users/dgempesaw/pem/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/phrases/sc2/* /opt/HDEW/honeydew/phrases
