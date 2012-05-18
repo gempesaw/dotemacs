@@ -10,3 +10,4 @@ cookies
 *.desktop.lock
 el-get/*
 el-get/*.el
+saveplace
