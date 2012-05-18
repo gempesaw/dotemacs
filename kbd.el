@@ -9,7 +9,7 @@
 (global-set-key (kbd "C-c r") 'rename-buffer)
 
 ;; magit status key chord
-(global-set-key (kbd "M-g M-s") 'magit-status)
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; shortcut for revert buffer
 (global-set-key (kbd "C-x r") 'revert-buffer)
@@ -29,3 +29,12 @@
 
 ;; smart tab - do i need this?
 (global-set-key (kbd "TAB") 'smart-tab)
+
+;; Start eshell or switch to it if it's active.
+(global-set-key (kbd "C-c s") 'eshell)
+
+;; Start a new eshell even if one is active.
+(global-set-key (kbd "C-c C-s") (lambda () (interactive) (eshell t)))
+
+;; replace buffer-menu with ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
