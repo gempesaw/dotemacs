@@ -12,10 +12,9 @@
 (setq epg-gpg-program "/usr/local/bin/gpg")
 
 ;; start in full screen
-(ns-toggle-fullscreen)
+;; (ns-toggle-fullscreen)
 
 (add-to-list 'load-path "~/.emacs.d/")
-
 (load "customize.el")
 (load "kbd.el")
 (load "modes.el")

@@ -1,6 +1,8 @@
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)
 
+;; magit svn inclusion
+(require 'magit-svn)
 
 ;; winner mode
 (when (fboundp 'winner-mode)
