@@ -11,3 +11,5 @@ cookies
 el-get/*
 el-get/*.el
 saveplace
+elpa*
+elpa/*
