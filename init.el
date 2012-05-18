@@ -11,9 +11,6 @@
 (add-to-list 'exec-path "/usr/local/bin")
 (setq epg-gpg-program "/usr/local/bin/gpg")
 
-;; start in full screen
-;; (ns-toggle-fullscreen)
-
 (add-to-list 'load-path "~/.emacs.d/")
 (load "customize.el")
 (load "kbd.el")

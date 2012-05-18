@@ -27,7 +27,8 @@
 
 ;; Modeline info
 (display-time-mode 1)
-(display-battery-mode 1)
+;; battery mode might not work for desktops
+;; (display-battery-mode 1)
 
 ;; Small fringes
 (set-fringe-mode '(1 . 1))
@@ -50,3 +51,10 @@
 
 ;; Trash can support
 (setq delete-by-moving-to-trash t)
+
+;; automatically save buffers associated with files on buffer switch
+;; and on windows switch
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))

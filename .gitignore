@@ -6,3 +6,7 @@ lastdir
 tramp
 cookies
 *~
+*.desktop
+*.desktop.lock
+el-get/*
+el-get/*.el

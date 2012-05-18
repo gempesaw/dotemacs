@@ -2,6 +2,9 @@
 ;; courtesy of
 ;;; Tab management
 
+(setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
+(setq-default tab-width 8)            ;; but maintain correct appearance
+
 ;; Spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 
@@ -10,11 +13,11 @@
 
 (setq hippie-expand-try-functions-list
       '(yas/hippie-try-expand
-  try-expand-dabbrev
-  try-expand-dabbrev-all-buffers
-  try-expand-dabbrev-from-kill
-  try-complete-file-name
-  try-complete-lisp-symbol))
+        try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-file-name
+        try-complete-lisp-symbol))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Smart Tab
