@@ -3,54 +3,12 @@
 ;;; Code:
 
 
-;;;### (autoloads (color-theme-desert) "color-theme-desert/color-theme-desert"
-;;;;;;  "color-theme-desert/color-theme-desert.el" (20382 60224))
-;;; Generated autoloads from color-theme-desert/color-theme-desert.el
-
-(autoload 'color-theme-desert "color-theme-desert/color-theme-desert" "\
-Emacs color theme desert, inspired by VIM desert theme.
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads (color-theme-solarized-light color-theme-solarized-dark
-;;;;;;  color-theme-solarized) "color-theme-solarized/color-theme-solarized"
-;;;;;;  "color-theme-solarized/color-theme-solarized.el" (20382 60257))
-;;; Generated autoloads from color-theme-solarized/color-theme-solarized.el
-
-(autoload 'color-theme-solarized "color-theme-solarized/color-theme-solarized" "\
-Color theme by Ethan Schoonover, created 2011-03-24.
-Ported to Emacs by Greg Pfeil, http://ethanschoonover.com/solarized.
-
-\(fn MODE)" t nil)
-
-(autoload 'color-theme-solarized-dark "color-theme-solarized/color-theme-solarized" "\
-
-
-\(fn)" t nil)
-
-(autoload 'color-theme-solarized-light "color-theme-solarized/color-theme-solarized" "\
-
-
-\(fn)" t nil)
-
-;;;***
-
-;;;### (autoloads nil "color-theme-solarized/solarized-definitions"
-;;;;;;  "color-theme-solarized/solarized-definitions.el" (20382 60257))
-;;; Generated autoloads from color-theme-solarized/solarized-definitions.el
-
-(when (boundp 'custom-theme-load-path) (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
-
-;;;***
-
 ;;;### (autoloads (color-theme-initialize color-theme-submit color-theme-install
 ;;;;;;  color-theme-compare color-theme-make-snapshot color-theme-analyze-defun
 ;;;;;;  color-theme-print color-theme-install-at-point-for-current-frame
 ;;;;;;  color-theme-install-at-mouse color-theme-describe color-theme-select)
-;;;;;;  "color-theme/color-theme" "color-theme/color-theme.el" (17529
-;;;;;;  41105))
+;;;;;;  "color-theme/color-theme" "color-theme/color-theme.el" (20405
+;;;;;;  55515))
 ;;; Generated autoloads from color-theme/color-theme.el
 
 (autoload 'color-theme-select "color-theme/color-theme" "\
@@ -99,8 +57,8 @@ Example:
       (interactive)
       (color-theme-install
        '(...
-   ...
-   ...)))
+	 ...
+	 ...)))
     (my-color-theme)
 
 If you want to use a specific color theme function, you can call the
@@ -185,207 +143,8 @@ Initialize the color theme package by loading color-theme-libraries.
 
 ;;;***
 
-;;;### (autoloads (cperl-perldoc-at-point cperl-perldoc cperl-mode)
-;;;;;;  "cperl-mode/cperl-mode" "cperl-mode/cperl-mode.el" (20382
-;;;;;;  59960))
-;;; Generated autoloads from cperl-mode/cperl-mode.el
-(put 'cperl-indent-level 'safe-local-variable 'integerp)
-(put 'cperl-brace-offset 'safe-local-variable 'integerp)
-(put 'cperl-continued-brace-offset 'safe-local-variable 'integerp)
-(put 'cperl-label-offset 'safe-local-variable 'integerp)
-(put 'cperl-continued-statement-offset 'safe-local-variable 'integerp)
-(put 'cperl-extra-newline-before-brace 'safe-local-variable 'booleanp)
-(put 'cperl-merge-trailing-else 'safe-local-variable 'booleanp)
-
-(autoload 'cperl-mode "cperl-mode/cperl-mode" "\
-Major mode for editing Perl code.
-Expression and list commands understand all C brackets.
-Tab indents for Perl code.
-Paragraphs are separated by blank lines only.
-Delete converts tabs to spaces as it moves back.
-
-Various characters in Perl almost always come in pairs: {}, (), [],
-sometimes <>.  When the user types the first, she gets the second as
-well, with optional special formatting done on {}.  (Disabled by
-default.)  You can always quote (with \\[quoted-insert]) the left
-\"paren\" to avoid the expansion.  The processing of < is special,
-since most the time you mean \"less\".  CPerl mode tries to guess
-whether you want to type pair <>, and inserts is if it
-appropriate.  You can set `cperl-electric-parens-string' to the string that
-contains the parenths from the above list you want to be electrical.
-Electricity of parenths is controlled by `cperl-electric-parens'.
-You may also set `cperl-electric-parens-mark' to have electric parens
-look for active mark and \"embrace\" a region if possible.'
-
-CPerl mode provides expansion of the Perl control constructs:
-
-   if, else, elsif, unless, while, until, continue, do,
-   for, foreach, formy and foreachmy.
-
-and POD directives (Disabled by default, see `cperl-electric-keywords'.)
-
-The user types the keyword immediately followed by a space, which
-causes the construct to be expanded, and the point is positioned where
-she is most likely to want to be.  eg. when the user types a space
-following \"if\" the following appears in the buffer: if () { or if ()
-} { } and the cursor is between the parentheses.  The user can then
-type some boolean expression within the parens.  Having done that,
-typing \\[cperl-linefeed] places you - appropriately indented - on a
-new line between the braces (if you typed \\[cperl-linefeed] in a POD
-directive line, then appropriate number of new lines is inserted).
-
-If CPerl decides that you want to insert \"English\" style construct like
-
-            bite if angry;
-
-it will not do any expansion.  See also help on variable
-`cperl-extra-newline-before-brace'.  (Note that one can switch the
-help message on expansion by setting `cperl-message-electric-keyword'
-to nil.)
-
-\\[cperl-linefeed] is a convenience replacement for typing carriage
-return.  It places you in the next line with proper indentation, or if
-you type it inside the inline block of control construct, like
-
-            foreach (@lines) {print; print}
-
-and you are on a boundary of a statement inside braces, it will
-transform the construct into a multiline and will place you into an
-appropriately indented blank line.  If you need a usual
-`newline-and-indent' behavior, it is on \\[newline-and-indent],
-see documentation on `cperl-electric-linefeed'.
-
-Use \\[cperl-invert-if-unless] to change a construction of the form
-
-      if (A) { B }
-
-into
-
-            B if A;
-
-\\{cperl-mode-map}
-
-Setting the variable `cperl-font-lock' to t switches on font-lock-mode
-\(even with older Emacsen), `cperl-electric-lbrace-space' to t switches
-on electric space between $ and {, `cperl-electric-parens-string' is
-the string that contains parentheses that should be electric in CPerl
-\(see also `cperl-electric-parens-mark' and `cperl-electric-parens'),
-setting `cperl-electric-keywords' enables electric expansion of
-control structures in CPerl.  `cperl-electric-linefeed' governs which
-one of two linefeed behavior is preferable.  You can enable all these
-options simultaneously (recommended mode of use) by setting
-`cperl-hairy' to t.  In this case you can switch separate options off
-by setting them to `null'.  Note that one may undo the extra
-whitespace inserted by semis and braces in `auto-newline'-mode by
-consequent \\[cperl-electric-backspace].
-
-If your site has perl5 documentation in info format, you can use commands
-\\[cperl-info-on-current-command] and \\[cperl-info-on-command] to access it.
-These keys run commands `cperl-info-on-current-command' and
-`cperl-info-on-command', which one is which is controlled by variable
-`cperl-info-on-command-no-prompt' and `cperl-clobber-lisp-bindings'
-\(in turn affected by `cperl-hairy').
-
-Even if you have no info-format documentation, short one-liner-style
-help is available on \\[cperl-get-help], and one can run perldoc or
-man via menu.
-
-It is possible to show this help automatically after some idle time.
-This is regulated by variable `cperl-lazy-help-time'.  Default with
-`cperl-hairy' (if the value of `cperl-lazy-help-time' is nil) is 5
-secs idle time .  It is also possible to switch this on/off from the
-menu, or via \\[cperl-toggle-autohelp].  Requires `run-with-idle-timer'.
-
-Use \\[cperl-lineup] to vertically lineup some construction - put the
-beginning of the region at the start of construction, and make region
-span the needed amount of lines.
-
-Variables `cperl-pod-here-scan', `cperl-pod-here-fontify',
-`cperl-pod-face', `cperl-pod-head-face' control processing of POD and
-here-docs sections.  With capable Emaxen results of scan are used
-for indentation too, otherwise they are used for highlighting only.
-
-Variables controlling indentation style:
- `cperl-tab-always-indent'
-    Non-nil means TAB in CPerl mode should always reindent the current line,
-    regardless of where in the line point is when the TAB command is used.
- `cperl-indent-left-aligned-comments'
-    Non-nil means that the comment starting in leftmost column should indent.
- `cperl-auto-newline'
-    Non-nil means automatically newline before and after braces,
-    and after colons and semicolons, inserted in Perl code.  The following
-    \\[cperl-electric-backspace] will remove the inserted whitespace.
-    Insertion after colons requires both this variable and
-    `cperl-auto-newline-after-colon' set.
- `cperl-auto-newline-after-colon'
-    Non-nil means automatically newline even after colons.
-    Subject to `cperl-auto-newline' setting.
- `cperl-indent-level'
-    Indentation of Perl statements within surrounding block.
-    The surrounding block's indentation is the indentation
-    of the line on which the open-brace appears.
- `cperl-continued-statement-offset'
-    Extra indentation given to a substatement, such as the
-    then-clause of an if, or body of a while, or just a statement continuation.
- `cperl-continued-brace-offset'
-    Extra indentation given to a brace that starts a substatement.
-    This is in addition to `cperl-continued-statement-offset'.
- `cperl-brace-offset'
-    Extra indentation for line if it starts with an open brace.
- `cperl-brace-imaginary-offset'
-    An open brace following other text is treated as if it the line started
-    this far to the right of the actual line indentation.
- `cperl-label-offset'
-    Extra indentation for line that is a label.
- `cperl-min-label-indent'
-    Minimal indentation for line that is a label.
-
-Settings for classic indent-styles: K&R BSD=C++ GNU PerlStyle=Whitesmith
-  `cperl-indent-level'                5   4       2   4
-  `cperl-brace-offset'                0   0       0   0
-  `cperl-continued-brace-offset'     -5  -4       0   0
-  `cperl-label-offset'               -5  -4      -2  -4
-  `cperl-continued-statement-offset'  5   4       2   4
-
-CPerl knows several indentation styles, and may bulk set the
-corresponding variables.  Use \\[cperl-set-style] to do this.  Use
-\\[cperl-set-style-back] to restore the memorized preexisting values
-\(both available from menu).  See examples in `cperl-style-examples'.
-
-Part of the indentation style is how different parts of if/elsif/else
-statements are broken into lines; in CPerl, this is reflected on how
-templates for these constructs are created (controlled by
-`cperl-extra-newline-before-brace'), and how reflow-logic should treat \"continuation\" blocks of else/elsif/continue, controlled by the same variable,
-and by `cperl-extra-newline-before-brace-multiline',
-`cperl-merge-trailing-else', `cperl-indent-region-fix-constructs'.
-
-If `cperl-indent-level' is 0, the statement after opening brace in
-column 0 is indented on
-`cperl-brace-offset'+`cperl-continued-statement-offset'.
-
-Turning on CPerl mode calls the hooks in the variable `cperl-mode-hook'
-with no args.
-
-DO NOT FORGET to read micro-docs (available from `Perl' menu)
-or as help on variables `cperl-tips', `cperl-problems',
-`cperl-praise', `cperl-speed'.
-
-\(fn)" t nil)
-
-(autoload 'cperl-perldoc "cperl-mode/cperl-mode" "\
-Run `perldoc' on WORD.
-
-\(fn WORD)" t nil)
-
-(autoload 'cperl-perldoc-at-point "cperl-mode/cperl-mode" "\
-Run a `perldoc' on the word around point.
-
-\(fn)" t nil)
-
-;;;***
-
 ;;;### (autoloads (crontab-get crontab-mode) "crontab-mode/crontab-mode"
-;;;;;;  "crontab-mode/crontab-mode.el" (20382 59957))
+;;;;;;  "crontab-mode/crontab-mode.el" (20405 55516))
 ;;; Generated autoloads from crontab-mode/crontab-mode.el
 
 (autoload 'crontab-mode "crontab-mode/crontab-mode" "\
@@ -404,90 +163,6 @@ Get the crontab for the HOST into a buffer.
 
 ;;;***
 
-;;;### (autoloads (magit-status) "magit/magit" "magit/magit.el" (20382
-;;;;;;  59959))
-;;; Generated autoloads from magit/magit.el
-
-(autoload 'magit-status "magit/magit" "\
-Open a Magit status buffer for the Git repository containing
-DIR.  If DIR is not within a Git repository, offer to create a
-Git repository in DIR.
-
-Interactively, a prefix argument means to ask the user which Git
-repository to use even if `default-directory' is under Git control.
-Two prefix arguments means to ignore `magit-repo-dirs' when asking for
-user input.
-
-\(fn DIR)" t nil)
-
-;;;***
-
-;;;### (autoloads (turn-on-magit-stgit magit-stgit-mode) "magit/magit-stgit"
-;;;;;;  "magit/magit-stgit.el" (20382 59959))
-;;; Generated autoloads from magit/magit-stgit.el
-
-(autoload 'magit-stgit-mode "magit/magit-stgit" "\
-StGit support for Magit
-
-\(fn &optional ARG)" t nil)
-
-(autoload 'turn-on-magit-stgit "magit/magit-stgit" "\
-Unconditionally turn on `magit-stgit-mode'.
-
-\(fn)" nil nil)
-
-;;;***
-
-;;;### (autoloads (turn-on-magit-svn magit-svn-mode) "magit/magit-svn"
-;;;;;;  "magit/magit-svn.el" (20382 59959))
-;;; Generated autoloads from magit/magit-svn.el
-
-(autoload 'magit-svn-mode "magit/magit-svn" "\
-SVN support for Magit
-
-\(fn &optional ARG)" t nil)
-
-(autoload 'turn-on-magit-svn "magit/magit-svn" "\
-Unconditionally turn on `magit-svn-mode'.
-
-\(fn)" nil nil)
-
-;;;***
-
-;;;### (autoloads (turn-on-magit-topgit magit-topgit-mode) "magit/magit-topgit"
-;;;;;;  "magit/magit-topgit.el" (20382 59959))
-;;; Generated autoloads from magit/magit-topgit.el
-
-(autoload 'magit-topgit-mode "magit/magit-topgit" "\
-Topgit support for Magit
-
-\(fn &optional ARG)" t nil)
-
-(autoload 'turn-on-magit-topgit "magit/magit-topgit" "\
-Unconditionally turn on `magit-topgit-mode'.
-
-\(fn)" nil nil)
-
-;;;***
-
-;;;### (autoloads (rebase-mode) "magit/rebase-mode" "magit/rebase-mode.el"
-;;;;;;  (20382 59959))
-;;; Generated autoloads from magit/rebase-mode.el
-
-(autoload 'rebase-mode "magit/rebase-mode" "\
-Major mode for editing of a Git rebase file.
-
-Rebase files are generated when you run 'git rebase -i' or run
-`magit-interactive-rebase'.  They describe how Git should perform
-the rebase.  See the documentation for git-rebase (e.g., by
-running 'man git-rebase' at the command line) for details.
-
-\(fn)" t nil)
-
-(add-to-list 'auto-mode-alist '("git-rebase-todo" . rebase-mode))
-
-;;;***
-
 ;;;### (autoloads (mode-compile-kill mode-compile mode-compile-submit-bug-report
 ;;;;;;  emacs-lisp-byte-compile-dir-interactive-p mode-compile-reading-time
 ;;;;;;  mode-compile-expert-p mode-compile-after-kill-hook mode-compile-before-kill-hook
@@ -497,7 +172,7 @@ running 'man git-rebase' at the command line) for details.
 ;;;;;;  mode-compile-ignore-makerule-regexp mode-compile-prefered-default-makerule
 ;;;;;;  mode-compile-make-options mode-compile-ignore-makefile-backups
 ;;;;;;  mode-compile-make-program) "mode-compile/mode-compile" "mode-compile/mode-compile.el"
-;;;;;;  (20382 59958))
+;;;;;;  (20405 55516))
 ;;; Generated autoloads from mode-compile/mode-compile.el
 
 (defvar mode-compile-make-program "make" "\
@@ -748,7 +423,7 @@ Bound on \\[mode-compile-kill].
 ;;;***
 
 ;;;### (autoloads (php-mode php-file-patterns php-mode-to-use) "php-mode-improved/php-mode-improved"
-;;;;;;  "php-mode-improved/php-mode-improved.el" (20382 59958))
+;;;;;;  "php-mode-improved/php-mode-improved.el" (20405 55516))
 ;;; Generated autoloads from php-mode-improved/php-mode-improved.el
 
 (defvar php-mode-to-use (progn (require 'mumamo nil t) (if (fboundp 'nxhtml-mumamo-turn-on) 'nxhtml-mumamo-turn-on (if (fboundp 'html-mumamo-turn-on) 'html-mumamo-turn-on 'php-mode))) "\
@@ -770,18 +445,8 @@ Major mode for editing PHP code.
 
 ;;;***
 
-;;;### (autoloads nil nil ("color-theme-almost-monokai/color-theme-almost-monokai.el"
-;;;;;;  "color-theme-chocolate-rain/color-theme-chocolate-rain.el"
-;;;;;;  "color-theme-ir-black/color-theme-ir-black.el" "color-theme-mac-classic/color-theme-mac-classic.el"
-;;;;;;  "color-theme-railscasts/color-theme-railscasts.el" "color-theme-sanityinc/color-theme-sanityinc.el"
-;;;;;;  "color-theme-solarized/color-theme-solarized-pkg.el" "color-theme-solarized/solarized-dark-theme.el"
-;;;;;;  "color-theme-solarized/solarized-light-theme.el" "color-theme-subdued/color-theme-subdued.el"
-;;;;;;  "color-theme-tango-2/color-theme-tango-2.el" "color-theme-tango/color-theme-tango.el"
-;;;;;;  "color-theme-twilight/color-theme-twilight.el" "color-theme-zen-and-art/zen-and-art.el"
-;;;;;;  "color-theme/color-theme-autoloads.el" "el-get/el-get-install.el"
-;;;;;;  "el-get/el-get.el" "magit/50magit.el" "magit/magit-bisect.el"
-;;;;;;  "magit/magit-key-mode.el" "magit/magit-pkg.el" "magit/magit-wip.el")
-;;;;;;  (20382 60259 448262))
+;;;### (autoloads nil nil ("el-get/el-get-install.el" "el-get/el-get.el")
+;;;;;;  (20405 55598 990600))
 
 ;;;***
 
