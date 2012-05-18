@@ -1,4 +1,4 @@
-(defun prelude-google ()
+(defun google ()
   "Googles a query or region if any."
   (interactive)
   (browse-url

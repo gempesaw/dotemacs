@@ -28,17 +28,22 @@
     (local-set-key (kbd "C-c C-n") 'hs-show-all)
     (hs-minor-mode t)))
 
-
 (add-hook 'cperl-mode-hook
     (lambda () (subword-mode 1)))
 
 ;; ido mode
-(setq ido-enable-flex-matching t) ; fuzzy matching is a must have
 (ido-mode t) ; enable ido for buffer/file switching
 (ido-everywhere t) ;enable ido everywhere
+(setq ido-enable-prefix nil
+      ido-enable-flex-matching t ; fuzzy matching is a must have
+      ido-create-new-buffer 'always
+      ido-use-filename-at-point 'guess
+      ido-max-prospects 10
+      ido-default-file-method 'selected-window)
 
+;; auto-completion in minibuffer
+(icomplete-mode +1)
 
-;; FROM prelude :):):)
 ;; delete the selection with a keypress
 (delete-selection-mode t)
 
@@ -54,14 +59,10 @@
 ;; smart pairing for all
 (electric-pair-mode t)
 
-;; auto-completion in minibuffer
-(icomplete-mode +1)
-
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; clean up obsolete buffers automatically
-;; TODO - wtf is midnight :D
 (require 'midnight)
 
 ;; the blinking cursor is nothing, but an annoyance
