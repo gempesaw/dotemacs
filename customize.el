@@ -13,6 +13,7 @@
 (setq mac-option-modifier nil)
 
 ;; I never use downcase-region
+(put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
 ;; Don't show the startup screen
@@ -58,3 +59,14 @@
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
+
+;; tramp settings
+(require 'tramp)
+(setq tramp-default-method "ssh")
+(setq tramp-auto-save-directory "~/tmp/tramp/")
+(setq tramp-chunksize 2000)
+
+;; get gpg into the path
+(add-to-list 'exec-path "/usr/bin")
+(add-to-list 'exec-path "/usr/local/bin")
+(setq epg-gpg-program "/usr/local/bin/gpg")
