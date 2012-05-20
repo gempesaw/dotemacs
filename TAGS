@@ -1,0 +1,24 @@
+
+customize.el,70
+(defadvice switch-to-buffer 58,1434
+(defadvice other-window 60,1537
+
+defun.el,19
+(defun google 1,0
+
+kbd.el,25
+(defun back-window 2,48
+
+modes.el,39
+(defalias 'perl-mode perl-mode16,307
+
+tabs.el,100
+(defvar smart-tab-using-hippie-expand 28,832
+(defun smart-tab 31,936
+(defun smart-indent 51,1642
+
+themes.el,0
+
+init.el,0
+
+el-get-samples.el,0
