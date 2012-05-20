@@ -38,3 +38,6 @@
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;; load file into emacs
+(global-set-key (kbd "C-c C-l") 'load-file)
