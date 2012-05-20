@@ -41,3 +41,6 @@
 
 ;; load file into emacs
 (global-set-key (kbd "C-c C-l") 'load-file)
+
+;; quicker el-get list packages
+(global-set-key (kbd "C-c C-e l p") 'el-get-list-packages)
