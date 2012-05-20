@@ -14,7 +14,7 @@
 
 (setq my-packages
       (append
-       '(el-get
+       '(;; el-get
          cperl-mode
          crontab-mode
          cssh
