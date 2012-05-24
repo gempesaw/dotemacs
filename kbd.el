@@ -44,3 +44,7 @@
 
 ;; quicker el-get list packages
 (global-set-key (kbd "C-c C-e l p") 'el-get-list-packages)
+
+;; i like using M-` to switch between frames
+(global-unset-key (kbd "M-`"))
+(global-set-key (kbd "M-`") 'other-frame)
