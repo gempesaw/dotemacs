@@ -67,3 +67,12 @@
 
 ;; the blinking cursor is nothing, but an annoyance
 (blink-cursor-mode -1)
+
+;; tumblr-mode settings
+(setq
+ tumblr-email "gempesaw@gmail.com"
+ tumblr-hostnames (quote ("danzorx.tumblr.com"))
+ tumblr-retrieve-posts-num-total 5
+)
+
+(load "passwords.el")

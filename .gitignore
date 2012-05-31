@@ -16,3 +16,4 @@ elpa*
 elpa/*
 nil/*
 nil
+passwords.el
