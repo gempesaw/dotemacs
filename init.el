@@ -16,11 +16,8 @@
       (append
        '(;; el-get
          cperl-mode
-         ;; crontab-mode
-         cssh
-         ;; switch-window
+         js2-mode
          magit
-         php-mode
          )
        (mapcar 'el-get-source-name el-get-sources)))
 
