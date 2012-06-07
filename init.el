@@ -18,6 +18,7 @@
          cperl-mode
          js2-mode
          magit
+         unbound
          )
        (mapcar 'el-get-source-name el-get-sources)))
 
