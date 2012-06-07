@@ -1,26 +1,9 @@
-;; color-theme-euphoria Generated with http://color-theme-select.heroku.com/ on Fri May 25 2012 10:58:09 GMT-0400 (EDT)
-;; You can edit the theme name or the documentation by hovering over them.
-;; Be sure to add your name and email if you want to contribute this theme.
-
-(deftheme euphoria
+(deftheme euphoria-theme
   "")
 (custom-theme-set-faces
- 'euphoria
+ 'euphoria-theme
 
- '(background-color . "black")
- '(background-mode . "dark")
- '(border-color . "black")
- '(cursor-color . "yellow")
- '(foreground-color . "#00ff00")
- '(mouse-color . "yellow")
-
-
- '(help-highlight-face . "underline")
- '(list-matching-lines-face . "bold")
- '(widget-mouse-face . "highlight")
-
-
- '(default  ((t (:background "black" :foreground "#00ff00" :slant normal :weight normal :width normal :family "misc-fixed"))))
+ '(default  ((t (:background "black" :foreground "#00ff00" :slant normal :weight normal :width normal :family "Monaco"))))
 
  '(bold  ((t (:bold t :weight bold))))
  '(bold-italic  ((t (:italic t :slant italic :weight bold))))
@@ -98,7 +81,6 @@
 
  '(zmacs-region  ((t (:background "steelblue" :foreground "white"))))
 )
-
 
 
 (provide-theme 'euphoria-theme)
