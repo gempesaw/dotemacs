@@ -31,18 +31,22 @@
 (global-set-key (kbd "TAB") 'smart-tab)
 
 ;; Start eshell or switch to it if it's active.
-(global-set-key (kbd "C-c s") 'eshell)
+(global-unset-key (kbd "C-c ;"))
+(global-set-key (kbd "C-c ;") 'eshell)
 
 ;; Start a new eshell even if one is active.
-(global-set-key (kbd "C-c C-s") (lambda () (interactive) (eshell t)))
+(global-unset-key (kbd "C-c C-;"))
+(global-set-key (kbd "C-c C-;") (lambda () (interactive) (eshell t)))
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; load file into emacs
+(global-unset-key (kbd "C-c C-l"))
 (global-set-key (kbd "C-c C-l") 'load-file)
 
 ;; quicker el-get list packages
+(global-unset-key (kbd "C-c C-e l p"))
 (global-set-key (kbd "C-c C-e l p") 'el-get-list-packages)
 
 ;; i like using M-` to switch between frames
