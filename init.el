@@ -6,6 +6,8 @@
     (end-of-buffer)
     (eval-print-last-sexp)))
 
+
+;; custom packages not in el-get
 (setq el-get-sources
       '((:name tumblr-mode
              :type git
