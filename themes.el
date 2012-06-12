@@ -1,3 +1,5 @@
+(setq term-default-bg-color nil)
+
 ;; for solarized-theme.el
 (add-to-list 'load-path "~/.emacs.d/themes")
 
