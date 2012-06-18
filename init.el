@@ -48,3 +48,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+
+;; TODO: refactor into a function?
+;; start up selenium if possible.
+(when (file-exists-p "/opt/selenium-server-standalone-2.*.jar")
+     (shell-command "java -jar /opt/selenium-server-standalone-2.*.jar &")
+     (set-buffer "*Async Shell Command*")
+     (rename-buffer "selenium")
+     (toggle-read-only)
+)
