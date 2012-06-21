@@ -7,19 +7,27 @@
     (eval-print-last-sexp)))
 
 
-;; custom packages not in el-get
+;; custom local sources
 (setq el-get-sources
       '((:name tumblr-mode
-             :type git
-             :url "http://github.com/qxj/tumblr-mode.git"
-             :features (tumblr-mode))))
+               :type git
+               :url "http://github.com/qxj/tumblr-mode.git"
+               :features (tumblr-mode))
+      )
+)
 
 (setq my-packages
       (append
        '(;; el-get
+         ack
+         browse-kill-ring
          cperl-mode
-         js2-mode
+         json
          magit
+         markdown-mode
+         mode-compile
+         php-mode-improved
+         typing
          unbound
          )
        (mapcar 'el-get-source-name el-get-sources)))
@@ -52,9 +60,8 @@
 
 ;; TODO: refactor into a function?
 ;; start up selenium if possible.
-(when (file-exists-p "/opt/selenium-server-standalone-2.*.jar")
+(when (file-exists-p "/opt/selenium-server-standalone-2.23.0.jar")
      (shell-command "java -jar /opt/selenium-server-standalone-2.*.jar &")
      (set-buffer "*Async Shell Command*")
      (rename-buffer "selenium")
-     (toggle-read-only)
-)
+     (toggle-read-only))
