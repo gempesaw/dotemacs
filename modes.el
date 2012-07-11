@@ -81,4 +81,8 @@
  tumblr-retrieve-posts-num-total 5
 )
 
+;; passwords in a file not on github :p
 (load "passwords.el")
+
+;; org-jira mode
+(setq jiralib-url "https://arnoldmedia.jira.com")
