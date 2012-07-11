@@ -41,6 +41,12 @@
       ido-max-prospects 10
       ido-default-file-method 'selected-window)
 
+(add-to-list 'ido-ignore-directories "target")
+(add-to-list 'ido-ignore-directories "node_modules")
+
+;; Use ido everywhere
+(ido-ubiquitous 1)
+
 ;; auto-completion in minibuffer
 (icomplete-mode +1)
 
