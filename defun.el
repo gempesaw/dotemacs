@@ -10,7 +10,7 @@
 
 ;; I don't want M-x term to ask me about what shell to run
 ;; this is pulled from term.el (C-h f term)
-(defun term ()
+(defun cterm ()
   "Start a terminal-emulator in a new buffer.
 The buffer is in Term mode; see `term-mode' for the commands to
 use in that buffer.
