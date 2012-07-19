@@ -70,6 +70,3 @@
 (add-to-list 'exec-path "/usr/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (setq epg-gpg-program "/usr/local/bin/gpg")
-
-;; shortcut for browse-kill-ring
-(defalias 'bkr 'browse-kill-ring)

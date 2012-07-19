@@ -52,6 +52,7 @@
 
 ;; load the child files
 (add-to-list 'load-path "~/.emacs.d/")
+(load "alias.el")
 (load "customize.el")
 (load "defun.el")
 (load "kbd.el")
