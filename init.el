@@ -13,14 +13,22 @@
                :type git
                :url "http://github.com/qxj/tumblr-mode.git"
                :features (tumblr-mode))
-        (:name org-jira-mode
+        (:name org-jira
                :type git
-               :url "http://github.com/baohaojun/org-jira.git"
+               :url "git@github.com:gempesaw/org-jira.git"
                :features (org-jira))
         (:name ido-ubiquitous
                :type git
                :url "https://github.com/technomancy/ido-ubiquitous"
                :features (ido-ubiquitous))
+        (:name mark-multiple
+               :type git
+               :url "https://github.com/magnars/mark-multiple.el"
+               :features (mark-multiple))
+        ;; (:name
+        ;;        :type git
+        ;;        :url ""
+        ;;        :features ())
       )
 )
 
