@@ -73,6 +73,3 @@
 
 ;; shortcut for browse-kill-ring
 (defalias 'bkr 'browse-kill-ring)
-
-;; escaped character in term should be C-x, not C-c...
-(term-set-escape-char ?\C-x)

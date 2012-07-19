@@ -23,4 +23,7 @@ shell to run.
   (set-buffer (make-term "terminal" "/bin/bash"))
   (term-mode)
   (term-char-mode)
+  (term-set-escape-char ?\C-x)
   (switch-to-buffer "*terminal*"))
+
+(define-key global-map [remap term] 'cterm)
