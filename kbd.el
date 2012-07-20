@@ -62,3 +62,6 @@
 
 ;; search within files with find grep
 (global-set-key (kbd "C-c d") 'find-grep-dired)
+
+;; recursive file search ??? there's gotta be a better way!
+(global-set-key (kbd "C-x M-f") `find-name-dired)
