@@ -6,10 +6,10 @@
 ;; toggle full screen
 ;; (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
 
-;; rename buffer key chord
+;; rename buffer
 (global-set-key (kbd "C-c r") 'rename-buffer)
 
-;; magit status key chord
+;; magit status
 (global-set-key (kbd "C-x g") 'magit-status)
 
 ;; blame mode
