@@ -2,8 +2,9 @@
 (defun back-window () (interactive) (other-window -1))
 (global-set-key (kbd "C-x p") 'back-window)
 
-;; toggle full screen key chord
-(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+;; TODO - full screen doesn't work in emacs 24
+;; toggle full screen
+;; (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
 
 ;; rename buffer key chord
 (global-set-key (kbd "C-c r") 'rename-buffer)
