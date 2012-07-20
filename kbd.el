@@ -12,6 +12,9 @@
 ;; magit status key chord
 (global-set-key (kbd "C-x g") 'magit-status)
 
+;; blame mode
+(global-set-key (kbd "C-c g") 'magit-blame-mode)
+
 ;; shortcut for revert buffer
 (global-set-key (kbd "C-x r") 'revert-buffer)
 
@@ -53,3 +56,6 @@
 ;; i like using M-` to switch between frames
 (global-unset-key (kbd "M-`"))
 (global-set-key (kbd "M-`") 'other-frame)
+
+;; search within files with find grep
+(global-set-key (kbd "C-c d") 'find-grep-dired)
