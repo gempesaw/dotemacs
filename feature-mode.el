@@ -8,7 +8,7 @@
 )
 
 (define-generic-mode 'feature-mode
-  '("#")                      ;; comment characters
+  '("# ")                     ;; comment characters
   '("Feature" "Scenario")     ;; keywords to font-lock
   nil                         ;; additional expressions to font-lock
   '("\\.feature$")            ;; placed in auto-mode-alist
