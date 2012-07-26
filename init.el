@@ -77,8 +77,8 @@
 
 ;; TODO: refactor into a function?
 ;; start up selenium if possible.
-(when (file-exists-p "/opt/selenium-server-standalone-2.24.1.jar")
-     (shell-command "java -jar /opt/selenium-server-standalone-2.24.1.jar &")
+(when (file-exists-p "/opt/selenium-server-standalone-2.25.0.jar")
+     (shell-command "java -jar /opt/selenium-server-standalone-2.25.0.jar &")
      (set-buffer "*Async Shell Command*")
      (rename-buffer "selenium")
      (toggle-read-only))
