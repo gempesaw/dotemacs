@@ -69,3 +69,6 @@
 
 ;; recursive file search ??? there's gotta be a better way!
 (global-set-key (kbd "C-x M-f") `find-name-dired)
+
+;; expanding region
+(global-set-key (kbd "C-'") 'er/expand-region)

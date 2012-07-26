@@ -23,8 +23,13 @@
                :features (ido-ubiquitous))
         (:name mark-multiple
                :type git
-               :url "https://github.com/magnars/mark-multiple.el"
+               :url "https://github.com/magnars/mark-multiple.el.git"
                :features (mark-multiple))
+        (:name expand-region
+               :type git
+               :url "https://github.com/magnars/expand-region.el.git"
+               :features (expand-region))
+
         ;; (:name
         ;;        :type git
         ;;        :url ""
