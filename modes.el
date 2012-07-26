@@ -91,3 +91,6 @@
 
 ;; org-jira mode
 (setq jiralib-url "https://arnoldmedia.jira.com")
+
+;; turn on html mode for .tag files
+(setq auto-mode-alist (cons '("\\.tag$" . html-mode) auto-mode-alist))
