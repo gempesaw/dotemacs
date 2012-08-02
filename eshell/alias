@@ -1,3 +1,4 @@
 alias copyphrase scp -i /Users/dgempesaw/.ssh/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/phrases/*/* /opt/HDEW/honeydew/phrases
 alias copyphrasesc2 scp -i /Users/dgempesaw/.ssh/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/phrases/sc2/* /opt/HDEW/honeydew/phrases
-alias brew $*
+alias hdew copyphrase;copykey
+alias copykey scp -i /Users/dgempesaw/.ssh/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt
