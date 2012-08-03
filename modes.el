@@ -19,7 +19,6 @@
 (setq cperl-indent-level 4)
 (setq cperl-continued-statement-offset 0)
 (setq cperl-extra-newline-before-brace t)
-(define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
 
 (add-hook 'cperl-mode-hook
   (lambda()

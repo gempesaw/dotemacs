@@ -50,8 +50,6 @@
 (global-set-key (kbd "C-c '") 'cterm)
 
 ;; in cterm toggle between modes
-(define-key term-raw-map (kbd "C-'") 'term-line-mode)
-(define-key term-mode-map (kbd "C-'") 'term-char-mode)
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
