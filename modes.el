@@ -28,9 +28,6 @@
     (local-set-key (kbd "C-c C-n") 'hs-show-all)
     (hs-minor-mode t)))
 
-(add-hook 'cperl-mode-hook
-    (lambda () (subword-mode 1)))
-
 ;; ido mode
 (ido-mode t) ; enable ido for buffer/file switching
 (ido-everywhere t) ;enable ido everywhere
@@ -101,3 +98,5 @@
 ;; switch regexp builder to string read mode
 (require 're-builder)
 (setq reb-re-syntax 'perl)
+
+(global-subword-mode t)
