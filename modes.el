@@ -97,3 +97,7 @@
 
 ;; load my feature mode
 (load "feature-mode.el")
+
+;; switch regexp builder to string read mode
+(require 're-builder)
+(setq reb-re-syntax 'perl)

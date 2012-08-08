@@ -6,7 +6,6 @@
     (end-of-buffer)
     (eval-print-last-sexp)))
 
-
 ;; custom local sources
 (setq el-get-sources
       '((:name tumblr-mode
@@ -29,6 +28,10 @@
                :type git
                :url "https://github.com/magnars/expand-region.el.git"
                :features (expand-region))
+        (:name re-builder-x
+               :type git
+               :url "https://github.com/bsdf/re-builder-X.git"
+               :features (re-builder))
 
         ;; (:name
         ;;        :type git
