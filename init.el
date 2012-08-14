@@ -32,6 +32,12 @@
                :type git
                :url "https://github.com/bsdf/re-builder-X.git"
                :features (re-builder))
+        (:name yasnippet
+               :type git
+               :url "https://github.com/capitaomorte/yasnippet.git"
+               :pkgname "capitaomorte/yasnippet"
+               :features "yasnippet"
+               :compile "yasnippet.el")
 
         ;; (:name
         ;;        :type git
