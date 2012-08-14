@@ -101,5 +101,5 @@
 (require 'cperl-mode)
 (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
 (cterm)
-(define-key term-mode-map (kbd "C-'") 'term-char-mode)
-(define-key term-raw-map (kbd "C-'") 'term-line-mode)
+(define-key term-mode-map (kbd "C-;") 'term-char-mode)
+(define-key term-raw-map (kbd "C-;") 'term-line-mode)
