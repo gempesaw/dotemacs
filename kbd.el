@@ -34,7 +34,7 @@
 (global-unset-key (kbd "M-0"))
 (global-set-key (kbd "M-0") 'delete-window)
 
-;; smart tab - do i need this?
+;; smart tab - do i need this? YES
 (global-set-key (kbd "TAB") 'smart-tab)
 
 ;; Start eshell or switch to it if it's active.
@@ -48,8 +48,6 @@
 ;; Start cterm or switch to it if it's active.
 (global-unset-key (kbd "C-c '"))
 (global-set-key (kbd "C-c '") 'cterm)
-
-;; in cterm toggle between modes
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -73,9 +71,12 @@
 (global-set-key (kbd "C-x M-f") `find-name-dired)
 
 ;; expanding region
+;; this gets overwritten in cterm mode :(
 (global-set-key (kbd "C-'") 'er/expand-region)
 
 ;; shortcuts for compilation
 (global-set-key (kbd "<f5>") 'smart-compile)
 (global-set-key (kbd "<f6>") 'recompile)
 
+;; eval region
+(global-set-key (kbd "C-<f5>") 'eval-region)
