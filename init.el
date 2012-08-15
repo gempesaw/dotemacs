@@ -53,11 +53,13 @@
          browse-kill-ring
          cperl-mode
          json
+         ;; js2-mode
          magit
          markdown-mode
-         mode-compile
+         ;; mode-compile
          ;; php-mode-improved
-         typing
+         smart-compile
+         ;; typing
          unbound
          )
        (mapcar 'el-get-source-name el-get-sources)))
