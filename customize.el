@@ -28,6 +28,7 @@
 
 ;; Modeline info
 (display-time-mode 1)
+
 ;; battery mode might not work for desktops
 ;; (display-battery-mode 1)
 
@@ -61,7 +62,7 @@
   (when buffer-file-name (save-buffer)))
 
 ;; tramp settings
-(require 'tramp)
+(require 'tramp) ;; this should not be necessary
 (setq tramp-default-method "ssh")
 (setq tramp-auto-save-directory "~/tmp/tramp/")
 (setq tramp-chunksize 2000)
@@ -70,3 +71,9 @@
 (add-to-list 'exec-path "/usr/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (setq epg-gpg-program "/usr/local/bin/gpg")
+
+;; smart compile
+(require 'smart-compile) ;; this should not be necessary
+(setq compilation-read-command nil)
+(add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
+(add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )

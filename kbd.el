@@ -75,4 +75,7 @@
 ;; expanding region
 (global-set-key (kbd "C-'") 'er/expand-region)
 
-(global-set-key (kbd "<f5>") 'recompile)
+;; shortcuts for compilation
+(global-set-key (kbd "<f5>") 'smart-compile)
+(global-set-key (kbd "<f6>") 'recompile)
+
