@@ -100,3 +100,4 @@
 (setq reb-re-syntax 'perl)
 
 (global-subword-mode t)
+(yas/global-mode t)
