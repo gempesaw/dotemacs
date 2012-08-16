@@ -77,3 +77,9 @@
 (setq compilation-read-command nil)
 (add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
 (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
+
+;; don't ask about files
+(setq compilation-ask-about-save nil)
+
+;; don't compile based on last buffer
+(setq compilation-last-buffer nil)
