@@ -11,7 +11,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hippie expand.  Groovy vans with tie-dyes.
 
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+(setq hippie-expand-try-functions-list '(
+                                         yas/hippie-try-expand
+                                         try-expand-dabbrev
                                          try-expand-dabbrev-all-buffers
                                          try-expand-dabbrev-from-kill
                                          try-complete-file-name-partially
@@ -32,8 +34,7 @@
 ;; http://www.emacswiki.org/emacs/TabCompletion
 ;; TODO: Take a look at https://github.com/genehack/smart-tab
 
-
-(defvar smart-tab-using-hippie-expand -1
+(defvar smart-tab-using-hippie-expand t
   "turn this on if you want to use hippie-expand completion.")
 
 (defun smart-tab (prefix)
