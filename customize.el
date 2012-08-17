@@ -62,10 +62,12 @@
   (when buffer-file-name (save-buffer)))
 
 ;; tramp settings
-(require 'tramp) ;; this should not be necessary
-(setq tramp-default-method "ssh")
-(setq tramp-auto-save-directory "~/tmp/tramp/")
-(setq tramp-chunksize 2000)
+(eval-after-load "tramp"
+  '(progn
+     (setq tramp-default-method "ssh")
+     (setq tramp-auto-save-directory "~/tmp/tramp/")
+     (setq tramp-chunksize 2000)
+     ))
 
 ;; get gpg into the path
 (add-to-list 'exec-path "/usr/bin")
@@ -73,10 +75,12 @@
 (setq epg-gpg-program "/usr/local/bin/gpg")
 
 ;; smart compile
-(require 'smart-compile) ;; this should not be necessary
-(setq compilation-read-command nil)
-(add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
-(add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
+(eval-after-load "smart-compile"
+  '(progn
+     (setq compilation-read-command nil)
+     (add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
+     (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
+     ))
 
 ;; don't ask about files
 (setq compilation-ask-about-save nil)
@@ -97,9 +101,11 @@
 ;; ignore list http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/
 ;; (add-to-list 'ido-ignore-buffers "buffers")
 ;; (add-to-list 'ido-ignore-files "files")
-(add-to-list 'ido-ignore-directories "target")
-(add-to-list 'ido-ignore-directories "svn_HDEW")
-(add-to-list 'ido-ignore-directories "node_modules")
+(eval-after-load "ido-mode"
+  '(progn
+     (add-to-list 'ido-ignore-directories "target")
+     (add-to-list 'ido-ignore-directories "svn_HDEW")
+     (add-to-list 'ido-ignore-directories "node_modules")))
 
 ;; Display ido results vertically, rather than horizontally
 (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
@@ -109,5 +115,7 @@
 
 ;; make dired-find-file faster
 ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
-(require 'find-dired)
-(setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+(eval-after-load "find-dired"
+  '(progn
+     (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+     ))

@@ -84,3 +84,9 @@
 
 ;; google
 (global-set-key (kbd "C-x ?") 'google)
+
+;; win switch
+(eval-after-load "win-switch"
+  '(progn
+     (global-set-key "\C-xo" 'win-switch-dispatch)
+     ))

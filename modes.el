@@ -2,15 +2,18 @@
 (desktop-save-mode 1)
 
 ;; magit svn inclusion
-(require 'magit-svn)
+(eval-after-load "magit"
+  '(progn
+     (require 'magit-svn)))
 
 ;; winner mode
 (when (fboundp 'winner-mode)
   (winner-mode 1))
 
 ;; erc setup
-(require 'erc-match)
-(setq erc-keywords '("resolve" "dgempesaw"))
+(eval-after-load "erc-match"
+  '(progn
+     (setq erc-keywords '("resolve" "dgempesaw"))))
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)

@@ -87,8 +87,11 @@
       (rename-buffer "selenium")
       (toggle-read-only)))
 
-(require 'cperl-mode)
-(define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
+(eval-after-load "cperl-mode"
+  '(progn
+     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
+     ))
+
 (cterm)
 (define-key term-mode-map (kbd "C-;") 'term-char-mode)
 (define-key term-raw-map (kbd "C-;") 'term-line-mode)
