@@ -91,8 +91,16 @@
       ido-use-filename-at-point 'guess
       ido-max-prospects 10
       ido-default-file-method 'selected-window
+      ;; ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini" ".cfg" ".cnf")
+      )
+
+;; ignore list http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/
+;; (add-to-list 'ido-ignore-buffers "buffers")
+;; (add-to-list 'ido-ignore-files "files")
 (add-to-list 'ido-ignore-directories "target")
+(add-to-list 'ido-ignore-directories "svn_HDEW")
 (add-to-list 'ido-ignore-directories "node_modules")
+
 ;; Display ido results vertically, rather than horizontally
 (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
 (defun ido-disable-line-trucation () (set (make-local-variable 'truncate-lines) nil))
