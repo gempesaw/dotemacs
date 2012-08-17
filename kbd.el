@@ -81,3 +81,6 @@
 
 ;; eval region
 (global-set-key (kbd "C-<f5>") 'eval-region)
+
+;; google
+(global-set-key (kbd "C-x ?") 'google)
