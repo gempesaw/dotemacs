@@ -106,3 +106,8 @@
 (defun ido-disable-line-trucation () (set (make-local-variable 'truncate-lines) nil))
 (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation)
 
+
+;; make dired-find-file faster
+;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
+(require 'find-dired)
+(setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
