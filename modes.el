@@ -31,23 +31,9 @@
 ;; ido mode
 (ido-mode t) ; enable ido for buffer/file switching
 (ido-everywhere t) ;enable ido everywhere
-(setq ido-enable-prefix nil
-      ido-enable-flex-matching t ; fuzzy matching is a must have
-      ido-create-new-buffer 'always
-      ido-use-filename-at-point 'guess
-      ido-max-prospects 10
-      ido-default-file-method 'selected-window)
-
-(add-to-list 'ido-ignore-directories "target")
-(add-to-list 'ido-ignore-directories "node_modules")
 
 ;; Use ido everywhere
 (ido-ubiquitous 1)
-
-;; Display ido results vertically, rather than horizontally
-(setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
-(defun ido-disable-line-trucation () (set (make-local-variable 'truncate-lines) nil))
-(add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation)
 
 ;; auto-completion in minibuffer
 (icomplete-mode +1)
