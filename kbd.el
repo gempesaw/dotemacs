@@ -90,6 +90,15 @@
   '(progn
      (global-set-key "\C-xo" 'win-switch-dispatch)
      ))
+
+
+(global-unset-key (kbd "C-x C-r"))
+(eval-after-load "inline-string-rectangle"
+'(progn
+   (global-set-key (kbd "C-x C-r t") 'inline-string-rectangle)
+   (global-set-key (kbd "C-x C-r C-t") 'inline-string-rectangle)
+   ))
+
 ;; for multiple marking
 (eval-after-load "mark-more-like-this"
   '(progn
@@ -99,3 +108,10 @@
      (global-set-key (kbd "C-*") 'mark-all-like-this)
      ))
 
+;; picks up both tags in sgml mode? i don't use this...
+;; (eval-after-load "mark-more-like-this"
+;; '(progn
+;;    (add-hook 'sgml-mode-hook
+;;              (lambda ()
+;;                (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)))
+;;    ))
