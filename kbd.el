@@ -115,3 +115,7 @@
 ;;              (lambda ()
 ;;                (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)))
 ;;    ))
+
+;; bookmarks
+(global-set-key (kbd "C-c C-b") 'bookmark-bmenu-list)
+(global-set-key (kbd "C-c b") 'bookmark-set)
