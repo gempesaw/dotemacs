@@ -117,5 +117,5 @@
 ;;    ))
 
 ;; bookmarks
-(global-set-key (kbd "C-c C-b") 'bookmark-bmenu-list)
+(global-set-key (kbd "C-c M-b") 'bookmark-bmenu-list)
 (global-set-key (kbd "C-c b") 'bookmark-set)
