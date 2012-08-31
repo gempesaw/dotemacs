@@ -119,3 +119,4 @@
 ;; bookmarks
 (global-set-key (kbd "C-c M-b") 'bookmark-bmenu-list)
 (global-set-key (kbd "C-c b") 'bookmark-set)
+(global-set-key (kbd "C-x m") 'bookmark-jump)
