@@ -80,6 +80,7 @@
 
 ;; turn on html mode for .tag files
 (setq auto-mode-alist (cons '("\\.tag$" . html-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.out$" . auto-revert-tail-mode) auto-mode-alist))
 
 ;; load my feature mode
 (load "feature-mode.el")
