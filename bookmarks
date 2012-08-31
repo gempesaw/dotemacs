@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Sharecare2"
+(("catalina.out-pub"
+ (filename . "/ssh:qascpub:/opt/tomcat/logs/catalina.out")
+ (front-context-string)
+ (rear-context-string . "ding properties\n")
+ (position . 233727))
+("Sharecare2"
  (filename . "~/opt/Sharecare2/")
  (front-context-string . "..\n  drwxr-xr-x ")
  (rear-context-string . "10 Aug 16 15:41 ")
@@ -27,4 +32,14 @@
  (front-context-string . ".svn\n  -rw-rw-r-")
  (rear-context-string . "96 Sep  1  2011 ")
  (position . 215))
+("catalina.out-auth"
+ (filename . "/ssh:qascauth:/opt/tomcat/logs/catalina.out")
+ (front-context-string)
+ (rear-context-string . "ding properties\n")
+ (position . 1))
+("catalina.out-data"
+ (filename . "/ssh:qascdata:/opt/tomcat/logs/catalina.out")
+ (front-context-string)
+ (rear-context-string . "ding properties\n")
+ (position . 1))
 )
