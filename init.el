@@ -38,7 +38,9 @@
                :pkgname "capitaomorte/yasnippet"
                :features "yasnippet"
                :compile "yasnippet.el")
-
+        (:name smart-compile
+               :type emacswiki
+               :website "http://emacswiki.org/emacs/smart-compile.el")
         ;; (:name
         ;;        :type git
         ;;        :url ""
@@ -58,7 +60,7 @@
          markdown-mode
          ;; mode-compile
          ;; php-mode-improved
-         smart-compile
+         ;; smart-compile
          ;; typing
          unbound
          )
