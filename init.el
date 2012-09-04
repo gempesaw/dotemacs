@@ -55,6 +55,7 @@
          browse-kill-ring
          cperl-mode
          json
+         htmlize
          ;; js2-mode
          magit
          markdown-mode
@@ -77,6 +78,7 @@
 (load "modes.el")
 (load "tabs.el")
 (load "themes.el")
+(load "mypackage.el")
 (setq custom-file "emacs-custom.el")
 (load custom-file 'noerror)
 
