@@ -54,3 +54,9 @@ browsers."
    (concat
     "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
     (buffer-file-name))))
+
+(defun hdew-prove-all ()
+  "runs all the tests in the honeydew folder"
+  (interactive)
+  (async-shell-command
+   "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/"))
