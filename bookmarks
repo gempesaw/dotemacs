@@ -2,17 +2,22 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("catalina.out-pub"
+(("htdocs_home"
+ (filename . "~/opt/git_hdew/honeydew-ui/htdocs/")
+ (front-context-string . "Copy.png\n  -rw-r")
+ (rear-context-string . "30 Aug 16 09:57 ")
+ (position . 324))
+("catalina.out-pub"
  (filename . "/ssh:qascpub:/opt/tomcat/logs/catalina.out")
  (front-context-string)
  (rear-context-string . "ding properties\n")
  (position . 233727))
-("Sharecare2"
+("Sharecare2-java-project"
  (filename . "~/opt/Sharecare2/")
  (front-context-string . "..\n  drwxr-xr-x ")
  (rear-context-string . "10 Aug 16 15:41 ")
  (position . 231))
-("SC2"
+("SC2-feature-folder"
  (filename . "/ssh:honeydew:/opt/honeydew/features/Sharecare/SC2/")
  (front-context-string . "accountSettings\n")
  (rear-context-string . "96 Aug  3 21:33 ")
