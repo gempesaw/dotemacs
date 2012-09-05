@@ -124,5 +124,4 @@
 ;; win-switch
 (require 'win-switch)
 (global-set-key (kbd "C-x o") 'other-window)
->>>>>>> Change bookmark shortcuts to be more consistent, use prefix C-c C-b
 (global-set-key (kbd "C-x i") 'win-switch-enter)
