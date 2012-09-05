@@ -17,3 +17,5 @@ elpa/*
 nil/*
 nil
 passwords.el
+/chromedriver.log
+/.prove
