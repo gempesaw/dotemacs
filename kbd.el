@@ -117,10 +117,12 @@
 ;;    ))
 
 ;; bookmarks
-(global-set-key (kbd "C-c M-b") 'bookmark-bmenu-list)
-(global-set-key (kbd "C-c b") 'bookmark-set)
-(global-set-key (kbd "C-x m") 'bookmark-jump)
+(global-set-key (kbd "C-c C-b l") 'bookmark-bmenu-list)
+(global-set-key (kbd "C-c C-b s") 'bookmark-set)
+(global-set-key (kbd "C-c C-b j") 'bookmark-jump)
 
 ;; win-switch
 (require 'win-switch)
+(global-set-key (kbd "C-x o") 'other-window)
+>>>>>>> Change bookmark shortcuts to be more consistent, use prefix C-c C-b
 (global-set-key (kbd "C-x i") 'win-switch-enter)
