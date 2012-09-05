@@ -28,10 +28,6 @@
                :type git
                :url "https://github.com/magnars/expand-region.el.git"
                :features (expand-region))
-        (:name re-builder-x
-               :type git
-               :url "https://github.com/bsdf/re-builder-X.git"
-               :features (re-builder))
         (:name yasnippet
                :type git
                :url "https://github.com/capitaomorte/yasnippet.git"
@@ -58,6 +54,7 @@
          ;; js2-mode
          magit
          markdown-mode
+         regex-tool
          ;; mode-compile
          ;; php-mode-improved
          ;; smart-compile
