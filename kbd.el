@@ -123,4 +123,6 @@
 
 ;; win-switch
 (eval-after-load "win-switch"
-  (global-set-key (kbd "C-o") 'win-switch-enter))
+  '(progn
+     (global-set-key (kbd "C-x o") 'other-window)
+     (global-set-key (kbd "C-o") 'win-switch-enter)))
