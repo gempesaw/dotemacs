@@ -22,9 +22,6 @@
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Don't ask about killing terminals
-;; (set-process-query-on-exit-flag (get-process "terminal") nil)
-
 ;; Display line and column numbers
 (setq line-number-mode    t)
 (setq column-number-mode  t)

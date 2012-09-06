@@ -16,14 +16,16 @@ The buffer is in Term mode; see `term-mode' for the commands to
 use in that buffer.
 
 I've redefined this in `defun.el', so that it doesn't ask for the
-shell to run.
+shell to run, and so it doesn't ask before getting killed.
 
 \\<term-raw-map>Type \\[switch-to-buffer] to switch to another buffer."
   (interactive)
   (set-buffer (make-term "terminal" "/bin/bash"))
   (term-mode)
-  (term-char-mode)
+  (term-line-mode)
   (term-set-escape-char ?\C-x)
+  ;; Don't ask about killing terminals
+  (set-process-query-on-exit-flag (get-process "terminal") nil)
   (switch-to-buffer "*terminal*"))
 
 (define-key global-map [remap term] 'cterm)
