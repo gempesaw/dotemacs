@@ -86,4 +86,7 @@
 (load "feature-mode.el")
 
 (global-subword-mode t)
+
+;; personal snippets
+(setq yas-snippet-dirs '("./snippets"))
 (yas/global-mode t)
