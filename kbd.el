@@ -122,6 +122,5 @@
 (global-set-key (kbd "C-c C-b j") 'bookmark-jump)
 
 ;; win-switch
-(require 'win-switch)
-(global-set-key (kbd "C-x o") 'other-window)
-(global-set-key (kbd "C-o") 'win-switch-enter)
+(eval-after-load "win-switch"
+  (global-set-key (kbd "C-o") 'win-switch-enter))
