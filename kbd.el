@@ -124,4 +124,4 @@
 ;; win-switch
 (require 'win-switch)
 (global-set-key (kbd "C-x o") 'other-window)
-(global-set-key (kbd "C-x i") 'win-switch-enter)
+(global-set-key (kbd "C-o") 'win-switch-enter)
