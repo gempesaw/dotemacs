@@ -87,6 +87,3 @@
 
 (global-subword-mode t)
 (yas/global-mode t)
-
-;;
-(require 'uniquify)

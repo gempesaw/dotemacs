@@ -23,7 +23,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Don't ask about killing terminals
-(set-process-query-on-exit-flag (get-process "terminal") nil)
+;; (set-process-query-on-exit-flag (get-process "terminal") nil)
 
 ;; Display line and column numbers
 (setq line-number-mode    t)
@@ -122,3 +122,8 @@
   '(progn
      (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
      ))
+
+;; uniquify options
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(setq uniquify-strip-common-suffix 'nil)
