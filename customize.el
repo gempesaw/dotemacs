@@ -145,13 +145,13 @@
      (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
      ))
 
-(eval-after-load "term-char-mode"
-  '(progn
-     (define-key term-mode-map (kbd "C-;") 'term-char-mode)))
+;; (eval-after-load "term-char-mode"
+;;   '(progn
+;;      (define-key term-mode-map (kbd "C-;") 'term-char-mode)))
 
-(eval-after-load "term-line-mode"
-  '(progn
-     (define-key term-raw-map (kbd "C-;") 'term-line-mode)))
+;; (eval-after-load "term-line-mode"
+;;   '(progn
+;;      (define-key term-raw-map (kbd "C-;") 'term-line-mode)))
 
 ;; erc setup
 (eval-after-load "erc-match"
