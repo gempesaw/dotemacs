@@ -74,3 +74,5 @@
 ;; personal snippets
 (setq yas-snippet-dirs '("./snippets"))
 (yas/global-mode t)
+
+(win-switch-mode t)
