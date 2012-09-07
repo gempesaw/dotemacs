@@ -85,35 +85,12 @@
 ;; google
 (global-set-key (kbd "C-x ?") 'google)
 
-;; win switch
-(eval-after-load "win-switch"
-  '(progn
-     (global-set-key "\C-xo" 'win-switch-dispatch)
-     ))
-
-
-(global-unset-key (kbd "C-x C-r"))
-(eval-after-load "inline-string-rectangle"
-'(progn
-   (global-set-key (kbd "C-x C-r t") 'inline-string-rectangle)
-   (global-set-key (kbd "C-x C-r C-t") 'inline-string-rectangle)
-   ))
-
-;; for multiple marking
-(eval-after-load "mark-more-like-this"
-  '(progn
-     (global-set-key (kbd "C-<") 'mark-previous-like-this)
-     (global-set-key (kbd "C->") 'mark-next-like-this)
-     (global-set-key (kbd "C-M-m") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
-     (global-set-key (kbd "C-*") 'mark-all-like-this)
-     ))
-
-;; picks up both tags in sgml mode? i don't use this...
-;; (eval-after-load "mark-more-like-this"
+;; TODO: rebind this
+;; (global-unset-key (kbd "C-x C-r"))
+;; (eval-after-load "inline-string-rectangle"
 ;; '(progn
-;;    (add-hook 'sgml-mode-hook
-;;              (lambda ()
-;;                (define-key sgml-mode-map (kbd "C-c C-r") 'rename-sgml-tag)))
+;;    (global-set-key (kbd "C-x C-r t") 'inline-string-rectangle)
+;;    (global-set-key (kbd "C-x C-r C-t") 'inline-string-rectangle)
 ;;    ))
 
 ;; bookmarks
@@ -121,8 +98,5 @@
 (global-set-key (kbd "C-c C-b s") 'bookmark-set)
 (global-set-key (kbd "C-c C-b j") 'bookmark-jump)
 
-;; win-switch
-(eval-after-load "win-switch"
-  '(progn
-     (global-set-key (kbd "C-x o") 'other-window)
-     (global-set-key (kbd "C-o") 'win-switch-enter)))
+;; win-switch is in customize.el
+;; mark-more-like-this is in customize.el

@@ -1,19 +1,9 @@
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)
 
-;; magit svn inclusion
-(eval-after-load "magit"
-  '(progn
-     (require 'magit-svn)))
-
 ;; winner mode
 (when (fboundp 'winner-mode)
   (winner-mode 1))
-
-;; erc setup
-(eval-after-load "erc-match"
-  '(progn
-     (setq erc-keywords '("resolve" "dgempesaw"))))
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
@@ -46,12 +36,6 @@
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
-
-;; saveplace remembers your location in a file when saving files
-(setq save-place-file (concat user-emacs-directory "saveplace"))
-;; activate it for all buffers
-(setq-default save-place t)
-(require 'saveplace)
 
 ;; smart pairing for all
 (electric-pair-mode t)

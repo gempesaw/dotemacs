@@ -121,6 +121,52 @@
      ))
 
 ;; uniquify options
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-(setq uniquify-strip-common-suffix 'nil)
+(eval-after-load "uniquify"
+  '(progn
+     (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+     (setq uniquify-strip-common-suffix 'nil)))
+
+;; magit svn inclusion
+(eval-after-load "magit"
+  '(progn
+     (require 'magit-svn)))
+
+;; for multiple marking
+(eval-after-load "mark-more-like-this"
+  '(progn
+     (global-set-key (kbd "C-<") 'mark-previous-like-this)
+     (global-set-key (kbd "C->") 'mark-next-like-this)
+     (global-set-key (kbd "C-M-m") 'mark-more-like-this) ; like the other two, but takes an argument (negative is previous)
+     (global-set-key (kbd "C-*") 'mark-all-like-this)
+     ))
+
+(eval-after-load "cperl-mode"
+  '(progn
+     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
+     ))
+
+(eval-after-load "term-char-mode"
+  '(progn
+     (define-key term-mode-map (kbd "C-;") 'term-char-mode)))
+
+(eval-after-load "term-line-mode"
+  '(progn
+     (define-key term-raw-map (kbd "C-;") 'term-line-mode)))
+
+;; erc setup
+(eval-after-load "erc-match"
+  '(progn
+     (setq erc-keywords '("resolve" "dgempesaw"))))
+
+(eval-after-load "saveplace"
+  '(progn
+     ;; saveplace remembers your location in a file when saving files
+     (setq save-place-file (concat user-emacs-directory "saveplace"))
+     ;; activate it for all buffers
+     (setq-default save-place t)))
+
+;; win-switch
+(eval-after-load "win-switch"
+  '(progn
+     (global-unset-key (kbd "C-j"))
+     (global-set-key (kbd "C-j") 'win-switch-enter)))

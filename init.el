@@ -1,3 +1,6 @@
+(add-to-list 'load-path "~/.emacs.d/")
+(load "customize.el")
+
 ;; set up el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil t)
@@ -23,7 +26,7 @@
         (:name mark-multiple
                :type git
                :url "https://github.com/magnars/mark-multiple.el.git"
-               :features (mark-multiple))
+               :features (mark-more-like-this))
         (:name expand-region
                :type git
                :url "https://github.com/magnars/expand-region.el.git"
@@ -67,9 +70,7 @@
 (el-get 'sync my-packages)
 
 ;; load the child files
-(add-to-list 'load-path "~/.emacs.d/")
 (load "alias.el")
-(load "customize.el")
 (load "defun.el")
 (load "kbd.el")
 (load "modes.el")
@@ -86,12 +87,3 @@
       (set-buffer "*Async Shell Command*")
       (rename-buffer "selenium")
       (toggle-read-only)))
-
-(eval-after-load "cperl-mode"
-  '(progn
-     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
-     ))
-
-(cterm)
-(define-key term-mode-map (kbd "C-;") 'term-char-mode)
-(define-key term-raw-map (kbd "C-;") 'term-line-mode)
