@@ -62,3 +62,8 @@ browsers."
   (interactive)
   (async-shell-command
    "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/"))
+
+
+(defun my-minibuffer-setup-hook ()
+  (my-keys-minor-mode 0))
+

@@ -126,6 +126,7 @@
   '(progn
      (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
      (setq uniquify-strip-common-suffix 'nil)))
+(require 'uniquify)
 
 ;; magit svn inclusion
 (eval-after-load "magit"
@@ -166,8 +167,13 @@
      ;; activate it for all buffers
      (setq-default save-place t)))
 
+(defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  t " my-keys" 'my-keys-minor-mode-map)
+
 ;; win-switch
 (eval-after-load "win-switch"
   '(progn
-     (global-unset-key (kbd "C-j"))
-     (global-set-key (kbd "C-j") 'win-switch-enter)))
+     (define-key my-keys-minor-mode-map (kbd "C-j") 'win-switch-enter)))

@@ -79,3 +79,6 @@
 (yas/global-mode 1)
 
 (win-switch-mode t)
+
+;; activate my minor mode to override keybindings
+(my-keys-minor-mode 1)
