@@ -2,20 +2,13 @@
 (load "customize.el")
 
 ;; load the child files
-(load "alias.el")
-(load "defun.el")
-(load "kbd.el")
-(load "modes.el")
-(load "tabs.el")
-(load "themes.el")
-(setq custom-file "emacs-custom.el")
-(load custom-file 'noerror)
-
-;; TODO: refactor into a function?
-;; start up selenium if possible.
-(if (eq nil (get-buffer "selenium"))
-    (when (file-exists-p "/opt/selenium-server-standalone-2.25.0.jar")
-      (shell-command "java -jar /opt/selenium-server-standalone-2.25.0.jar -Dwebdriver.chrome.driver=/opt/chromedriver &")
-      (set-buffer "*Async Shell Command*")
-      (rename-buffer "selenium")
-      (toggle-read-only)))
+(load "alias.el" 'noerror)
+(load "defun.el" 'noerror)
+(load "elget.el" 'noerror)
+(load "emacs-custom.el" 'noerror)
+(load "kbd.el" 'noerror)
+(load "hooks.el" 'noerror)
+(load "modes.el" 'noerror)
+(load "tabs.el" 'noerror)
+(load "themes.el" 'noerror)
+(load "selenium-start.el" 'noerror)
