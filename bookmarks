@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("htdocs_home"
+(("qa-scrums"
+ (filename . "~/notes/qa-scrums/")
+ (front-context-string . "  -rw-r--r--   1")
+ (rear-context-string . " 2012-09-04.org\n")
+ (position . 316))
+("htdocs_home"
  (filename . "~/opt/git_hdew/honeydew-ui/htdocs/")
  (front-context-string . "Copy.png\n  -rw-r")
  (rear-context-string . "30 Aug 16 09:57 ")
