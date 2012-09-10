@@ -49,6 +49,7 @@
        '(;; el-get
          ack
          browse-kill-ring
+         coffee-mode
          cperl-mode
          json
          ;; js2-mode
