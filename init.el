@@ -5,6 +5,7 @@
 (load "alias.el" 'noerror)
 (load "defun.el" 'noerror)
 (load "elget.el" 'noerror)
+(setq custom-file "~/emacs-custom.el")
 (load "emacs-custom.el" 'noerror)
 (load "kbd.el" 'noerror)
 (load "hooks.el" 'noerror)
