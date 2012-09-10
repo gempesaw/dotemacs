@@ -155,6 +155,9 @@
 ;;   '(progn
 ;;      (define-key term-raw-map (kbd "C-;") 'term-line-mode)))
 
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
+
 ;; erc setup
 (eval-after-load "erc-match"
   '(progn
