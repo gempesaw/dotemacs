@@ -20,13 +20,13 @@ shell to run, and so it doesn't ask before getting killed.
 
 \\<term-raw-map>Type \\[switch-to-buffer] to switch to another buffer."
   (interactive)
-  (set-buffer (make-term "terminal" "/bin/bash"))
+  (set-buffer (term-ansi-make-term "terminal" "/bin/bash"))
   (term-mode)
   (term-line-mode)
   (term-set-escape-char ?\C-x)
   ;; Don't ask about killing terminals
   (set-process-query-on-exit-flag (get-process "terminal") nil)
-  (switch-to-buffer "*terminal*"))
+  (switch-to-buffer "terminal"))
 
 (define-key global-map [remap term] 'cterm)
 
