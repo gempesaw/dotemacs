@@ -94,9 +94,9 @@
 ;;    ))
 
 ;; bookmarks
-(global-set-key (kbd "C-c C-b l") 'bookmark-bmenu-list)
-(global-set-key (kbd "C-c C-b s") 'bookmark-set)
-(global-set-key (kbd "C-c C-b j") 'bookmark-jump)
+(global-set-key (kbd "C-c b l") 'bookmark-bmenu-list)
+(global-set-key (kbd "C-c b s") 'bookmark-set)
+(global-set-key (kbd "C-c b j") 'bookmark-jump)
 
 ;; win-switch is in customize.el
 ;; mark-more-like-this is in customize.el
