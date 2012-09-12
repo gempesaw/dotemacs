@@ -89,7 +89,7 @@ browsers."
   (find-file "/ssh:qascdata:/opt/tomcat/logs/catalina.out" t)
   (end-of-buffer)
   (other-window 1)
-  (cterm)
+  (ssh-qascpub)
   )
 
 
