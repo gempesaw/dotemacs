@@ -60,6 +60,8 @@
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
+(defadvice windmove-do-window-select (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
 
 ;; tramp settings
 (eval-after-load "tramp"
