@@ -29,3 +29,6 @@
 
 
 (set-process-query-on-exit-flag (get-process "terminal") nil)
+
+(add-to-list 'initial-frame-alist `(fullscreen . fullheight))
+(add-to-list 'default-frame-alist `(fullscreen . fullheight))
