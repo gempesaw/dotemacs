@@ -37,12 +37,15 @@
         (:name smart-compile
                :type emacswiki
                :website "http://emacswiki.org/emacs/smart-compile.el")
+        (:name web-mode
+               :type git
+               :url "https://github.com/fxbois/web-mode.git"
+               :features (web-mode))
         ;; (:name
         ;;        :type git
         ;;        :url ""
         ;;        :features ())
-      )
-)
+      ))
 
 (setq my-packages
       (append
