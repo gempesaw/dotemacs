@@ -61,6 +61,7 @@
          markdown-mode
          regex-tool
          ;; mode-compile
+         powerline
          ;; php-mode-improved
          ;; smart-compile
          ;; typing
