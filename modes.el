@@ -38,7 +38,7 @@
 (global-auto-revert-mode t)
 
 ;; smart pairing for all
-(electric-pair-mode t)
+;; (electric-pair-mode t)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)

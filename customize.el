@@ -189,3 +189,8 @@
 (eval-after-load "win-switch"
   '(progn
      (define-key my-keys-minor-mode-map (kbd "C-j") 'win-switch-enter)))
+
+;; autopair
+(eval-after-load "autopair"
+  '(progn
+     (autopair-global-mode)))

@@ -51,6 +51,7 @@
       (append
        '(;; el-get
          ack
+         autopair
          browse-kill-ring
          coffee-mode
          cperl-mode
