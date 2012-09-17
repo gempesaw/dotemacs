@@ -38,6 +38,7 @@
 ;; Emacs gurus don't need no stinking scroll bars
 (when (fboundp 'toggle-scroll-bar)
   (toggle-scroll-bar -1))
+(toggle-scroll-bar -1)
 
 ;; Explicitly show the end of a buffer
 (set-default 'indicate-empty-lines t)
