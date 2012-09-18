@@ -41,10 +41,10 @@
                :type git
                :url "https://github.com/fxbois/web-mode.git"
                :features (web-mode))
-        ;; (:name
-        ;;        :type git
-        ;;        :url ""
-        ;;        :features ())
+        (:name powerline
+               :type git
+               :url "https://github.com/milkypostman/powerline.git"
+               :features (powerline))
       ))
 
 (setq my-packages
@@ -61,7 +61,6 @@
          markdown-mode
          regex-tool
          ;; mode-compile
-         powerline
          ;; php-mode-improved
          ;; smart-compile
          ;; typing
