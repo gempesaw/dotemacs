@@ -2,7 +2,17 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("qa-scrums"
+(("hnew:prod-hdew-git"
+ (filename . "/ssh:hnew:/home/honeydew/prod_hdew/")
+ (front-context-string . "honeydew\n  drwxr")
+ (rear-context-string . "96 Sep 17 17:50 ")
+ (position . 393))
+("sshconfig"
+ (filename . "~/.ssh/config")
+ (front-context-string . "l\n   User honeyd")
+ (rear-context-string . "penstack.interna")
+ (position . 1006))
+("qa-scrums"
  (filename . "~/notes/qa-scrums/")
  (front-context-string . "  -rw-r--r--   1")
  (rear-context-string . " 2012-09-04.org\n")
@@ -37,7 +47,7 @@
  (front-context-string . "etc\n  drwxrwxrwx")
  (rear-context-string . "96 Aug 24  2011 ")
  (position . 392))
-("htdocs"
+("old-prod-htdocs"
  (filename . "/ssh:honeydew:/opt/honeydew-ui/htdocs/")
  (front-context-string . ".svn\n  -rw-rw-r-")
  (rear-context-string . "96 Sep  1  2011 ")
