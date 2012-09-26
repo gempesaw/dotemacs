@@ -20,10 +20,6 @@
                :type git
                :url "https://github.com/technomancy/ido-ubiquitous"
                :features (ido-ubiquitous))
-        (:name mark-multiple
-               :type git
-               :url "https://github.com/magnars/mark-multiple.el.git"
-               :features (mark-more-like-this))
         (:name expand-region
                :type git
                :url "https://github.com/magnars/expand-region.el.git"

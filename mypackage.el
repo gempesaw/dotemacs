@@ -9,6 +9,7 @@
     impatient-mode
     popup
     simple-httpd
+     multiple-cursors)
   "A list of packages to ensure are installed at launch.")
 
 (defun my-melpa-packages-installed-p ()
