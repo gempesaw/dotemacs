@@ -44,7 +44,7 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; clean up obsolete buffers automatically
-;; (require 'midnight)
+(require 'midnight)
 
 ;; the blinking cursor is nothing, but an annoyance
 (blink-cursor-mode -1)
@@ -74,8 +74,8 @@
 ;; personal snippets
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"            ;; personal snippets
-        "~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
-        ))
+	"~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
+	))
 (yas/global-mode 1)
 
 (win-switch-mode t)
