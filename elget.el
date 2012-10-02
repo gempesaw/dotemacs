@@ -6,6 +6,10 @@
     (end-of-buffer)
     (eval-print-last-sexp)))
 
+;; use marmalade
+(add-to-list 'package-archives
+	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
 ;; custom local sources
 (setq el-get-sources
       '((:name tumblr-mode
@@ -63,6 +67,13 @@
          unbound
          win-switch
          )
+	 ;; the following were found on melpa but it shouldn't matter
+	 htmlize
+	 popup
+	 multiple-cursors
+	 )
        (mapcar 'el-get-source-name el-get-sources)))
 
+;; (el-get-emacswiki-refresh)
+;; (el-get-elpa-build-local-recipes)
 (el-get 'sync my-packages)
