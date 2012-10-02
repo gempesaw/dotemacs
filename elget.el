@@ -39,6 +39,7 @@
 	 smart-compile
 	 yasnippet
 	 win-switch
+	 zencoding-mode
 	 )
        (mapcar 'el-get-source-name el-get-sources)))
 
