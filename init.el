@@ -11,5 +11,4 @@
 (load "modes.el" 'noerror)
 (load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
-(load "mypackage.el" 'noerror)
 (load "selenium-start.el" 'noerror)
