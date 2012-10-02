@@ -17,10 +17,6 @@
 	       :type git
 	       :url "http://github.com/qxj/tumblr-mode.git"
 	       :features (tumblr-mode))
-	;; (:name cyberpunk-theme
-	;;        :type git
-	;;        :url "https://github.com/n3mo/cyberpunk-theme.el.git"
-	;;        :after (add-to-list 'custom-theme-load-path "~/opt/dotemacs/el-get/cyberpunk-theme/"))
 	(:name ir-black-theme
 	       :type git
 	       :url "https://github.com/jmdeldin/ir-black-theme.el.git"
@@ -30,6 +26,7 @@
 (setq my-packages
       (append
        '(;; el-get
+	 ace-jump-mode
 	 ack
 	 autopair
 	 browse-kill-ring
@@ -48,6 +45,7 @@
 	 smart-compile
 	 yasnippet
 	 win-switch
+	 wrap-region
 	 zencoding-mode
 	 )
        (mapcar 'el-get-source-name el-get-sources)))
