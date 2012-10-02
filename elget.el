@@ -42,6 +42,6 @@
 	 )
        (mapcar 'el-get-source-name el-get-sources)))
 
-(el-get-emacswiki-refresh)
-(el-get-elpa-build-local-recipes)
+;; (el-get-emacswiki-build-local-recipes)
+;; (el-get-elpa-build-local-recipes)
 (el-get 'sync my-packages)
