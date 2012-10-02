@@ -13,64 +13,32 @@
 ;; custom local sources
 (setq el-get-sources
       '((:name tumblr-mode
-               :type git
-               :url "http://github.com/qxj/tumblr-mode.git"
-               :features (tumblr-mode))
-        ;; (:name org-jira
-        ;;        :type git
-        ;;        :url "git@github.com:gempesaw/org-jira.git"
-        ;;        :features (org-jira))
-        (:name ido-ubiquitous
-               :type git
-               :url "https://github.com/technomancy/ido-ubiquitous"
-               :features (ido-ubiquitous))
-        (:name expand-region
-               :type git
-               :url "https://github.com/magnars/expand-region.el.git"
-               :features (expand-region))
-        (:name yasnippet
-               :type git
-               :url "https://github.com/capitaomorte/yasnippet.git"
-               :pkgname "capitaomorte/yasnippet"
-               :features "yasnippet"
-               :compile "yasnippet.el")
-        (:name smart-compile
-               :type emacswiki
-               :website "http://emacswiki.org/emacs/smart-compile.el")
-        (:name web-mode
-               :type git
-               :url "https://github.com/fxbois/web-mode.git"
-               :features (web-mode))
-        (:name powerline
-               :type git
-               :url "https://github.com/milkypostman/powerline.git"
-               :features (powerline))
+	       :type git
+	       :url "http://github.com/qxj/tumblr-mode.git"
+	       :features (tumblr-mode))
       ))
 
 (setq my-packages
       (append
        '(;; el-get
-         ack
-         autopair
-         browse-kill-ring
-         coffee-mode
-         cperl-mode
-         json
-         ;; js2-mode
-         magit
-         markdown-mode
-         regex-tool
-         ;; mode-compile
-         ;; php-mode-improved
-         ;; smart-compile
-         ;; typing
-         unbound
-         win-switch
-         )
-	 ;; the following were found on melpa but it shouldn't matter
+	 ack
+	 autopair
+	 browse-kill-ring
+	 coffee-mode
+	 cperl-mode
+	 expand-region
 	 htmlize
-	 popup
+	 ido-ubiquitous
+	 json
+	 magit
+	 markdown-mode
 	 multiple-cursors
+	 powerline
+	 popup
+	 regex-tool
+	 smart-compile
+	 yasnippet
+	 win-switch
 	 )
        (mapcar 'el-get-source-name el-get-sources)))
 
