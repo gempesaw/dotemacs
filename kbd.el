@@ -88,14 +88,6 @@
 ;; google
 (global-set-key (kbd "C-x ?") 'google)
 
-;; TODO: rebind this
-;; (global-unset-key (kbd "C-x C-r"))
-;; (eval-after-load "inline-string-rectangle"
-;; '(progn
-;;    (global-set-key (kbd "C-x C-r t") 'inline-string-rectangle)
-;;    (global-set-key (kbd "C-x C-r C-t") 'inline-string-rectangle)
-;;    ))
-
 ;; bookmarks
 (global-set-key (kbd "C-c b l") 'bookmark-bmenu-list)
 (global-set-key (kbd "C-c b s") 'bookmark-set)
@@ -103,3 +95,29 @@
 
 ;; win-switch is in customize.el
 ;; mark-more-like-this is in customize.el
+
+;; multiple cursors
+(eval-after-load "multiple-cursors"
+  '(progn
+     (global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
+
+     (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+     (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+     (global-set-key (kbd "C-*") 'mc/mark-all-like-this)))
+
+;; win-switch
+(eval-after-load "win-switch"
+  '(progn
+     (setq win-switch-idle-time 0.375)
+     (define-key my-keys-minor-mode-map (kbd "C-j") 'win-switch-enter)))
+
+
+(eval-after-load "cperl-mode"
+  '(progn
+     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
+     ))
+
+(eval-after-load "coffee-mode"
+  '(progn
+     (define-key coffee-mode-map (kbd "C-c C-c") 'coffee-compile-file)
+     (define-key coffee-mode-map (kbd "C-c C-v") 'coffee-compile-buffer)))

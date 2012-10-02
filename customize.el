@@ -138,15 +138,7 @@
 
 (setq custom-file "~/emacs-custom.el")
 
-(eval-after-load "cperl-mode"
-  '(progn
-     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
-     ))
-
-(eval-after-load "coffee-mode"
-  '(progn
-     (define-key coffee-mode-map (kbd "C-c C-c") 'coffee-compile-file)
-     (define-key coffee-mode-map (kbd "C-c C-v") 'coffee-compile-buffer)))
+(setq win-switch-idle-time 0.375)
 
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
@@ -170,21 +162,7 @@
   "A minor mode so that my key settings override annoying major modes."
   t " my-keys" 'my-keys-minor-mode-map)
 
-;; win-switch
-(eval-after-load "win-switch"
-  '(progn
-     (define-key my-keys-minor-mode-map (kbd "C-j") 'win-switch-enter)))
-
 ;; autopair
 (eval-after-load "autopair"
   '(progn
      (autopair-global-mode)))
-
-;; multiple cursors
-(eval-after-load "multiple-cursors"
-  '(progn
-     (global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
-
-     (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-     (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-     (global-set-key (kbd "C-*") 'mc/mark-all-like-this)))
