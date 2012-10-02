@@ -148,14 +148,6 @@
      (define-key coffee-mode-map (kbd "C-c C-c") 'coffee-compile-file)
      (define-key coffee-mode-map (kbd "C-c C-v") 'coffee-compile-buffer)))
 
-;; (eval-after-load "term-char-mode"
-;;   '(progn
-;;      (define-key term-mode-map (kbd "C-;") 'term-char-mode)))
-
-;; (eval-after-load "term-line-mode"
-;;   '(progn
-;;      (define-key term-raw-map (kbd "C-;") 'term-line-mode)))
-
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
 (setq exec-path (append exec-path '("/usr/local/bin")))

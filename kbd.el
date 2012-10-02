@@ -47,8 +47,11 @@
 (global-set-key (kbd "C-c C-;") (lambda () (interactive) (eshell t)))
 
 ;; Start cterm or switch to it if it's active.
+(require 'term)
 (global-unset-key (kbd "C-c '"))
 (global-set-key (kbd "C-c '") 'cterm)
+(define-key term-mode-map (kbd "C-;") 'term-char-mode)
+(define-key term-raw-map (kbd "C-;") 'term-line-mode)
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
