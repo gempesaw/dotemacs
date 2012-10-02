@@ -102,7 +102,3 @@ browsers."
 (defun start-qa-file-copy ()
   (interactive)
   (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
-
-
-(fset 'close-qa-catalina
-   [?\C-x ?b ?a ?u ?t ?h ?\C-  ?c ?a ?t ?a ?l ?i ?n ?a return ?\M-k ?\C-j ?k ?\M-k ?\C-j ?k ?\M-k ?\C-j ?l ?\M-k ?\C-x ?5 ?0])
