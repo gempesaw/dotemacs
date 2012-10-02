@@ -53,9 +53,12 @@ M-x compile.
 browsers."
   (interactive)
   (async-shell-command
-   (concat
-    "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
-    (buffer-file-name))))
+   (concat "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
+           (buffer-file-name))
+   "run-feature-in-all-browsers")
+  (set-buffer "run-feature-in-all-browsers")
+  (dired-other-window "/Users/dgempesaw/tmp/sauce/")
+  )
 
 (defun hdew-prove-all ()
   "runs all the tests in the honeydew folder"
