@@ -92,21 +92,15 @@ browsers."
   (find-file "/ssh:qascdata:/opt/tomcat/logs/catalina.out" t)
   (end-of-buffer)
   (other-window 1)
-  (ssh-qascpub)
+  (check-build-timestamp-on-remote-box)
   )
 
-
-;; Use this for remote so I can specify command line arguments
-(defun remote-term (new-buffer-name cmd &rest switches)
-  (setq term-ansi-buffer-name new-buffer-name)
-  (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-  (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
-  (set-process-query-on-exit-flag (get-process new-buffer-name) nil)
-  (set-buffer term-ansi-buffer-name)
-  (term-mode)
-  (term-line-mode)
-  (switch-to-buffer term-ansi-buffer-name))
-
-(defun ssh-qascpub ()
+(defun check-build-timestamp-on-remote-box ()
   (interactive)
-  (remote-term "qascpub" "ssh" "qascpub"))
+  (async-shell-command "ssh qa@qascpub . lsw.sh" "qa-file-copy"))
+
+(defun start-qa-file-copy ()
+  (interactive)
+  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
+
+
