@@ -2,11 +2,11 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("hnew:prod-hdew-git"
- (filename . "/ssh:hnew:/home/honeydew/prod_hdew/")
- (front-context-string . "honeydew\n  drwxr")
- (rear-context-string . "96 Sep 17 17:50 ")
- (position . 393))
+(("hnew:stage_hdew"
+ (filename . "/ssh:hnew:/home/honeydew/stage_hdew/")
+ (front-context-string . ".git\n  -rw-rw-r-")
+ (rear-context-string . "96 Sep 26 10:58 ")
+ (position . 212))
 ("sshconfig"
  (filename . "~/.ssh/config")
  (front-context-string . "l\n   User honeyd")
