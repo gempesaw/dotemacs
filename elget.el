@@ -9,6 +9,7 @@
 ;; use marmalade
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
 
 ;; custom local sources
 (setq el-get-sources
@@ -21,6 +22,14 @@
 	       :type git
 	       :url "https://github.com/jmdeldin/ir-black-theme.el.git"
 	       :after (add-to-list 'custom-theme-load-path "~/opt/dotemacs/el-get/ir-black-theme/"))
+	(:name simple-httpd
+	       :type git
+	       :url "https://github.com/skeeto/emacs-http-server.git"
+	       :features (simple-httpd))
+	(:name impatient-mode
+	       :type git
+	       :url "https://github.com/netguy204/imp.el.git"
+	       :features (impatient-mode))
       ))
 
 (setq my-packages
