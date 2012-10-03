@@ -23,7 +23,7 @@
  (rear-context-string . " 2012-09-04.org\n")
  (position . 316))
 ("htdocs_home"
- (filename . "~/opt/git_hdew/honeydew-ui/htdocs/")
+ (filename . "~/opt/dev_hdew/honeydew-ui/htdocs/")
  (front-context-string . "Copy.png\n  -rw-r")
  (rear-context-string . "30 Aug 16 09:57 ")
  (position . 324))
