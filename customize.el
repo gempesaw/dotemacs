@@ -138,7 +138,7 @@
 
 (setq custom-file "~/emacs-custom.el")
 
-(setq win-switch-idle-time 0.375)
+(setq win-switch-idle-time 0.5)
 
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
