@@ -84,6 +84,7 @@
      (add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
      (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.pl\\'" . "perl -w %F") )
+     (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
      ))
 
 ;; don't ask about files
