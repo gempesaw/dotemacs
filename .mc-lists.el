@@ -10,7 +10,8 @@
                                autopair-backspace
                                kill-region))
 
-(setq mc/cmds-to-run-once '(win-switch-exit
+(setq mc/cmds-to-run-once '(eval-last-sexp
+                            win-switch-exit
                             win-switch-exit-and-redo
                             win-switch-enter))
 
