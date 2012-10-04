@@ -121,3 +121,5 @@
   '(progn
      (define-key coffee-mode-map (kbd "C-c C-c") 'coffee-compile-file)
      (define-key coffee-mode-map (kbd "C-c C-v") 'coffee-compile-buffer)))
+
+(global-set-key (kbd "C-c e") 'replace-last-sexp)

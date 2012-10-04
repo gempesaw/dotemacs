@@ -5,7 +5,7 @@
    (concat
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
     (url-hexify-string (if mark-active
-	 (buffer-substring (region-beginning) (region-end))
+         (buffer-substring (region-beginning) (region-end))
        (read-string "Google: "))))))
 
 ;; I don't want M-x term to ask me about what shell to run
@@ -38,7 +38,7 @@ M-x compile.
 """
  (interactive "p")
  (if (and (eq pfx 1)
-	  compilation-last-buffer)
+          compilation-last-buffer)
      (progn
        (set-buffer compilation-last-buffer)
        (revert-buffer t t))
@@ -54,7 +54,7 @@ browsers."
   (interactive)
   (async-shell-command
    (concat "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
-	   (buffer-file-name))
+           (buffer-file-name))
    "run-feature-in-all-browsers")
   (set-buffer "run-feature-in-all-browsers")
   (dired-other-window "/Users/dgempesaw/tmp/sauce/")
@@ -102,3 +102,9 @@ browsers."
 (defun start-qa-file-copy ()
   (interactive)
   (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
+
+(defun replace-last-sexp ()
+  (interactive)
+  (let ((value (eval (preceding-sexp))))
+    (kill-sexp -1)
+    (insert (format "%s" value))))
