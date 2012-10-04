@@ -123,3 +123,7 @@
      (define-key coffee-mode-map (kbd "C-c C-v") 'coffee-compile-buffer)))
 
 (global-set-key (kbd "C-c e") 'replace-last-sexp)
+
+;; key binding for ace jump mode
+(global-set-key (kbd "C-c SPC") 'ace-jump-mode)
+(global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
