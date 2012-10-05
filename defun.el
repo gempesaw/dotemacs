@@ -126,7 +126,7 @@ browsers."
 
 (defun check-build-timestamp-on-remote-box ()
   (interactive)
-  (async-shell-command "ssh qa@qascpub . lsw.sh" "check-build-timestamp"))
+  (async-shell-command "ssh qa@qascpub ls -al /tmp/builds" "check-build-timestamp"))
 
 (defun start-qa-file-copy ()
   (interactive)
