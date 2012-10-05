@@ -111,3 +111,32 @@ browsers."
   (let ((value (eval (preceding-sexp))))
     (kill-sexp -1)
     (insert (format "%s" value))))
+
+(defun close-qa-catalina ()
+  (interactive)
+  (kill-buffer "qascauth")
+  (kill-buffer "qascpub")
+  (kill-buffer "qascdata")
+  (kill-buffer "check-build-timestamp")
+  (kill-buffer "qa-file-copy"))
+
+(defun tail-log (box-type lines-to-show)
+  "Tails a catalina.out log in the background
+
+It automatically will retry if the log doesn't exist. The first
+argument is the type of box (auth, pub, or data). The second
+argument is the number of lines to show: this is usually nil or
+\"-n +0\" to show the entire log. For example,
+
+\(tail-log \"pub\" nil\)
+\(tail-log \"pub\" \"-n +0\"\)"
+  (save-window-excursion
+    (let ((tail-options " --retry --follow=name ")
+          (filename " /opt/tomcat/logs/catalina.out"))
+      (let ((ssh-tail-command
+             (concat "ssh qa@qasc" box-type " tail " tail-options lines-to-show filename))
+            (tail-log-buffer-name
+             (concat "qasc" box-type)))
+        (async-shell-command ssh-tail-command tail-log-buffer-name)
+        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)
+        ))))
