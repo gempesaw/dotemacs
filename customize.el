@@ -173,3 +173,8 @@
 
 ;; don't bother updating a menu because it bothers M-k kill-this-buffer
 (setq menu-updating-frame nil)
+
+(setq multiple-cursors-mode-enabled-hook nil)
+(setq multiple-cursors-mode-disabled-hook nil)
+(add-hook 'multiple-cursors-mode-enabled-hook  (lambda () (autopair-mode 0)))
+(add-hook 'multiple-cursors-mode-disabled-hook (lambda () (autopair-mode 1)))
