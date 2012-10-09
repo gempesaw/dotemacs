@@ -2,12 +2,17 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("old-prod-phrases"
- (filename . "/ssh:honeydew:/opt/honeydew/phrases/")
+(("dev-phrases"
+ (filename . "~/opt/honeydew/phrases/")
+ (front-context-string . "AAA_BBB_Login.ph")
+ (rear-context-string . "55 Oct  9 11:59 ")
+ (position . 317))
+("prod-phrases"
+ (filename . "/ssh:hnew:/opt/honeydew/phrases/")
  (front-context-string . "Startle\n  drwxr-")
  (rear-context-string . "88 Sep 27 21:58 ")
  (position . 215))
-("hnew:stage_hdew"
+("stage-hdew-home"
  (filename . "/ssh:hnew:/home/honeydew/stage_hdew/")
  (front-context-string . ".git\n  -rw-rw-r-")
  (rear-context-string . "96 Sep 26 10:58 ")
@@ -22,7 +27,7 @@
  (front-context-string . "  -rw-r--r--   1")
  (rear-context-string . " 2012-09-04.org\n")
  (position . 316))
-("htdocs_home"
+("dev-htdocs"
  (filename . "~/opt/dev_hdew/honeydew-ui/htdocs/")
  (front-context-string . "Copy.png\n  -rw-r")
  (rear-context-string . "30 Aug 16 09:57 ")
@@ -37,23 +42,23 @@
  (front-context-string . "..\n  drwxr-xr-x ")
  (rear-context-string . "10 Aug 16 15:41 ")
  (position . 231))
-("SC2-feature-folder"
- (filename . "/ssh:honeydew:/opt/honeydew/features/Sharecare/SC2/")
+("prod-features-sharecare-sc2"
+ (filename . "/ssh:hnew:/opt/honeydew/features/Sharecare/SC2/")
  (front-context-string . "accountSettings\n")
  (rear-context-string . "96 Aug  3 21:33 ")
  (position . 227))
-("home"
- (filename . "/ssh:honeydew:/home/honeydew/")
+("prod-user-home"
+ (filename . "/ssh:hnew:/home/honeydew/")
  (front-context-string . "._datafile\n  -rw")
  (rear-context-string . "25 Nov 17  2011 ")
  (position . 215))
-("hdew_prod"
- (filename . "/ssh:honeydew:/opt/honeydew/")
+("prod-perl-honeydew-home"
+ (filename . "/ssh:hnew:/opt/honeydew/")
  (front-context-string . "etc\n  drwxrwxrwx")
  (rear-context-string . "96 Aug 24  2011 ")
  (position . 392))
-("old-prod-htdocs"
- (filename . "/ssh:honeydew:/opt/honeydew-ui/htdocs/")
+("prod-htdocs"
+ (filename . "/ssh:hnew:/opt/honeydew-ui/htdocs/")
  (front-context-string . ".svn\n  -rw-rw-r-")
  (rear-context-string . "96 Sep  1  2011 ")
  (position . 215))
