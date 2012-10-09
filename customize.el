@@ -170,3 +170,6 @@
 (eval-after-load "regex-tool"
   '(progn
      (setq regex-tool-backend "perl")))
+
+;; don't bother updating a menu because it bothers M-k kill-this-buffer
+(setq menu-updating-frame nil)
