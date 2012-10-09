@@ -163,7 +163,10 @@
   "A minor mode so that my key settings override annoying major modes."
   t " my-keys" 'my-keys-minor-mode-map)
 
-;; autopair
 (eval-after-load "autopair"
   '(progn
      (autopair-global-mode)))
+
+(eval-after-load "regex-tool"
+  '(progn
+     (setq regex-tool-backend "perl")))
