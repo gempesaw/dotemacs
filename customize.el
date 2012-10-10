@@ -178,3 +178,13 @@
 (setq multiple-cursors-mode-disabled-hook nil)
 (add-hook 'multiple-cursors-mode-enabled-hook  (lambda () (autopair-mode 0)))
 (add-hook 'multiple-cursors-mode-disabled-hook (lambda () (autopair-mode 1)))
+
+(eval-after-load "powerline"
+  '(progn
+     (custom-set-faces
+      '(mode-line ((t (:foreground "#030303" :background "lightseagreen" :box nil))))
+      '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#666666" :box nil)))))
+
+     (setq powerline-arrow-shape 'arrow)
+     (setq powerline-color1 "grey22")
+     (setq powerline-color2 "grey40")))
