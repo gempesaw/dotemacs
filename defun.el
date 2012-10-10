@@ -166,3 +166,14 @@ argument is the number of lines to show: this is usually nil or
         (async-shell-command ssh-tail-command tail-log-buffer-name)
         (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)
         ))))
+
+
+(defun delete-all-pngs-on-desktop ()
+"Opens a dired to desktop, marks all pngs, and tries to delete
+them, asking user for confirmation"
+  (interactive)
+  (save-window-excursion
+  (dired "~/Desktop")
+  (revert-buffer)
+  (dired-mark-files-regexp "png" nil)
+  (dired-do-delete)))
