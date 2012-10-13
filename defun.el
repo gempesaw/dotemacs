@@ -75,32 +75,58 @@ browsers."
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
 
 
-(defun open-qa-catalina ()
+(defun open-qa-catalina-late ()
   (interactive)
   (make-frame-command)
+  (switch-to-buffer "*scratch*" nil 'force-same-window)
+  (tail-log "auth" " -n +0 ")
+  (tail-log "pub" " -n +0 ")
+  (tail-log "data" " -n +0 ")
+  (check-build-timestamp-on-remote-box)
   (delete-other-windows)
-  (async-shell-command "ssh qa@qascauth tail --retry --follow=name /opt/tomcat/logs/catalina.out" "qascauth")
-  (async-shell-command "ssh qa@qascpub tail --retry --follow=name /opt/tomcat/logs/catalina.out" "qascpub")
-  (async-shell-command "ssh qa@qascdata tail --retry --follow=name /opt/tomcat/logs/catalina.out" "qascdata")
   (split-window-horizontally)
   (split-window-vertically)
   (split-window-vertically)
   (balance-windows)
-  (switch-to-buffer "qascauth" nil (quote force-same-window))
+  (switch-to-buffer "qascauth" nil 'force-same-window)
   (end-of-buffer)
   (other-window 1)
-  (switch-to-buffer "qascpub" nil (quote force-same-window))
+  (switch-to-buffer "qascpub" nil 'force-same-window)
   (end-of-buffer)
   (other-window 1)
-  (switch-to-buffer "qascdata" nil (quote force-same-window))
+  (switch-to-buffer "qascdata" nil 'force-same-window)
   (end-of-buffer)
   (other-window 1)
+  (switch-to-buffer "check-build-timestamp" nil 'force-same-window))
+
+(defun open-qa-catalina-early ()
+  (interactive)
+  (make-frame-command)
+  (switch-to-buffer "*scratch*" nil 'force-same-window)
+  (tail-log "auth" nil)
+  (tail-log "pub" nil)
+  (tail-log "data" nil)
   (check-build-timestamp-on-remote-box)
+  (delete-other-windows)
+  (split-window-horizontally)
+  (split-window-vertically)
+  (split-window-vertically)
+  (balance-windows)
+  (switch-to-buffer "qascauth" nil 'force-same-window)
+  (end-of-buffer)
+  (other-window 1)
+  (switch-to-buffer "qascpub" nil 'force-same-window)
+  (end-of-buffer)
+  (other-window 1)
+  (switch-to-buffer "qascdata" nil 'force-same-window)
+  (end-of-buffer)
+  (other-window 1)
+  (switch-to-buffer "check-build-timestamp" nil 'force-same-window)
   )
 
 (defun check-build-timestamp-on-remote-box ()
   (interactive)
-  (async-shell-command "ssh qa@qascpub . lsw.sh" "check-build-timestamp"))
+  (async-shell-command "ssh qa@qascpub ls -al /tmp/builds" "check-build-timestamp"))
 
 (defun start-qa-file-copy ()
   (interactive)
@@ -111,3 +137,43 @@ browsers."
   (let ((value (eval (preceding-sexp))))
     (kill-sexp -1)
     (insert (format "%s" value))))
+
+(defun close-qa-catalina ()
+  (interactive)
+  (kill-buffer "qascauth")
+  (kill-buffer "qascpub")
+  (kill-buffer "qascdata")
+  (kill-buffer "check-build-timestamp")
+  (kill-buffer "qa-file-copy"))
+
+(defun tail-log (box-type lines-to-show)
+  "Tails a catalina.out log in the background
+
+It automatically will retry if the log doesn't exist. The first
+argument is the type of box (auth, pub, or data). The second
+argument is the number of lines to show: this is usually nil or
+\"-n +0\" to show the entire log. For example,
+
+\(tail-log \"pub\" nil\)
+\(tail-log \"pub\" \"-n +0\"\)"
+  (save-window-excursion
+    (let ((tail-options " --retry --follow=name ")
+          (filename " /opt/tomcat/logs/catalina.out"))
+      (let ((ssh-tail-command
+             (concat "ssh qa@qasc" box-type " tail " tail-options lines-to-show filename))
+            (tail-log-buffer-name
+             (concat "qasc" box-type)))
+        (async-shell-command ssh-tail-command tail-log-buffer-name)
+        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)
+        ))))
+
+
+(defun delete-all-pngs-on-desktop ()
+"Opens a dired to desktop, marks all pngs, and tries to delete
+them, asking user for confirmation"
+  (interactive)
+  (save-window-excursion
+  (dired "~/Desktop")
+  (revert-buffer)
+  (dired-mark-files-regexp "png" nil)
+  (dired-do-delete)))

@@ -4,13 +4,31 @@
 (setq mc/cmds-to-run-for-all '(yas-expand
                                beginning-of-buffer
                                autopair-skip-close-maybe
+                               c-electric-slash
+                               c-electric-semi&comma
+                               c-electric-pound
+                               c-electric-paren
+                               comint-delchar-or-maybe-eof
+                               c-electric-backspace
+                               wgrep-finish-edit
+                               autopair-skip-close-maybe
+                               org-end-of-line
+                               org-delete-char
+                               org-beginning-of-line
+                               autopair-insert-opening
+                               js2-beginning-of-line
+                               yas-expand
+                               js2-end-of-line
                                autopair-insert-or-skip-quote
                                autopair-insert-opening
                                autopair-backspace
                                kill-region))
 
 (setq mc/cmds-to-run-once '(win-switch-exit-and-redo
+                            org-delete-backward-char
+                            org-self-insert-command
+                            win-switch-down
+                            eval-last-sexp
+                            win-switch-exit
+                            win-switch-exit-and-redo
                             win-switch-enter))
-
-                            
-                               
