@@ -22,7 +22,8 @@
                                autopair-backspace
                                kill-region))
 
-(setq mc/cmds-to-run-once '(org-delete-backward-char
+(setq mc/cmds-to-run-once '(scroll-up-command
+                            org-delete-backward-char
                             org-self-insert-command
                             win-switch-down
                             eval-last-sexp
