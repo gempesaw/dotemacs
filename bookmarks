@@ -2,8 +2,18 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("dev-phrases"
- (filename . "~/opt/honeydew/phrases/")
+(("creds"
+ (filename . "~/.creds.gpg")
+ (front-context-string . "User Name,Access")
+ (rear-context-string)
+ (position . 1))
+("prod-sets"
+ (filename . "/ssh:hnew:/opt/honeydew/sets/")
+ (front-context-string . "DrOzRC.set\n  -rw")
+ (rear-context-string . "96 Oct  4 14:25 ")
+ (position . 203))
+("dev-phrases"
+ (filename . "~/opt/dev_hdew/honeydew/phrases/")
  (front-context-string . "AAA_BBB_Login.ph")
  (rear-context-string . "55 Oct  9 11:59 ")
  (position . 317))
