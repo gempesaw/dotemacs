@@ -136,3 +136,9 @@
 
 ;; remote compilation of feature files
 (global-set-key (kbd "M-<f6>") 'remote-feature-compile)
+
+;; look up functions
+(global-unset-key (kbd "C-h C-f"))
+(global-unset-key (kbd "C-h f"))
+(global-set-key (kbd "C-h f") 'find-function-at-point)
+(global-set-key (kbd "C-h C-f") 'find-function)
