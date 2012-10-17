@@ -126,16 +126,7 @@
      ))
 
 ;; uniquify options
-(eval-after-load "uniquify"
-  '(progn
-     (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-     (setq uniquify-strip-common-suffix 'nil)))
 (require 'uniquify)
-
-;; magit svn inclusion
-(eval-after-load "magit"
-  '(progn
-     (require 'magit-svn)))
 
 (setq custom-file "~/emacs-custom.el")
 
@@ -170,9 +161,6 @@
 (eval-after-load "regex-tool"
   '(progn
      (setq regex-tool-backend "perl")))
-
-;; don't bother updating a menu because it bothers M-k kill-this-buffer
-(setq menu-updating-frame nil)
 
 (eval-after-load "multiple-cursors"
   '(progn
