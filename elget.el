@@ -52,6 +52,7 @@
          popup
          regex-tool
          smart-compile
+         smex
          yasnippet
          win-switch
          wgrep

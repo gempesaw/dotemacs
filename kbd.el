@@ -147,3 +147,7 @@
 
 ;; insert eol semi
 (global-set-key (kbd "C-;") 'add-semicolon-at-end-of-line)
+
+;; use smex?!
+(global-unset-key (kbd "M-x"))
+(global-set-key (kbd "M-x") 'smex)
