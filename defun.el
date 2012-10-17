@@ -177,3 +177,9 @@ them, asking user for confirmation"
   (revert-buffer)
   (dired-mark-files-regexp "png" nil)
   (dired-do-delete)))
+
+(defun add-semicolon-at-end-of-line ()
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (insert ";")))

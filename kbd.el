@@ -142,3 +142,6 @@
 (global-unset-key (kbd "C-h f"))
 (global-set-key (kbd "C-h f") 'find-function-at-point)
 (global-set-key (kbd "C-h C-f") 'find-function)
+
+;; insert eol semi
+(global-set-key (kbd "C-;") 'add-semicolon-at-end-of-line)
