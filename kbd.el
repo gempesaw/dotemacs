@@ -139,9 +139,8 @@
 
 ;; look up functions
 (global-unset-key (kbd "C-h C-f"))
-(global-unset-key (kbd "C-h f"))
-(global-set-key (kbd "C-h f") 'find-function-at-point)
-(global-set-key (kbd "C-h C-f") 'find-function)
+(global-set-key (kbd "C-h C-f") 'find-function-at-point)
+(global-set-key (kbd "C-h C-g") 'find-function)
 
 ;; wdired
 (global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
