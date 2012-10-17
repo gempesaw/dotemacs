@@ -175,7 +175,7 @@
 (eval-after-load "powerline"
   '(progn
      (custom-set-faces
-      '(mode-line ((t (:foreground "#030303" :background "lightseagreen" :box nil))))
+      '(mode-line ((t (:foreground "#030303" :background "cyan" :box nil))))
       '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#666666" :box nil)))))
 
      (setq powerline-arrow-shape 'arrow)
