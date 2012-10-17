@@ -145,8 +145,9 @@
 ;; wdired
 (global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
 
-;; insert eol semi
-(global-set-key (kbd "C-;") 'add-semicolon-at-end-of-line)
+;; insert eol semi, reindent, go to next line
+(global-set-key (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
+(global-set-key (kbd "C-<return>") 'create-newline-from-anywhere)
 
 ;; use smex?!
 (global-unset-key (kbd "M-x"))
