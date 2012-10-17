@@ -183,3 +183,14 @@ them, asking user for confirmation"
   (save-excursion
     (end-of-line)
     (insert ";")))
+
+(defun add-semi-eol-and-goto-next-line-indented ()
+  (interactive)
+  (add-semicolon-at-end-of-line)
+  (end-of-line)
+  (reindent-then-newline-and-indent))
+
+(defun create-newline-from-anywhere()
+  (interactive)
+  (end-of-line)
+  (reindent-then-newline-and-indent))
