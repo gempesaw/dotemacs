@@ -143,5 +143,8 @@
 (global-set-key (kbd "C-h f") 'find-function-at-point)
 (global-set-key (kbd "C-h C-f") 'find-function)
 
+;; wdired
+(global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
+
 ;; insert eol semi
 (global-set-key (kbd "C-;") 'add-semicolon-at-end-of-line)
