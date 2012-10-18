@@ -152,3 +152,6 @@
 ;; use smex?!
 (global-unset-key (kbd "M-x"))
 (global-set-key (kbd "M-x") 'smex)
+
+;; save easier! c'monnnn
+(global-set-key (kbd "M-s") 'save-buffer)
