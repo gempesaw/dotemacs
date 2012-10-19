@@ -5,3 +5,13 @@ still function in special-mode"
     (setq menu-updating-frame nil)
     ad-do-it
     (setq menu-updating-frame t)))
+
+
+;; automatically save buffers associated with files on buffer switch
+;; and on windows switch
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice windmove-do-window-select (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
