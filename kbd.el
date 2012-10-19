@@ -142,6 +142,9 @@
 (global-set-key (kbd "C-h C-f") 'find-function-at-point)
 (global-set-key (kbd "C-h C-g") 'find-function)
 
+;; and variables
+(global-set-key (kbd "C-h C-v") 'describe-variable-at-point)
+
 ;; wdired
 (global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
 

@@ -194,3 +194,9 @@ them, asking user for confirmation"
   (interactive)
   (end-of-line)
   (reindent-then-newline-and-indent))
+
+(defun describe-variable-at-point ()
+  (interactive)
+  (let ((symb (variable-at-point)))
+    (when (and symb (not (equal symb 0)))
+      (describe-variable (variable-at-point)))))
