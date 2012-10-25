@@ -157,4 +157,9 @@
 (global-set-key (kbd "M-x") 'smex)
 
 ;; save easier! c'monnnn
+(global-unset-key (kbd "C-x C-s"))
 (global-set-key (kbd "M-s") 'save-buffer)
+
+;; bind log tailing to mouse buttons :)
+(global-set-key (kbd "M-<mouse-3>") 'open-qa-catalina-early)
+(global-set-key (kbd "M-<mouse-4>") 'close-qa-catalina)
