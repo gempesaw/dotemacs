@@ -145,8 +145,9 @@
 ;; and variables
 (global-set-key (kbd "C-h C-v") 'describe-variable-at-point)
 
-;; wdired
+;; make wdired like wgrep
 (global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
+;; (define-key grep-mode-map (kbd "C-c C-c") 'wgrep-save-all-buffers))
 
 ;; insert eol semi, reindent, go to next line
 (global-set-key (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
