@@ -9,6 +9,7 @@
 (load "my-macros.el" 'noerror)
 (load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
+(load "passwords.el" 'noerror)
 (load "selenium-start.el" 'noerror)
 
 ;; load all the necessary packages
