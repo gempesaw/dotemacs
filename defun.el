@@ -143,8 +143,7 @@ browsers."
   (kill-buffer "qascauth")
   (kill-buffer "qascpub")
   (kill-buffer "qascdata")
-  (kill-buffer "check-build-timestamp")
-  (kill-buffer "qa-file-copy"))
+  (kill-buffer "check-build-timestamp"))
 
 (defun tail-log (box-type lines-to-show)
   "Tails a catalina.out log in the background
