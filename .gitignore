@@ -19,3 +19,4 @@ nil
 passwords.el
 /chromedriver.log
 /.prove
+/passwords.el
