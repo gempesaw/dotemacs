@@ -198,4 +198,9 @@ them, asking user for confirmation"
   (interactive)
   (let ((symb (variable-at-point)))
     (when (and symb (not (equal symb 0)))
-      (describe-variable (variable-at-point)))))
+      (save-window-excursion
+        (message (describe-variable (variable-at-point)))))))
+
+(defun open-qa-mongo-db()
+  (interactive)
+  (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
