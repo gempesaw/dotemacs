@@ -30,6 +30,10 @@
                :type git
                :url "https://github.com/netguy204/imp.el.git"
                :features (impatient-mode))
+        (:name switch-window
+               :type git
+               :url "https://github.com/gempesaw/switch-window.git"
+               :features (switch-window))
       ))
 
 (setq my-packages
@@ -53,9 +57,9 @@
          regex-tool
          smart-compile
          smex
-         yasnippet
          win-switch
          wgrep
+         yasnippet
          zencoding-mode
          )
        (mapcar 'el-get-source-name el-get-sources)))

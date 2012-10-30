@@ -108,7 +108,13 @@
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
      (global-set-key (kbd "C-*") 'mc/mark-all-like-this)))
 
-;; win-switch
+;; window switching - win-switch + switch-window = winner
+(global-unset-key (kbd "M-j"))
+(eval-after-load "switch-window"
+  '(progn
+     (define-key my-keys-minor-mode-map (kbd "M-j") 'switch-window)
+     (define-key my-keys-minor-mode-map (kbd "C-c J") 'delete-other-window)))
+
 (eval-after-load "win-switch"
   '(progn
      (setq win-switch-idle-time 0.375)
