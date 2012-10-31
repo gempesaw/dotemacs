@@ -173,4 +173,8 @@
      (setq powerline-color1 "grey22")
      (setq powerline-color2 "grey40")))
 
+;; switch windows using home row keys
 (setq switch-window-shortcut-style 'qwerty)
+
+;; automatically save buffers when finishing a wgrep session
+(setq wgrep-auto-save-buffer t)
