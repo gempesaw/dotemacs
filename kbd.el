@@ -113,7 +113,7 @@
 (eval-after-load "switch-window"
   '(progn
      (define-key my-keys-minor-mode-map (kbd "M-j") 'switch-window)
-     (define-key my-keys-minor-mode-map (kbd "C-c J") 'delete-other-window)))
+     (define-key my-keys-minor-mode-map (kbd "C-c j") 'delete-other-window)))
 
 (eval-after-load "win-switch"
   '(progn
