@@ -34,6 +34,10 @@
                :type git
                :url "https://github.com/gempesaw/switch-window.git"
                :features (switch-window))
+        (:name js2-mode
+               :type git
+               :url "git://github.com/mooz/js2-mode.git"
+               :features (js2-mode))
       ))
 
 (setq my-packages
