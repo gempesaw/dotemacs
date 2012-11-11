@@ -165,6 +165,8 @@
 ;; use smex?!
 (global-unset-key (kbd "M-x"))
 (global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-c M-x") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; save easier! c'monnnn
 (global-unset-key (kbd "C-x C-s"))
