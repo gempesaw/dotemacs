@@ -178,3 +178,10 @@
 
 ;; automatically save buffers when finishing a wgrep session
 (setq wgrep-auto-save-buffer t)
+
+(eval-after-load 'magit
+  '(progn
+     (set-face-foreground 'magit-diff-add "green3")
+     (set-face-foreground 'magit-diff-del "red3")
+     (set-face-background 'magit-item-highlight "gray17")))
+
