@@ -46,6 +46,9 @@
 (global-unset-key (kbd "C-c C-;"))
 (global-set-key (kbd "C-c C-;") (lambda () (interactive) (eshell t)))
 
+;; opens a hnew ssh session if there isn't one, or switches to the current one if there is one
+(global-set-key (kbd "C-c ,") 'open-existing-hnew-shell)
+
 ;; Start cterm or switch to it if it's active.
 (require 'term)
 (global-unset-key (kbd "C-c '"))
@@ -170,3 +173,5 @@
 ;; bind log tailing to mouse buttons :)
 (global-set-key (kbd "M-<mouse-3>") 'open-qa-catalina-early)
 (global-set-key (kbd "M-<mouse-4>") 'close-qa-catalina)
+;; open a new ssh connection easily
+(global-set-key (kbd "C-c .") 'open-existing-ssh-shell)
