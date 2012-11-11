@@ -171,3 +171,13 @@ them, asking user for confirmation"
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
   (rename-buffer url t))
+
+(defun open-existing-ssh-shell (remote-box)
+  (interactive "sWhat box: ")
+  (let ((buffer (concat "*ssh-" remote-box "*")))
+    (if (eq nil (get-buffer buffer))
+        (save-window-excursion
+          (async-shell-command (concat "ssh " remote-box)
+                               (generate-new-buffer-name buffer))
+          (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
+    (switch-to-buffer buffer)))
