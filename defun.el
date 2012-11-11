@@ -102,9 +102,7 @@ browsers."
   (tail-log "auth" nil)
   (tail-log "pub" nil)
   (tail-log "data" nil)
-  (check-build-timestamp-on-remote-box)
   (delete-other-windows)
-  (split-window-horizontally)
   (split-window-vertically)
   (split-window-vertically)
   (balance-windows)
@@ -116,13 +114,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "qascdata" nil 'force-same-window)
   (end-of-buffer)
-  (other-window 1)
-  (switch-to-buffer "check-build-timestamp" nil 'force-same-window)
   )
-
-(defun check-build-timestamp-on-remote-box ()
-  (interactive)
-  (async-shell-command "ssh qa@qascpub ls -al /tmp/builds" "check-build-timestamp"))
 
 (defun start-qa-file-copy ()
   (interactive)
@@ -139,7 +131,7 @@ browsers."
   (kill-buffer "qascauth")
   (kill-buffer "qascpub")
   (kill-buffer "qascdata")
-  (kill-buffer "check-build-timestamp"))
+  (delete-frame))
 
 (defun tail-log (box-type lines-to-show)
   "Tails a catalina.out log in the background
