@@ -45,6 +45,7 @@
          browse-kill-ring
          coffee-mode
          cperl-mode
+         emacs-w3m
          expand-region
          htmlize
          ido-ubiquitous

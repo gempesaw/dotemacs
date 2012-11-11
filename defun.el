@@ -1,7 +1,7 @@
 (defun google ()
   "Googles a query or region if any."
   (interactive)
-  (browse-url
+  (w3m-browse-url
    (concat
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
     (url-hexify-string (if mark-active
@@ -167,3 +167,7 @@ them, asking user for confirmation"
 (defun open-qa-mongo-db()
   (interactive)
   (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
+
+(defun my-w3m-rename-buffer (url)
+  "Renames the current buffer to be the current URL"
+  (rename-buffer url t))

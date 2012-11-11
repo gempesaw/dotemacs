@@ -185,3 +185,10 @@
      (set-face-foreground 'magit-diff-del "red3")
      (set-face-background 'magit-item-highlight "gray17")))
 
+(add-hook 'w3m-display-hook 'my-w3m-rename-buffer)
+
+(add-hook 'w3m-display-hook
+          (lambda (url)
+            (let ((buffer-read-only nil))
+              (delete-trailing-whitespace))))
+
