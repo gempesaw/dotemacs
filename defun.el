@@ -92,6 +92,10 @@ browsers."
   (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (goto-char (point-max)))
 
+(defun validate-catalina-logs ()
+  (interactive)
+  (multi-occur-in-matching-buffers "tail-catalina" "ERROR," 1))
+
 (defun start-qa-file-copy ()
   (interactive)
   (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
