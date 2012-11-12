@@ -77,6 +77,8 @@ browsers."
   (tail-log "qascauth" nil)
   (tail-log "qascpub" nil)
   (tail-log "qascdata" nil)
+  (tail-log "qasched" nil)
+  (tail-log "qaschedmaster" nil)
   (delete-other-windows)
   (split-window-vertically)
   (split-window-vertically)
