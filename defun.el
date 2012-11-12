@@ -74,22 +74,25 @@ browsers."
   (interactive)
   (make-frame-command)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
-  (tail-log "auth" nil)
-  (tail-log "pub" nil)
-  (tail-log "data" nil)
+  (tail-log "qascauth" nil)
+  (tail-log "qascpub" nil)
+  (tail-log "qascdata" nil)
   (delete-other-windows)
   (split-window-vertically)
   (split-window-vertically)
   (balance-windows)
   (switch-to-buffer "qascauth" nil 'force-same-window)
   (end-of-buffer)
+  (switch-to-buffer "*tail-catalina-qascauth*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "qascpub" nil 'force-same-window)
   (end-of-buffer)
+  (switch-to-buffer "*tail-catalina-qascpub*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "qascdata" nil 'force-same-window)
   (end-of-buffer)
   )
+  (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
 
 (defun start-qa-file-copy ()
   (interactive)
@@ -109,26 +112,27 @@ browsers."
   (delete-frame))
 
 (defun tail-log (box-type lines-to-show)
+
+(defun tail-log (remote-box-name lines-to-show)
   "Tails a catalina.out log in the background
 
 It automatically will retry if the log doesn't exist. The first
-argument is the type of box (auth, pub, or data). The second
-argument is the number of lines to show: this is usually nil or
-\"-n +0\" to show the entire log. For example,
+argument is the name of the box: (\"qascauth\", \"qascpub\",
+\"qascdata\", \"qaschedule\", \"qaschedulemaster\", \"qavideo\"
+).  The second argument is the number of lines to show: this is
+usually nil or \"-n +0\" to show the entire log. For example,
 
-\(tail-log \"pub\" nil\)
-\(tail-log \"pub\" \"-n +0\"\)"
+\(tail-log \"qascpub\" nil\)
+\(tail-log \"qascpub\" \"-n +0\"\)"
   (save-window-excursion
     (let ((tail-options " --retry --follow=name ")
           (filename " /opt/tomcat/logs/catalina.out"))
       (let ((ssh-tail-command
-             (concat "ssh qa@qasc" box-type " tail " tail-options lines-to-show filename))
+             (concat "ssh qa@" remote-box-name " tail " tail-options lines-to-show filename))
             (tail-log-buffer-name
-             (concat "qasc" box-type)))
+             (concat "*tail-catalina-" remote-box-name "*")))
         (async-shell-command ssh-tail-command tail-log-buffer-name)
-        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)
-        ))))
-
+        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)))))
 
 (defun delete-all-pngs-on-desktop ()
 "Opens a dired to desktop, marks all pngs, and tries to delete
