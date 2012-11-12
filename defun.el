@@ -102,12 +102,21 @@ browsers."
 
 (defun close-qa-catalina ()
   (interactive)
-  (kill-buffer "qascauth")
-  (kill-buffer "qascpub")
-  (kill-buffer "qascdata")
+  (kill-matching-buffers-rudely "*tail-catalina-")
   (delete-frame))
 
-(defun tail-log (box-type lines-to-show)
+(defun kill-matching-buffers-rudely (regexp &optional internal-too)
+  "Kill buffers whose name matches the specified REGEXP. This
+function, unlike the built-in `kill-matching-buffers` does so
+WITHOUT ASKING. The optional second argument indicates whether to
+kill internal buffers too."
+  (interactive "sKill buffers matching this regular expression: \nP")
+  (dolist (buffer (buffer-list))
+    (let ((name (buffer-name buffer)))
+      (when (and name (not (string-equal name ""))
+                 (or internal-too (/= (aref name 0) ?\s))
+                 (string-match regexp name))
+        (kill-buffer buffer)))))
 
 (defun tail-log (remote-box-name lines-to-show)
   "Tails a catalina.out log in the background
