@@ -89,6 +89,11 @@ browsers."
       (other-window 1)))
   (balance-windows))
 
+(defun check-what-servers-have-restarted ()
+  (interactive)
+  (multi-occur-in-matching-buffers "tail-catalina" "INFO: Server startup in" 1))
+
+(defun search-catalina-logs-for-errors ()
   (interactive)
   (multi-occur-in-matching-buffers "tail-catalina" "ERROR," 1))
 
