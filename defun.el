@@ -130,7 +130,9 @@ argument is the name of the box: (\"qascauth\", \"qascpub\",
 usually nil or \"-n +0\" to show the entire log. For example,
 
 \(tail-log \"qascpub\" nil\)
-\(tail-log \"qascpub\" \"-n +0\"\)"
+\(tail-log \"qascpub\" \"-n +0\"\)
+
+Returns the buffer in which the tail is occuring."
   (save-window-excursion
     (let ((tail-options " --retry --follow=name ")
           (filename " /opt/tomcat/logs/catalina.out"))
@@ -139,7 +141,9 @@ usually nil or \"-n +0\" to show the entire log. For example,
             (tail-log-buffer-name
              (concat "*tail-catalina-" remote-box-name "*")))
         (async-shell-command ssh-tail-command tail-log-buffer-name)
-        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)))))
+        (set-process-query-on-exit-flag (get-buffer-process tail-log-buffer-name) nil)
+        (get-buffer tail-log-buffer-name)))))
+
 
 (defun delete-all-pngs-on-desktop ()
 "Opens a dired to desktop, marks all pngs, and tries to delete
