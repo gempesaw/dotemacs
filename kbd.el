@@ -184,4 +184,7 @@
      (define-key w3m-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)))
 
 ;; open a new ssh connection easily
-(global-set-key (kbd "C-c .") 'open-existing-ssh-shell)
+(define-key my-keys-minor-mode-map (kbd "C-c .") 'open-existing-ssh-shell)
+(define-key my-keys-minor-mode-map (kbd "C-c C-.") 'open-existing-ssh-shell)
+
+(global-set-key (kbd "C-c /") 'tail-entire-log)
