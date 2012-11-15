@@ -48,13 +48,13 @@ M-x compile.
   "passes the current file to a perl script that runs it in all
 browsers."
   (interactive)
-  (async-shell-command
-   (concat "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
-           (buffer-file-name))
-   "run-feature-in-all-browsers")
+  (save-window-excursion
+    (async-shell-command
+     (concat "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
+             (buffer-file-name))
+     "run-feature-in-all-browsers"))
   (set-buffer "run-feature-in-all-browsers")
-  (dired-other-window "/Users/dgempesaw/tmp/sauce/")
-  )
+  (dired-other-window "/Users/dgempesaw/tmp/sauce/"))
 
 (defun hdew-prove-all ()
   "runs all the tests in the honeydew folder"
