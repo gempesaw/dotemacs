@@ -196,3 +196,7 @@ them, asking user for confirmation"
                                (generate-new-buffer-name buffer))
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
     (switch-to-buffer buffer)))
+
+(defun tail-entire-log (remote-box)
+  (interactive "sBox to tail: ")
+  (switch-to-buffer (tail-log remote-box "-n +0")))
