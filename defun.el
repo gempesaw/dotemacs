@@ -186,6 +186,14 @@ them, asking user for confirmation"
   (interactive)
   (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
 
+(defun open-existing-hnew-shell ()
+  (interactive)
+  (let ((buffer "*ssh-hnew*"))
+    (if (eq nil (get-buffer buffer))
+        (save-window-excursion
+          (async-shell-command "ssh hnew" "*ssh-hnew*")))
+      (switch-to-buffer buffer)))
+
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
   (rename-buffer url t))
