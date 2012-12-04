@@ -203,3 +203,29 @@ them, asking user for confirmation"
 (defun tail-entire-log (remote-box)
   (interactive "sBox to tail: ")
   (switch-to-buffer (tail-log remote-box "-n +0")))
+
+(defun sharecare-update-build ()
+  (interactive)
+  (search-forward "#")
+  (delete-char -1)
+  (let ((currentLineText (buffer-substring (line-beginning-position) (point)))
+        (newVersion (buffer-substring (point) (line-end-position)))
+        (product '(("auth" . "webauth&newtag=builds/sharecare/rc/")
+                   ("pub" . "webpub&newtag=builds/sharecare/rc/")
+                   ("Data" . "data&newtag=builds/data/rc/")
+                   ("ETL" . "schedulemaster&newtag=builds/schedulemaster/rc/")
+                   ("Sync" . "schedule&newtag=builds/schedule/rc/")))
+        (update-build-url))
+    (delete-region (line-beginning-position) (line-end-position))
+    (loop for cell in product do
+          (let ((vikAbbrev (car cell))
+                (productAndNewTag (cdr cell)))
+            (if (and (string-match vikAbbrev currentLineText)
+                     (not (string-match "UNCHANGED" newVersion)))
+                (progn
+                  (setq update-build-url
+                        (concat
+                         "https://admin.be.jamconsultg.com/kohana/adminui/updatebuildtag?site=sharecare&product="
+                         productAndNewTag newVersion "&buildtype=qa"))
+                  (insert (concat update-build-url "\n"))
+                  (switch-to-buffer (url-retrieve-synchronously update-build-url))))))))
