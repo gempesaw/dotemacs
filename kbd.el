@@ -198,11 +198,11 @@
 ;; tyvm. so, let's clobber 'em back.
 (eval-after-load "w3m"
   '(progn
-     (define-key w3m-mode-map (kbd "M-k") 'kill-this-buffer)
-     (define-key w3m-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)))
+     (define-key w3m-mode-map (kbd "M-k") 'kill-this-buffer)))
 
 ;; open a new ssh connection easily
 (define-key my-keys-minor-mode-map (kbd "C-c .") 'open-existing-ssh-shell)
 (define-key my-keys-minor-mode-map (kbd "C-c C-.") 'open-existing-ssh-shell)
 
-(global-set-key (kbd "C-c /") 'tail-entire-log)
+(global-unset-key (kbd "C-x C-j"))
+(global-set-key (kbd "C-x C-j") 'join-line)
