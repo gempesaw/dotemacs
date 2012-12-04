@@ -67,6 +67,7 @@
          yasnippet
          zencoding-mode
          )
+	 exec-path-from-shell
        (mapcar 'el-get-source-name el-get-sources)))
 
 ;; (el-get-emacswiki-build-local-recipes)
