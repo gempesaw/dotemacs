@@ -8,66 +8,57 @@
 
 ;; use marmalade
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
 ;; custom local sources
 (setq el-get-sources
       '(
-        (:name tumblr-mode
-               :type git
-               :url "http://github.com/qxj/tumblr-mode.git"
-               :features (tumblr-mode))
-        (:name ir-black-theme
-               :type git
-               :url "https://github.com/jmdeldin/ir-black-theme.el.git"
-               :after (add-to-list 'custom-theme-load-path "~/opt/dotemacs/el-get/ir-black-theme/"))
-        (:name simple-httpd
-               :type git
-               :url "https://github.com/skeeto/emacs-http-server.git"
-               :features (simple-httpd))
-        (:name impatient-mode
-               :type git
-               :url "https://github.com/netguy204/imp.el.git"
-               :features (impatient-mode))
-        (:name switch-window
-               :type git
-               :url "https://github.com/gempesaw/switch-window.git"
-               :features (switch-window))
-        (:name js2-mode
-               :type git
-               :url "git://github.com/mooz/js2-mode.git"
-               :features (js2-mode))
+	(:name simple-httpd
+	       :type git
+	       :url "https://github.com/skeeto/emacs-http-server.git"
+	       :features (simple-httpd))
+	(:name impatient-mode
+	       :type git
+	       :url "https://github.com/netguy204/imp.el.git"
+	       :features (impatient-mode))
+	(:name switch-window
+	       :type git
+	       :url "https://github.com/gempesaw/switch-window.git"
+	       :features (switch-window))
+	(:name js2-mode
+	       :type git
+	       :url "git://github.com/mooz/js2-mode.git"
+	       :features (js2-mode))
       ))
 
 (setq my-packages
       (append
        '(;; el-get
-         ace-jump-mode
-         ack
-         autopair
-         browse-kill-ring
-         coffee-mode
-         cperl-mode
-         emacs-w3m
-         expand-region
-         htmlize
-         ido-ubiquitous
-         json
-         magit
-         markdown-mode
-         multiple-cursors
-         powerline
-         popup
-         regex-tool
-         smart-compile
-         smex
-         win-switch
-         wgrep
-         yasnippet
-         zencoding-mode
-         )
+	 ace-jump-mode
+	 ack
+	 browse-kill-ring
+	 coffee-mode
+	 cperl-mode
+	 emacs-w3m
 	 exec-path-from-shell
+	 expand-region
+	 htmlize
+	 ido-ubiquitous
+	 json
+	 magit
+	 markdown-mode
+	 multiple-cursors
+	 powerline
+	 popup
+	 regex-tool
+	 smart-compile
+	 smex
+	 win-switch
+	 wgrep
+	 yasnippet
+	 zencoding-mode
+	 )
        (mapcar 'el-get-source-name el-get-sources)))
 
 ;; (el-get-emacswiki-build-local-recipes)
