@@ -44,7 +44,7 @@
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; clean up obsolete buffers automatically
-(require 'midnight)
+;; (require 'midnight)
 
 ;; the blinking cursor is nothing, but an annoyance
 (blink-cursor-mode -1)
