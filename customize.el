@@ -132,7 +132,8 @@
 ;; erc setup
 (eval-after-load "erc-match"
   '(progn
-     (setq erc-keywords '("resolve" "dgempesaw"))))
+     (setq erc-track-enable-keybindings nil)))
+     (setq erc-keywords '("resolve" "dgempesaw"))
 
 (eval-after-load "saveplace"
   '(progn
