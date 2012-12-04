@@ -193,7 +193,7 @@
             (let ((buffer-read-only nil))
               (delete-trailing-whitespace))))
 
-
+;; use the cool js2-mode from yegge and mooz
 (autoload 'js2-mode "js2-mode" nil t)
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
 (add-to-list 'auto-mode-alist '("\\.js$'" . js2-mode))
