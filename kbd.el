@@ -157,9 +157,8 @@
 ;; key binding for ace jump mode
 (eval-after-load "ace-jump-mode"
   '(progn
-     (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
-     (global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
-     ))
+     (define-key my-keys-minor-mode-map (kbd "C-c SPC") 'ace-jump-mode)
+     (define-key my-keys-minor-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)))
 
 ;; remote compilation of feature files
 (global-set-key (kbd "M-<f6>") 'remote-feature-compile)
