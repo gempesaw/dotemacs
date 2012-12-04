@@ -46,7 +46,25 @@
 (global-unset-key (kbd "C-c C-;"))
 (global-set-key (kbd "C-c C-;") (lambda () (interactive) (eshell t)))
 
-;; opens a hnew ssh session if there isn't one, or switches to the current one if there is one
+;; start shell or switch to it if it's active
+(global-unset-key (kbd "C-c /"))
+(global-set-key (kbd "C-c /")
+                (lambda ()
+                  (interactive)
+                  (set-process-query-on-exit-flag
+                   (get-buffer-process (shell)) nil)))
+
+;; start a new shell even if one is active
+(global-unset-key (kbd "C-c C-/"))
+(global-set-key (kbd "C-c C-/")
+                (lambda ()
+                  (interactive)
+                  (set-process-query-on-exit-flag
+                   (get-buffer-process
+                    (shell
+                     (generate-new-buffer "*shell*"))) nil)))
+
+;; start hnew shell or switch to it if it's active
 (global-set-key (kbd "C-c ,") 'open-existing-hnew-shell)
 
 ;; Start cterm or switch to it if it's active.
