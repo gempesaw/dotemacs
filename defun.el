@@ -72,7 +72,6 @@ browsers."
 
 (defun open-catalina-logs ()
   (interactive)
-  (make-frame-command)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
   (delete-other-windows)
   (let ((qa-boxes '("qascauth" "qascpub" "qascdata" "qasched" "qaschedmaster"))
@@ -109,8 +108,7 @@ browsers."
 
 (defun close-qa-catalina ()
   (interactive)
-  (kill-matching-buffers-rudely "*tail-catalina-")
-  (delete-frame))
+  (kill-matching-buffers-rudely "*tail-catalina-"))
 
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
   "Kill buffers whose name matches the specified REGEXP. This
