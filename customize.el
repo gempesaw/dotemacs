@@ -200,3 +200,10 @@
 ;; explicitly state bookmarks
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
+;; jabby wabby
+(setq jabber-account-list '(("gempesaw@gmail.com"
+                              (:network-server . "talk.google.com")
+                              (:connection-type . ssl))
+                              (:port . 443)))
+(setq jabber-alert-presence-hooks nil)
+
