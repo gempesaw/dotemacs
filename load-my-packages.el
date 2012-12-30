@@ -9,7 +9,6 @@
     ace-jump-mode
     ack
     browse-kill-ring
-    coffee-mode
     cperl-mode
     w3m
     exec-path-from-shell
@@ -22,7 +21,6 @@
     markdown-mode
     multiple-cursors
     powerline
-    popup
     regex-tool
     simple-httpd
     smex
