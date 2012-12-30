@@ -34,7 +34,7 @@
         when (not (package-installed-p p)) do (return nil)
         finally (return t)))
 
-(unless (my-packages-installed-p)
+(save-window-excursion (unless (my-packages-installed-p)
   ;; check for new packages (package versions)
   (message "%s" "Emacs Prelude is now refreshing its package database...")
   (package-refresh-contents)
@@ -42,6 +42,6 @@
   ;; install the missing packages
   (dolist (p my-packages)
     (when (not (package-installed-p p))
-      (package-install p))))
+      (package-install p)))))
 
 (package-initialize)
