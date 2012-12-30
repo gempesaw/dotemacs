@@ -8,6 +8,7 @@
   '(
     ace-jump-mode
     ack
+    autopair
     browse-kill-ring
     cperl-mode
     w3m
@@ -16,6 +17,7 @@
     htmlize
     impatient-mode
     ido-ubiquitous
+    ir-black-theme
     js2-mode
     magit
     markdown-mode
