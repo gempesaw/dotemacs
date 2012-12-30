@@ -1,3 +1,10 @@
+;; some packages aren't autoloaded, unfortunately
+(require 'ace-jump-mode)
+(require 'switch-window)
+(require 'powerline)
+(require 'multiple-cursors)
+(require 'simple-httpd)
+
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)
 
