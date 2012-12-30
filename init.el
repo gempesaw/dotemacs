@@ -1,3 +1,5 @@
+(defvar *emacs-load-start* (current-time))
+
 (add-to-list 'load-path "~/.emacs.d/")
 
 (load "alias.el" 'noerror)
@@ -15,3 +17,6 @@
 (load "load-my-packages.el" 'noerror)
 ;; and then tweak their settings them
 (load "modes.el" 'noerror)
+
+(message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
