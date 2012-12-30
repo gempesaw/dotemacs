@@ -57,7 +57,7 @@
 )
 
 ;; passwords in a file not on github :p
-(load "passwords.el")
+(load "passwords.el" 'noerror)
 
 ;; org-jira mode
 (setq jiralib-url "https://arnoldmedia.jira.com")
