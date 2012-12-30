@@ -9,10 +9,9 @@
 (load "my-macros.el" 'noerror)
 (load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
-(load "passwords.el" 'noerror)
 (load "selenium-start.el" 'noerror)
 
 ;; load all the necessary packages
-(load "elget.el" 'noerror)
+(load "load-my-packages.el" 'noerror)
 ;; and then tweak their settings them
 (load "modes.el" 'noerror)
