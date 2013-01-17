@@ -197,6 +197,7 @@
 (autoload 'js2-mode "js2-mode" nil t)
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
 (add-to-list 'auto-mode-alist '("\\.js$'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.t$'" . cperl-mode))
 
 ;; explicitly state bookmarks
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
