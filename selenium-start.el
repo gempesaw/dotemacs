@@ -2,9 +2,11 @@
 ;; start up selenium if possible.
 
 (let ((selenium-proc-name "selenium-webdriver")
-      (selenium-version "2.26.0"))
-  (let ((selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))
-        (selenium-file (concat "/opt/selenium-server-standalone-" selenium-version ".jar")))
+      (selenium-version "2.28.0")
+      (selenium-buffer nil)
+      (selenium-file))
+  (setq selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))
+  (setq selenium-file (concat "/opt/selenium-server-standalone-" selenium-version ".jar"))
     (save-window-excursion
       (when (and (eq nil (get-buffer selenium-buffer)) (file-exists-p selenium-file))
         (set-process-query-on-exit-flag
@@ -12,4 +14,4 @@
                         "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver")
          nil)
         (switch-to-buffer selenium-buffer)
-        (setq buffer-read-only t)))))
+        (setq buffer-read-only t))))
