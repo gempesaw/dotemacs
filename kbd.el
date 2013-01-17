@@ -205,3 +205,4 @@
 
 (global-unset-key (kbd "C-x C-j"))
 (global-set-key (kbd "C-x C-j") 'join-line)
+(global-set-key (kbd "C-x f") 'fetchmacs-view-notes)
