@@ -16,3 +16,4 @@
 (load "elget.el" 'noerror)
 ;; and then tweak their settings them
 (load "modes.el" 'noerror)
+(put 'narrow-to-region 'disabled nil)
