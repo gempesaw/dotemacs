@@ -12,6 +12,7 @@
 (setq cperl-indent-level 4)
 (setq cperl-continued-statement-offset 0)
 (setq cperl-extra-newline-before-brace t)
+(setq cperl-indent-parens-as-block t)
 
 (add-hook 'cperl-mode-hook
   (lambda()
