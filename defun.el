@@ -184,6 +184,16 @@ them, asking user for confirmation"
       (save-window-excursion
         (message (describe-variable (variable-at-point)))))))
 
+(defun extract-json-from-http-response (buffer)
+  (let ((json nil))
+    (save-excursion
+      (set-buffer buffer)
+      (goto-char (point-min))
+      (re-search-forward "^$" nil 'move)
+      (setq json (buffer-substring-no-properties (point) (point-max))))
+      ;; (kill-buffer (current-buffer)))
+    json))
+
 (defun open-qa-mongo-db()
   (interactive)
   (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
@@ -219,10 +229,10 @@ them, asking user for confirmation"
   (interactive "sBox to tail: ")
   (switch-to-buffer (tail-log remote-box "-n +0")))
 
-(defun sharecare-update-build ()
+(defun sc-update-build ()
   (interactive)
   (search-forward "#")
-  (delete-char -1)
+  ;; (delete-char -1)
   (let ((currentLineText (buffer-substring (line-beginning-position) (point)))
         (newVersion (buffer-substring (point) (line-end-position)))
         (product '(("auth" . "webauth&newtag=builds/sharecare/rc/")
@@ -231,7 +241,7 @@ them, asking user for confirmation"
                    ("ETL" . "schedulemaster&newtag=builds/schedulemaster/rc/")
                    ("Sync" . "schedule&newtag=builds/schedule/rc/")))
         (update-build-url))
-    (delete-region (line-beginning-position) (line-end-position))
+    ;; (delete-region (line-beginning-position) (line-end-position))
     (loop for cell in product do
           (let ((vikAbbrev (car cell))
                 (productAndNewTag (cdr cell)))
@@ -242,5 +252,59 @@ them, asking user for confirmation"
                         (concat
                          "https://admin.be.jamconsultg.com/kohana/adminui/updatebuildtag?site=sharecare&product="
                          productAndNewTag newVersion "&buildtype=qa"))
-                  (insert (concat update-build-url "\n"))
-                  (switch-to-buffer (url-retrieve-synchronously update-build-url))))))))
+                  (url-retrieve update-build-url 'sc-check-current-build)))))))
+
+(defun sc-check-current-build (&optional rest)
+  (let ((json-object-type 'alist)
+        (build-number))
+    (save-excursion
+      (setq build-number
+            (aref (cdr (assoc 'data (car (-filter
+                                          (lambda (item)
+                                            (cdr (assoc 'selected item)))
+                                          (append
+                                           (cdar (json-read-from-string
+                                                  (extract-json-from-http-response
+                                                   (current-buffer)))) nil) )))) 0)))
+    (kill-buffer (current-buffer))
+    (set-buffer "*scratch*")
+    (end-of-line)
+    (newline)
+    (insert (cadr (split-string build-number "/")) " updated to " (car (last (split-string build-number "/"))))))
+
+(defun sc-restart-all-5-boxes ()
+  (interactive)
+  (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
+        (restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems=")
+        (qa-boxes nil))
+    (set-buffer buf)
+    (goto-char (point-min))
+    (setq qa-boxes
+          (-filter (lambda (item) (or (string= (caddr (nth 5 item)) "scqawebauth2f")
+                                      (string= (caddr (nth 5 item)) "scqawebpub2f")
+                                      (string= (caddr (nth 5 item)) "scqadata2f")
+                                      (string= (caddr (nth 5 item)) "scqaschedule2f")
+                                      (string= (caddr (nth 5 item)) "scqaschedulemaster2f")))
+                   (cdr (-remove (lambda (item) (stringp item))
+                                 (car (xml-parse-region
+                                       (+ 1 (re-search-forward "^$"))
+                                       (point-max) buf))))))
+    (-each (-map (lambda (item)
+                   (let ((id-string (split-string (cdaadr item) "\\^")))
+                     (cons (caddr (nth 5 item))
+                           (concat restart-url-prefix
+                                   (car id-string)
+                                   "^"
+                                   (cadr id-string)
+                                   ",&action=Restart"))))
+                 qa-boxes)
+           (lambda (item)
+             (url-retrieve (cdr item) (lambda (status)))))))
+
+
+(defun sc-update-all-builds ()
+  (interactive)
+  (sc-update-build)
+  (sc-update-build)
+  (sc-update-build)
+  (sc-update-build))
