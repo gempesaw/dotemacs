@@ -1,3 +1,10 @@
+;; some packages aren't autoloaded, unfortunately
+(require 'ace-jump-mode)
+(require 'switch-window)
+(require 'powerline)
+(require 'multiple-cursors)
+(require 'simple-httpd)
+
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)
 
@@ -58,7 +65,7 @@
 )
 
 ;; passwords in a file not on github :p
-(load "passwords.el")
+(load "passwords.el" 'noerror)
 
 ;; org-jira mode
 (setq jiralib-url "https://arnoldmedia.jira.com")
@@ -75,11 +82,10 @@
 ;; personal snippets
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"            ;; personal snippets
-	"~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
-	))
-(yas/global-mode 1)
-
-(win-switch-mode t)
+        "~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
+        ))
+(yas-global-mode 1)
+(autopair-global-mode 1)
 
 ;; activate my minor mode to override keybindings
 (my-keys-minor-mode 1)

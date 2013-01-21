@@ -117,14 +117,10 @@
 (global-set-key (kbd "C-c b s") 'bookmark-set)
 (global-set-key (kbd "C-c b j") 'bookmark-jump)
 
-;; win-switch is in customize.el
-;; mark-more-like-this is in customize.el
-
 ;; multiple cursors
 (eval-after-load "multiple-cursors"
   '(progn
      (global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
-
      (global-set-key (kbd "C->") 'mc/mark-next-like-this)
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
      (global-set-key (kbd "C-*") 'mc/mark-all-like-this)))
@@ -135,12 +131,6 @@
   '(progn
      (define-key my-keys-minor-mode-map (kbd "M-j") 'switch-window)
      (define-key my-keys-minor-mode-map (kbd "C-c j") 'delete-other-window)))
-
-(eval-after-load "win-switch"
-  '(progn
-     (setq win-switch-idle-time 0.375)
-     (define-key my-keys-minor-mode-map (kbd "C-j") 'win-switch-enter)))
-
 
 (eval-after-load "cperl-mode"
   '(progn
