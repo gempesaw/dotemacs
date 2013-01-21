@@ -188,6 +188,10 @@ them, asking user for confirmation"
   (interactive)
   (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
 
+(defun open-dev-mongo-db ()
+  (interactive)
+  (async-shell-command (concat "mongo " ip-and-port-of-dev-mongo) "*qa-mongo*"))
+
 (defun open-existing-hnew-shell ()
   (interactive)
   (let ((buffer "*ssh-hnew*"))
