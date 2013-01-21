@@ -197,8 +197,9 @@ them, asking user for confirmation"
   (let ((buffer "*ssh-hnew*"))
     (if (eq nil (get-buffer buffer))
         (save-window-excursion
-          (async-shell-command "ssh hnew" "*ssh-hnew*")))
-      (switch-to-buffer buffer)))
+          (set-process-query-on-exit-flag
+           (start-process "ssh-hnew" buffer "ssh" "hnew") nil))
+      (switch-to-buffer buffer))))
 
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
