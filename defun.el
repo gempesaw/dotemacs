@@ -168,7 +168,9 @@ them, asking user for confirmation"
   (interactive)
   (add-semicolon-at-end-of-line)
   (end-of-line)
-  (reindent-then-newline-and-indent))
+  (forward-line)
+  (indent-according-to-mode)
+  (back-to-indentation))
 
 (defun create-newline-from-anywhere()
   (interactive)
