@@ -1,6 +1,10 @@
-;; disable menu and toolbar
-(menu-bar-mode 0)
-(tool-bar-mode 0)
+;; Turn off mouse interface early in startup to avoid momentary display
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; No splash screen please ... jeez
+(setq inhibit-startup-message t)
 
 ;; disable mouse scrolling
 (setq mouse-wheel-scroll-amount '(1))
@@ -10,7 +14,9 @@
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
+
+;; oh cool we get a super button!
+(setq mac-option-modifier 'super)
 
 ;; I never use downcase-region
 (put 'upcase-region 'disabled nil)
@@ -35,11 +41,6 @@
 ;; Small fringes
 (set-fringe-mode '(1 . 1))
 
-;; Emacs gurus don't need no stinking scroll bars
-(when (fboundp 'toggle-scroll-bar)
-  (toggle-scroll-bar -1))
-(toggle-scroll-bar -1)
-
 ;; Explicitly show the end of a buffer
 (set-default 'indicate-empty-lines t)
 
@@ -49,8 +50,8 @@
 ;; Gotta see matching parens
 (show-paren-mode t)
 
-;; Trailing whitespace is unnecessary
-(add-hook 'before-save-hook (lambda () (whitespace-cleanup)))
+;; Various superfluous white-space. Just say no.
+(add-hook 'before-save-hook 'cleanup-buffer-safe)
 
 ;; Trash can support
 (setq delete-by-moving-to-trash t)
@@ -184,7 +185,9 @@
   '(progn
      (set-face-foreground 'magit-diff-add "green3")
      (set-face-foreground 'magit-diff-del "red3")
-     (set-face-background 'magit-item-highlight "gray17")))
+     (set-face-background 'magit-item-highlight "gray17")
+     ;; (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+))
 
 (add-hook 'w3m-display-hook 'my-w3m-rename-buffer)
 
@@ -215,3 +218,21 @@
 (if (require 'sasl nil t)
       (setq oauth-nonce-function #'sasl-unique-id)
     (setq oauth-nonce-function #'oauth-internal-make-nonce))
+
+;; Make dired less verbose
+(eval-after-load "dired-details"
+  '(progn
+     (setq-default dired-details-hidden-string "--- ")
+     (dired-details-install)))
+
+;; Auto refresh buffers
+(global-auto-revert-mode 1)
+
+;; Also auto refresh dired, but be quiet about it
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+
+;; elisp slime nav mode
+(autoload 'elisp-slime-nav-mode "elisp-slime-nav")
+(add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
+(eval-after-load 'elisp-slime-nav '(diminish 'elisp-slime-nav-mode))

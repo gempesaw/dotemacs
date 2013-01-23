@@ -12,7 +12,10 @@
     browse-kill-ring
     cperl-mode
     dash
-    w3m
+    dired-details
+    diminish
+    elisp-slime-nav
+
     exec-path-from-shell
     expand-region
     htmlize
@@ -28,6 +31,7 @@
     simple-httpd
     smex
     switch-window
+    w3m
     wgrep
     yasnippet)
   "A list of packages to ensure are installed at launch.")
