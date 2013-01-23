@@ -229,8 +229,7 @@ them, asking user for confirmation"
   (interactive "sBox to tail: ")
   (switch-to-buffer (tail-log remote-box "-n +0")))
 
-(defun sc-update-build ()
-  (interactive)
+(defun sc--update-build ()
   (search-forward "#")
   ;; (delete-char -1)
   (let ((currentLineText (buffer-substring (line-beginning-position) (point)))
@@ -304,7 +303,7 @@ them, asking user for confirmation"
 
 (defun sc-update-all-builds ()
   (interactive)
-  (sc-update-build)
-  (sc-update-build)
-  (sc-update-build)
-  (sc-update-build))
+  (sc--update-build)
+  (sc--update-build)
+  (sc--update-build)
+  (sc--update-build))
