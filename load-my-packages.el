@@ -11,6 +11,9 @@
     autopair
     browse-kill-ring
     cperl-mode
+    dired-details
+    diminish
+    elisp-slime-nav
     w3m
     exec-path-from-shell
     expand-region

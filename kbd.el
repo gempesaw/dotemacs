@@ -15,6 +15,9 @@
 ;; magit-svn-mode
 (add-hook 'magit-mode-hook (lambda() (local-set-key (kbd "N") 'magit-svn-mode)))
 
+;; magit whitespace
+;; (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)
+
 ;; blame mode
 (global-set-key (kbd "C-c g") 'magit-blame-mode)
 
@@ -196,5 +199,6 @@
 (global-unset-key (kbd "C-x C-j"))
 (global-set-key (kbd "C-x C-j") 'join-line)
 
+;; (define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)
 
-(define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)
+(global-set-key (kbd "C-c n") 'cleanup-buffer)
