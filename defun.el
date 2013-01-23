@@ -237,3 +237,9 @@ them, asking user for confirmation"
                          productAndNewTag newVersion "&buildtype=qa"))
                   (insert (concat update-build-url "\n"))
                   (switch-to-buffer (url-retrieve-synchronously update-build-url))))))))
+
+(defun tex-without-changing-windows ()
+  (interactive)
+  (save-buffer)
+  (save-window-excursion
+    (tex-file)))
