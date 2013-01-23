@@ -195,3 +195,6 @@
 
 (global-unset-key (kbd "C-x C-j"))
 (global-set-key (kbd "C-x C-j") 'join-line)
+
+
+(define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)
