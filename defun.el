@@ -200,15 +200,15 @@ them, asking user for confirmation"
 
 (defun open-dev-mongo-db ()
   (interactive)
-  (async-shell-command (concat "mongo " ip-and-port-of-dev-mongo) "*qa-mongo*"))
+  (async-shell-command (concat "mongo " ip-and-port-of-dev-mongo) "*dev-mongo*"))
 
 (defun open-existing-hnew-shell ()
   (interactive)
   (let ((buffer "*ssh-hnew*"))
     (if (eq nil (get-buffer buffer))
         (save-window-excursion
-          (set-process-query-on-exit-flag
-           (start-process "ssh-hnew" buffer "ssh" "hnew") nil))
+          (async-shell-command "ssh hnew" buffer)
+          (set-process-query-on-exit-flag (get-buffer-process buffer) nil))
       (switch-to-buffer buffer))))
 
 (defun my-w3m-rename-buffer (url)
