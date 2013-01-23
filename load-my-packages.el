@@ -11,6 +11,7 @@
     autopair
     browse-kill-ring
     cperl-mode
+    dash
     w3m
     exec-path-from-shell
     expand-region
