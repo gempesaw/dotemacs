@@ -186,7 +186,7 @@
      (set-face-foreground 'magit-diff-add "green3")
      (set-face-foreground 'magit-diff-del "red3")
      (set-face-background 'magit-item-highlight "gray17")
-     ;; (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 ))
 
 (add-hook 'w3m-display-hook 'my-w3m-rename-buffer)
