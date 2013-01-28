@@ -88,13 +88,18 @@ browsers."
       (other-window 1)))
   (balance-windows))
 
-(defun check-what-servers-have-restarted ()
+(defun sc-check-what-servers-have-restarted ()
   (interactive)
-  (multi-occur-in-matching-buffers "tail-catalina" "INFO: Server startup in" 1))
+  (multi-occur-in-matching-buffers "tail-catalina" "INFO: Server startup in" 1)
+  (set-buffer "*Occur*")
+  (rename-buffer "*sc-restarted*")
+  (multi-occur-in-matching-buffers "tail-catalina" "ERROR," 1)
+  (set-buffer "*Occur*")
+  (rename-buffer "*sc-errors*"))
 
-(defun search-catalina-logs-for-errors ()
+(defun sc-search-catalina-logs-for-errors ()
   (interactive)
-  (multi-occur-in-matching-buffers "tail-catalina" "ERROR," 1))
+  )
 
 (defun start-qa-file-copy ()
   (interactive)
