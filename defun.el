@@ -210,7 +210,8 @@ them, asking user for confirmation"
 (defun open-existing-hnew-shell ()
   (interactive)
   (let ((buffer "*ssh-hnew*"))
-    (if (eq nil (get-buffer buffer))
+    (if (or (eq nil (get-buffer-process buffer))
+            (eq nil (get-buffer buffer)))
         (save-window-excursion
           (async-shell-command "ssh hnew" buffer)
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil))
