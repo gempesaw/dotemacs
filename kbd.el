@@ -181,6 +181,10 @@
 ;; save easier! c'monnnn
 (global-unset-key (kbd "C-x C-s"))
 (define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "M-s") 'save-buffer)))
+
 
 ;; bind log tailing to mouse buttons :)
 (global-set-key (kbd "M-<mouse-3>") 'open-catalina-logs)
@@ -201,6 +205,8 @@
 
 (global-set-key (kbd "C-x f") 'fetchmacs-view-notes)
 
-;; (define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)
+(eval-after-load "latex"
+  '(progn
+     (define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)))
 
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
