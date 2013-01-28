@@ -434,3 +434,10 @@ Including indent-buffer, which should not be called automatically on save."
   (paredit-newline)
   (yank)
   (exchange-point-and-mark))
+
+(defun ig-redeem ()
+  (interactive)
+  (save-window-excursion
+    (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
+    (set-buffer "ig-redeem")
+    (message (buffer-substring (point-min) (point-max))))
