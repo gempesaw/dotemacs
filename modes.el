@@ -4,6 +4,10 @@
 (require 'powerline)
 (require 'multiple-cursors)
 (require 'simple-httpd)
+(require 'diminish)
+(require 'elisp-slime-nav)
+(require 'smart-compile)
+(require 'dash)
 
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)

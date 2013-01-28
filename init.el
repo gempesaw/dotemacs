@@ -13,7 +13,6 @@
 (load "themes.el" 'noerror)
 (load "selenium-start.el" 'noerror)
 (load "smart-compile.el" 'noerror)
-(require 'smart-compile)
 
 ;; load all the necessary packages
 (load "load-my-packages.el" 'noerror)

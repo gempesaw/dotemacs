@@ -409,4 +409,3 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (kill-buffer)
   (jump-to-register :magit-fullscreen))
->>>>>>> 4083ff1a1efacc1e2044826b96239b5e852965b7
