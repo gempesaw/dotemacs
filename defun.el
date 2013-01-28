@@ -286,7 +286,7 @@ them, asking user for confirmation"
     (goto-char (point-min))
     (setq qa-boxes
           (-filter (lambda (item) (or (string= (caddr (nth 5 item)) "scqawebauth2f")
-                                      (string= (caddr (nth 5 item)) "scqawebpub2f")
+                                      ;; (string= (caddr (nth 5 item)) "scqawebpub2f")
                                       (string= (caddr (nth 5 item)) "scqadata2f")
                                       (string= (caddr (nth 5 item)) "scqaschedule2f")
                                       (string= (caddr (nth 5 item)) "scqaschedulemaster2f")))
