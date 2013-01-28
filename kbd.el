@@ -170,6 +170,14 @@
 
 ;; insert eol semi, reindent, go to next line
 (global-set-key (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
+(global-set-key (kbd "C-,") (lambda ()
+                              (interactive)
+                              (end-of-line)
+                              (insert ",")
+                              (indent-according-to-mode)
+                              (forward-line 1)
+                              (indent-according-to-mode)))
+
 (global-set-key (kbd "C-<return>") 'create-newline-from-anywhere)
 
 ;; use smex?!
