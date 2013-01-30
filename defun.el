@@ -70,7 +70,7 @@ browsers."
   (interactive)
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
 
-(defun open-catalina-logs ()
+(defun sc-open-catalina-logs ()
   (interactive)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
   (delete-other-windows)
@@ -97,10 +97,6 @@ browsers."
   (set-buffer "*Occur*")
   (rename-buffer "*sc-errors*"))
 
-(defun sc-search-catalina-logs-for-errors ()
-  (interactive)
-  )
-
 (defun start-qa-file-copy ()
   (interactive)
   (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
@@ -111,7 +107,7 @@ browsers."
     (kill-sexp -1)
     (insert (format "%s" value))))
 
-(defun close-qa-catalina ()
+(defun sc-close-qa-catalina ()
   (interactive)
   (kill-matching-buffers-rudely "*tail-catalina-"))
 
