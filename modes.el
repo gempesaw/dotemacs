@@ -1,10 +1,10 @@
 ;; some packages aren't autoloaded, unfortunately
+(require 'dired-details)
 (require 'ace-jump-mode)
 (require 'switch-window)
 (require 'powerline)
 (require 'multiple-cursors)
 (require 'simple-httpd)
-(require 'diminish)
 (require 'elisp-slime-nav)
 (require 'smart-compile)
 (require 'dash)
