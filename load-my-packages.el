@@ -15,7 +15,6 @@
     dired-details
     diminish
     elisp-slime-nav
-
     exec-path-from-shell
     expand-region
     htmlize
@@ -35,6 +34,8 @@
     wgrep
     yasnippet)
   "A list of packages to ensure are installed at launch.")
+
+(require 'diminish)
 
 (defun my-packages-installed-p ()
   (loop for p in my-packages
