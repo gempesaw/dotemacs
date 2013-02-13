@@ -219,16 +219,6 @@ them, asking user for confirmation"
   "Renames the current buffer to be the current URL"
   (rename-buffer url t))
 
-(defun open-existing-ssh-shell (remote-box)
-  (interactive "sWhat box: ")
-  (let ((buffer (concat "*ssh-" remote-box "*")))
-    (if (eq nil (get-buffer buffer))
-        (save-window-excursion
-          (async-shell-command (concat "ssh " remote-box)
-                               (generate-new-buffer-name buffer))
-          (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
-    (switch-to-buffer buffer)))
-
 (defun tail-entire-log (remote-box)
   (interactive "sBox to tail: ")
   (switch-to-buffer (tail-log remote-box "-n +0")))
@@ -441,3 +431,39 @@ Including indent-buffer, which should not be called automatically on save."
     (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
     (set-buffer "ig-redeem")
     (message (buffer-substring (point-min) (point-max))))
+(defun get-file-as-string (filePath)
+  "Return FILEPATH's file content."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string
+     (buffer-string) "\n" t)))
+
+(defun get-remote-names ()
+  (interactive)
+  (let ((ssh-config (get-file-as-string ssh-config-path) )
+        (ssh-host-names))
+    (while ssh-config
+      (let ((line (car ssh-config)))
+        (if (and (string-match-p "Host " line)
+                 (not (string-match-p "*" line))
+                 (not (string-match-p "^# " line)))
+            (setq ssh-host-names (cons (cadr (split-string line " "))
+                                       ssh-host-names))))
+      (setq ssh-config (cdr ssh-config)))
+    ssh-host-names))
+
+(defun open-ssh-connection (&optional pfx)
+  (interactive "p")
+  (let ((box (ido-completing-read "Which box: " (get-remote-names)))
+        (buffer "*ssh-"))
+    (setq buffer (concat buffer box "*"))
+    (save-window-excursion
+      (async-shell-command (concat "ssh " box)
+                           (generate-new-buffer-name buffer)))
+    (if (eq pfx 4)
+        (progn
+          (split-window)
+          (other-window 1)))
+    (switch-to-buffer buffer)
+    (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
+
