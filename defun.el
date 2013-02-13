@@ -467,3 +467,11 @@ Including indent-buffer, which should not be called automatically on save."
     (switch-to-buffer buffer)
     (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
 
+(defun escape-quotes-in-region ()
+  (interactive)
+  (if (and transient-mark-mode mark-active)
+      (save-restriction
+        (narrow-to-region (region-beginning) (region-end))
+        (goto-char (point-min))
+        (while (re-search-forward "\"" nil t)
+          (replace-match "\\\\\"" nil nil)))))
