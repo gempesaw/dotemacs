@@ -74,7 +74,7 @@ browsers."
   (interactive)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
   (delete-other-windows)
-  (let ((qa-boxes '("qascauth" "qascpub" "qascdata" "qasched" "qaschedmaster"))
+  (let ((qa-boxes '("qaschedmaster" "qascauth" "qascpub" "qascdata" "qasched"))
         (buffer-prefix "tail-catalina-"))
     (dolist (remote-box-alias qa-boxes)
       (tail-log remote-box-alias nil)
@@ -109,7 +109,9 @@ browsers."
 
 (defun sc-close-qa-catalina ()
   (interactive)
-  (kill-matching-buffers-rudely "*tail-catalina-"))
+  (kill-matching-buffers-rudely "*tail-catalina-")
+  (delete-other-windows)
+  (switch-to-buffer "*scratch*"))
 
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
   "Kill buffers whose name matches the specified REGEXP. This
