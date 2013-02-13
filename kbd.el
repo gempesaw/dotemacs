@@ -205,8 +205,8 @@
      (define-key w3m-mode-map (kbd "M-k") 'kill-this-buffer)))
 
 ;; open a new ssh connection easily
-(define-key my-keys-minor-mode-map (kbd "C-c .") 'open-existing-ssh-shell)
-(define-key my-keys-minor-mode-map (kbd "C-c C-.") 'open-existing-ssh-shell)
+(define-key my-keys-minor-mode-map (kbd "C-c .") 'open-ssh-connection)
+(define-key my-keys-minor-mode-map (kbd "C-c C-.") 'open-ssh-connection)
 
 (global-unset-key (kbd "C-x C-j"))
 (global-set-key (kbd "C-x C-j") 'join-line)
@@ -218,3 +218,8 @@
      (define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)))
 
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
+
+(global-set-key (kbd "s-1") 'sc-update-all-builds)
+(global-set-key (kbd "s-2") 'sc-open-catalina-logs)
+(global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
+
