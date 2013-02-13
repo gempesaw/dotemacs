@@ -302,6 +302,8 @@ them, asking user for confirmation"
 
 (defun sc-update-all-builds ()
   (interactive)
+  (yank)
+  (re-search-backward "SC2")
   (sc--update-build)
   (sc--update-build)
   (sc--update-build)
