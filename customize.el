@@ -77,6 +77,7 @@
      (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.pl\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
+     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview)))
      ))
 
 ;; don't ask about files
