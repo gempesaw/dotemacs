@@ -13,7 +13,6 @@
     cperl-mode
     dash
     dired-details
-    diminish
     elisp-slime-nav
     exec-path-from-shell
     expand-region
@@ -30,12 +29,11 @@
     simple-httpd
     smex
     switch-window
+    tumblesocks
     w3m
     wgrep
     yasnippet)
   "A list of packages to ensure are installed at launch.")
-
-(require 'diminish)
 
 (defun my-packages-installed-p ()
   (loop for p in my-packages
