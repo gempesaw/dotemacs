@@ -73,7 +73,7 @@
 (eval-after-load "smart-compile"
   '(progn
      (setq compilation-read-command nil)
-     (add-to-list 'smart-compile-alist '("\\.feature\\'" . "perl -w /opt/honeydew/bin/honeydew.pl -isMine -feature=%F") )
+     (add-to-list 'smart-compile-alist '("\\.feature\\'" . (execute-feature)) )
      (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.pl\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
@@ -165,16 +165,6 @@
      (add-hook 'multiple-cursors-mode-disabled-hook (lambda () (autopair-mode 1)))
      ))
 
-(eval-after-load "powerline"
-  '(progn
-     (custom-set-faces
-      '(mode-line ((t (:foreground "#030303" :background "cyan" :box nil))))
-      '(mode-line-inactive ((t (:foreground "#f9f9f9" :background "#666666" :box nil)))))
-
-     (setq powerline-arrow-shape 'arrow)
-     (setq powerline-color1 "grey22")
-     (setq powerline-color2 "grey40")))
-
 ;; switch windows using home row keys
 (setq switch-window-shortcut-style 'qwerty)
 
@@ -235,4 +225,5 @@
 ;; elisp slime nav mode
 (autoload 'elisp-slime-nav-mode "elisp-slime-nav")
 (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
-(eval-after-load 'elisp-slime-nav '(diminish 'elisp-slime-nav-mode))
+
+(setq ssh-config-path "~/.ssh/config")
