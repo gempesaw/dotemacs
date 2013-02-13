@@ -15,6 +15,10 @@ still function in special-mode"
   (when buffer-file-name (save-buffer)))
 (defadvice windmove-do-window-select (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
+(defadvice switch-window (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice ido-switch--window (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
 
 (defadvice bookmark-set (after save-bookmarks activate)
   (bookmark-save))
