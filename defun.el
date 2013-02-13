@@ -457,6 +457,27 @@ Including indent-buffer, which should not be called automatically on save."
             (start-qa-file-copy)
             (set-process-filter proc nil))))))
 
+(defun reset-ssh-connections ()
+  (interactive)
+  (let ((tramp-buffers
+         (-filter (lambda (item)
+                    (string-match "tramp" (buffer-name item)))
+                  (buffer-list))))
+    (while tramp-buffers
+      (kill-buffer (car tramp-buffers))
+      (setq tramp-buffers (cdr tramp-buffers))))
+  (delete-hung-ssh-sessions))
+
+(defun delete-hung-ssh-sessions ()
+  (interactive)
+  (let ((cm-socket-files (directory-files "~/.ssh/cm_socket" nil nil t)))
+    (while cm-socket-files
+      (let ((filename (car cm-socket-files)))
+        (if (not (or (string= "." filename)
+                     (string= ".." filename)))
+            (delete-file (concat "~/.ssh/cm_socket/" filename)))
+        (setq cm-socket-files (cdr cm-socket-files))))))
+
 (defun get-file-as-string (filePath)
   "Return FILEPATH's file content."
   (with-temp-buffer
