@@ -223,3 +223,6 @@
 (global-set-key (kbd "s-2") 'sc-open-catalina-logs)
 (global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
 
+
+(global-unset-key (kbd "M-."))
+(global-set-key (kbd "M-.") 'find-tag-other-window)
