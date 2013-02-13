@@ -204,7 +204,7 @@
 (setq jabber-alert-presence-hooks nil)
 
 ;; tumblesocks
-(setq tumblesocks-blog "danzorx.tumblr.com")
+(setq tumblesocks-blog "eval-defun.tumblr.com")
 (setq tumblesocks-post-default-state 'queue)
 (if (require 'sasl nil t)
       (setq oauth-nonce-function #'sasl-unique-id)
