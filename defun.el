@@ -86,6 +86,8 @@ browsers."
                         nil 'force-same-window)
       (goto-char (point-max))
       (other-window 1)))
+  (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
+  (set-process-filter (get-buffer-process "*tail-catalina-qascpub*") 'sc-deploy-assets-after-pub)
   (balance-windows))
 
 (defun sc-check-what-servers-have-restarted ()
@@ -266,8 +268,8 @@ them, asking user for confirmation"
     (newline)
     (insert (cadr (split-string build-number "/")) " updated to " (car (last (split-string build-number "/"))))))
 
-(defun sc-restart-qa-boxes (&optional pfx)
-  (interactive "P")
+(defun sc-restart-qa-boxes (&optional qascpub)
+  (interactive)
   (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
         (restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems=")
         (qa-boxes nil))
@@ -275,12 +277,12 @@ them, asking user for confirmation"
     (goto-char (point-min))
     (setq qa-boxes
           (-filter (lambda (item)
-                     (if (eq (car pfx) 4)
-                           (string= (caddr (nth 5 item)) "scqawebpub2f")
-                       (or (string= (caddr (nth 5 item)) "scqawebauth2f")
-                           (string= (caddr (nth 5 item)) "scqadata2f")
-                           (string= (caddr (nth 5 item)) "scqaschedule2f")
-                           (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))))
+                     (if (eq qascpub t)
+                           (or (string= (caddr (nth 5 item)) "scqawebpub2f")
+                               (string= (caddr (nth 5 item)) "scqadata2f")
+                               (string= (caddr (nth 5 item)) "scqaschedule2f")
+                               (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))
+                       (string= (caddr (nth 5 item)) "scqawebauth2f")))
                    (cdr (-remove (lambda (item) (stringp item))
                                  (car (xml-parse-region
                                        (+ 1 (re-search-forward "^$"))
@@ -295,8 +297,8 @@ them, asking user for confirmation"
                                    ",&action=Restart"))))
                  qa-boxes)
            (lambda (item)
+             ;; (message (car item))
              (url-retrieve (cdr item) (lambda (status)))))))
-
 
 (defun sc-update-all-builds ()
   (interactive)
@@ -431,6 +433,30 @@ Including indent-buffer, which should not be called automatically on save."
     (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
     (set-buffer "ig-redeem")
     (message (buffer-substring (point-min) (point-max))))
+(defun sc-auto-restart-pub-after-auth (proc string)
+  (when (buffer-live-p (process-buffer proc))
+    (with-current-buffer (process-buffer proc)
+      (goto-char (process-mark proc))
+      (insert string)
+      (set-marker (process-mark proc) (point))
+      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+          (progn
+            (message "auth server has started, restarting pub now!")
+            (sc-restart-qa-boxes t)
+            (set-process-filter proc nil))))))
+
+(defun sc-deploy-assets-after-pub (proc string)
+  (when (buffer-live-p (process-buffer proc))
+    (with-current-buffer (process-buffer proc)
+      (goto-char (process-mark proc))
+      (insert string)
+      (set-marker (process-mark proc) (point))
+      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+          (progn
+            (message "pub server has restarted, deploying assets now!")
+            (start-qa-file-copy)
+            (set-process-filter proc nil))))))
+
 (defun get-file-as-string (filePath)
   "Return FILEPATH's file content."
   (with-temp-buffer
