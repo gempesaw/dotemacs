@@ -20,3 +20,4 @@ passwords.el
 /chromedriver.log
 /.prove
 /passwords.el
+/tumblr-oauth-token

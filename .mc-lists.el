@@ -18,6 +18,7 @@
         c-electric-pound
         c-electric-semi&comma
         c-electric-slash
+        cleanup-buffer
         comint-delchar-or-maybe-eof
         cperl-electric-backspace
         cperl-electric-brace
@@ -26,6 +27,7 @@
         cperl-electric-rparen
         cperl-electric-semi
         cperl-electric-terminator
+        create-newline-from-anywhere
         delete-horizontal-space
         dired-mark
         downcase-region
@@ -38,6 +40,7 @@
         org-beginning-of-line
         org-delete-char
         org-end-of-line
+        paredit-forward-delete
         repeat
         smex
         upcase-region
@@ -66,6 +69,7 @@
         sgml-delete-tag
         smart-compile
         switch-window
+        undefined
         wdired-finish-edit
         wgrep-toggle-readonly-area
         win-switch-down
