@@ -2,7 +2,7 @@
 (require 'dired-details)
 (require 'ace-jump-mode)
 (require 'switch-window)
-(require 'powerline)
+(require 'exec-path-from-shell)
 (require 'multiple-cursors)
 (require 'simple-httpd)
 (require 'elisp-slime-nav)

@@ -24,7 +24,6 @@
     magit
     markdown-mode
     multiple-cursors
-    powerline
     regex-tool
     simple-httpd
     smex
