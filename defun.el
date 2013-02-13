@@ -452,6 +452,18 @@ Including indent-buffer, which should not be called automatically on save."
     (setq compile-command command)
     (compile compile-command t)))
 
+(defun find-function-C-source (fun-or-var &optional file type)
+  (with-help-window (help-buffer)
+    (prin1 fun-or-var)
+    ;; Use " is " instead of a colon so that
+    ;; it is easier to get out the function name using forward-sexp.
+    (princ " is ")
+    (describe-function-1 fun-or-var)
+    (with-current-buffer standard-output
+      ;; Return the text we displayed.
+      (buffer-string))) fun-or-var)
+
+
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
