@@ -433,6 +433,25 @@ Including indent-buffer, which should not be called automatically on save."
     (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
     (set-buffer "ig-redeem")
     (message (buffer-substring (point-min) (point-max))))
+
+(defun execute-feature (&optional arg)
+  (interactive "p")
+  (let ((filename (buffer-file-name (current-buffer)))
+        (command "perl -w /opt/honeydew/bin/honeydew.pl -isMine")
+        (compile-command))
+    (setq command (concat command " -feature=" filename))
+    (if (eq arg 4)
+        (let ((browser (read-from-minibuffer "browser: " "ie 9 webdriver"))
+              (hostname (read-from-minibuffer "hostname: " "http://localhost"))
+              (sauce (read-from-minibuffer "sauce: " "t")))
+          (setq command (concat command
+                                (if (eq sauce t) "-sauce")
+                                " -browser='" browser
+                                "' -hostname='" hostname
+                                "'"))))
+    (setq compile-command command)
+    (compile compile-command t)))
+
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
