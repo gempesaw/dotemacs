@@ -214,8 +214,8 @@ them, asking user for confirmation"
             (eq nil (get-buffer buffer)))
         (save-window-excursion
           (async-shell-command "ssh hnew" buffer)
-          (set-process-query-on-exit-flag (get-buffer-process buffer) nil))
-      (switch-to-buffer buffer))))
+          (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
+      (switch-to-buffer buffer)))
 
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
