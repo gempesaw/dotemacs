@@ -222,6 +222,7 @@
 (global-set-key (kbd "s-1") 'sc-update-all-builds)
 (global-set-key (kbd "s-2") 'sc-open-catalina-logs)
 (global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
+(global-set-key (kbd "s-4") 'sc-close-qa-catalina)
 
 
 (global-unset-key (kbd "M-."))
