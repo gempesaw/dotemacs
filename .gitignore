@@ -21,4 +21,4 @@ passwords.el
 /.prove
 /passwords.el
 /tumblr-oauth-token
-*cache*
+*cache/
