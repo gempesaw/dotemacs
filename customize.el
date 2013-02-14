@@ -228,3 +228,5 @@
 (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
 
 (setq ssh-config-path "~/.ssh/config")
+
+(setq ace-jump-mode-scope 'frame)
