@@ -1,4 +1,5 @@
 ;; some packages aren't autoloaded, unfortunately
+(require 'autopair)
 (require 'dired-details)
 (require 'ace-jump-mode)
 (require 'switch-window)
