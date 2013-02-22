@@ -31,6 +31,7 @@
         delete-horizontal-space
         dired-mark
         downcase-region
+        execute-feature
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
