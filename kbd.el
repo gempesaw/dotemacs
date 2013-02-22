@@ -78,7 +78,8 @@
 (define-key term-raw-map (kbd "C-;") 'term-line-mode)
 
 ;; replace buffer-menu with ibuffer
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-c C-b") 'ibuffer)
+(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
 
 ;; load file into emacs
 (global-unset-key (kbd "C-c C-l"))
