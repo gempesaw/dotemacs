@@ -555,3 +555,11 @@ Including indent-buffer, which should not be called automatically on save."
         (goto-char (point-min))
         (while (re-search-forward "\"" nil t)
           (replace-match "\\\\\"" nil nil)))))
+
+(defun sc-kabocha-test ()
+  (interactive)
+  (start-process "prove-kabocha" "*kabocha-run-tests*" "/opt/kabocha/run-tests" ))
+
+(defun sc-hdew-push-to-prod ()
+  (interactive)
+  (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*")))
