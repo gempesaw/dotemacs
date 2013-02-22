@@ -281,7 +281,8 @@ them, asking user for confirmation"
                            (or (string= (caddr (nth 5 item)) "scqawebpub2f")
                                (string= (caddr (nth 5 item)) "scqadata2f")
                                (string= (caddr (nth 5 item)) "scqaschedule2f")
-                               (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))
+                               ;; (string= (caddr (nth 5 item)) "scqaschedulemaster2f")
+                               )
                        (string= (caddr (nth 5 item)) "scqawebauth2f")))
                    (cdr (-remove (lambda (item) (stringp item))
                                  (car (xml-parse-region
