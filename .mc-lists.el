@@ -20,6 +20,7 @@
         c-electric-slash
         cleanup-buffer
         comint-delchar-or-maybe-eof
+        comment-dwim
         cperl-electric-backspace
         cperl-electric-brace
         cperl-electric-lbrace
@@ -29,6 +30,7 @@
         cperl-electric-terminator
         create-newline-from-anywhere
         delete-horizontal-space
+        dired-details-hide
         dired-mark
         downcase-region
         execute-feature
@@ -38,6 +40,7 @@
         js2-beginning-of-line
         js2-end-of-line
         kill-region
+        mark-whole-buffer
         org-beginning-of-line
         org-delete-char
         org-end-of-line
@@ -58,6 +61,7 @@
         delete-window
         dired-next-line
         dired-previous-line
+        dired-summary
         dired-undo
         end-of-buffer
         eval-last-sexp
