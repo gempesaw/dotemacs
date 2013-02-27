@@ -1,15 +1,3 @@
-;; some packages aren't autoloaded, unfortunately
-(require 'autopair)
-(require 'dired-details)
-(require 'ace-jump-mode)
-(require 'switch-window)
-(require 'exec-path-from-shell)
-(require 'multiple-cursors)
-(require 'simple-httpd)
-(require 'elisp-slime-nav)
-(require 'smart-compile)
-(require 'dash)
-
 ;; enable desktop saving for buffer restore
 (desktop-save-mode 1)
 

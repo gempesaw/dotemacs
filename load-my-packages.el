@@ -1,13 +1,13 @@
 (require 'package)
 (require 'cl)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")))
 
 (defvar my-packages
   '(
     ace-jump-mode
-    ack
+    ack-and-a-half
     autopair
     browse-kill-ring
     cperl-mode
@@ -40,13 +40,14 @@
         finally (return t)))
 
 (save-window-excursion (unless (my-packages-installed-p)
-  ;; check for new packages (package versions)
-  (message "%s" "Emacs Prelude is now refreshing its package database...")
-  (package-refresh-contents)
-  (message "%s" " done.")
-  ;; install the missing packages
-  (dolist (p my-packages)
-    (when (not (package-installed-p p))
-      (package-install p)))))
+                         ;; check for new packages (package versions)
+                         (message "%s" "Emacs Prelude is now refreshing its package database...")
+                         (package-refresh-contents)
+                         (message "%s" " done.")
+                         ;; install the missing packages
+                         (dolist (p my-packages)
+                           (when (not (package-installed-p p))
+                             (package-install p)
+                             (require p)))))
 
 (package-initialize)
