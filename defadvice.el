@@ -11,14 +11,21 @@ still function in special-mode"
 ;; and on windows switch
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
+
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
-(defadvice windmove-do-window-select (before save-buffer-now activate)
+
+(defadvice switch-window (before switch-window activate)
   (when buffer-file-name (save-buffer)))
-(defadvice switch-window (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
+
 (defadvice ido-switch--window (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
+
+(defadvice split-window-below (after split-window-below activate)
+  (balance-windows))
+
+(defadvice split-window-right (after split-window-right activate)
+  (balance-windows))
 
 (defadvice bookmark-set (after save-bookmarks activate)
   (bookmark-save))
