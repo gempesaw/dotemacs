@@ -281,8 +281,7 @@ them, asking user for confirmation"
                            (or (string= (caddr (nth 5 item)) "scqawebpub2f")
                                (string= (caddr (nth 5 item)) "scqadata2f")
                                (string= (caddr (nth 5 item)) "scqaschedule2f")
-                               ;; (string= (caddr (nth 5 item)) "scqaschedulemaster2f")
-                               )
+                               (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))
                        (string= (caddr (nth 5 item)) "scqawebauth2f")))
                    (cdr (-remove (lambda (item) (stringp item))
                                  (car (xml-parse-region
@@ -559,8 +558,8 @@ Including indent-buffer, which should not be called automatically on save."
 
 (defun sc-kabocha-test ()
   (interactive)
-  (start-process "prove-kabocha" "*kabocha-run-tests*" "/opt/kabocha/run-tests" ))
+  (async-shell-command "sh /opt/kabocha/run-tests" "*kabocha-run-tests*"))
 
 (defun sc-hdew-push-to-prod ()
   (interactive)
-  (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*")))
+  (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))
