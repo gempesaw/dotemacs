@@ -22,3 +22,4 @@ passwords.el
 /passwords.el
 /tumblr-oauth-token
 *cache/
+/.DS_Store

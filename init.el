@@ -2,6 +2,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/")
 
+(setq unread-command-char '-1)
 (load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
 (load "defun.el" 'noerror)
