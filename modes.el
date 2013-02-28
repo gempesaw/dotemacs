@@ -78,7 +78,7 @@
         "~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
         ))
 
-(yas/global-mode 1)
+(yas-global-mode 1)
 
 ;; activate my minor mode to override keybindings
 (my-keys-minor-mode 1)
