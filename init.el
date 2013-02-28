@@ -5,6 +5,7 @@
 (load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
 (load "defun.el" 'noerror)
+(load "defadvice.el" 'noerror)
 (load "emacs-custom.el" 'noerror)
 (load "kbd.el" 'noerror)
 (load "hooks.el" 'noerror)
