@@ -439,18 +439,33 @@ Including indent-buffer, which should not be called automatically on save."
 (defun execute-feature (&optional arg)
   (interactive "p")
   (let ((filename (buffer-file-name (current-buffer)))
-        (command "perl -w /opt/honeydew/bin/honeydew.pl -isMine")
+        (command "w /opt/honeydew/bin/honeydew.pl -isMine")
         (compile-command))
     (setq command (concat command " -feature=" filename))
-    (if (eq arg 4)
-        (let ((browser (read-from-minibuffer "browser: " "ie 9 webdriver"))
-              (hostname (read-from-minibuffer "hostname: " "http://localhost"))
-              (sauce (read-from-minibuffer "sauce: " "t")))
-          (setq command (concat command
-                                (if (eq sauce t) "-sauce")
-                                " -browser='" browser
-                                "' -hostname='" hostname
-                                "'"))))
+    (if (eq arg 16)
+        (setq command (concat "d" command)))
+    (if (>= arg 4)
+        (let ((browser (ido-completing-read "browser: "
+                                            '("chrome"
+                                              "firefox"
+                                              "ie 9"
+                                              "ie 8")))
+              (hostname (ido-completing-read "hostname: "
+                                             '("localhost"
+                                               "www.qa.sharecare.com"
+                                               "www.stage.sharecare.com"
+                                               "www.sharecare.com"
+                                               "www.qa.startle.com"
+                                               "www.stage.startle.com"
+                                               "www.startle.com"
+                                               "www.qa.doctoroz.com"
+                                               "www.stage.doctoroz.com"
+                                               "www.doctoroz.com")))
+              (sauce (ido-completing-read "sauce: " '("nil" "t"))))
+          (setq command (concat "perl -" command
+                                (if (string= sauce "t") " -sauce")
+                                " -browser='" browser " webdriver'"
+                                " -hostname='http://" hostname "'"))))
     (setq compile-command command)
     (compile compile-command t)))
 
