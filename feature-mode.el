@@ -6,7 +6,12 @@
     "Scenario"
     "Hostname"
     "Tags"
-    "Subtitle")
+    "Subtitle"
+    "Version"
+    "Email"
+    "Given"
+    "When"
+    "Then")
   nil                         ;; additional expressions to font-lock
   '("\\.feature$")            ;; placed in auto-mode-alist
   '(feature-mode-hook) ;; list of functions to call)
@@ -19,7 +24,7 @@
 \\{feature-mode-map}"
   (setq major-mode 'feature-mode
         mode-name "Feature"
-        mode-line-process "Feature")
+        mode-line-process nil)
   (use-local-map feature-mode-map)
   (run-mode-hooks 'feature-mode-hook))
 
