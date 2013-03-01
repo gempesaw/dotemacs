@@ -193,11 +193,11 @@
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
 ;; jabby wabby
-(setq jabber-account-list '(("gempesaw@gmail.com"
-                              (:network-server . "talk.google.com")
-                              (:connection-type . ssl))
-                              (:port . 443)))
+(setq jabber-account-list '(("dgempesaw@sharecare.com"
+                             (:connection-type . starttls))))
 (setq jabber-alert-presence-hooks nil)
+(setq starttls-extra-arguments '("--insecure"))
+(setq starttls-use-gnutls t)
 
 ;; tumblesocks
 (setq tumblesocks-blog "eval-defun.tumblr.com")

@@ -23,6 +23,7 @@
     impatient-mode
     ido-ubiquitous
     ir-black-theme
+    jabber
     js2-mode
     magit
     markdown-mode
