@@ -18,7 +18,8 @@
     dired-details
     elisp-slime-nav
     exec-path-from-shell
-    ;; expand-region
+    expand-region
+    gist
     htmlize
     impatient-mode
     ido-ubiquitous
