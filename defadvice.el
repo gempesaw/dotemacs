@@ -27,6 +27,9 @@ still function in special-mode"
 (defadvice split-window-right (after split-window-right activate)
   (balance-windows))
 
+(defadvice delete-window (after delete-window activate)
+  (balance-windows))
+
 (defadvice bookmark-set (after save-bookmarks activate)
   (bookmark-save))
 
