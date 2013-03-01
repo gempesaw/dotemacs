@@ -131,12 +131,6 @@
 (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
 
-;; erc setup
-(eval-after-load "erc-match"
-  '(progn
-     (setq erc-track-enable-keybindings nil)))
-     (setq erc-keywords '("resolve" "dgempesaw"))
-
 (eval-after-load "saveplace"
   '(progn
      ;; saveplace remembers your location in a file when saving files
@@ -232,3 +226,10 @@
 (setq ssh-config-path "~/.ssh/config")
 
 (setq ace-jump-mode-scope 'frame)
+
+(setq circe-network-options
+      `(("Freenode"
+         :nick "dgempesaw"
+         :channels ("#emacs" "#selenium")
+         :nickserv-password ,freenode-password
+         )))

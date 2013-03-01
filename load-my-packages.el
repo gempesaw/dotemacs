@@ -13,6 +13,7 @@
     autopair
     browse-kill-ring
     cperl-mode
+    circe
     dash
     dired-details
     elisp-slime-nav
