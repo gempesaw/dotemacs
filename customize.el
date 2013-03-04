@@ -195,7 +195,18 @@
 ;; jabby wabby
 (setq jabber-account-list '(("dgempesaw@sharecare.com"
                              (:connection-type . starttls))))
-(setq jabber-alert-presence-hooks nil)
+(setq jabber-alert-presence-hooks nil
+      jabber-auto-reconnect t
+      jabber-avatar-verbose nil
+      jabber-vcard-avatars-retrieve nil
+      jabber-chat-buffer-format "*-jabber-%n-*"
+      jabber-history-enabled nil
+      jabber-mode-line-mode t
+      jabber-roster-buffqer "*-jabber-*"
+      jabber-roster-line-format " %c %-25n %u %-8s (%r)"
+      jabber-show-offline-qcontacts nil
+      jabber-muc-autojoin '("qa@conference.sharecare.com")
+      jabber-muc-default-nicknames '(("qa@conference.sharecare.com" . "Daniel Gempesaw")))
 (setq starttls-extra-arguments '("--insecure"))
 (setq starttls-use-gnutls t)
 
