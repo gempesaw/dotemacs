@@ -56,3 +56,6 @@
                              (require p)))))
 
 (package-initialize)
+
+
+(dolist (p my-packages) (require p))
