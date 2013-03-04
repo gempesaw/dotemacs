@@ -225,3 +225,9 @@
 
 (global-unset-key (kbd "M-."))
 (global-set-key (kbd "M-.") 'find-tag-other-window)
+
+(eval-after-load "tracking"
+  '(progn
+     (define-key tracking-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)
+     (define-key tracking-mode-map (kbd "C-c C-@") 'ace-jump-mode)
+     (define-key tracking-mode-map (kbd "C-x C-j C-k") 'tracking-next-buffer)))
