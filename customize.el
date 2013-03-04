@@ -194,6 +194,7 @@
 
 ;; jabby wabby
 (setq jabber-account-list '(("dgempesaw@sharecare.com"
+                             (:password . work-jabber-password)
                              (:connection-type . starttls))))
 (setq jabber-alert-presence-hooks nil
       jabber-auto-reconnect t
