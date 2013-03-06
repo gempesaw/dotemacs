@@ -462,11 +462,11 @@ Including indent-buffer, which should not be called automatically on save."
                                                "www.stage.doctoroz.com"
                                                "www.doctoroz.com")))
               (sauce (ido-completing-read "sauce: " '("nil" "t"))))
-          (setq command (concat "perl -" command
+          (setq command (concat command
                                 (if (string= sauce "t") " -sauce")
                                 " -browser='" browser " webdriver'"
                                 " -hostname='http://" hostname "'"))))
-    (setq compile-command command)
+    (setq compile-command (concat "perl -" command))
     (compile compile-command t)))
 
 (defun find-function-C-source (fun-or-var &optional file type)
