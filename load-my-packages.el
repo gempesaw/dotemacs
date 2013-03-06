@@ -29,6 +29,7 @@
     magit
     markdown-mode
     multiple-cursors
+    php-mode
     regex-tool
     simple-httpd
     smex
