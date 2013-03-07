@@ -204,7 +204,7 @@
       jabber-mode-line-mode t
       jabber-roster-buffqer "*-jabber-*"
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
-      jabber-show-offline-qcontacts nil
+      jabber-show-offline-contacts nil
       jabber-muc-autojoin '("qa@conference.sharecare.com")
       jabber-muc-default-nicknames '(("qa@conference.sharecare.com" . "Daniel Gempesaw")))
 (setq starttls-extra-arguments '("--insecure"))
