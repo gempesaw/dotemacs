@@ -28,8 +28,6 @@ shell to run, and so it doesn't ask before getting killed.
   (set-process-query-on-exit-flag (get-process "terminal") nil)
   (switch-to-buffer "terminal"))
 
-(define-key global-map [remap term] 'cterm)
-
 (defun compile-again (pfx)
   """Run the same compile as the last time.
 
@@ -112,8 +110,7 @@ browsers."
 (defun sc-close-qa-catalina ()
   (interactive)
   (kill-matching-buffers-rudely "*tail-catalina-")
-  (delete-other-windows)
-  (switch-to-buffer "*scratch*"))
+  (delete-frame))
 
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
   "Kill buffers whose name matches the specified REGEXP. This
@@ -302,6 +299,9 @@ them, asking user for confirmation"
 
 (defun sc-update-all-builds ()
   (interactive)
+  (make-frame-command)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (goto-char (point-max))
   (yank)
   (re-search-backward "SC2")
   (sc--update-build)
@@ -574,6 +574,10 @@ Including indent-buffer, which should not be called automatically on save."
 (defun sc-kabocha-test ()
   (interactive)
   (async-shell-command "sh /opt/kabocha/run-tests" "*kabocha-run-tests*"))
+
+(defun sc-kabocha-test-sso ()
+  (interactive)
+  (async-shell-command "sh /opt/kabocha/run-sso-tests" "*kabocha-run-tests*"))
 
 (defun sc-hdew-push-to-prod ()
   (interactive)
