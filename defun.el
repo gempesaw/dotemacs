@@ -263,7 +263,11 @@ them, asking user for confirmation"
     (set-buffer "*scratch*")
     (end-of-line)
     (newline)
-    (insert (cadr (split-string build-number "/")) " updated to " (car (last (split-string build-number "/"))))))
+    (insert (message (concat
+                      (cadr (split-string build-number "/"))
+                      " updated to "
+                      (car (last (split-string build-number "/"))))))))
+
 
 (defun sc-restart-qa-boxes (&optional qascpub)
   (interactive)
