@@ -249,7 +249,8 @@ them, asking user for confirmation"
 
 (defun sc-check-current-build (&optional rest)
   (let ((json-object-type 'alist)
-        (build-number))
+        (build-number)
+        (update-message))
     (save-excursion
       (setq build-number
             (aref (cdr (assoc 'data (car (-filter
@@ -263,7 +264,9 @@ them, asking user for confirmation"
     (set-buffer "*scratch*")
     (end-of-line)
     (newline)
-    (insert (cadr (split-string build-number "/")) " updated to " (car (last (split-string build-number "/"))))))
+    (setq update-message (cadr (split-string build-number "/")) " updated to " (car (last (split-string build-number "/"))))
+    (insert update-message)
+    (message update-message)))
 
 (defun sc-restart-qa-boxes (&optional qascpub)
   (interactive)
