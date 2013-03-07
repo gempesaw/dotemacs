@@ -268,7 +268,6 @@ them, asking user for confirmation"
                       " updated to "
                       (car (last (split-string build-number "/"))))))))
 
-
 (defun sc-restart-qa-boxes (&optional qascpub)
   (interactive)
   (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
