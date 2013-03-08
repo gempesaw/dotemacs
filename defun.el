@@ -110,6 +110,8 @@ browsers."
 (defun sc-close-qa-catalina ()
   (interactive)
   (kill-matching-buffers-rudely "*tail-catalina-")
+  (kill-matching-buffers-rudely "*sc-errors*")
+  (kill-matching-buffers-rudely "*sc-restarted*")
   (delete-frame))
 
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
