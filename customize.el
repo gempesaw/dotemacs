@@ -192,11 +192,10 @@
 ;; explicitly state bookmarks
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
-;; jabby wabby
+;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
 (setq jabber-account-list '(("dgempesaw@sharecare.com"
                              (:connection-type . starttls))))
 (setq jabber-alert-presence-hooks nil
-      jabber-auto-reconnect t
       jabber-avatar-verbose nil
       jabber-vcard-avatars-retrieve nil
       jabber-chat-buffer-format "*-jabber-%n-*"
