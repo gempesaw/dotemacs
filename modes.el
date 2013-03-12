@@ -95,3 +95,10 @@
      (put 'paredit-doublequote 'delete-selection t)
      (put 'paredit-newline 'delete-selection t)
      ))
+
+(delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
+(delete '("\\.js\\'" . js-mode) auto-mode-alist)
+(add-to-list 'auto-mode-alist '("\\.js$'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.t$'" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.md$'" . markdown-mode))
