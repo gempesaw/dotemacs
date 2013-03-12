@@ -211,10 +211,6 @@
 
 (global-set-key (kbd "C-x f") 'fetchmacs-view-notes)
 
-(eval-after-load "latex"
-  '(progn
-     (define-key latex-mode-map (kbd "C-c C-f") 'tex-without-changing-windows)))
-
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
 
 (global-set-key (kbd "s-1") 'sc-update-all-builds)

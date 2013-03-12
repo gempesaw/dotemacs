@@ -10,3 +10,12 @@
        (if (looking-back "/")
            (insert "~/")
          (call-interactively 'self-insert-command))))))
+
+(add-hook 'latex-mode-hook
+          (lambda ()
+            (define-key latex-mode-map (kbd "C-c C-f")
+              (lambda ()
+                (interactive)
+                (save-buffer)
+                (save-window-excursion
+                  (tex-file))))))

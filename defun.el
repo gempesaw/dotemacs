@@ -314,13 +314,6 @@ them, asking user for confirmation"
   (sc--update-build)
   (sc--update-build))
 
-(defun tex-without-changing-windows ()
-  (interactive)
-  (save-buffer)
-  (save-window-excursion
-    (tex-file)))
-
-
 (defun toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
