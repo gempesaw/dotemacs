@@ -583,3 +583,22 @@ Including indent-buffer, which should not be called automatically on save."
 (defun sc-hdew-push-to-prod ()
   (interactive)
   (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))
+
+(defun markdown-preview-with-syntax-highlighting (&optional output-buffer-name)
+  "Run `markdown' on the current buffer and preview the output in a browser."
+  (interactive)
+  (browse-url-of-buffer
+   (with-current-buffer (markdown markdown-output-buffer-name)
+     (goto-char (point-min))
+     (if (> (length markdown-css-path) 0)
+         (insert "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
+                 markdown-css-path
+                 "\"  />\n"))
+
+     (if (> (length markdown-script-path) 0)
+         (progn
+           (insert "<script type=\"text/javascript\" src=\""
+                 markdown-script-path
+                 "\"  /></script>\n")
+           (insert "<script type=\"text/javascript\">hljs.initHighlightingOnLoad();</script>")))
+     markdown-output-buffer-name)))
