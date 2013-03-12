@@ -485,7 +485,6 @@ Including indent-buffer, which should not be called automatically on save."
       ;; Return the text we displayed.
       (buffer-string))) fun-or-var)
 
-
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
@@ -579,6 +578,10 @@ Including indent-buffer, which should not be called automatically on save."
 (defun sc-kabocha-test ()
   (interactive)
   (async-shell-command "sh /opt/kabocha/run-tests" "*kabocha-run-tests*"))
+
+(defun sc-kabocha-self-test ()
+  (interactive)
+  (async-shell-command "cd /opt/kabocha;prove" "*kabocha-run-tests*"))
 
 (defun sc-kabocha-test-sso ()
   (interactive)
