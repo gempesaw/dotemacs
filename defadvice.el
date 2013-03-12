@@ -18,19 +18,16 @@ still function in special-mode"
 (defadvice switch-window (before switch-window activate)
   (when buffer-file-name (save-buffer)))
 
-(defadvice ido-switch--window (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-
-(defadvice split-window-below (after split-window-below activate)
+(defadvice split-window-below (after restore-balanace-below activate)
   (balance-windows))
 
-(defadvice split-window-right (after split-window-right activate)
+(defadvice split-window-right (after restore-balance-right activate)
   (balance-windows))
 
-(defadvice delete-window (after delete-window activate)
+(defadvice delete-window (after restore-balance activate)
   (balance-windows))
 
-(defadvice bookmark-set (after save-bookmarks activate)
+(defadvice bookmark-set (after save-bookmarks-automatically activate)
   (bookmark-save))
 
 
