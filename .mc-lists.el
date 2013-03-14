@@ -29,6 +29,7 @@
         cperl-electric-semi
         cperl-electric-terminator
         create-newline-from-anywhere
+        dabbrev-expand
         delete-horizontal-space
         dired-details-hide
         dired-mark
@@ -46,6 +47,7 @@
         org-end-of-line
         paredit-forward-delete
         repeat
+        sgml-slash
         smex
         upcase-region
         wdired-previous-line
