@@ -243,3 +243,45 @@
 
 (setq markdown-css-path "/opt/highlight.js/src/styles/ir_black.css")
 (setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
+
+(setq mu4e-get-mail-command "offlineimap -q -o"
+      mu4e-update-interval 300
+      mu4e-view-prefer-html t
+      mu4e-view-show-images t
+      mu4e-html2text-command "html2text -utf8 -nobs -style pretty"
+      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
+                       ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
+                       ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
+                       ("date:today..now AND NOT subject:JIRA" "Today's messages" ?t)
+                       ("subject:mentioned you (JIRA)" "Tagged in JIRA" ?J)
+                       ;; ("date:7d..now" "Last 7 days" 119)
+                       ;; ("mime:image/*" "Messages with images" 112)
+                       ))
+
+(setq user-mail-address "dgempesaw@sharecare.com"
+      user-full-name  "Daniel Gempesaw"
+      message-signature (concat
+"Thanks,"
+"<div style=\"font-size: 9pt; font-family: 'Century Gothic', sans-serif; color: rgb(112, 112, 112)\">"
+"  <p>"
+"    <span style=\"font-weight: bold; color: #10A2AF\">Daniel Gempesaw | QA Architect</span><br />"
+"    M 302.754.1231"
+"  </p>"
+"  <p>"
+"    <span style=\"font-weight: bold; color: #10A2AF\">Sharecare, Inc.</span><br />"
+"    Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book"
+"  </p>"
+"  <p>"
+"    My RealAge is 3.7 years younger! <a href=\"http://www.sharecare.com/assessments/realagetest/\" style=\"color: blue\">Find out your <span style=\"font-weight: bold\">RealAge</span> now!</a>"
+"  </p>"
+"</div>"))
+
+;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
+;; otherwise it tries to send through OS associated mail client
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      message-send-mail-function 'smtpmail-send-it
+      smtpmail-stream-type 'starttls
+      smtpmail-default-smtp-server "pod51019.outlook.com"
+      smtpmail-smtp-server "pod51019.outlook.com"
+      smtpmail-smtp-user "dgempesaw@sharecare.com"
+      smtpmail-smtp-service 587)
