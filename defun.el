@@ -99,7 +99,7 @@ browsers."
 
 (defun start-qa-file-copy ()
   (interactive)
-  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
+  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "build-file-copy"))
 
 (defun replace-last-sexp ()
   (interactive)
