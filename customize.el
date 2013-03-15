@@ -261,20 +261,12 @@
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
       message-signature (concat
-"Thanks,"
-"<div style=\"font-size: 9pt; font-family: 'Century Gothic', sans-serif; color: rgb(112, 112, 112)\">"
-"  <p>"
-"    <span style=\"font-weight: bold; color: #10A2AF\">Daniel Gempesaw | QA Architect</span><br />"
-"    M 302.754.1231"
-"  </p>"
-"  <p>"
-"    <span style=\"font-weight: bold; color: #10A2AF\">Sharecare, Inc.</span><br />"
-"    Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book"
-"  </p>"
-"  <p>"
-"    My RealAge is 3.7 years younger! <a href=\"http://www.sharecare.com/assessments/realagetest/\" style=\"color: blue\">Find out your <span style=\"font-weight: bold\">RealAge</span> now!</a>"
-"  </p>"
-"</div>"))
+"Daniel Gempesaw | QA Architect\n"
+"M 302.754.1231\n"
+"\n"
+"Sharecare, Inc.\n"
+"Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
+))
 
 ;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
 ;; otherwise it tries to send through OS associated mail client
