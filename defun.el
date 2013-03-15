@@ -602,3 +602,10 @@ Including indent-buffer, which should not be called automatically on save."
                  "\"  /></script>\n")
            (insert "<script type=\"text/javascript\">hljs.initHighlightingOnLoad();</script>")))
      markdown-output-buffer-name)))
+
+
+(defun switch-between-buffers (interesting-buffer)
+  (interactive)
+  (if (not (string= interesting-buffer (buffer-name)))
+      (switch-to-buffer interesting-buffer nil t)
+    (switch-to-prev-buffer))))
