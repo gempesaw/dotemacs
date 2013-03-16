@@ -68,6 +68,14 @@ browsers."
   (interactive)
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
 
+(defun sc-copy-build-numbers ()
+  (interactive)
+  (re-search-forward "auth")
+  (beginning-of-line)
+  (copy-region-as-kill (point) (save-excursion
+                                 (forward-line 4)
+                                 (point))))
+
 (defun sc-open-catalina-logs ()
   (interactive)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
@@ -270,40 +278,60 @@ them, asking user for confirmation"
                       " updated to "
                       (car (last (split-string build-number "/"))))))))
 
-(defun sc-restart-qa-boxes (&optional qascpub)
+(defun sc-resolve-qa-boxes ()
   (interactive)
   (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
-        (restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems=")
-        (qa-boxes nil))
+        (note)
+        (name)
+        (boxes))
     (set-buffer buf)
-    (goto-char (point-min))
-    (setq qa-boxes
-          (-filter (lambda (item)
-                     (if (eq qascpub t)
-                           (or (string= (caddr (nth 5 item)) "scqawebpub2f")
-                               (string= (caddr (nth 5 item)) "scqadata2f")
-                               (string= (caddr (nth 5 item)) "scqaschedule2f")
-                               (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))
-                       (string= (caddr (nth 5 item)) "scqawebauth2f")))
-                   (cdr (-remove (lambda (item) (stringp item))
-                                 (car (xml-parse-region
-                                       (+ 1 (re-search-forward "^$"))
-                                       (point-max) buf))))))
-    (-each (-map (lambda (item)
-                   (let ((id-string (split-string (cdaadr item) "\\^")))
-                     (cons (caddr (nth 5 item))
-                           (concat restart-url-prefix
-                                   (car id-string)
-                                   "^"
-                                   (cadr id-string)
-                                   ",&action=Restart"))))
-                 qa-boxes)
-           (lambda (item)
-             ;; (message (car item))
-             (url-retrieve (cdr item) (lambda (status)))))))
+    (goto-char 1)
+    (replace-string "\n" "")
+    (goto-char 1)
+    (setq parsed-xml (cdddar (xml-parse-region
+                              (re-search-forward "/xml")
+                              (point-max) buf)))
+    (kill-buffer buf)
+    (-filter
+     (lambda (item)
+       (if (setq note (caddar (last item)))
+           (progn
+             (setq name (caddr (nth 3 item)))
+             (and (not (string-match "Disable" note))
+                  (or (string= name "scqawebpub2f")
+                      (string= name "scqadata2f")
+                      (string= name "scqaschedule2f")
+                      (string= name "scqaschedulemaster2f")
+                      (string= name "scqawebauth2f"))))))
+     parsed-xml))))
+
+(defun sc-restart-qa-boxes (&optional all)
+  (interactive)
+  (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
+    (-each
+     (-filter
+      (lambda (item)
+        (if (eq nil all)
+            (string-match "auth" (car item))
+          (not (string-match "auth" (car item)))))
+      (-map
+       (lambda (item)
+         (let ((id-string (split-string (cdaadr item) "\\^")))
+           (cons (caddr (nth 3 item))
+                 (concat restart-url-prefix
+                         (car id-string)
+                         "^"
+                         (cadr id-string)
+                         ",&action=Restart"))))
+       (sc-resolve-qa-boxes)))
+     (lambda (item)
+       (message (concat "restarting " (car item)))
+       ;; (message (cdr item))
+       (url-retrieve (cdr item) (lambda (status)))))))
 
 (defun sc-update-all-builds ()
   (interactive)
+  (sc-copy-build-numbers)
   (make-frame-command)
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (goto-char (point-max))
@@ -484,7 +512,7 @@ Including indent-buffer, which should not be called automatically on save."
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+      (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "auth server has started, restarting pub now!")
             (sc-restart-qa-boxes t)
@@ -496,7 +524,7 @@ Including indent-buffer, which should not be called automatically on save."
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+      (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "pub server has restarted, deploying assets now!")
             (start-qa-file-copy)
