@@ -303,7 +303,7 @@ them, asking user for confirmation"
                       (string= name "scqaschedule2f")
                       (string= name "scqaschedulemaster2f")
                       (string= name "scqawebauth2f"))))))
-     parsed-xml))))
+     parsed-xml)))
 
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
@@ -636,4 +636,4 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (if (not (string= interesting-buffer (buffer-name)))
       (switch-to-buffer interesting-buffer nil t)
-    (switch-to-prev-buffer))))
+    (switch-to-prev-buffer)))
