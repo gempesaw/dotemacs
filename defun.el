@@ -5,8 +5,8 @@
    (concat
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
     (url-hexify-string (if mark-active
-         (buffer-substring (region-beginning) (region-end))
-       (read-string "Google: "))))))
+                           (buffer-substring (region-beginning) (region-end))
+                         (read-string "Google: "))))))
 
 ;; I don't want M-x term to ask me about what shell to run
 ;; this is pulled from term.el (C-h f term)
@@ -34,13 +34,13 @@ shell to run, and so it doesn't ask before getting killed.
 If there was no last time, or there is a prefix argument, this acts like
 M-x compile.
 """
- (interactive "p")
- (if (and (eq pfx 1)
-          compilation-last-buffer)
-     (progn
-       (set-buffer compilation-last-buffer)
-       (revert-buffer t t))
-   (call-interactively 'compile)))
+(interactive "p")
+(if (and (eq pfx 1)
+         compilation-last-buffer)
+    (progn
+      (set-buffer compilation-last-buffer)
+      (revert-buffer t t))
+  (call-interactively 'compile)))
 
 (defun run-feature-in-all-browsers ()
   "passes the current file to a perl script that runs it in all
@@ -161,14 +161,14 @@ Returns the buffer in which the tail is occuring."
 
 
 (defun delete-all-pngs-on-desktop ()
-"Opens a dired to desktop, marks all pngs, and tries to delete
+  "Opens a dired to desktop, marks all pngs, and tries to delete
 them, asking user for confirmation"
   (interactive)
   (save-window-excursion
-  (dired "~/Desktop")
-  (revert-buffer)
-  (dired-mark-files-regexp "png" nil)
-  (dired-do-delete)))
+    (dired "~/Desktop")
+    (revert-buffer)
+    (dired-mark-files-regexp "png" nil)
+    (dired-do-delete)))
 
 (defun add-semicolon-at-end-of-line ()
   (interactive)
@@ -203,7 +203,7 @@ them, asking user for confirmation"
       (goto-char (point-min))
       (re-search-forward "^$" nil 'move)
       (setq json (buffer-substring-no-properties (point) (point-max))))
-      ;; (kill-buffer (current-buffer)))
+    ;; (kill-buffer (current-buffer)))
     json))
 
 (defun open-qa-mongo-db()
@@ -222,7 +222,7 @@ them, asking user for confirmation"
         (save-window-excursion
           (async-shell-command "ssh hnew" buffer)
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
-      (switch-to-buffer buffer)))
+    (switch-to-buffer buffer)))
 
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
@@ -459,8 +459,8 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (save-window-excursion
     (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
-    (set-buffer "ig-redeem")
-    (message (buffer-substring (point-min) (point-max))))
+  (set-buffer "ig-redeem")
+  (message (buffer-substring (point-min) (point-max))))
 
 (defun execute-feature (&optional arg)
   (interactive "p")
@@ -626,8 +626,8 @@ Including indent-buffer, which should not be called automatically on save."
      (if (> (length markdown-script-path) 0)
          (progn
            (insert "<script type=\"text/javascript\" src=\""
-                 markdown-script-path
-                 "\"  /></script>\n")
+                   markdown-script-path
+                   "\"  /></script>\n")
            (insert "<script type=\"text/javascript\">hljs.initHighlightingOnLoad();</script>")))
      markdown-output-buffer-name)))
 

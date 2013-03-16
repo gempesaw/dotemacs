@@ -34,6 +34,7 @@
         dired-details-hide
         dired-mark
         downcase-region
+        eval-defun
         execute-feature
         ibuffer-mark-for-delete
         ibuffer-mark-forward
