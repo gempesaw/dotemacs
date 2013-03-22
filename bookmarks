@@ -2,11 +2,26 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("kabocha"
- (filename . "/opt/kabocha/")
- (front-context-string . "lib\n  -rwxr-xr-x")
- (rear-context-string . "36 Feb 22 11:59 ")
- (position . 1420))
+(("dev-kabocha"
+ (filename . "~/opt/kabocha/")
+ (front-context-string . ".git\n  -rw-r--r-")
+ (rear-context-string . "76 Mar  8 14:35 ")
+ (position . 301))
+("prod-features"
+ (filename . "/ssh:hnew:/opt/honeydew/features/")
+ (front-context-string . "Sharecare\n  drwx")
+ (rear-context-string . "96 Nov 21 16:25 ")
+ (position . 537))
+("dev-perl"
+ (filename . "~/opt/dev_hdew/honeydew/")
+ (front-context-string . "features\n  -rw-r")
+ (rear-context-string . "06 Mar 19 09:59 ")
+ (position . 709))
+("dotemacs"
+ (filename . "~/opt/dotemacs/")
+ (front-context-string . "init.el\n  -rw-r-")
+ (rear-context-string . "21 Mar 16 02:29 ")
+ (position . 1899))
 ("cm_socket"
  (filename . "~/.ssh/cm_socket/")
  (front-context-string . "honeydew@server-")
