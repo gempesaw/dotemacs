@@ -43,6 +43,7 @@
         js2-end-of-line
         kill-region
         mark-whole-buffer
+        mu4e-headers-mark-for-read
         org-beginning-of-line
         org-delete-char
         org-end-of-line
@@ -70,6 +71,8 @@
         eval-last-sexp
         handle-switch-frame
         js2-mode-show-node
+        mu4e-headers-prev
+        mu4e-mark-execute-all
         org-delete-backward-char
         org-self-insert-command
         revert-buffer
