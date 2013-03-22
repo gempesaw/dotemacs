@@ -636,4 +636,39 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (if (not (string= interesting-buffer (buffer-name)))
       (switch-to-buffer interesting-buffer nil t)
-    (switch-to-prev-buffer)))
+    (switch-to-prev-buffer)
+    nil))
+
+;; http://emacs-fu.blogspot.com/2013/03/editing-with-root-privileges-once-more.html
+(defun find-file-as-root ()
+  "Like `ido-find-file, but automatically edit the file with
+root-privileges (using tramp/sudo), if the file is not writable
+by user."
+  (interactive)
+  (let ((file (ido-read-file-name "Edit as root: ")))
+    (unless (file-writable-p file)
+      (setq file (concat "/sudo:root@localhost:" file)))
+    (find-file file)))
+
+;; http://ergoemacs.org/emacs/elisp_delete-current-file.html
+(defun delete-current-file ( no-backup-p)
+  "Delete the file associated with the current buffer.
+
+Also close the current buffer.  If no file is associated, just close buffer without prompt for save.
+
+A backup file is created with filename appended  ~ date time stamp ~ . Existing file of the same name is overwritten.
+
+when called with `universal-argument', don't create backup."
+  (interactive "P")
+  (let (fName)
+    (when (buffer-file-name) ; buffer is associated with a file
+      (setq fName (buffer-file-name))
+      (save-buffer fName)
+      (if  no-backup-p
+          (progn )
+        (copy-file fName (concat fName "~" (format-time-string "%Y%m%d_%H%M%S") "~") t)
+        )
+      (delete-file fName)
+      (message " %s  deleted." fName)
+      )
+    (kill-buffer (current-buffer))))

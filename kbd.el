@@ -230,8 +230,14 @@
 
 (global-unset-key (kbd "s-q"))
 (global-set-key (kbd "s-q") (lambda () (interactive)
-                              (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")))
+                              (if (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")
+                                    (jabber-muc-names))))
 
 (global-unset-key (kbd "s-m"))
 (global-set-key (kbd "s-m") (lambda () (interactive)
-                              (switch-between-buffers "*mu4e-headers*")))
+                              (if (switch-between-buffers "*mu4e-headers*")
+                                  (mu4e-update-mail-and-index t))))
+
+
+(global-unset-key (kbd "C-x C-r"))
+(global-set-key (kbd "C-x C-r") 'find-file-as-root)
