@@ -327,7 +327,7 @@ them, asking user for confirmation"
      (lambda (item)
        (message (concat "restarting " (car item)))
        ;; (message (cdr item))
-       (url-retrieve (cdr item) (lambda (status)))))))
+       (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer))))))))
 
 (defun sc-update-all-builds ()
   (interactive)
