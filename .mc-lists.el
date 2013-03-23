@@ -29,10 +29,12 @@
         cperl-electric-semi
         cperl-electric-terminator
         create-newline-from-anywhere
+        dabbrev-expand
         delete-horizontal-space
         dired-details-hide
         dired-mark
         downcase-region
+        eval-defun
         execute-feature
         ibuffer-mark-for-delete
         ibuffer-mark-forward
@@ -41,11 +43,13 @@
         js2-end-of-line
         kill-region
         mark-whole-buffer
+        mu4e-headers-mark-for-read
         org-beginning-of-line
         org-delete-char
         org-end-of-line
         paredit-forward-delete
         repeat
+        sgml-slash
         smex
         upcase-region
         wdired-previous-line
@@ -67,6 +71,8 @@
         eval-last-sexp
         handle-switch-frame
         js2-mode-show-node
+        mu4e-headers-prev
+        mu4e-mark-execute-all
         org-delete-backward-char
         org-self-insert-command
         revert-buffer

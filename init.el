@@ -23,3 +23,6 @@
 (load "load-my-packages.el" 'noerror)
 ;; and then tweak their settings
 (load "modes.el" 'noerror)
+
+(add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
+(require 'mu4e)

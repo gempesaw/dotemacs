@@ -5,8 +5,8 @@
    (concat
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
     (url-hexify-string (if mark-active
-         (buffer-substring (region-beginning) (region-end))
-       (read-string "Google: "))))))
+                           (buffer-substring (region-beginning) (region-end))
+                         (read-string "Google: "))))))
 
 ;; I don't want M-x term to ask me about what shell to run
 ;; this is pulled from term.el (C-h f term)
@@ -34,13 +34,13 @@ shell to run, and so it doesn't ask before getting killed.
 If there was no last time, or there is a prefix argument, this acts like
 M-x compile.
 """
- (interactive "p")
- (if (and (eq pfx 1)
-          compilation-last-buffer)
-     (progn
-       (set-buffer compilation-last-buffer)
-       (revert-buffer t t))
-   (call-interactively 'compile)))
+(interactive "p")
+(if (and (eq pfx 1)
+         compilation-last-buffer)
+    (progn
+      (set-buffer compilation-last-buffer)
+      (revert-buffer t t))
+  (call-interactively 'compile)))
 
 (defun run-feature-in-all-browsers ()
   "passes the current file to a perl script that runs it in all
@@ -67,6 +67,14 @@ browsers."
 (defun reload-my-init ()
   (interactive)
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
+
+(defun sc-copy-build-numbers ()
+  (interactive)
+  (re-search-forward "auth")
+  (beginning-of-line)
+  (copy-region-as-kill (point) (save-excursion
+                                 (forward-line 4)
+                                 (point))))
 
 (defun sc-open-catalina-logs ()
   (interactive)
@@ -99,7 +107,7 @@ browsers."
 
 (defun start-qa-file-copy ()
   (interactive)
-  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "qa-file-copy"))
+  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "build-file-copy"))
 
 (defun replace-last-sexp ()
   (interactive)
@@ -153,14 +161,14 @@ Returns the buffer in which the tail is occuring."
 
 
 (defun delete-all-pngs-on-desktop ()
-"Opens a dired to desktop, marks all pngs, and tries to delete
+  "Opens a dired to desktop, marks all pngs, and tries to delete
 them, asking user for confirmation"
   (interactive)
   (save-window-excursion
-  (dired "~/Desktop")
-  (revert-buffer)
-  (dired-mark-files-regexp "png" nil)
-  (dired-do-delete)))
+    (dired "~/Desktop")
+    (revert-buffer)
+    (dired-mark-files-regexp "png" nil)
+    (dired-do-delete)))
 
 (defun add-semicolon-at-end-of-line ()
   (interactive)
@@ -195,7 +203,7 @@ them, asking user for confirmation"
       (goto-char (point-min))
       (re-search-forward "^$" nil 'move)
       (setq json (buffer-substring-no-properties (point) (point-max))))
-      ;; (kill-buffer (current-buffer)))
+    ;; (kill-buffer (current-buffer)))
     json))
 
 (defun open-qa-mongo-db()
@@ -214,7 +222,7 @@ them, asking user for confirmation"
         (save-window-excursion
           (async-shell-command "ssh hnew" buffer)
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
-      (switch-to-buffer buffer)))
+    (switch-to-buffer buffer)))
 
 (defun my-w3m-rename-buffer (url)
   "Renames the current buffer to be the current URL"
@@ -270,40 +278,60 @@ them, asking user for confirmation"
                       " updated to "
                       (car (last (split-string build-number "/"))))))))
 
-(defun sc-restart-qa-boxes (&optional qascpub)
+(defun sc-resolve-qa-boxes ()
   (interactive)
   (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
-        (restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems=")
-        (qa-boxes nil))
+        (note)
+        (name)
+        (boxes))
     (set-buffer buf)
-    (goto-char (point-min))
-    (setq qa-boxes
-          (-filter (lambda (item)
-                     (if (eq qascpub t)
-                           (or (string= (caddr (nth 5 item)) "scqawebpub2f")
-                               (string= (caddr (nth 5 item)) "scqadata2f")
-                               (string= (caddr (nth 5 item)) "scqaschedule2f")
-                               (string= (caddr (nth 5 item)) "scqaschedulemaster2f"))
-                       (string= (caddr (nth 5 item)) "scqawebauth2f")))
-                   (cdr (-remove (lambda (item) (stringp item))
-                                 (car (xml-parse-region
-                                       (+ 1 (re-search-forward "^$"))
-                                       (point-max) buf))))))
-    (-each (-map (lambda (item)
-                   (let ((id-string (split-string (cdaadr item) "\\^")))
-                     (cons (caddr (nth 5 item))
-                           (concat restart-url-prefix
-                                   (car id-string)
-                                   "^"
-                                   (cadr id-string)
-                                   ",&action=Restart"))))
-                 qa-boxes)
-           (lambda (item)
-             ;; (message (car item))
-             (url-retrieve (cdr item) (lambda (status)))))))
+    (goto-char 1)
+    (replace-string "\n" "")
+    (goto-char 1)
+    (setq parsed-xml (cdddar (xml-parse-region
+                              (re-search-forward "/xml")
+                              (point-max) buf)))
+    (kill-buffer buf)
+    (-filter
+     (lambda (item)
+       (if (setq note (caddar (last item)))
+           (progn
+             (setq name (caddr (nth 3 item)))
+             (and (not (string-match "Disable" note))
+                  (or (string= name "scqawebpub2f")
+                      (string= name "scqadata2f")
+                      (string= name "scqaschedule2f")
+                      (string= name "scqaschedulemaster2f")
+                      (string= name "scqawebauth2f"))))))
+     parsed-xml)))
+
+(defun sc-restart-qa-boxes (&optional all)
+  (interactive)
+  (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
+    (-each
+     (-filter
+      (lambda (item)
+        (if (eq nil all)
+            (string-match "auth" (car item))
+          (not (string-match "auth" (car item)))))
+      (-map
+       (lambda (item)
+         (let ((id-string (split-string (cdaadr item) "\\^")))
+           (cons (caddr (nth 3 item))
+                 (concat restart-url-prefix
+                         (car id-string)
+                         "^"
+                         (cadr id-string)
+                         ",&action=Restart"))))
+       (sc-resolve-qa-boxes)))
+     (lambda (item)
+       (message (concat "restarting " (car item)))
+       ;; (message (cdr item))
+       (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer))))))))
 
 (defun sc-update-all-builds ()
   (interactive)
+  (sc-copy-build-numbers)
   (make-frame-command)
   (switch-to-buffer (get-buffer-create "*scratch*"))
   (goto-char (point-max))
@@ -431,8 +459,8 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (save-window-excursion
     (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
-    (set-buffer "ig-redeem")
-    (message (buffer-substring (point-min) (point-max))))
+  (set-buffer "ig-redeem")
+  (message (buffer-substring (point-min) (point-max))))
 
 (defun execute-feature (&optional arg)
   (interactive "p")
@@ -484,7 +512,7 @@ Including indent-buffer, which should not be called automatically on save."
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+      (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "auth server has started, restarting pub now!")
             (sc-restart-qa-boxes t)
@@ -496,7 +524,7 @@ Including indent-buffer, which should not be called automatically on save."
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "INFO: Initializing EHCache CacheManager" string)
+      (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "pub server has restarted, deploying assets now!")
             (start-qa-file-copy)
@@ -598,7 +626,49 @@ Including indent-buffer, which should not be called automatically on save."
      (if (> (length markdown-script-path) 0)
          (progn
            (insert "<script type=\"text/javascript\" src=\""
-                 markdown-script-path
-                 "\"  /></script>\n")
+                   markdown-script-path
+                   "\"  /></script>\n")
            (insert "<script type=\"text/javascript\">hljs.initHighlightingOnLoad();</script>")))
      markdown-output-buffer-name)))
+
+
+(defun switch-between-buffers (interesting-buffer)
+  (interactive)
+  (if (not (string= interesting-buffer (buffer-name)))
+      (switch-to-buffer interesting-buffer nil t)
+    (switch-to-prev-buffer)
+    nil))
+
+;; http://emacs-fu.blogspot.com/2013/03/editing-with-root-privileges-once-more.html
+(defun find-file-as-root ()
+  "Like `ido-find-file, but automatically edit the file with
+root-privileges (using tramp/sudo), if the file is not writable
+by user."
+  (interactive)
+  (let ((file (ido-read-file-name "Edit as root: ")))
+    (unless (file-writable-p file)
+      (setq file (concat "/sudo:root@localhost:" file)))
+    (find-file file)))
+
+;; http://ergoemacs.org/emacs/elisp_delete-current-file.html
+(defun delete-current-file ( no-backup-p)
+  "Delete the file associated with the current buffer.
+
+Also close the current buffer.  If no file is associated, just close buffer without prompt for save.
+
+A backup file is created with filename appended  ~ date time stamp ~ . Existing file of the same name is overwritten.
+
+when called with `universal-argument', don't create backup."
+  (interactive "P")
+  (let (fName)
+    (when (buffer-file-name) ; buffer is associated with a file
+      (setq fName (buffer-file-name))
+      (save-buffer fName)
+      (if  no-backup-p
+          (progn )
+        (copy-file fName (concat fName "~" (format-time-string "%Y%m%d_%H%M%S") "~") t)
+        )
+      (delete-file fName)
+      (message " %s  deleted." fName)
+      )
+    (kill-buffer (current-buffer))))
