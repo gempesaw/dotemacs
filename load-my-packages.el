@@ -35,7 +35,6 @@
     smex
     switch-window
     tumblesocks
-    w3m
     wgrep
     yasnippet)
   "A list of packages to ensure are installed at launch.")
