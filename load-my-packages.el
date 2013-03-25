@@ -31,6 +31,7 @@
     multiple-cursors
     php-mode
     regex-tool
+    scala-mode2
     simple-httpd
     smex
     switch-window
