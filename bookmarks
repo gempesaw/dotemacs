@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("dev-kabocha"
+(("dev-hdew-tests"
+ (filename . "~/opt/dev_hdew/honeydew/features/tests/")
+ (front-context-string . "url-regex.featur")
+ (rear-context-string . "29 Feb 19 15:58 ")
+ (position . 1972))
+("dev-kabocha"
  (filename . "~/opt/kabocha/")
  (front-context-string . ".git\n  -rw-r--r-")
  (rear-context-string . "76 Mar  8 14:35 ")
