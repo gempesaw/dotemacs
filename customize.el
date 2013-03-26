@@ -244,19 +244,19 @@
 (setq markdown-css-path "/opt/highlight.js/src/styles/ir_black.css")
 (setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
 
-(setq mu4e-get-mail-command "offlineimap -q -o"
-      mu4e-update-interval 300
+(setq mu4e-get-mail-command "true"
+      mu4e-update-interval 180
       mu4e-view-prefer-html nil
       mu4e-view-show-images t
       mu4e-html2text-command "html2text -utf8 -nobs -style pretty | sed 's/&quot;/\"/g'"
       mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
-                       ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?t)
+                       ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                       ;; ("date:7d..now" "Last 7 days" 119)
-                       ;; ("mime:image/*" "Messages with images" 112)
-                       ))
+                       ("maildir:/INBOX" "Inobx" ?i)
+                       ("from:dgempesaw@sharecare.com" "Sent" ?t)
+                       ("date:7d..now" "Last 7 days" ?l)))
 
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
