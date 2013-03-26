@@ -19,6 +19,7 @@
     elisp-slime-nav
     exec-path-from-shell
     expand-region
+    fetchmacs
     gist
     htmlize
     impatient-mode
