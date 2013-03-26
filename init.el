@@ -27,3 +27,6 @@
            (require 'mu4e)
            (load "/opt/fetchmacs/fetchmacs-creds.el" 'noerror)
            (load "/opt/fetchmacs/fetchmacs.el" 'noerror)))
+
+(add-to-list 'load-path "~/.emacs.d/ensime_2.9.2-0.9.7/elisp")
+(require 'ensime)

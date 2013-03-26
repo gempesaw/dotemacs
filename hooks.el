@@ -19,3 +19,5 @@
                 (save-buffer)
                 (save-window-excursion
                   (tex-file))))))
+
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
