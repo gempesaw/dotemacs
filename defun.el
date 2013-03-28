@@ -672,3 +672,21 @@ when called with `universal-argument', don't create backup."
       (message " %s  deleted." fName)
       )
     (kill-buffer (current-buffer))))
+
+(defun execute-perl (&optional arg)
+  (interactive "p")
+  (let ((command (concat "w " (buffer-file-name (current-buffer))))
+        (compile-command))
+    (if (eq arg 16)
+        ;; debug on C-u C-u
+        (setq command (concat "d" command)))
+    (if (eq arg 4)
+        ;; ask questions on C-u
+        (setq command (read-from-minibuffer "Edit command: perl -" command )))
+    (setq compile-command (concat "perl -" command))
+    (compile compile-command t)
+    (if (eq arg 16)
+        (progn
+          (pop-to-buffer "*compilation*")
+          (goto-char (point-max))
+          (insert "c")))))
