@@ -273,3 +273,6 @@
       smtpmail-smtp-server "pod51019.outlook.com"
       smtpmail-smtp-user "dgempesaw@sharecare.com"
       smtpmail-smtp-service 587)
+
+(setq split-height-threshold nil
+      split-width-threshold nil)

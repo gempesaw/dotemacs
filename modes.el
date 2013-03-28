@@ -51,25 +51,9 @@
 ;; the blinking cursor is nothing, but an annoyance
 (blink-cursor-mode -1)
 
-;; tumblr-mode settings
-(setq
- tumblr-email "gempesaw@gmail.com"
- tumblr-hostnames (quote ("danzorx.tumblr.com"))
- tumblr-retrieve-posts-num-total 5
-)
-
-;; passwords in a file not on github :p
-(load "passwords.el" 'noerror)
-
-;; org-jira mode
-(setq jiralib-url "https://arnoldmedia.jira.com")
-
 ;; turn on html mode for .tag files
 (setq auto-mode-alist (cons '("\\.tag$" . html-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.out$" . auto-revert-tail-mode) auto-mode-alist))
-
-;; load my feature mode
-(load "feature-mode.el")
 
 (global-subword-mode t)
 
