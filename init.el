@@ -7,6 +7,7 @@
 (load "defun.el" 'noerror)
 (load "defadvice.el" 'noerror)
 (load "emacs-custom.el" 'noerror)
+(load "feature-mode.el")
 (load "hooks.el" 'noerror)
 (load "kbd.el" 'noerror)
 (load "my-macros.el" 'noerror)
@@ -23,10 +24,11 @@
 (load "modes.el" 'noerror)
 
 (if (eq system-type "darwin")
-    (progn (add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
-           (require 'mu4e)
-           (load "/opt/fetchmacs/fetchmacs-creds.el" 'noerror)
-           (load "/opt/fetchmacs/fetchmacs.el" 'noerror)))
+    (progn
+      (add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
+      (require 'mu4e)
+      (load "/opt/fetchmacs/fetchmacs-creds.el" 'noerror)
+      (load "/opt/fetchmacs/fetchmacs.el" 'noerror)))
 
 (add-to-list 'load-path "~/.emacs.d/ensime_2.9.2-0.9.7/elisp")
 (require 'ensime)
