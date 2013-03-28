@@ -73,12 +73,8 @@
 (eval-after-load "smart-compile"
   '(progn
      (setq compilation-read-command nil)
-     (add-to-list 'smart-compile-alist '("\\.feature\\'" . (execute-feature)) )
-     (add-to-list 'smart-compile-alist '("\\.t\\'" . "perl -w %F") )
-     (add-to-list 'smart-compile-alist '("\\.pl\\'" . "perl -w %F") )
      (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
-     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview-with-syntax-highlighting)))
-     ))
+     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview-with-syntax-highlighting)))))
 
 ;; don't ask about files
 (setq compilation-ask-about-save nil)
