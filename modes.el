@@ -83,7 +83,8 @@
 
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
 (delete '("\\.js\\'" . js-mode) auto-mode-alist)
+(delete '("\\.t$'" . cperl-mode) auto-mode-alist)
 (add-to-list 'auto-mode-alist '("\\.js$'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.t$'" . cperl-mode))
-(add-to-list 'auto-mode-alist '("\\.md$'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
