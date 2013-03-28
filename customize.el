@@ -138,9 +138,9 @@
   "A minor mode so that my key settings override annoying major modes."
   t " my-keys" 'my-keys-minor-mode-map)
 
-(eval-after-load "autopair"
-  '(progn
-     (autopair-global-mode)))
+;; (eval-after-load "autopair"
+;;   '(progn
+;;      (autopair-global-mode)))
 
 (eval-after-load "regex-tool"
   '(progn
@@ -276,3 +276,45 @@
 
 (setq split-height-threshold nil
       split-width-threshold nil)
+
+
+;; Use cperl-mode instead of the default perl-mode
+(defalias 'perl-mode 'cperl-mode)
+(setq cperl-invalid-face (quote off))
+(setq cperl-electric-keywords t)
+(setq cperl-indent-level 4)
+(setq cperl-continued-statement-offset 0)
+(setq cperl-extra-newline-before-brace t)
+(setq cperl-indent-parens-as-block t)
+
+
+;; personal snippets
+(setq yas/snippet-dirs
+      '("~/.emacs.d/snippets"                      ;; personal snippets
+        "~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
+        ))
+
+(eval-after-load "paredit"
+  '(progn
+     (put 'paredit-forward-delete 'delete-selection 'supersede)
+     (put 'paredit-backward-delete 'delete-selection 'supersede)
+     (put 'paredit-open-round 'delete-selection t)
+     (put 'paredit-open-square 'delete-selection t)
+     (put 'paredit-doublequote 'delete-selection t)
+     (put 'paredit-newline 'delete-selection t)
+     ))
+
+(delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
+(delete '("\\.js\\'" . js-mode) auto-mode-alist)
+(delete '("\\.t$'" . cperl-mode) auto-mode-alist)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+(setq auto-mode-alist (cons '("\\.tag$" . html-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.out$" . auto-revert-tail-mode) auto-mode-alist))
+
+;; dired - reuse current buffer by pressing 'a'
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; term face settings
+(setq term-default-bg-color nil)
