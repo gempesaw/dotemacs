@@ -241,3 +241,9 @@
 
 (global-unset-key (kbd "C-x C-r"))
 (global-set-key (kbd "C-x C-r") 'find-file-as-root)
+
+(global-set-key (kbd "C-c y") 'toggle-window-split)
+
+(eval-after-load "mu4e"
+  '(progn
+     (define-key mu4e-view-mode-map (kbd "J") 'open-jira-ticket-from-email)))
