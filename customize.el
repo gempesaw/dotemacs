@@ -243,9 +243,12 @@
 (setq mu4e-get-mail-command "true"
       mu4e-update-interval 180
       mu4e-view-prefer-html nil
+      mu4e-headers-results-limit 100
+      mu4e-use-fancy-chars nil
       mu4e-view-show-images t
       mu4e-html2text-command "html2text -utf8 -nobs -style pretty | sed 's/&quot;/\"/g'"
       mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
+                       ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
                        ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
