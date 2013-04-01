@@ -47,6 +47,7 @@
         org-beginning-of-line
         org-delete-char
         org-end-of-line
+        paredit-doublequote
         paredit-forward-delete
         repeat
         sgml-slash

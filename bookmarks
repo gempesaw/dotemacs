@@ -2,7 +2,17 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("dev-hdew-tests"
+(("firefox-background-info-plist"
+ (filename . "/Applications/Firefox.app/Contents/Info.plist")
+ (front-context-string . "\n    <key>CFBund")
+ (rear-context-string . "g>True</string>\n")
+ (position . 310))
+("prod-kabocha"
+ (filename . "/ssh:hnewnew:/opt/kabocha/")
+ (front-context-string . "lib\n  -rw-rw-r--")
+ (rear-context-string . "96 Mar 28 15:56 ")
+ (position . 1144))
+("dev-hdew-tests"
  (filename . "~/opt/dev_hdew/honeydew/features/tests/")
  (front-context-string . "url-regex.featur")
  (rear-context-string . "29 Feb 19 15:58 ")
@@ -17,11 +27,12 @@
  (front-context-string . "Sharecare\n  drwx")
  (rear-context-string . "96 Nov 21 16:25 ")
  (position . 537))
-("dev-perl"
+("dev-honeydew"
  (filename . "~/opt/dev_hdew/honeydew/")
  (front-context-string . "features\n  -rw-r")
  (rear-context-string . "06 Mar 19 09:59 ")
- (position . 709))
+ (position . 709)
+ (annotation . ""))
 ("dotemacs"
  (filename . "~/opt/dotemacs/")
  (front-context-string . "init.el\n  -rw-r-")
