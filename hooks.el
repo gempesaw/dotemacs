@@ -30,3 +30,8 @@
     (local-set-key (kbd "C-c C-s C-n") 'hs-show-all)
     (local-set-key (kbd "<f5>") 'execute-perl)
     (hs-minor-mode t)))
+
+
+(add-hook 'mu4e-index-updated-hook
+          (defun new-mail-alert ()
+            (alert "new mail!")))
