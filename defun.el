@@ -340,7 +340,11 @@ them, asking user for confirmation"
   (sc--update-build)
   (sc--update-build)
   (sc--update-build)
-  (sc--update-build))
+  (sc--update-build)
+  (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+  (goto-char (point-max))
+  (insert "Restarting QA, pewpew :)")
+  (jabber-chat-buffer-send))
 
 (defun toggle-window-split ()
   (interactive)
