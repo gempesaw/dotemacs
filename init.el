@@ -23,12 +23,10 @@
 ;; and then tweak their settings
 (load "modes.el" 'noerror)
 
-(if (eq system-type "darwin")
+(if (eq system-type 'darwin)
     (progn
       (add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
-      (require 'mu4e)
-      (load "/opt/fetchmacs/fetchmacs-creds.el" 'noerror)
-      (load "/opt/fetchmacs/fetchmacs.el" 'noerror)))
+      (require 'mu4e)))
 
 (add-to-list 'load-path "~/.emacs.d/ensime_2.9.2-0.9.7/elisp")
 (require 'ensime)
