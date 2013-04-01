@@ -1,6 +1,7 @@
 (require 'package)
 (require 'cl)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ;; ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
@@ -10,9 +11,10 @@
 (setq my-melpa-packages
       '(
         impatient-mode
-        ir-black-theme
+        php-mode
         scala-mode2
         simple-httpd
+        switch-window
         ))
 
 (setq my-packages
@@ -37,10 +39,8 @@
         magit
         markdown-mode
         multiple-cursors
-        php-mode
         regex-tool
         smex
-        switch-window
         tumblesocks
         wgrep
         yasnippet))
@@ -51,22 +51,18 @@
         finally (return t)))
 
 (defun load-my-packages (list-of-packages source)
-  (let ((temporary-package-archives package-archives))
-    (save-window-excursion
-      (unless (my-packages-installed-p list-of-packages)
-        ;; check for new packages (package versions)
-        (message "%s" "Refreshing package database...")
-        (package-refresh-contents)
-        (message "%s" " done.")
-
-        (if (eq source 'melpa)
-            (setq temporary-package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                                     ("melpa" . "http://melpa.milkbox.net/packages/")))
-          ;; install the missing packages
-          (dolist (p list-of-packages)
-            (when (not (package-installed-p p))
-              (package-install p)
-              (require p))))))))
+  (let (old-archives package-archives))
+  ((save-window-excursion
+     (unless (my-packages-installed-p list-of-packages)
+       (if (eq source 'melpa)
+           (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
+       (package-refresh-contents)
+       (dolist (p list-of-packages)
+         (if (not (package-installed-p p))
+             (progn
+               (package-install p)
+               (require p)))))))
+  (setq package-archives old-archives))
 
 (load-my-packages my-packages 'marmalade)
 (load-my-packages my-melpa-packages 'melpa)
