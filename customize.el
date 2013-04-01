@@ -321,3 +321,6 @@
 
 ;; term face settings
 (setq term-default-bg-color nil)
+
+;; alert settings
+(setq alert-default-style 'growl)

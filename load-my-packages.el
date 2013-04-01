@@ -71,3 +71,6 @@
 
 
 (dolist (p my-packages) (require p))
+
+(load-file "./alert/alert.el")
+(require 'alert)
