@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        abort-recursive-edit
         add-semi-eol-and-goto-next-line-indented
         autopair-backspace
         autopair-insert-opening
@@ -49,8 +50,10 @@
         org-end-of-line
         paredit-doublequote
         paredit-forward-delete
+        paredit-open-round
         repeat
         sgml-slash
+        smart-tab
         smex
         upcase-region
         wdired-previous-line
