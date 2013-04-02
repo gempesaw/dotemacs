@@ -343,7 +343,7 @@ them, asking user for confirmation"
   (sc--update-build)
   (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
   (goto-char (point-max))
-  (insert "Restarting QA, pewpew :)")
+  (insert "Restarting QA")
   (jabber-chat-buffer-send))
 
 (defun toggle-window-split ()
@@ -576,10 +576,31 @@ Including indent-buffer, which should not be called automatically on save."
       (setq ssh-config (cdr ssh-config)))
     ssh-host-names))
 
+(defun get-user-for-remote-box ()
+  (interactive)
+  (let ((ssh-config (get-file-as-string ssh-config-path) )
+        (ssh-remote-info)
+        (ssh-user-remote-pairs))
+    (while ssh-config
+      (let ((host-line (car ssh-config))
+            (user-line (caddr ssh-config)))
+        (if (and (string-match-p "Host " host-line)
+                 (not (string-match-p "*" host-line))
+                 (not (string-match-p "*" user-line))
+                 (not (string-match-p "^# " host-line))
+                 (not (string-match-p "^# " user-line)))
+            (add-to-list 'ssh-user-remote-pairs
+                         `(,(car (last (split-string host-line " ")))
+                           ,(car (last (split-string user-line " "))))))
+        (setq ssh-config (cdr ssh-config))))
+    ssh-user-remote-pairs))
+
 (defun open-ssh-connection (&optional pfx)
   (interactive "p")
-  (let ((box (ido-completing-read "Which box: " (get-remote-names)))
-        (buffer "*ssh-"))
+  (let ((remote-info (get-user-for-remote-box))
+        (buffer "*ssh-")
+        (box))
+    (setq box (ido-completing-read "Which box: " (mapcar 'car remote-info)))
     (setq buffer (concat buffer box "*"))
     (save-window-excursion
       (async-shell-command (concat "ssh " box)
@@ -589,6 +610,7 @@ Including indent-buffer, which should not be called automatically on save."
           (split-window)
           (other-window 1)))
     (switch-to-buffer buffer)
+    (cd (concat "/ssh:" box ":/home/" (cadr (assoc box remote-info)) "/"))
     (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
 
 (defun escape-quotes-in-region ()
