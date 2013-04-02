@@ -39,6 +39,7 @@
         magit
         markdown-mode
         multiple-cursors
+        offlineimap
         regex-tool
         smex
         tumblesocks
