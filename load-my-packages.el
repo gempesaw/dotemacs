@@ -14,6 +14,7 @@
         php-mode
         scala-mode2
         simple-httpd
+        smartparens
         switch-window
         ))
 
@@ -52,26 +53,24 @@
         finally (return t)))
 
 (defun load-my-packages (list-of-packages source)
-  (let (old-archives package-archives))
-  ((save-window-excursion
-     (unless (my-packages-installed-p list-of-packages)
-       (if (eq source 'melpa)
-           (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
-       (package-refresh-contents)
-       (dolist (p list-of-packages)
-         (if (not (package-installed-p p))
-             (progn
-               (package-install p)
-               (require p)))))))
-  (setq package-archives old-archives))
+  (let ((old-archives package-archives))
+    (save-window-excursion
+      (unless (my-packages-installed-p list-of-packages)
+        (if (eq source 'melpa)
+            (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
+        (package-refresh-contents)
+        (dolist (p list-of-packages)
+          (if (not (package-installed-p p))
+              (progn
+                (package-install p)
+                (require p)))))
+      (setq package-archives old-archives))
+    (dolist (p list-of-packages) (require p))))
 
 (load-my-packages my-packages 'marmalade)
 (load-my-packages my-melpa-packages 'melpa)
 
 (package-initialize)
 
-
-(dolist (p my-packages) (require p))
-
-(load-file "./alert/alert.el")
+(load-file "~/.emacs.d/alert/alert.el")
 (require 'alert)
