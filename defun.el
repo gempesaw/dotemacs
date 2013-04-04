@@ -478,6 +478,7 @@ Including indent-buffer, which should not be called automatically on save."
         (let ((browser (ido-completing-read "browser: "
                                             '("chrome"
                                               "firefox"
+                                              "ie 10"
                                               "ie 9"
                                               "ie 8")))
               (hostname (ido-completing-read "hostname: "
