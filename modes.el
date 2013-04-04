@@ -41,3 +41,6 @@
   (exec-path-from-shell-initialize))
 
 (autoload 'js2-mode "js2-mode" nil t)
+
+;; smarty parens of fuco
+(smartparens-global-mode t)
