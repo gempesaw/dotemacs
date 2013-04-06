@@ -307,27 +307,29 @@ them, asking user for confirmation"
 
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
-  (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
-    (-each
-     (-filter
-      (lambda (item)
-        (if (eq nil all)
-            (string-match "auth" (car item))
-          (not (string-match "auth" (car item)))))
-      (-map
+  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
+      (message "Try again from a tail-qa buffer! No accidents :)")
+    (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
+      (-each
+       (-filter
+        (lambda (item)
+          (if (eq nil all)
+              (string-match "auth" (car item))
+            (not (string-match "auth" (car item)))))
+        (-map
+         (lambda (item)
+           (let ((id-string (split-string (cdaadr item) "\\^")))
+             (cons (caddr (nth 3 item))
+                   (concat restart-url-prefix
+                           (car id-string)
+                           "^"
+                           (cadr id-string)
+                           ",&action=Restart"))))
+         (sc-resolve-qa-boxes)))
        (lambda (item)
-         (let ((id-string (split-string (cdaadr item) "\\^")))
-           (cons (caddr (nth 3 item))
-                 (concat restart-url-prefix
-                         (car id-string)
-                         "^"
-                         (cadr id-string)
-                         ",&action=Restart"))))
-       (sc-resolve-qa-boxes)))
-     (lambda (item)
-       (message (concat "restarting " (car item)))
-       ;; (message (cdr item))
-       (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer))))))))
+         (message (concat "restarting " (car item)))
+         ;; (message (cdr item))
+         (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer)))))))))
 
 (defun sc-update-all-builds ()
   (interactive)
@@ -472,7 +474,9 @@ Including indent-buffer, which should not be called automatically on save."
         (command "w /opt/honeydew/bin/honeydew.pl -isMine")
         (compile-command))
     (setq command (concat command " -feature=" filename))
-    (if (eq arg 16)
+    (if (eq arg 64)
+        (setq command (concat command " -database ")))
+    (if (>= arg 16)
         (setq command (concat "d" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
