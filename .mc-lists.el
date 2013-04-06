@@ -55,6 +55,7 @@
         sgml-slash
         smart-tab
         smex
+        sp--self-insert-command
         upcase-region
         wdired-previous-line
         wgrep-change-to-wgrep-mode
