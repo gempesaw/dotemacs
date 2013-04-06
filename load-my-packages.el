@@ -22,7 +22,6 @@
       '(
         ace-jump-mode
         ack-and-a-half
-        autopair
         browse-kill-ring
         cperl-mode
         circe
