@@ -75,6 +75,7 @@
         end-of-buffer
         eval-last-sexp
         handle-switch-frame
+        hs-show-block
         js2-mode-show-node
         mu4e-headers-prev
         mu4e-mark-execute-all
