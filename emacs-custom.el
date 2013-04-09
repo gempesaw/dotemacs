@@ -15,5 +15,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:foreground "#828282" :background "#141414" :box nil :height 85))))
- '(mode-line-inactive ((t (:foreground "#252525" :background "#111111" :box nil :height 85)))))
+ '(mode-line ((t (:foreground "#282828" :background "#FFFACD" :box t :height 120))))
+ '(mode-line-inactive ((t (:foreground "#BBBBBB" :background "#111111" :box nil :height 120)))))
