@@ -4,6 +4,8 @@
 (setq mc/cmds-to-run-for-all
       '(
         abort-recursive-edit
+        ace-jump-mode
+        ace-jump-move
         add-semi-eol-and-goto-next-line-indented
         autopair-backspace
         autopair-insert-opening
@@ -20,6 +22,7 @@
         c-electric-semi&comma
         c-electric-slash
         cleanup-buffer
+        comint-copy-old-input
         comint-delchar-or-maybe-eof
         comment-dwim
         cperl-electric-backspace
@@ -51,6 +54,7 @@
         paredit-doublequote
         paredit-forward-delete
         paredit-open-round
+        paredit-wrap-round
         repeat
         sgml-slash
         smart-tab

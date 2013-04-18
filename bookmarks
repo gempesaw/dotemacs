@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("firefox-background-info-plist"
+(("changes.md"
+ (filename . "~/opt/dev_hdew/honeydew-ui/htdocs/changes/changes.md")
+ (front-context-string . "4 (0.8.0)\n\n#### ")
+ (rear-context-string)
+ (position . 11))
+("firefox-background-info-plist"
  (filename . "/Applications/Firefox.app/Contents/Info.plist")
  (front-context-string . "\n    <key>CFBund")
  (rear-context-string . "g>True</string>\n")
