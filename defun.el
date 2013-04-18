@@ -461,13 +461,6 @@ Including indent-buffer, which should not be called automatically on save."
   (yank)
   (exchange-point-and-mark))
 
-(defun ig-redeem ()
-  (interactive)
-  (save-window-excursion
-    (shell-command "perl -w /Users/dgempesaw/opt/autoredeem/autoredeem.pl" "ig-redeem"))
-  (set-buffer "ig-redeem")
-  (message (buffer-substring (point-min) (point-max))))
-
 (defun execute-feature (&optional arg)
   (interactive "p")
   (let ((filename (buffer-file-name (current-buffer)))
