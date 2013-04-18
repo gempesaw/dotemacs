@@ -34,9 +34,7 @@
 
 ;; Modeline info
 (display-time-mode 1)
-
-;; battery mode might not work for desktops
-;; (display-battery-mode 1)
+(setq display-time-day-and-date t)
 
 ;; Small fringes
 (set-fringe-mode '(1 . 1))
@@ -242,7 +240,7 @@
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                       ("maildir:/INBOX AND date:1d..now" "Inbox" ?i)
+                       ("maildir:/INBOX AND date:today..now" "Inbox" ?i)
                        ("maildir:/INBOX" "All Inbox" ?I)
 ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
