@@ -138,21 +138,9 @@
   "A minor mode so that my key settings override annoying major modes."
   t " my-keys" 'my-keys-minor-mode-map)
 
-;; (eval-after-load "autopair"
-;;   '(progn
-;;      (autopair-global-mode)))
-
 (eval-after-load "regex-tool"
   '(progn
      (setq regex-tool-backend "perl")))
-
-(eval-after-load "multiple-cursors"
-  '(progn
-     (setq multiple-cursors-mode-enabled-hook nil)
-     (setq multiple-cursors-mode-disabled-hook nil)
-     (add-hook 'multiple-cursors-mode-enabled-hook  (lambda () (autopair-mode 0)))
-     (add-hook 'multiple-cursors-mode-disabled-hook (lambda () (autopair-mode 1)))
-     ))
 
 ;; switch windows using home row keys
 (setq switch-window-shortcut-style 'qwerty)
