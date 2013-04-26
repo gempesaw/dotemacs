@@ -170,8 +170,12 @@
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
-(setq jabber-account-list '(("dgempesaw@sharecare.com"
-                             (:connection-type . starttls))))
+(setq jabber-account-list `(("gempesaw@gmail.com"
+                             (:password ,gmail-2-auth-pw)
+                             )
+                            ("dgempesaw@sharecare.com"
+                             (:password ,jabber-password)
+                             (:connection-type . ssl))))
 (setq jabber-alert-presence-hooks nil
       jabber-avatar-verbose nil
       jabber-vcard-avatars-retrieve nil
@@ -181,6 +185,7 @@
       jabber-roster-buffqer "*-jabber-*"
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
       jabber-show-offline-contacts nil
+      jabber-auto-reconnect t
       jabber-muc-autojoin '("qa@conference.sharecare.com")
       jabber-muc-default-nicknames '(("qa@conference.sharecare.com" . "Daniel Gempesaw")))
 (setq starttls-extra-arguments '("--insecure"))
