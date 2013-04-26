@@ -43,10 +43,12 @@
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
+        indent-for-tab-command
         js2-beginning-of-line
         js2-end-of-line
         kill-region
         mark-whole-buffer
+        mc/mark-next-lines
         mu4e-headers-mark-for-read
         org-beginning-of-line
         org-delete-char
