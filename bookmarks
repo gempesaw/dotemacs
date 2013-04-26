@@ -13,7 +13,7 @@
  (rear-context-string . "g>True</string>\n")
  (position . 310))
 ("prod-kabocha"
- (filename . "/ssh:hnewnew:/opt/kabocha/")
+ (filename . "/ssh:hnew:/opt/kabocha/")
  (front-context-string . "lib\n  -rw-rw-r--")
  (rear-context-string . "96 Mar 28 15:56 ")
  (position . 1144))
