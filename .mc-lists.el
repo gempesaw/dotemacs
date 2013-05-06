@@ -44,6 +44,7 @@
         ibuffer-mark-forward
         ido-switch-buffer
         indent-for-tab-command
+        insert-parentheses
         js2-beginning-of-line
         js2-end-of-line
         kill-region
@@ -83,6 +84,9 @@
         handle-switch-frame
         hs-show-block
         js2-mode-show-node
+        magit-status
+        markdown-dedent-or-delete
+        move-to-window-line-top-bottom
         mu4e-headers-prev
         mu4e-mark-execute-all
         org-delete-backward-char
