@@ -148,8 +148,7 @@
 ;; key binding for ace jump mode
 (eval-after-load "ace-jump-mode"
   '(progn
-     (define-key my-keys-minor-mode-map (kbd "C-c SPC") 'ace-jump-mode)
-     (define-key my-keys-minor-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)))
+     (define-key my-keys-minor-mode-map (kbd "C-.") 'ace-jump-mode)))
 
 ;; remote compilation of feature files
 (global-set-key (kbd "M-<f6>") 'remote-feature-compile)
@@ -224,14 +223,14 @@
 
 (eval-after-load "tracking"
   '(progn
-     (define-key tracking-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)
+     (define-key tracking-mode-map (kbd "C-.") 'ace-jump-mode)
      (define-key tracking-mode-map (kbd "C-c C-@") 'ace-jump-mode)
      (define-key tracking-mode-map (kbd "C-x C-j C-k") 'tracking-next-buffer)))
 
 (global-unset-key (kbd "s-q"))
 (global-set-key (kbd "s-q") (lambda () (interactive)
                               (if (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")
-                                    (jabber-muc-names))))
+                                  (jabber-muc-names))))
 
 (global-unset-key (kbd "s-m"))
 (global-set-key (kbd "s-m") (lambda () (interactive)
