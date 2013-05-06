@@ -23,7 +23,7 @@
 
 ;; macro and shortcut to set up in 3 wide, last split window organization
 (fset 'startupConfig
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 51 24 51 24 112 24 50 24 111 24 50 24 48 24 43 134217848 115 104 101 108 108 return 24 111 24 98 104 111 110 101 121 100 101 119 46 112 108 return 24 112 24 112 24 98 72 111 110 101 121 68 101 119 46 112 109 return 24 112 24 98 100 101 102 97 117 108 116 46 112 109 return] 0 "%d")) arg)))
+      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 51 24 51 24 112 24 50 24 111 24 50 24 48 24 43 134217848 115 104 101 108 108 return 24 111 24 98 104 111 110 101 121 100 101 119 46 112 108 return 24 112 24 112 24 98 72 111 110 101 121 68 101 119 46 112 109 return 24 112 24 98 100 101 102 97 117 108 116 46 112 109 return] 0 "%d")) arg)))
 (global-set-key (kbd "C-x c f g") 'startupConfig)
 
 ;; Easier buffer killing
@@ -189,17 +189,6 @@
 (eval-after-load "paredit"
   '(progn
      (define-key paredit-mode-map (kbd "M-s") 'save-buffer)))
-
-
-;; bind log tailing to mouse buttons :)
-(global-set-key (kbd "M-<mouse-3>") 'open-catalina-logs)
-(global-set-key (kbd "M-<mouse-4>") 'close-qa-catalina)
-
-;; w3m clobbers some of my keyboard bindings that I happen to like,
-;; tyvm. so, let's clobber 'em back.
-(eval-after-load "w3m"
-  '(progn
-     (define-key w3m-mode-map (kbd "M-k") 'kill-this-buffer)))
 
 ;; open a new ssh connection easily
 (define-key my-keys-minor-mode-map (kbd "C-c .") 'open-ssh-connection)
