@@ -230,20 +230,21 @@
 (setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
 
 (setq mu4e-get-mail-command "true"
+      mu4e-headers-leave-behavior 'apply
       mu4e-update-interval 60
       mu4e-view-prefer-html nil
       mu4e-headers-results-limit 100
       mu4e-use-fancy-chars nil
       mu4e-view-show-images t
       mu4e-html2text-command "html2text -utf8 -nobs -style pretty | sed 's/&quot;/\"/g'"
-      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:today" "Today's JIRA" ?1)
+      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now" "Today's JIRA" ?1)
                        ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
                        ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                       ("maildir:/INBOX AND date:today..now" "Inbox" ?i)
+                       ("maildir:/INBOX AND date:1d..now" "Inbox" ?i)
                        ("maildir:/INBOX" "All Inbox" ?I)
                        ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
