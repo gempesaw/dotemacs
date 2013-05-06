@@ -193,8 +193,8 @@
 (setq tumblesocks-blog "eval-defun.tumblr.com")
 (setq tumblesocks-post-default-state 'queue)
 (if (require 'sasl nil t)
-      (setq oauth-nonce-function #'sasl-unique-id)
-    (setq oauth-nonce-function #'oauth-internal-make-nonce))
+    (setq oauth-nonce-function #'sasl-unique-id)
+  (setq oauth-nonce-function #'oauth-internal-make-nonce))
 
 ;; Make dired less verbose
 (eval-after-load "dired-details"
@@ -271,7 +271,7 @@
       smtpmail-smtp-service 587)
 
 (setq split-height-threshold nil
-      split-width-threshold nil)
+      split-width-threshold 160)
 
 
 ;; Use cperl-mode instead of the default perl-mode
