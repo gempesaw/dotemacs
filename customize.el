@@ -232,7 +232,7 @@
 (setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
 
 (setq mu4e-get-mail-command "true"
-      mu4e-update-interval 180
+      mu4e-update-interval 60
       mu4e-view-prefer-html nil
       mu4e-headers-results-limit 100
       mu4e-use-fancy-chars nil
@@ -247,19 +247,19 @@
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                        ("maildir:/INBOX AND date:today..now" "Inbox" ?i)
                        ("maildir:/INBOX" "All Inbox" ?I)
-;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
+                       ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
                        ("date:7d..now" "Last 7 days" ?l)))
 
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
       message-signature (concat
-"Daniel Gempesaw | QA Architect\n"
-"M 302.754.1231\n"
-"\n"
-"Sharecare, Inc.\n"
-"Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
-))
+                         "Daniel Gempesaw | QA Architect\n"
+                         "M 302.754.1231\n"
+                         "\n"
+                         "Sharecare, Inc.\n"
+                         "Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
+                         ))
 
 ;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
 ;; otherwise it tries to send through OS associated mail client
