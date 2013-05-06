@@ -327,3 +327,10 @@
                                                mu4e-headers-mode
                                                mu4e-view-mode
                                                )))
+
+(eval-after-load "dired-aux"
+   '(add-to-list 'dired-compress-file-suffixes
+                 '("\\.zip\\'" ".zip" "unzip")))
+
+
+(setq ensime-sbt-compile-on-save nil)
