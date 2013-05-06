@@ -633,7 +633,12 @@ Including indent-buffer, which should not be called automatically on save."
 
 (defun sc-hdew-push-to-prod ()
   (interactive)
-  (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))
+  (save-excursion
+    (goto-char (point-min))
+    (if (and (not (eq nil (search-forward "Result: PASS" nil t)))
+             (not (string= "*hdew-prove-all*" (buffer-name (current-buffer)))))
+        (message "Try again from a successful hdew prove buffer!")
+      (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))))
 
 (defun markdown-preview-with-syntax-highlighting (&optional output-buffer-name)
   "Run `markdown' on the current buffer and preview the output in a browser."
