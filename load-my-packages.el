@@ -28,6 +28,7 @@
         dash
         dired-details
         elisp-slime-nav
+        elpy
         exec-path-from-shell
         expand-region
         fetchmacs
