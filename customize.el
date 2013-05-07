@@ -170,7 +170,10 @@
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
-(setq jabber-account-list '(("dgempesaw@sharecare.com"
+(setq jabber-account-list `(;; ("gempesaw@gmail.com"
+                            ;;  (:password ,gmail-2-auth-pw)
+                            ;;  )
+                            ("dgempesaw@sharecare.com"
                              (:connection-type . starttls))))
 (setq jabber-alert-presence-hooks nil
       jabber-avatar-verbose nil
@@ -181,8 +184,8 @@
       jabber-roster-buffqer "*-jabber-*"
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
       jabber-show-offline-contacts nil
-      jabber-muc-autojoin '("qa@conference.sharecare.com")
-      jabber-muc-default-nicknames '(("qa@conference.sharecare.com" . "Daniel Gempesaw")))
+      jabber-auto-reconnect t
+      jabber-muc-autojoin '("qa@conference.sharecare.com"))
 (setq starttls-extra-arguments '("--insecure"))
 (setq starttls-use-gnutls t)
 
@@ -190,8 +193,8 @@
 (setq tumblesocks-blog "eval-defun.tumblr.com")
 (setq tumblesocks-post-default-state 'queue)
 (if (require 'sasl nil t)
-      (setq oauth-nonce-function #'sasl-unique-id)
-    (setq oauth-nonce-function #'oauth-internal-make-nonce))
+    (setq oauth-nonce-function #'sasl-unique-id)
+  (setq oauth-nonce-function #'oauth-internal-make-nonce))
 
 ;; Make dired less verbose
 (eval-after-load "dired-details"
@@ -227,34 +230,35 @@
 (setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
 
 (setq mu4e-get-mail-command "true"
-      mu4e-update-interval 180
+      mu4e-headers-leave-behavior 'apply
+      mu4e-update-interval 60
       mu4e-view-prefer-html nil
       mu4e-headers-results-limit 100
       mu4e-use-fancy-chars nil
       mu4e-view-show-images t
       mu4e-html2text-command "html2text -utf8 -nobs -style pretty | sed 's/&quot;/\"/g'"
-      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:today" "Today's JIRA" ?1)
+      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now" "Today's JIRA" ?1)
                        ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
                        ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                       ("maildir:/INBOX AND date:today..now" "Inbox" ?i)
+                       ("maildir:/INBOX AND date:1d..now" "Inbox" ?i)
                        ("maildir:/INBOX" "All Inbox" ?I)
-;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
+                       ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
                        ("date:7d..now" "Last 7 days" ?l)))
 
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
       message-signature (concat
-"Daniel Gempesaw | QA Architect\n"
-"M 302.754.1231\n"
-"\n"
-"Sharecare, Inc.\n"
-"Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
-))
+                         "Daniel Gempesaw | QA Architect\n"
+                         "M 302.754.1231\n"
+                         "\n"
+                         "Sharecare, Inc.\n"
+                         "Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
+                         ))
 
 ;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
 ;; otherwise it tries to send through OS associated mail client
@@ -267,7 +271,7 @@
       smtpmail-smtp-service 587)
 
 (setq split-height-threshold nil
-      split-width-threshold nil)
+      split-width-threshold 160)
 
 
 ;; Use cperl-mode instead of the default perl-mode
@@ -323,3 +327,10 @@
                                                mu4e-headers-mode
                                                mu4e-view-mode
                                                )))
+
+(eval-after-load "dired-aux"
+   '(add-to-list 'dired-compress-file-suffixes
+                 '("\\.zip\\'" ".zip" "unzip")))
+
+
+(setq ensime-sbt-compile-on-save nil)
