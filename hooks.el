@@ -35,3 +35,9 @@
 (add-hook 'mu4e-index-updated-hook
           (defun new-mail-alert ()
             (alert "new mail!")))
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
