@@ -2,7 +2,7 @@
 ;; start up selenium if possible.
 
 (let ((selenium-proc-name "selenium-webdriver")
-      (selenium-version "2.31.0")
+      (selenium-version "2.32.0")
       (selenium-buffer nil)
       (selenium-file))
   (setq selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))

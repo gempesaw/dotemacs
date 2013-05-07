@@ -23,7 +23,7 @@
 
 ;; macro and shortcut to set up in 3 wide, last split window organization
 (fset 'startupConfig
-   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 51 24 51 24 112 24 50 24 111 24 50 24 48 24 43 134217848 115 104 101 108 108 return 24 111 24 98 104 111 110 101 121 100 101 119 46 112 108 return 24 112 24 112 24 98 72 111 110 101 121 68 101 119 46 112 109 return 24 112 24 98 100 101 102 97 117 108 116 46 112 109 return] 0 "%d")) arg)))
+      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 51 24 51 24 112 24 50 24 111 24 50 24 48 24 43 134217848 115 104 101 108 108 return 24 111 24 98 104 111 110 101 121 100 101 119 46 112 108 return 24 112 24 112 24 98 72 111 110 101 121 68 101 119 46 112 109 return 24 112 24 98 100 101 102 97 117 108 116 46 112 109 return] 0 "%d")) arg)))
 (global-set-key (kbd "C-x c f g") 'startupConfig)
 
 ;; Easier buffer killing
@@ -148,8 +148,7 @@
 ;; key binding for ace jump mode
 (eval-after-load "ace-jump-mode"
   '(progn
-     (define-key my-keys-minor-mode-map (kbd "C-c SPC") 'ace-jump-mode)
-     (define-key my-keys-minor-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)))
+     (define-key my-keys-minor-mode-map (kbd "C-.") 'ace-jump-mode)))
 
 ;; remote compilation of feature files
 (global-set-key (kbd "M-<f6>") 'remote-feature-compile)
@@ -191,17 +190,6 @@
   '(progn
      (define-key paredit-mode-map (kbd "M-s") 'save-buffer)))
 
-
-;; bind log tailing to mouse buttons :)
-(global-set-key (kbd "M-<mouse-3>") 'open-catalina-logs)
-(global-set-key (kbd "M-<mouse-4>") 'close-qa-catalina)
-
-;; w3m clobbers some of my keyboard bindings that I happen to like,
-;; tyvm. so, let's clobber 'em back.
-(eval-after-load "w3m"
-  '(progn
-     (define-key w3m-mode-map (kbd "M-k") 'kill-this-buffer)))
-
 ;; open a new ssh connection easily
 (define-key my-keys-minor-mode-map (kbd "C-c .") 'open-ssh-connection)
 (define-key my-keys-minor-mode-map (kbd "C-c C-.") 'open-ssh-connection)
@@ -224,14 +212,14 @@
 
 (eval-after-load "tracking"
   '(progn
-     (define-key tracking-mode-map (kbd "C-c C-SPC") 'ace-jump-mode)
+     (define-key tracking-mode-map (kbd "C-.") 'ace-jump-mode)
      (define-key tracking-mode-map (kbd "C-c C-@") 'ace-jump-mode)
      (define-key tracking-mode-map (kbd "C-x C-j C-k") 'tracking-next-buffer)))
 
 (global-unset-key (kbd "s-q"))
 (global-set-key (kbd "s-q") (lambda () (interactive)
                               (if (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")
-                                    (jabber-muc-names))))
+                                  (jabber-muc-names))))
 
 (global-unset-key (kbd "s-m"))
 (global-set-key (kbd "s-m") (lambda () (interactive)
@@ -246,4 +234,6 @@
 
 (eval-after-load "mu4e"
   '(progn
-     (define-key mu4e-view-mode-map (kbd "J") 'open-jira-ticket-from-email)))
+     (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
+     (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
+     (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
