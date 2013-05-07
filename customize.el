@@ -334,3 +334,5 @@
 
 
 (setq ensime-sbt-compile-on-save nil)
+
+(setq iedit-toggle-key-default nil)
