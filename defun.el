@@ -80,7 +80,7 @@ browsers."
   (interactive)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
   (delete-other-windows)
-  (let ((qa-boxes '("qaschedmaster" "qascauth" "qascpub" "qascdata" "qasched"))
+  (let ((qa-boxes '("qaschedmaster" "qascauth" "qawebarmy" "qascpub" "qascdata" "qasched"))
         (buffer-prefix "tail-catalina-"))
     (dolist (remote-box-alias qa-boxes)
       (tail-log remote-box-alias nil)
