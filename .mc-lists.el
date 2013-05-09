@@ -38,6 +38,7 @@
         dired-details-hide
         dired-mark
         downcase-region
+        elpy-shell-send-region-or-buffer
         eval-defun
         execute-feature
         ibuffer-mark-for-delete
@@ -58,6 +59,7 @@
         paredit-forward-delete
         paredit-open-round
         paredit-wrap-round
+        python-indent-dedent-line-backspace
         repeat
         sgml-slash
         smart-tab
