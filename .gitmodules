@@ -4,3 +4,6 @@
 [submodule "alert"]
 	path = alert
 	url = https://github.com/jwiegley/alert
+[submodule "lewang-flx"]
+	path = lewang-flx
+	url = https://github.com/lewang/flx
