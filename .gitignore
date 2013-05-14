@@ -24,3 +24,4 @@ passwords.el
 *cache/
 /.DS_Store
 /projectile.cache
+/ac-comphist.dat
