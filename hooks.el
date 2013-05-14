@@ -38,6 +38,7 @@
 
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
 
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 
