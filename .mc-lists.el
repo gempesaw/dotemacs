@@ -50,6 +50,7 @@
         js2-end-of-line
         kill-region
         mark-whole-buffer
+        markdown-cycle
         mc/mark-next-lines
         mu4e-headers-mark-for-read
         org-beginning-of-line
@@ -85,6 +86,7 @@
         eval-last-sexp
         handle-switch-frame
         hs-show-block
+        jabber-activity-switch-to
         js2-mode-show-node
         magit-status
         markdown-dedent-or-delete
