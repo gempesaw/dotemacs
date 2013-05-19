@@ -24,3 +24,10 @@ passwords.el
 *cache/
 /.DS_Store
 /projectile.cache
+/ensime_2.9.2-0.9.7/hs_err_pid2660.log
+/ensime_2.9.2-0.9.7/hs_err_pid2988.log
+/ensime_2.9.2-0.9.7/hs_err_pid3644.log
+/ensime_2.9.2-0.9.7/hs_err_pid4444.log
+/ensime_2.9.2-0.9.7/hs_err_pid6984.log
+/ensime_2.9.2-0.9.8.1/hs_err_pid3500.log
+/ensime_2.9.2-0.9.8.1/hs_err_pid5288.log
