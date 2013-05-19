@@ -83,6 +83,7 @@
 ;; ido customization
 (setq ido-enable-prefix nil
       ido-enable-flex-matching t ; fuzzy matching is a must have
+      flx-ido-use t
       ido-create-new-buffer 'always
       ido-use-filename-at-point 'guess
       ido-max-prospects 10
@@ -334,3 +335,5 @@
 
 
 (setq ensime-sbt-compile-on-save nil)
+
+(setq iedit-toggle-key-default nil)

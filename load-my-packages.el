@@ -28,6 +28,7 @@
         dash
         dired-details
         elisp-slime-nav
+        elpy
         exec-path-from-shell
         expand-region
         fetchmacs
@@ -70,3 +71,6 @@
 (load-my-packages my-melpa-packages 'melpa)
 
 (package-initialize)
+
+(add-to-list 'load-path "~/.emacs.d/lewang-flx/")
+(require 'flx-ido)

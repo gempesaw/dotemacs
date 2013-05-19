@@ -44,3 +44,5 @@
 
 ;; smarty parens of fuco
 (smartparens-global-mode t)
+
+(elpy-enable)
