@@ -38,6 +38,7 @@
         dired-details-hide
         dired-mark
         downcase-region
+        elpy-shell-send-region-or-buffer
         eval-defun
         execute-feature
         goto-line
@@ -50,6 +51,7 @@
         js2-end-of-line
         kill-region
         mark-whole-buffer
+        markdown-cycle
         mc/mark-next-lines
         mu4e-headers-mark-for-read
         org-beginning-of-line
@@ -59,6 +61,7 @@
         paredit-forward-delete
         paredit-open-round
         paredit-wrap-round
+        python-indent-dedent-line-backspace
         repeat
         sgml-slash
         smart-tab
@@ -85,6 +88,7 @@
         eval-last-sexp
         handle-switch-frame
         hs-show-block
+        jabber-activity-switch-to
         js2-mode-show-node
         magit-status
         markdown-dedent-or-delete

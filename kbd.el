@@ -237,3 +237,6 @@
      (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
      (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
      (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
+
+(global-unset-key (kbd "s-o"))
+(global-set-key (kbd "s-o") '(lambda () (interactive) (async-shell-command "ps aux | grep offline" nil nil)))
