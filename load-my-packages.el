@@ -70,6 +70,3 @@
 (load-my-packages my-melpa-packages 'melpa)
 
 (package-initialize)
-
-(load-file "~/.emacs.d/alert/alert.el")
-(require 'alert)
