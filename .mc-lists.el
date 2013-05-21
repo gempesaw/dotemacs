@@ -41,6 +41,7 @@
         elpy-shell-send-region-or-buffer
         eval-defun
         execute-feature
+        goto-line
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
@@ -78,6 +79,7 @@
 
 (setq mc/cmds-to-run-once
       '(
+        backward-up-list
         compilation-previous-file
         delete-window
         dired-next-line

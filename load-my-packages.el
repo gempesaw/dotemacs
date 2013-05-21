@@ -74,8 +74,5 @@
 
 (package-initialize)
 
-(load-file "~/.emacs.d/alert/alert.el")
-(require 'alert)
-
 (add-to-list 'load-path "~/.emacs.d/lewang-flx/")
 (require 'flx-ido)
