@@ -56,8 +56,10 @@
         org-beginning-of-line
         org-delete-char
         org-end-of-line
+        paredit-backward-kill-word
         paredit-doublequote
         paredit-forward-delete
+        paredit-meta-doublequote
         paredit-open-round
         paredit-wrap-round
         python-indent-dedent-line-backspace
@@ -99,6 +101,7 @@
         scroll-up-command
         sgml-delete-tag
         smart-compile
+        sql-magic-go
         switch-window
         undefined
         wdired-finish-edit
