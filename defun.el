@@ -93,7 +93,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qasched*" nil 'force-same-window)
   (other-window 1)
-  (switch-to-buffer "*tail-catalina-qascauth*" nil 'force-same-window)
+  (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (split-window-below)
   (split-window-below)
   (other-window 1)
@@ -115,7 +115,9 @@ browsers."
 
 (defun start-qa-file-copy ()
   (interactive)
-  (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "build-file-copy"))
+  (save-window-excursion
+    (message "okay, pub restarted, let's push some assets!")
+    (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "build-file-copy")))
 
 (defun replace-last-sexp ()
   (interactive)
