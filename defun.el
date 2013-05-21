@@ -481,7 +481,7 @@ Including indent-buffer, which should not be called automatically on save."
     (setq command (concat command " -feature=" filename))
     (if (eq arg 64)
         (setq command (concat command " -database ")))
-    (if (>= arg 16)
+    (if (eq arg 16)
         (setq command (concat "d" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
@@ -725,6 +725,7 @@ when called with `universal-argument', don't create backup."
           (pop-to-buffer "*compilation*")
           (goto-char (point-max))
           (insert "c")))))
+
 (defun offlineimap-rudely-restart ()
   (interactive)
   (let ((pid (car (get-file-as-string "~/.offlineimap/pid"))))
