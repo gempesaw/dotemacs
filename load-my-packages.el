@@ -26,6 +26,7 @@
         cperl-mode
         circe
         dash
+        dart-mode
         dired-details
         elisp-slime-nav
         elpy
@@ -41,6 +42,7 @@
         markdown-mode
         multiple-cursors
         offlineimap
+        paredit
         regex-tool
         smex
         tumblesocks

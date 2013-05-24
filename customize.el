@@ -232,13 +232,13 @@
 
 (setq mu4e-get-mail-command "true"
       mu4e-headers-leave-behavior 'apply
-      mu4e-update-interval 60
+      mu4e-update-interval 180
       mu4e-view-prefer-html nil
-      mu4e-headers-results-limit 100
+      mu4e-headers-results-limit 50
       mu4e-use-fancy-chars nil
       mu4e-view-show-images t
       mu4e-html2text-command "html2text -utf8 -nobs -style pretty | sed 's/&quot;/\"/g'"
-      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now" "Today's JIRA" ?1)
+      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
                        ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
                        ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
@@ -249,7 +249,8 @@
                        ("maildir:/INBOX" "All Inbox" ?I)
                        ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
-                       ("date:7d..now" "Last 7 days" ?l)))
+                       ("date:7d..now" "Last 7 days" ?l)
+                       ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
 
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
