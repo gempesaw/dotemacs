@@ -243,3 +243,7 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
+;; (eval-after-load 'key-chord
+;;   (progn
+;;     (key-chord-define-global "wc" 'workspace-create-new)
+;;     (key-chord-define-global "wg" 'workspace-goto)))
