@@ -57,8 +57,12 @@ browsers."
 (defun hdew-prove-all ()
   "runs all the tests in the honeydew folder"
   (interactive)
-  (async-shell-command
-   "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/" "*hdew-prove-all*"))
+  (let ((buf "*hdew-prove-all*"))
+    (if (eq buf (buffer-name (current-buffer)))
+        (async-shell-command
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed /opt/honeydew/t/" buf)
+      (async-shell-command
+       "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/" buf))))
 
 
 (defun my-minibuffer-setup-hook ()
