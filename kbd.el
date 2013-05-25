@@ -240,3 +240,6 @@
 
 (global-unset-key (kbd "s-o"))
 (global-set-key (kbd "s-o") '(lambda () (interactive) (async-shell-command "ps aux | grep offline" nil nil)))
+
+(global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
+
