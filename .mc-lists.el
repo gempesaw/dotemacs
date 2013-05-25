@@ -41,7 +41,6 @@
         elpy-shell-send-region-or-buffer
         eval-defun
         execute-feature
-        goto-line
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
@@ -60,6 +59,7 @@
         paredit-backward-kill-word
         paredit-doublequote
         paredit-forward-delete
+        paredit-kill
         paredit-meta-doublequote
         paredit-open-round
         paredit-wrap-round
@@ -67,6 +67,7 @@
         repeat
         sgml-slash
         smart-tab
+        smarter-move-beginning-of-line
         smex
         sp--self-insert-command
         upcase-region
@@ -79,7 +80,6 @@
 
 (setq mc/cmds-to-run-once
       '(
-        backward-up-list
         compilation-previous-file
         delete-window
         dired-next-line
