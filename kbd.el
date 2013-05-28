@@ -222,9 +222,17 @@
                                   (jabber-muc-names))))
 
 (global-unset-key (kbd "s-m"))
-(global-set-key (kbd "s-m") (lambda () (interactive)
-                              (if (switch-between-buffers "*mu4e-headers*")
-                                  (mu4e-update-mail-and-index t))))
+(global-set-key (kbd "s-m") (lambda ()
+                              (interactive)
+                              (let ((buf "*mu4e-headers*"))
+                                (if (not (string= buf (buffer-name)))
+                                    (progn
+                                      (with-current-buffer (get-buffer-create buf)
+                                        (unless (string-match "Search" (buffer-string))
+                                          (execute-kbd-macro 'mu4e-open-inbox))
+                                        (mu4e-update-mail-and-index t)
+                                        (switch-to-buffer buf)))
+                                  (switch-to-prev-buffer)))))
 
 
 (global-unset-key (kbd "C-x C-r"))
