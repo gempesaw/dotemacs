@@ -13,7 +13,6 @@
 (load "my-macros.el" 'noerror)
 (load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
-(load "selenium-start.el" 'noerror)
 
 ;; manually load some packages
 (load "smart-compile.el" 'noerror)
@@ -30,3 +29,5 @@
 
 (add-to-list 'load-path "~/.emacs.d/ensime_2.9.2-0.9.8.1/elisp")
 (require 'ensime)
+
+(sc-start-selenium-server)
