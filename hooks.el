@@ -34,7 +34,7 @@
 (eval-after-load 'paredit-mode
   (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode))
 
-(eval-after-load "elisp-slime-nav-mode"
+(eval-after-load "elisp-slime-nav"
   '(progn
      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))))
 
