@@ -33,6 +33,7 @@ still function in special-mode"
 
 ;; full screen magit-status
 (defadvice magit-status (around magit-fullscreen activate)
-  (window-configuration-to-register :magit-fullscreen)
+  ;; µ is 265
+  (window-configuration-to-register 265)
   ad-do-it
   (delete-other-windows))

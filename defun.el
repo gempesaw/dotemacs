@@ -448,10 +448,11 @@ Including indent-buffer, which should not be called automatically on save."
   (magit-refresh))
 
 (defun magit-quit-session ()
+  ;; µ is 265
   "Restores the previous window configuration and kills the magit buffer"
   (interactive)
   (kill-buffer)
-  (jump-to-register :magit-fullscreen))
+  (jump-to-register 265))
 
 (defun paredit--is-at-start-of-sexp ()
   (and (looking-at "(\\|\\[")
