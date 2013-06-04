@@ -59,17 +59,20 @@
         paredit-backward-kill-word
         paredit-doublequote
         paredit-forward-delete
+        paredit-forward-kill-word
         paredit-kill
         paredit-meta-doublequote
         paredit-open-round
         paredit-wrap-round
         python-indent-dedent-line-backspace
+        python-indent-electric-colon
         repeat
         sgml-slash
         smart-tab
         smarter-move-beginning-of-line
         smex
         sp--self-insert-command
+        transpose-sexps
         upcase-region
         wdired-previous-line
         wgrep-change-to-wgrep-mode
