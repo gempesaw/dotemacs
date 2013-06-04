@@ -242,6 +242,7 @@
 
 (eval-after-load "mu4e"
   '(progn
+     (define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-all-as-read)
      (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
      (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
      (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
