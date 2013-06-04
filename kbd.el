@@ -251,10 +251,15 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
-;; (eval-after-load 'key-chord
-;;   (progn
-;;     (key-chord-define-global "wc" 'workspace-create-new)
-;;     (key-chord-define-global "wg" 'workspace-goto)))
+(eval-after-load 'key-chord
+  (progn
+    (key-chord-define-global "xg" 'magit-status)
+    (key-chord-define-global "qq" 'window-configuration-to-register)
+    (key-chord-define-global "wj" 'jump-to-register)
+    (key-chord-define-global "xf" 'find-file)
+    nil
+    ))
+
 
 (define-key php-mode-map (kbd "C-c C-r") 'php-send-buffer)
 (define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
