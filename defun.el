@@ -778,3 +778,11 @@ point reaches the beginning or end of the buffer, stop there."
          nil)
         (switch-to-buffer selenium-buffer)
         (setq buffer-read-only t)))))
+
+(defun sc-open-jira-ticket-at-point ()
+  (interactive)
+  (let ((ticket (thing-at-point 'sexp)))
+    (unless (string-match-p "^[A-z]+-[0-9]+$" ticket)
+      (setq ticket (read-from-minibuffer "Not sure if this is a ticket: " ticket)))
+    (browse-url (concat "http://arnoldmedia.jira.com/browse/" ticket))))
+
