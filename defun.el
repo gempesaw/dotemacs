@@ -58,9 +58,9 @@ browsers."
   "runs all the tests in the honeydew folder"
   (interactive)
   (let ((buf "*hdew-prove-all*"))
-    (if (eq buf (buffer-name (current-buffer)))
+    (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed /opt/honeydew/t/" buf)
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed" buf)
       (async-shell-command
        "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/" buf))))
 
