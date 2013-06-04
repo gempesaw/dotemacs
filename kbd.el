@@ -255,3 +255,7 @@
 ;;   (progn
 ;;     (key-chord-define-global "wc" 'workspace-create-new)
 ;;     (key-chord-define-global "wg" 'workspace-goto)))
+
+(define-key php-mode-map (kbd "C-c C-r") 'php-send-buffer)
+(define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
+(define-key php-mode-map (kbd "<tab>") 'smart-tab)

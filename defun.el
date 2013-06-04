@@ -786,3 +786,13 @@ point reaches the beginning or end of the buffer, stop there."
       (setq ticket (read-from-minibuffer "Not sure if this is a ticket: " ticket)))
     (browse-url (concat "http://arnoldmedia.jira.com/browse/" ticket))))
 
+(defun php-send-buffer ()
+  (interactive)
+  (with-current-buffer "*PHP*"
+    (erase-buffer))
+  (php-send-region (point-min) (point-max)))
+
+(defun php-send-line ()
+  (interactive)
+  (with-current-buffer "*PHP*" (erase-buffer))
+  (php-send-region (point-at-bol) (point-at-eol)))
