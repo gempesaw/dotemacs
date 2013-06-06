@@ -262,6 +262,9 @@
     ))
 
 
-(define-key php-mode-map (kbd "C-c C-r") 'php-send-buffer)
+(define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
+(define-key php-mode-map (kbd "<f5>") 'php-send-buffer)
+(define-key php-mode-map (kbd "<f6>") 'php-recompile-php-buffer)
 (define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
 (define-key php-mode-map (kbd "<tab>") 'smart-tab)
+
