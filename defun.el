@@ -82,12 +82,18 @@ browsers."
 
 (defun sc-open-catalina-logs ()
   (interactive)
-  (switch-to-buffer "*scratch*" nil 'force-same-window)
-  (delete-other-windows)
+  (if (get-buffer "tail-catalina-qascauth"))
   (let ((qa-boxes '("qaschedmaster" "qascauth" "qawebarmy" "qascpub" "qascdata" "qasched"))
         (buffer-prefix "tail-catalina-"))
     (dolist (remote-box-alias qa-boxes)
       (tail-log remote-box-alias nil)))
+  (sc-switch-to-log-windows))
+
+(defun sc-switch-to-log-windows ()
+  (window-configuration-to-register ?p)
+  (switch-to-buffer "*scratch*" nil 'force-same-window)
+  (delete-other-windows)
+  (interactive)
   (switch-to-buffer "*tail-catalina-qascauth*" nil 'force-same-window)
   (split-window-right)
   (split-window-below)
@@ -106,7 +112,8 @@ browsers."
   (switch-to-buffer "*tail-catalina-qaschedmaster*" nil 'force-same-window)
   (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
   (set-process-filter (get-buffer-process "*tail-catalina-qascpub*") 'sc-deploy-assets-after-pub)
-  (balance-windows))
+  (balance-windows)
+  (window-configuration-to-register ?q))
 
 (defun sc-check-what-servers-have-restarted ()
   (interactive)
@@ -115,7 +122,10 @@ browsers."
   (rename-buffer "*sc-restarted*")
   (multi-occur-in-matching-buffers "tail-catalina" "ERROR," 1)
   (set-buffer "*Occur*")
-  (rename-buffer "*sc-errors*"))
+  (rename-buffer "*sc-errors*")
+  (multi-occur-in-matching-buffers "tail-catalina" "Error creating bean with name" 1)
+  (set-buffer "*Occur*")
+  (rename-buffer "*sc-bean-errors*"))
 
 (defun start-qa-file-copy ()
   (interactive)
@@ -133,8 +143,7 @@ browsers."
   (interactive)
   (kill-matching-buffers-rudely "*tail-catalina-")
   (kill-matching-buffers-rudely "*sc-errors*")
-  (kill-matching-buffers-rudely "*sc-restarted*")
-  (delete-frame))
+  (kill-matching-buffers-rudely "*sc-restarted*"))
 
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
   "Kill buffers whose name matches the specified REGEXP. This
