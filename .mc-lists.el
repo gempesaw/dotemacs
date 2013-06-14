@@ -35,6 +35,8 @@
         create-newline-from-anywhere
         dabbrev-expand
         delete-horizontal-space
+        delete-indentation
+        describe-key
         dired-details-hide
         dired-mark
         downcase-region
@@ -102,6 +104,7 @@
         mu4e-mark-execute-all
         org-delete-backward-char
         org-self-insert-command
+        php-send-buffer
         revert-buffer
         scroll-up-command
         sgml-delete-tag
