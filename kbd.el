@@ -1,11 +1,3 @@
-;; set up previous window as C-x p (like C-x o)
-(defun back-window () (interactive) (other-window -1))
-(global-set-key (kbd "C-x p") 'back-window)
-
-;; TODO - full screen doesn't work in emacs 24
-;; toggle full screen
-;; (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
-
 ;; rename buffer
 (global-set-key (kbd "C-c r") 'rename-buffer)
 
