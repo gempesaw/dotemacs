@@ -239,19 +239,22 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
-(eval-after-load 'key-chord
+(eval-after-load 'key-chord-mode
   (progn
+    (key-chord-mode t)
     (key-chord-define-global "xg" 'magit-status)
     (key-chord-define-global "qq" 'window-configuration-to-register)
     (key-chord-define-global "wj" 'jump-to-register)
     (key-chord-define-global "xf" 'find-file)
-    nil
-    ))
+    nil))
 
+(eval-after-load 'php-mode
+  (progn
+    (define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
+    (define-key php-mode-map (kbd "<f5>") 'php-send-buffer)
+    (define-key php-mode-map (kbd "<f6>") 'php-recompile-php-buffer)
+    (define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
+    (define-key php-mode-map (kbd "<tab>") 'smart-tab)
+    nil))
 
-(define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
-(define-key php-mode-map (kbd "<f5>") 'php-send-buffer)
-(define-key php-mode-map (kbd "<f6>") 'php-recompile-php-buffer)
-(define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
-(define-key php-mode-map (kbd "<tab>") 'smart-tab)
-
+(global-set-key (kbd "C-M-^") (lambda () (interactive) (delete-indentation -1)))
