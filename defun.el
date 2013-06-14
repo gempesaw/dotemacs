@@ -747,9 +747,7 @@ when called with `universal-argument', don't create backup."
 
 (defun offlineimap-rudely-restart ()
   (interactive)
-  (let ((pid (car (get-file-as-string "~/.offlineimap/pid"))))
-    (while (string-match "offline" (cadr (split-string (shell-command-to-string (concat "ps " pid)) "\n")))
-      (shell-command (concat "kill -9 " pid))))
+  (shell-command "pkill -u dgempesaw -s 9 -f offlineimap")
   (offlineimap-quit)
   (offlineimap))
 
