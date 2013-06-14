@@ -54,15 +54,15 @@ browsers."
   (set-buffer "run-feature-in-all-browsers")
   (dired-other-window "/Users/dgempesaw/tmp/sauce/"))
 
-(defun hdew-prove-all ()
+(defun sc-hdew-prove-all ()
   "runs all the tests in the honeydew folder"
   (interactive)
   (let ((buf "*hdew-prove-all*"))
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed" buf)
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save,slow" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/" buf))))
+       "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/ --rules='seq=06-self.t' --rules='par=**'" buf))))
 
 
 (defun my-minibuffer-setup-hook ()
@@ -82,12 +82,18 @@ browsers."
 
 (defun sc-open-catalina-logs ()
   (interactive)
-  (if (get-buffer "tail-catalina-qascauth"))
-  (let ((qa-boxes '("qaschedmaster" "qascauth" "qawebarmy" "qascpub" "qascdata" "qasched"))
-        (buffer-prefix "tail-catalina-"))
-    (dolist (remote-box-alias qa-boxes)
-      (tail-log remote-box-alias nil)))
-  (sc-switch-to-log-windows))
+  (unless (get-buffer-process "*tail-catalina-qascauth*")
+    (let ((qa-boxes '("qaschedmaster"
+                      "qascauth"
+                      "qawebarmy"
+                      "qascpub"
+                      "qascdata"
+                      "qasched")))
+      (dolist (remote-box-alias qa-boxes)
+        (tail-log remote-box-alias nil))
+      (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
+      (set-process-filter (get-buffer-process "*tail-catalina-qascpub*") 'sc-deploy-assets-after-pub)
+      (sc-switch-to-log-windows))))
 
 (defun sc-switch-to-log-windows ()
   (window-configuration-to-register ?p)
@@ -110,8 +116,6 @@ browsers."
   (switch-to-buffer "*tail-catalina-qascpub*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qaschedmaster*" nil 'force-same-window)
-  (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
-  (set-process-filter (get-buffer-process "*tail-catalina-qascpub*") 'sc-deploy-assets-after-pub)
   (balance-windows)
   (window-configuration-to-register ?q))
 
@@ -457,7 +461,6 @@ Including indent-buffer, which should not be called automatically on save."
   (magit-refresh))
 
 (defun magit-quit-session ()
-  ;; µ is 265
   "Restores the previous window configuration and kills the magit buffer"
   (interactive)
   (kill-buffer)
