@@ -76,3 +76,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/lewang-flx/")
 (require 'flx-ido)
+
+;; manually load some packages
+(load "smart-compile.el" 'noerror)
