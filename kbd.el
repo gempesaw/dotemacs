@@ -11,12 +11,7 @@
 (global-set-key (kbd "C-c g") 'magit-blame-mode)
 
 ;; shortcut for revert buffer
-(global-set-key (kbd "C-x r") 'revert-buffer)
-
-;; macro and shortcut to set up in 3 wide, last split window organization
-(fset 'startupConfig
-      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 51 24 51 24 112 24 50 24 111 24 50 24 48 24 43 134217848 115 104 101 108 108 return 24 111 24 98 104 111 110 101 121 100 101 119 46 112 108 return 24 112 24 112 24 98 72 111 110 101 121 68 101 119 46 112 109 return 24 112 24 98 100 101 102 97 117 108 116 46 112 109 return] 0 "%d")) arg)))
-(global-set-key (kbd "C-x c f g") 'startupConfig)
+(global-set-key (kbd "C-x r") (lambda () (interactive) (revert-buffer t t)))
 
 ;; Easier buffer killing
 (global-unset-key (kbd "M-k"))
