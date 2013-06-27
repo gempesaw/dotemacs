@@ -731,13 +731,15 @@ when called with `universal-argument', don't create backup."
   (interactive "p")
   (let ((command (concat "w " (buffer-file-name (current-buffer))))
         (compile-command))
-    (if (eq arg 16)
+    (if (string-match-p "default.pm" (buffer-name (current-buffer)))
+        (setq compile-command "perl /opt/honeydew/bin/makepod.pl")
+      (when (eq arg 16)
         ;; debug on C-u C-u
         (setq command (concat "d" command)))
-    (if (eq arg 4)
+      (when (eq arg 4)
         ;; ask questions on C-u
         (setq command (read-from-minibuffer "Edit command: perl -" command )))
-    (setq compile-command (concat "perl -" command))
+      (setq compile-command (concat "perl -" command)))
     (compile compile-command t)
     (if (eq arg 16)
         (progn
