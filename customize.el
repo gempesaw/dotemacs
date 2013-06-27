@@ -241,8 +241,8 @@
       mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
                        ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
-                       ("'QA Build Request' AND date:today..now AND NOT from:dgempesaw@sharecare.com" "QA Builds" ?q)
-                       ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA" "Unread messages" ?u)
+                       ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied" "QA Builds" ?q)
+                       ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                        ("maildir:/INBOX AND date:1d..now" "Inbox" ?i)
@@ -340,12 +340,18 @@
 (setq iedit-toggle-key-default nil)
 
  ;; If we have the tracking library add compilation buffer when complete
-(when (require 'tracking nil 'noerror)
-   (defun my-hide-compilation-buffer (proc)
-     "Hide the compile buffer"
-     (delete-window (get-buffer-window "*compilation*")))
-   (defun my-report-compilation-finished (buf exit-string)
-     "Report the compilation buffer to tracker"
-     (tracking-add-buffer buf))
-   (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
-   (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
+;; (when (require 'tracking nil 'noerror)
+;;    (defun my-hide-compilation-buffer (proc)
+;;      "Hide the compile buffer"
+;;      (delete-window (get-buffer-window "*compilation*")))
+;;    (defun my-report-compilation-finished (buf exit-string)
+;;      "Report the compilation buffer to tracker"
+;;      (tracking-add-buffer buf))
+;;    (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
+;;    (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
+
+;; display some minibuffer signal when we have QA mail
+(setq display-time-mail-function 'qa-build-email-pending-p
+      display-time-use-mail-icon t
+      display-time-mail-face '((t (:background "red"))))
+;; (display-time-update)
