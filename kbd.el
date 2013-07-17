@@ -216,12 +216,14 @@
                               (let ((buf "*mu4e-headers*"))
                                 (if (not (string= buf (buffer-name)))
                                     (progn
+                                      (window-configuration-to-register 6245)
                                       (with-current-buffer (get-buffer-create buf)
                                         (unless (string-match "Search" (buffer-string))
                                           (execute-kbd-macro 'mu4e-open-inbox))
                                         (mu4e-update-mail-and-index t)
-                                        (switch-to-buffer buf)))
-                                  (switch-to-prev-buffer)))))
+                                        (switch-to-buffer buf))
+                                      (delete-other-windows))
+                                  (jump-to-register 6245)))))
 
 
 (global-unset-key (kbd "C-x C-r"))
