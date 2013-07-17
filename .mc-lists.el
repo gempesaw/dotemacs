@@ -43,9 +43,11 @@
         elpy-shell-send-region-or-buffer
         eval-defun
         execute-feature
+        fill-paragraph
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
+        ignore
         indent-for-tab-command
         insert-parentheses
         js2-beginning-of-line
@@ -54,6 +56,7 @@
         mark-whole-buffer
         markdown-cycle
         mc/mark-next-lines
+        message-beginning-of-line
         mu4e-headers-mark-for-read
         org-beginning-of-line
         org-delete-char
@@ -62,6 +65,7 @@
         paredit-doublequote
         paredit-forward-delete
         paredit-forward-kill-word
+        paredit-forward-slurp-sexp
         paredit-kill
         paredit-meta-doublequote
         paredit-open-round
@@ -75,7 +79,10 @@
         smex
         sp--self-insert-command
         transpose-sexps
+        universal-argument-minus
         upcase-region
+        wdired-change-to-wdired-mode
+        wdired-next-line
         wdired-previous-line
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
@@ -90,9 +97,11 @@
         dired-next-line
         dired-previous-line
         dired-summary
+        dired-toggle-marks
         dired-undo
         end-of-buffer
         eval-last-sexp
+        execute-perl
         handle-switch-frame
         hs-show-block
         jabber-activity-switch-to
