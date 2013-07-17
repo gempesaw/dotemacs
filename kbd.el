@@ -195,7 +195,9 @@
 
 
 (global-unset-key (kbd "M-."))
-(global-set-key (kbd "M-.") 'find-tag-other-window)
+(global-set-key (kbd "M-.") (lambda () (interactive) (find-tag (thing-at-point 'symbol))))
+(global-unset-key (kbd "M-,"))
+(global-set-key (kbd "M-,") 'pop-tag-mark)
 
 (eval-after-load "tracking"
   '(progn
