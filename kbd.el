@@ -239,7 +239,10 @@
      (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
 
 (global-unset-key (kbd "s-o"))
-(global-set-key (kbd "s-o") '(lambda () (interactive) (async-shell-command "ps aux | grep offline" nil nil)))
+(global-set-key (kbd "s-o") '(lambda () (interactive)
+                               (if (switch-between-buffers "*OfflineIMAP*")
+                                   (progn (goto-char (point-max))
+                                          (offlineimap-resync)))))
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
