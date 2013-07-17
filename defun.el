@@ -849,3 +849,8 @@ If we're waiting for user-input, don't show anyhting."
 (defun qa-build-email-pending-p ()
   (let ((qa-email-file "~/.qa-build-ready"))
     (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
+
+;; http://www.emacswiki.org/emacs/SwitchingBuffers
+(defun switch-to-other-buffer ()
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
