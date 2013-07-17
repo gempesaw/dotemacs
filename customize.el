@@ -182,13 +182,15 @@
       jabber-chat-buffer-format "*-jabber-%n-*"
       jabber-history-enabled nil
       jabber-mode-line-mode t
-      jabber-roster-buffqer "*-jabber-*"
+      jabber-roster-buffer "*-jabber-*"
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
       jabber-show-offline-contacts nil
       jabber-auto-reconnect t
-      jabber-muc-autojoin '("qa@conference.sharecare.com"))
+      jabber-muc-autojoin '("qa@conference.sharecare.com")
+      jabber-mode-line-string (list " " 'jabber-mode-line-presence))
 (setq starttls-extra-arguments '("--insecure"))
 (setq starttls-use-gnutls t)
+(jabber-mode-line-mode)
 
 ;; tumblesocks
 (setq tumblesocks-blog "eval-defun.tumblr.com")
