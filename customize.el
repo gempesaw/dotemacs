@@ -255,7 +255,7 @@
 (setq user-mail-address "dgempesaw@sharecare.com"
       user-full-name  "Daniel Gempesaw"
       message-signature (concat
-                         "Daniel Gempesaw | QA Architect\n"
+                         "Daniel Gempesaw | Software Testing Architect\n"
                          "M 302.754.1231\n"
                          "\n"
                          "Sharecare, Inc.\n"
