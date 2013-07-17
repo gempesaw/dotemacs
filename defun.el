@@ -58,12 +58,12 @@ browsers."
   "runs all the tests in the honeydew folder"
   (interactive)
   (let ((buf "*hdew-prove-all*"))
+    (start-process "generate-hdew-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save,slow" buf)
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/ --rules='seq=06-self.t' --rules='par=**'" buf))))
-
+       "prove -I /opt/honeydew/lib/ -j9 --state=save,slow /opt/honeydew/t/ --rules='seq=0{5,6}-*' --rules='par=**'" buf))))
 
 (defun my-minibuffer-setup-hook ()
   (my-keys-minor-mode 0))
