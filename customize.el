@@ -354,4 +354,7 @@
 (setq display-time-mail-function 'qa-build-email-pending-p
       display-time-use-mail-icon t
       display-time-mail-face '((t (:background "red"))))
-;; (display-time-update)
+
+(defvar current-time-format "%a %H:%M:%S"
+  "Format of date to insert with `insert-current-time' func.
+Note the weekly scope of the command's precision.")

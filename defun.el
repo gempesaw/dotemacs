@@ -366,7 +366,7 @@ them, asking user for confirmation"
   (make-frame-command)
   (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
   (goto-char (point-max))
-  (insert "Restarting QA")
+  (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
   (jabber-chat-buffer-send)
   (pop-to-buffer (get-buffer-create "*scratch*"))
   (goto-char (point-max))
@@ -732,7 +732,7 @@ when called with `universal-argument', don't create backup."
   (let ((command (concat "w " (buffer-file-name (current-buffer))))
         (compile-command))
     (if (string-match-p "default.pm" (buffer-name (current-buffer)))
-        (setq compile-command "perl /opt/honeydew/bin/makepod.pl")
+        (setq compile-command "perl /opt/honeydew/bin/makePod.pl")
       (when (eq arg 16)
         ;; debug on C-u C-u
         (setq command (concat "d" command)))
