@@ -31,15 +31,28 @@
             (local-set-key (kbd "<f5>") 'execute-perl)
             (hs-minor-mode t)))
 
-(eval-after-load 'paredit-mode
-  (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode))
+(eval-after-load 'paredit
+  (autoload 'enable-paredit-mode "paredit"
+    "Turn on pseudo-structural editing of Lisp code."
+    t))
+
+(eval-after-load "smartparens"
+  (add-hook 'emacs-lisp-mode-hook 'turn-off-smartparens-mode))
 
 (eval-after-load "elisp-slime-nav"
   '(progn
      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))))
 
-(eval-after-load 'eldoc
+(eval-after-load "eldoc-mode"
   '(progn
-    (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-    (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-    (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)))
+     (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+     (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+     (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)))
+
+;; (setq mu4e-index-updated-hook nil)
+(add-hook 'mu4e-index-updated-hook
+          (lambda ()
+            (interactive)
+            (progn
+              (start-process "check-mail" " *temp-mail-check*" "sh" "/opt/dotemacs/checkmail.sh")
+              (display-time-update))))
