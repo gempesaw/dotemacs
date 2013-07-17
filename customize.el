@@ -22,8 +22,8 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; Don't show the startup screen
-(setq inhibit-startup-message t)
+;;; don't use the os x horrible fullscreen method
+(setq ns-use-native-fullscreen t)
 
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
