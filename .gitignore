@@ -26,3 +26,5 @@ passwords.el
 /projectile.cache
 /ensime_*
 /ac-comphist.dat
+/libpeerconnection.log
+/whee
