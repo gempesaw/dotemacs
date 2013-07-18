@@ -214,7 +214,7 @@
 (global-set-key (kbd "s-m") (lambda ()
                               (interactive)
                               (let ((buf "*mu4e-headers*"))
-                                (if (not (string= buf (buffer-name)))
+                                (if (not (string-match "mu4e" (buffer-name)))
                                     (progn
                                       (window-configuration-to-register 6245)
                                       (with-current-buffer (get-buffer-create buf)
