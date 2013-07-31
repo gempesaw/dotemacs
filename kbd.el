@@ -149,7 +149,10 @@
 (global-set-key (kbd "C-h C-v") 'describe-variable-at-point)
 
 ;; make wdired like wgrep
-(global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
+(global-unset-key (kbd "C-c C-p"))
+;; (global-set-key (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
+(define-key dired-mode-map (kbd "C-c C-p") 'wdired-change-to-wdired-mode)
+
 ;; (define-key grep-mode-map (kbd "C-c C-c") 'wgrep-save-all-buffers))
 
 ;; insert eol semi, reindent, go to next line
@@ -257,6 +260,7 @@
     (key-chord-define-global "xb" 'ido-switch-buffer)
     (key-chord-define-global "xv" 'switch-to-other-buffer)
     (key-chord-define-global "cj" 'bookmark-jump)
+    (key-chord-define-global "xh" 'mark-whole-buffer)
     nil))
 
 (eval-after-load 'php-mode
