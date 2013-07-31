@@ -174,10 +174,7 @@
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
-(setq jabber-account-list `(;; ("gempesaw@gmail.com"
-                            ;;  (:password ,gmail-2-auth-pw)
-                            ;;  )
-                            ("dgempesaw@sharecare.com"
+(setq jabber-account-list `(("dgempesaw@sharecare.com"
                              (:connection-type . starttls))))
 (setq jabber-alert-presence-hooks nil
       jabber-avatar-verbose nil
