@@ -36,9 +36,6 @@
     "Turn on pseudo-structural editing of Lisp code."
     t))
 
-(eval-after-load "smartparens"
-  (add-hook 'emacs-lisp-mode-hook 'turn-off-smartparens-mode))
-
 (eval-after-load "elisp-slime-nav"
   '(progn
      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))))
