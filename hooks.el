@@ -40,7 +40,7 @@
   '(progn
      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))))
 
-(eval-after-load "eldoc-mode"
+(eval-after-load "eldoc"
   '(progn
      (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
      (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
