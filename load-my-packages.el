@@ -15,7 +15,6 @@
         php-mode
         scala-mode2
         simple-httpd
-        smartparens
         switch-window
         ))
 
@@ -49,6 +48,7 @@
         smex
         tumblesocks
         wgrep
+        wrap-region
         yasnippet))
 
 (defun my-packages-installed-p (list-of-packages)
