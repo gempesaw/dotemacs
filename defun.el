@@ -854,6 +854,14 @@ If we're waiting for user-input, don't show anyhting."
 (defun switch-to-other-buffer ()
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+(defun prelude-auto-save-command ()
+  "Save the current buffer if `prelude-auto-save' is not nil."
+  (when (and buffer-file-name
+             (buffer-modified-p (current-buffer))
+             (file-writable-p buffer-file-name))
+    (save-buffer)))
+
 (defun jabber-alert-message-say (from buffer text proposed-alert)
   (interactive)
   (unless (eq (window-buffer (selected-window)) buffer)
