@@ -23,7 +23,7 @@
 (put 'downcase-region 'disabled nil)
 
 ;;; don't use the os x horrible fullscreen method
-(setq ns-use-native-fullscreen t)
+(setq ns-use-native-fullscreen nil)
 
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)

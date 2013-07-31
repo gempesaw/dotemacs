@@ -9,14 +9,9 @@ still function in special-mode"
 
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
-(defadvice switch-to-buffer (before save-buffer-now activate)
-  (when buffer-file-name (save-buffer)))
-
-(defadvice other-window (before other-window-now activate)
-  (when buffer-file-name (save-buffer)))
-
-(defadvice switch-window (before switch-window activate)
-  (when buffer-file-name (save-buffer)))
+(advise-commands "auto-save"
+                  (switch-to-buffer other-window switch-window)
+                  (prelude-auto-save-command))
 
 (defadvice split-window-below (after restore-balanace-below activate)
   (balance-windows))
