@@ -2,7 +2,27 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("changes.md"
+(("honeydew.pl"
+ (filename . "~/opt/dev_hdew/honeydew/bin/honeydew.pl")
+ (front-context-string . "#!/usr/bin/perl\n")
+ (rear-context-string)
+ (position . 1))
+("customize.el"
+ (filename . "~/opt/dotemacs/customize.el")
+ (front-context-string . ";;    (defun my-")
+ (rear-context-string . "ompilation*\")))\n")
+ (position . 12597))
+("defun"
+ (filename . "~/opt/dotemacs/defun.el")
+ (front-context-string . "\n               ")
+ (rear-context-string . "hedulemaster2f\")")
+ (position . 12284))
+("dan.feature"
+ (filename . "~/opt/dev_hdew/honeydew/features/dan.feature")
+ (front-context-string . "\n Scenario: whee")
+ (rear-context-string)
+ (position . 15))
+("changes.md"
  (filename . "~/opt/dev_hdew/honeydew-ui/htdocs/changes/changes.md")
  (front-context-string . "4 (0.8.0)\n\n#### ")
  (rear-context-string)
