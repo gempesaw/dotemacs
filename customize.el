@@ -108,7 +108,6 @@
 (defun ido-disable-line-trucation () (set (make-local-variable 'truncate-lines) nil))
 (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation)
 
-
 ;; make dired-find-file faster
 ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
 (eval-after-load "find-dired"
@@ -154,6 +153,7 @@
   '(progn
      (set-face-foreground 'magit-diff-add "green3")
      (set-face-foreground 'magit-diff-del "red3")
+     (set-face-attribute 'magit-item-highlight nil :inherit nil)
      (set-face-background 'magit-item-highlight "gray17")
      ;; quit magit smartly
      (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
