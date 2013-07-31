@@ -4,6 +4,7 @@
 (load "load-my-packages.el" 'noerror)
 
 ;; consolidated settings files
+(load "elisp-macros.el" 'noerror)
 (load "passwords.el" 'noerror)
 (load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
