@@ -91,6 +91,9 @@
       ;; ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini" ".cfg" ".cnf")
       )
 
+;; turn up gc threshold to speed up flx
+(setq gc-cons-threshold 20000000)
+
 ;; ignore list http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/
 ;; (add-to-list 'ido-ignore-buffers "buffers")
 ;; (add-to-list 'ido-ignore-files "files")
