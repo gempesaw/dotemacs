@@ -57,7 +57,7 @@ browsers."
 (defun sc-hdew-prove-all ()
   "runs all the tests in the honeydew folder"
   (interactive)
-  (let ((buf "*hdew-prove-all*"))
+  (let ((buf "*sc-hdew-prove-all*"))
     (start-process "generate-hdew-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
@@ -662,7 +662,7 @@ Including indent-buffer, which should not be called automatically on save."
   (save-excursion
     (goto-char (point-min))
     (if (and (not (eq nil (search-forward "Result: PASS" nil t)))
-             (not (string= "*hdew-prove-all*" (buffer-name (current-buffer)))))
+             (not (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
         (message "Try again from a successful hdew prove buffer!")
       (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))))
 
