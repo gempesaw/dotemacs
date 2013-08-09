@@ -273,6 +273,8 @@ them, asking user for confirmation"
         (update-build-url))
     ;; (delete-region (line-beginning-position) (line-end-position))
     (loop for cell in product do
+          (when (string-match "UNCHANGED" newVersion)
+            (setq sc-restart-type "half"))
           (let ((vikAbbrev (car cell))
                 (productAndNewTag (cdr cell)))
             (if (and (string-match vikAbbrev currentLineText)
@@ -326,12 +328,7 @@ them, asking user for confirmation"
            (progn
              (setq name (caddr (nth 3 item)))
              (and (not (string-match "Disable" note))
-                  (or (string= name "scqawebpub2f")
-                      (string= name "scqawebarmy2f")
-                      (string= name "scqadata2f")
-                      (string= name "scqaschedule2f")
-                      (string= name "scqaschedulemaster2f")
-                      (string= name "scqawebauth2f"))))))
+                  (sc-qa-box-name-conditionals)))))
      parsed-xml)))
 
 (defun sc-restart-qa-boxes (&optional all)
@@ -372,10 +369,12 @@ them, asking user for confirmation"
   (goto-char (point-max))
   (yank)
   (re-search-backward "SC2")
+  (setq sc-restart-type "all")
   (sc--update-build)
   (sc--update-build)
   (sc--update-build)
-  (sc--update-build))
+  (sc--update-build)
+  )
 
 (defun toggle-window-split ()
   (interactive)
