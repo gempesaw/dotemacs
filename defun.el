@@ -268,8 +268,7 @@ them, asking user for confirmation"
                    ("pub" . "webpub&newtag=builds/sharecare/rc/")
                    ("webarmy" . "webarmy&newtag=builds/sharecare/rc/")
                    ("Data" . "data&newtag=builds/data/rc/")
-                   ("Tasks" . "schedulemaster&newtag=builds/schedulemaster/rc/")
-                   ("Sync" . "schedule&newtag=builds/schedule/rc/")))
+                   ("Tasks" . "schedulemaster&newtag=builds/schedulemaster/rc/")))
         (update-build-url))
     ;; (delete-region (line-beginning-position) (line-end-position))
     (loop for cell in product do
