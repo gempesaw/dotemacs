@@ -256,14 +256,7 @@
                        ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
 
 (setq user-mail-address "dgempesaw@sharecare.com"
-      user-full-name  "Daniel Gempesaw"
-      message-signature (concat
-                         "Daniel Gempesaw | Software Testing Architect\n"
-                         "M 302.754.1231\n"
-                         "\n"
-                         "Sharecare, Inc.\n"
-                         "Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book\n"
-                         ))
+      user-full-name  "Daniel Gempesaw")
 
 ;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
 ;; otherwise it tries to send through OS associated mail client
