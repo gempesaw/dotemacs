@@ -839,18 +839,6 @@ The output will appear in the buffer *PHP*."
       (call-process "php" nil php-buffer nil "-r" php-most-recent-compilation-code)
       (insert (current-time-string)))))
 
-(defun mu4e-message (frm &rest args)
-  "Like `message', but prefixed with mu4e.
-If we're waiting for user-input, don't show anyhting."
-  (unless (or (active-minibuffer-window)
-              (not (string-match-p "^\(Indexing\|Retrieving\)" frm)))
-    (message "%s" (apply 'mu4e-format frm args))
-    nil))
-
-(defun qa-build-email-pending-p ()
-  (let ((qa-email-file "~/.qa-build-ready"))
-    (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
-
 ;; http://www.emacswiki.org/emacs/SwitchingBuffers
 (defun switch-to-other-buffer ()
   (interactive)
