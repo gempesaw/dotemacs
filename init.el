@@ -19,9 +19,6 @@
 (load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
 
-(if (eq system-type 'darwin)
-    (progn
-      (add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
-      (require 'mu4e)))
+(require 'dg-mu4e)
 
 (sc-start-selenium-server)
