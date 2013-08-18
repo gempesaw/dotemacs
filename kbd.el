@@ -249,7 +249,7 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
-(eval-after-load 'key-chord-mode
+(eval-after-load 'key-chord
   (progn
     (key-chord-mode t)
     (key-chord-define-global "xg" 'magit-status)
