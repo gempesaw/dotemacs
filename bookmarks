@@ -2,7 +2,21 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("honeydew.pl"
+(("Downloads"
+ (filename . "~/Downloads/")
+ (front-context-string . "..\n  -rw-r--r--@")
+ (rear-context-string . "70 Aug  9 13:51 ")
+ (position . 244))
+("hosts"
+ (filename .
+           #("/etc/hosts" 1 5
+             (face flx-highlight-face)
+             5 7
+             (face flx-highlight-face)))
+ (front-context-string . "##\n# Host Databa")
+ (rear-context-string)
+ (position . 1))
+("honeydew.pl"
  (filename . "~/opt/dev_hdew/honeydew/bin/honeydew.pl")
  (front-context-string . "#!/usr/bin/perl\n")
  (rear-context-string)
@@ -60,9 +74,9 @@
  (annotation . ""))
 ("dotemacs"
  (filename . "~/opt/dotemacs/")
- (front-context-string . "init.el\n  -rw-r-")
- (rear-context-string . "21 Mar 16 02:29 ")
- (position . 1899))
+ (front-context-string . "  /Users/dgempes")
+ (rear-context-string)
+ (position . 1))
 ("cm_socket"
  (filename . "~/.ssh/cm_socket/")
  (front-context-string . "honeydew@server-")
@@ -140,9 +154,9 @@
  (position . 392))
 ("prod-htdocs"
  (filename . "/ssh:hnew:/opt/honeydew-ui/htdocs/")
- (front-context-string . ".svn\n  -rw-rw-r-")
- (rear-context-string . "96 Sep  1  2011 ")
- (position . 215))
+ (front-context-string . "..\n  -rwxrwxrwx ")
+ (rear-context-string . "96 Aug  7 12:38 ")
+ (position . 158))
 ("catalina.out-auth"
  (filename . "/ssh:qascauth:/opt/tomcat/logs/catalina.out")
  (front-context-string)
