@@ -30,13 +30,13 @@ language: emacs-lisp
 
 env:
   matrix:
-    # - EMACS=xemacs21
-    # - EMACS=emacs22
-    # - EMACS=emacs23
+#   - EMACS=xemacs21
+#   - EMACS=emacs22
+#   - EMACS=emacs23
     - EMACS=emacs24
-    # - EMACS=emacs-snapshot
+#   - EMACS=emacs-snapshot
   global:
-    # - SOME_TOKEN=some_value
+#   - SOME_TOKEN=some_value
 
 ###
 ### allowing build failures
@@ -46,15 +46,15 @@ env:
 
 matrix:
   allow_failures:
-    # - env:
-    #     - EMACS=xemacs21
-    #     - SOME_TOKEN=some_value
-    # - env:
-    #     - EMACS=emacs22
-    #     - SOME_TOKEN=some_value
-    # - env:
-    #     - EMACS=emacs-snapshot
-    #     - SOME_TOKEN=some_value
+#   - env:
+#       - EMACS=xemacs21
+#       - SOME_TOKEN=some_value
+#   - env:
+#       - EMACS=emacs22
+#       - SOME_TOKEN=some_value
+#   - env:
+#       - EMACS=emacs-snapshot
+#       - SOME_TOKEN=some_value
 
 ###
 ### limit build attempts to defined branches
@@ -141,7 +141,7 @@ before_script:
 ###
 
 script:
-  $EMACS --version && make test EMACS=$EMACS
+  ls && pwd && $EMACS --version && $EMACS -batch -L ./ -L ./elpa/ -l ert -l dg-init-ert.el -f ert-run-tests-batch-and-exit
 
 ###
 ### settings
