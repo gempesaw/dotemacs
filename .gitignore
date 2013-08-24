@@ -12,8 +12,6 @@ el-get/*
 el-get/*.el
 saveplace
 session*
-elpa*
-elpa/*
 nil/*
 nil
 passwords.el
