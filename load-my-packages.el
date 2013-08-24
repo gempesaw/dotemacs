@@ -11,6 +11,7 @@
 
 (setq my-melpa-packages
       '(
+        flx-ido
         impatient-mode
         php-mode
         scala-mode2
@@ -49,7 +50,8 @@
         tumblesocks
         wgrep
         wrap-region
-        yasnippet))
+        yasnippet
+        ))
 
 (defun my-packages-installed-p (list-of-packages)
   (loop for p in list-of-packages
@@ -75,9 +77,6 @@
 (load-my-packages my-melpa-packages 'melpa)
 
 (package-initialize)
-
-(add-to-list 'load-path "~/.emacs.d/lewang-flx/")
-(require 'flx-ido)
 
 ;; manually load some packages
 (load "smart-compile.el" 'noerror)
