@@ -22,3 +22,5 @@
 (require 'dg-mu4e)
 
 (sc-start-selenium-server)
+
+(provide 'dg-init)
