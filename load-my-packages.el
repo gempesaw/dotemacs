@@ -1,5 +1,4 @@
 (require 'package)
-(require 'cl)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ;; ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")))
@@ -24,6 +23,7 @@
         ace-jump-mode
         ack-and-a-half
         browse-kill-ring
+        cl-lib
         cperl-mode
         circe
         dash
@@ -33,7 +33,6 @@
         elpy
         exec-path-from-shell
         expand-region
-        fetchmacs
         gist
         htmlize
         ido-ubiquitous
