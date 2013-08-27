@@ -21,10 +21,6 @@
 (global-unset-key (kbd "M-0"))
 (global-set-key (kbd "M-0") 'delete-window)
 
-;; smart tab - do i need this? YES
-(global-set-key (kbd "<tab>") 'smart-tab)
-(setq yas/trigger-key "C-<tab>")
-
 ;; Start eshell or switch to it if it's active.
 (global-unset-key (kbd "C-c ;"))
 (global-set-key (kbd "C-c ;") 'eshell)
