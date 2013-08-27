@@ -4,7 +4,7 @@
 (load "load-my-packages.el" 'noerror)
 
 ;; consolidated settings files
-(require 'dg-elisp-macros)
+
 (load "passwords.el" 'noerror)
 (load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
@@ -16,10 +16,15 @@
 (load "kbd.el" 'noerror)
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
-(load "tabs.el" 'noerror)
 (load "themes.el" 'noerror)
 
-(require 'dg-mu4e)
+
+(mapcar (lambda (it) (require it))
+        '(
+          dg-elisp-macros
+          dg-tabs
+          dg-mu4e
+          ))
 
 (sc-start-selenium-server)
 
