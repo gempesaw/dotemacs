@@ -780,7 +780,7 @@ point reaches the beginning or end of the buffer, stop there."
 (defun sc-start-selenium-server ()
   (interactive)
   (let ((selenium-proc-name "selenium-webdriver")
-        (selenium-version "2.32.0")
+        (selenium-version "2.35.0")
         (selenium-buffer nil)
         (selenium-file))
     (setq selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))
@@ -789,7 +789,9 @@ point reaches the beginning or end of the buffer, stop there."
       (when (and (eq nil (get-buffer selenium-buffer)) (file-exists-p selenium-file))
         (set-process-query-on-exit-flag
          (start-process selenium-proc-name selenium-buffer
-                        "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver")
+                        "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver"
+                        "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
+                        )
          nil)
         (switch-to-buffer selenium-buffer)
         (setq buffer-read-only t)))))
@@ -873,8 +875,12 @@ If we're waiting for user-input, don't show anyhting."
                        ((string= from "cmitchell") "Carl")
                        ((string= from "olebedev") "Olivia")
                        ((string= from "cthompson") "Carmen")
+                       ((string= from "jhall") "Janet")
+                       ((string= from "jcox") "Jeff")
+                       ((string= from "vsatam") "Vikrant")
                        (t from)))
-      (start-process "jabber-hello" "jabber-say-buffer" "say" "-v" voice " \"" from " says, '" text "'\""))))
+      (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
+
 (defun delete-other-window (&optional kill-window-buffer-too)
   "Display an overlay in each window showing a unique key, then
 ask user which window to delete.
