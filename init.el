@@ -4,7 +4,7 @@
 (load "load-my-packages.el" 'noerror)
 
 ;; consolidated settings files
-(load "elisp-macros.el" 'noerror)
+(require 'dg-elisp-macros)
 (load "passwords.el" 'noerror)
 (load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
@@ -23,4 +23,4 @@
 
 (sc-start-selenium-server)
 
-(provide 'dg-init)
+(provide 'init)
