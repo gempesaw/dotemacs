@@ -1,6 +1,6 @@
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ;; ("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")))
 
 (package-initialize)
@@ -8,61 +8,53 @@
 (defvar my-packages '() "A list of packages to ensure are installed at launch.")
 (defvar my-melpa-packages '() "A list of MELPA packages (not available on marmalade)")
 
-(setq my-melpa-packages
-      '(
-        flx-ido
-        impatient-mode
-        php-mode
-        scala-mode2
-        simple-httpd
-        switch-window
-        ))
-
-(setq my-packages
-      '(
-        ace-jump-mode
-        ack-and-a-half
-        browse-kill-ring
-        cl-lib
-        cperl-mode
-        circe
-        dash
-        dart-mode
-        dired-details
-        elisp-slime-nav
-        elpy
-        exec-path-from-shell
-        expand-region
-        gist
-        htmlize
-        ido-ubiquitous
-        jabber
-        js2-mode
-        magit
-        markdown-mode
-        multiple-cursors
-        offlineimap
-        paredit
-        regex-tool
-        s
-        smex
-        tumblesocks
-        wgrep
-        wrap-region
-        yasnippet
-        ))
+(setq my-packages '(
+                    ace-jump-mode
+                    ack-and-a-half
+                    browse-kill-ring
+                    cl-lib
+                    cperl-mode
+                    circe
+                    dash
+                    dart-mode
+                    dired-details
+                    flx-ido
+                    elisp-slime-nav
+                    elpy
+                    exec-path-from-shell
+                    expand-region
+                    gist
+                    htmlize
+                    ido-ubiquitous
+                    impatient-mode
+                    jabber
+                    js2-mode
+                    magit
+                    markdown-mode
+                    multiple-cursors
+                    offlineimap
+                    paredit
+                    php-mode
+                    regex-tool
+                    s
+                    simple-httpd
+                    smex
+                    switch-window
+                    tumblesocks
+                    wgrep
+                    wrap-region
+                    yasnippet
+                    ))
 
 (defun my-packages-installed-p (list-of-packages)
   (loop for p in list-of-packages
         when (not (package-installed-p p)) do (return nil)
         finally (return t)))
 
-(defun load-my-packages (list-of-packages source)
+(defun load-my-packages (list-of-packages)
   (let ((old-archives package-archives))
     (save-window-excursion
       (unless (my-packages-installed-p list-of-packages)
-        (if (eq source 'melpa)
-            (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/"))))
         (package-refresh-contents)
         (dolist (p list-of-packages)
           (if (not (package-installed-p p))
@@ -72,8 +64,7 @@
       (setq package-archives old-archives))
     (dolist (p list-of-packages) (require p))))
 
-(load-my-packages my-packages 'marmalade)
-(load-my-packages my-melpa-packages 'melpa)
+(load-my-packages my-packages)
 
 (package-initialize)
 
