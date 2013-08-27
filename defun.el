@@ -497,7 +497,8 @@ Including indent-buffer, which should not be called automatically on save."
         (setq command (concat "d" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
-                                            '("chrome"
+                                            '("phantomjs localhost"
+                                              "chrome"
                                               "firefox"
                                               "ie 10"
                                               "ie 9"
