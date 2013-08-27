@@ -875,3 +875,27 @@ If we're waiting for user-input, don't show anyhting."
                        ((string= from "cthompson") "Carmen")
                        (t from)))
       (start-process "jabber-hello" "jabber-say-buffer" "say" "-v" voice " \"" from " says, '" text "'\""))))
+(defun delete-other-window (&optional kill-window-buffer-too)
+  "Display an overlay in each window showing a unique key, then
+ask user which window to delete.
+
+If `kill-window-buffer-too` is non-nil, also delete the buffer in
+the window."
+  (interactive)
+  (if (> (length (window-list)) 1)
+      (progn
+        (let ((index (prompt-for-selected-window "Delete window: "))
+              (delete-window-function (if kill-window-buffer-too
+                                          'delete-window-and-kill-buffer
+                                        'delete-window)))
+          (apply-to-window-index delete-window-function index "")))))
+
+(defun delete-window-and-kill-buffer (&optional window)
+  "Delete WINDOW and kill it's associated buffer.
+WINDOW defaults to the currently selected window.
+Return nil."
+  (interactive)
+  (let ((window (window-normalize-window window)))
+    (kill-buffer (window-buffer window))
+    (delete-window window))
+  nil)
