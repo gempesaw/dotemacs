@@ -1,5 +1,6 @@
 (require 'ert)
-(require 'dg-init)
 
-(ert-deftest dg-features-are-available ()
-  (should (featurep 'flx-ido)))
+(require 'dg-elisp-macros)
+
+(ert-deftest should-pass ()
+  (should (fboundp 'sc-qa-box-name-conditionals)))
