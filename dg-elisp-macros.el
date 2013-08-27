@@ -16,8 +16,11 @@ The body of the advice is in BODY."
                                             (string= name "scqaschedulemaster2f")
                                             (string= name "scqawebauth2f")))
         ((equal sc-restart-type "half") '(or (string= name "scqawebpub2f")
-                                             (string= name "scqadata2f")
                                              (string= name "scqawebarmy2f")
-                                             (string= name "scqawebauth2f")))))
+                                             (string= name "scqawebauth2f")))
+        ((equal sc-restart-type "pubs") '(or (string= name "scqawebpub2f")
+                                             (string= name "scqawebarmy2f")))))
+
+(macroexpand '(sc-qa-box-name-conditionals))
 
 (provide 'dg-elisp-macros)
