@@ -87,8 +87,7 @@ browsers."
                       "qascauth"
                       "qawebarmy"
                       "qascpub"
-                      "qascdata"
-                      "qasched")))
+                      "qascdata")))
       (dolist (remote-box-alias qa-boxes)
         (tail-log remote-box-alias nil))
       (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
@@ -107,7 +106,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qawebarmy*" nil 'force-same-window)
   (other-window 1)
-  (switch-to-buffer "*tail-catalina-qasched*" nil 'force-same-window)
+  (switch-to-buffer "*mu4e-view*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (split-window-below)
@@ -117,6 +116,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qaschedmaster*" nil 'force-same-window)
   (balance-windows)
+  (other-window 3)
   (window-configuration-to-register ?q))
 
 (defun sc-check-what-servers-have-restarted ()
@@ -359,8 +359,7 @@ them, asking user for confirmation"
 (defun sc-update-all-builds ()
   (interactive)
   (sc-copy-build-numbers)
-  (make-frame-command)
-  (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+  (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
   (goto-char (point-max))
   (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
   (jabber-chat-buffer-send)
@@ -371,9 +370,7 @@ them, asking user for confirmation"
   (setq sc-restart-type "all")
   (sc--update-build)
   (sc--update-build)
-  (sc--update-build)
-  (sc--update-build)
-  )
+  (sc--update-build))
 
 (defun toggle-window-split ()
   (interactive)
@@ -500,7 +497,8 @@ Including indent-buffer, which should not be called automatically on save."
         (setq command (concat "d" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
-                                            '("chrome"
+                                            '("phantomjs localhost"
+                                              "chrome"
                                               "firefox"
                                               "ie 10"
                                               "ie 9"
@@ -541,10 +539,8 @@ Including indent-buffer, which should not be called automatically on save."
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
       (goto-char (process-mark proc))
-      (if (not (or (string-match "DEBUG" string)
-                   (string-match "file:\/opt\/apache-tomcat-6-0.32\/" string)))
-          (insert string)
-        (set-marker (process-mark proc) (point)))
+      (insert string)
+      (set-marker (process-mark proc) (point))
       (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "auth server has started, restarting pub now!")
@@ -780,7 +776,7 @@ point reaches the beginning or end of the buffer, stop there."
 (defun sc-start-selenium-server ()
   (interactive)
   (let ((selenium-proc-name "selenium-webdriver")
-        (selenium-version "2.32.0")
+        (selenium-version "2.35.0")
         (selenium-buffer nil)
         (selenium-file))
     (setq selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))
@@ -789,7 +785,9 @@ point reaches the beginning or end of the buffer, stop there."
       (when (and (eq nil (get-buffer selenium-buffer)) (file-exists-p selenium-file))
         (set-process-query-on-exit-flag
          (start-process selenium-proc-name selenium-buffer
-                        "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver")
+                        "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver"
+                        "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
+                        )
          nil)
         (switch-to-buffer selenium-buffer)
         (setq buffer-read-only t)))))
@@ -861,5 +859,62 @@ The output will appear in the buffer *PHP*."
                        ((string= from "cmitchell") "Carl")
                        ((string= from "olebedev") "Olivia")
                        ((string= from "cthompson") "Carmen")
+                       ((string= from "jhall") "Janet")
+                       ((string= from "jcox") "Jeff")
+                       ((string= from "vsatam") "Vikrant")
                        (t from)))
-      (start-process "jabber-hello" "jabber-say-buffer" "say" "-v" voice " \"" from " says, '" text "'\""))))
+      (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
+
+(defun mu4e-toggle-html2text-width ()
+  (interactive)
+  (message
+   (setq mu4e-html2text-command
+         (concat "html2text -nobs -width "
+                 (if (string-match "1000" mu4e-html2text-command)
+                     "72"
+                   "1000")
+                 " -utf8 | sed 's/&quot;/\"/g'"))))
+
+(defun s-second-half (separator string)
+  "Return the second half of a STRING split on SEPARATOR"
+  (cadr (s-split separator string)))
+
+(defun open-cron-env ()
+  "Open up a shell with the same envs as your cron
+
+Prior to using this command, you'll probably want to put the following in your crontab:
+
+    * * * * * env > ~/cronenv
+
+ and then uncomment it once it writes the ~/cronenv file.
+
+http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with"
+  (interactive)
+  (let ((buf "*cronenv*"))
+    (async-shell-command "env - `cat ~/cronenv` /bin/sh" buf buf)))
+
+
+(defun delete-other-window (&optional kill-window-buffer-too)
+  "Display an overlay in each window showing a unique key, then
+ask user which window to delete.
+
+If `kill-window-buffer-too` is non-nil, also delete the buffer in
+the window."
+  (interactive)
+  (if (> (length (window-list)) 1)
+      (progn
+        (let ((index (prompt-for-selected-window "Delete window: "))
+              (delete-window-function (if kill-window-buffer-too
+                                          'delete-window-and-kill-buffer
+                                        'delete-window)))
+          (apply-to-window-index delete-window-function index "")))))
+
+(defun delete-window-and-kill-buffer (&optional window)
+  "Delete WINDOW and kill it's associated buffer.
+WINDOW defaults to the currently selected window.
+Return nil."
+  (interactive)
+  (let ((window (window-normalize-window window)))
+    (kill-buffer (window-buffer window))
+    (delete-window window))
+  nil)
