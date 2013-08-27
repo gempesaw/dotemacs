@@ -3,7 +3,14 @@
 ;; load all the necessary packages
 (load "load-my-packages.el" 'noerror)
 
-;; consolidated settings files
+;; now load my things
+(setq dg-files '(
+                 dg-elisp-macros
+                 dg-tabs
+                 dg-mu4e
+                 dg-misc
+                 ))
+(mapcar (lambda (it) (require it)) dg-files)
 
 (load "passwords.el" 'noerror)
 (load "alias.el" 'noerror)
@@ -17,14 +24,6 @@
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
 (load "themes.el" 'noerror)
-
-
-(mapcar (lambda (it) (require it))
-        '(
-          dg-elisp-macros
-          dg-tabs
-          dg-mu4e
-          ))
 
 (sc-start-selenium-server)
 
