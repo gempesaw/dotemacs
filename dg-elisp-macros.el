@@ -8,7 +8,7 @@ The body of the advice is in BODY."
                     ,@body))
                commands)))
 
-
+(setq sc-restart-type nil)
 (defmacro sc-qa-box-name-conditionals ()
   (cond ((equal sc-restart-type "all") '(or (string= name "scqawebpub2f")
                                             (string= name "scqawebarmy2f")
