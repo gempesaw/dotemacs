@@ -16,11 +16,9 @@
                     cperl-mode
                     circe
                     dash
-                    dart-mode
                     dired-details
                     flx-ido
                     elisp-slime-nav
-                    elpy
                     exec-path-from-shell
                     expand-region
                     gist
