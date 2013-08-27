@@ -87,8 +87,7 @@ browsers."
                       "qascauth"
                       "qawebarmy"
                       "qascpub"
-                      "qascdata"
-                      "qasched")))
+                      "qascdata")))
       (dolist (remote-box-alias qa-boxes)
         (tail-log remote-box-alias nil))
       (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
@@ -107,7 +106,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qawebarmy*" nil 'force-same-window)
   (other-window 1)
-  (switch-to-buffer "*tail-catalina-qasched*" nil 'force-same-window)
+  (switch-to-buffer "*mu4e-view*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (split-window-below)
@@ -117,6 +116,7 @@ browsers."
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qaschedmaster*" nil 'force-same-window)
   (balance-windows)
+  (other-window 3)
   (window-configuration-to-register ?q))
 
 (defun sc-check-what-servers-have-restarted ()
@@ -359,8 +359,7 @@ them, asking user for confirmation"
 (defun sc-update-all-builds ()
   (interactive)
   (sc-copy-build-numbers)
-  (make-frame-command)
-  (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+  (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
   (goto-char (point-max))
   (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
   (jabber-chat-buffer-send)
@@ -371,9 +370,7 @@ them, asking user for confirmation"
   (setq sc-restart-type "all")
   (sc--update-build)
   (sc--update-build)
-  (sc--update-build)
-  (sc--update-build)
-  )
+  (sc--update-build))
 
 (defun toggle-window-split ()
   (interactive)
@@ -541,10 +538,8 @@ Including indent-buffer, which should not be called automatically on save."
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)
       (goto-char (process-mark proc))
-      (if (not (or (string-match "DEBUG" string)
-                   (string-match "file:\/opt\/apache-tomcat-6-0.32\/" string)))
-          (insert string)
-        (set-marker (process-mark proc) (point)))
+      (insert string)
+      (set-marker (process-mark proc) (point))
       (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "auth server has started, restarting pub now!")
