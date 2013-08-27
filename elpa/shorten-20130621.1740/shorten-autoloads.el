@@ -1,9 +1,10 @@
 ;;; shorten-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "shorten" "shorten.el" (21020 45031 0 0))
+;;;### (autoloads (shorten-strings) "shorten" "shorten.el" (21020
+;;;;;;  52532))
 ;;; Generated autoloads from shorten.el
 
 (autoload 'shorten-strings "shorten" "\
@@ -17,9 +18,15 @@ components back together into SHORTENED-STRING.  See also
 
 ;;;***
 
+;;;### (autoloads nil nil ("shorten-pkg.el") (21020 52532 996557))
+
+;;;***
+
+(provide 'shorten-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; shorten-autoloads.el ends here

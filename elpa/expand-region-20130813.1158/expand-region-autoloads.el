@@ -1,10 +1,10 @@
 ;;; expand-region-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "expand-region" "expand-region.el" (21020 45130
-;;;;;;  0 0))
+;;;### (autoloads (er/expand-region) "expand-region" "expand-region.el"
+;;;;;;  (21020 52539))
 ;;; Generated autoloads from expand-region.el
 
 (autoload 'er/expand-region "expand-region" "\
@@ -19,8 +19,12 @@ before calling `er/expand-region' for the first time.
 
 ;;;***
 
-;;;### (autoloads nil "expand-region-custom" "expand-region-custom.el"
-;;;;;;  (21020 45130 0 0))
+;;;### (autoloads (expand-region-exclude-text-mode-expansions expand-region-reset-fast-key
+;;;;;;  expand-region-contract-fast-key expand-region-fast-keys-enabled
+;;;;;;  expand-region-skip-whitespace expand-region-autocopy-register
+;;;;;;  expand-region-guess-python-mode expand-region-preferred-python-mode
+;;;;;;  expand-region) "expand-region-custom" "expand-region-custom.el"
+;;;;;;  (21020 52539))
 ;;; Generated autoloads from expand-region-custom.el
 
 (let ((loads (get 'expand-region 'custom-loads))) (if (member '"expand-region-custom" loads) nil (put 'expand-region 'custom-loads (cons '"expand-region-custom" loads))))
@@ -78,13 +82,15 @@ List of modes which derive from `text-mode' for which text mode expansions are n
 ;;;;;;  "python-el-expansions.el" "python-el-fgallina-expansions.el"
 ;;;;;;  "python-mode-expansions.el" "ruby-mode-expansions.el" "sml-mode-expansions.el"
 ;;;;;;  "text-mode-expansions.el" "the-org-mode-expansions.el" "web-mode-expansions.el")
-;;;;;;  (21020 45130 968910 0))
+;;;;;;  (21020 52539 416867))
 
 ;;;***
 
+(provide 'expand-region-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; expand-region-autoloads.el ends here

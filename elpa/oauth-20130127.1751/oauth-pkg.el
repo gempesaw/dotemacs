@@ -1,2 +1,2 @@
-(define-package "oauth" "20130127.1751" "Oauth library. [source: github]" 'nil)
+(define-package "oauth" "20130127.1751" "Oauth library. [github]" 'nil)
 

@@ -1,9 +1,10 @@
 ;;; smart-tab-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "smart-tab" "smart-tab.el" (21020 50403 0 0))
+;;;### (autoloads (smart-tab-mode smart-tab-mode-on smart-tab) "smart-tab"
+;;;;;;  "smart-tab.el" (21020 52602))
 ;;; Generated autoloads from smart-tab.el
 
 (autoload 'smart-tab "smart-tab" "\
@@ -38,9 +39,15 @@ Null prefix argument turns off the mode.
 
 ;;;***
 
+;;;### (autoloads nil nil ("smart-tab-pkg.el") (21020 52602 594070))
+
+;;;***
+
+(provide 'smart-tab-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; smart-tab-autoloads.el ends here

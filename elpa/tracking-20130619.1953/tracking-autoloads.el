@@ -1,9 +1,11 @@
 ;;; tracking-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "tracking" "tracking.el" (21020 45015 0 0))
+;;;### (autoloads (tracking-previous-buffer tracking-next-buffer
+;;;;;;  tracking-remove-buffer tracking-add-buffer tracking-mode)
+;;;;;;  "tracking" "tracking.el" (21020 52533))
 ;;; Generated autoloads from tracking.el
 
 (defvar tracking-mode nil "\
@@ -55,9 +57,15 @@ Switch to the last active buffer.
 
 ;;;***
 
+;;;### (autoloads nil nil ("tracking-pkg.el") (21020 52533 298905))
+
+;;;***
+
+(provide 'tracking-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; tracking-autoloads.el ends here

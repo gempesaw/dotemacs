@@ -1,10 +1,10 @@
 ;;; browse-kill-ring-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "browse-kill-ring" "browse-kill-ring.el" (21020
-;;;;;;  45153 0 0))
+;;;### (autoloads (browse-kill-ring browse-kill-ring-default-keybindings)
+;;;;;;  "browse-kill-ring" "browse-kill-ring.el" (21020 52531))
 ;;; Generated autoloads from browse-kill-ring.el
 
 (autoload 'browse-kill-ring-default-keybindings "browse-kill-ring" "\
@@ -22,9 +22,16 @@ Display items in the `kill-ring' in another buffer.
 
 ;;;***
 
+;;;### (autoloads nil nil ("browse-kill-ring-pkg.el") (21020 52532
+;;;;;;  87523))
+
+;;;***
+
+(provide 'browse-kill-ring-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; browse-kill-ring-autoloads.el ends here

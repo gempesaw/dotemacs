@@ -190,7 +190,7 @@
 	   [(20130821 32)
 	    nil "major mode for editing html templates [github]" tar])
  (web .
-      [(20130818 1425)
+      [(20130827 1312)
        nil "useful HTTP client [github]" single])
  (wcheck-mode .
 	      [(20130613 1808)
@@ -521,7 +521,7 @@
      [(20130403 1455)
       nil "a Japanese input method with T-Code on Emacs [github]" tar])
  (tangotango-theme .
-		   [(20130715 1126)
+		   [(20130827 1221)
 		    nil "Tango Palette color theme for Emacs 24. [github]" single])
  (tango-2-theme .
 		[(20120312 1325)
@@ -733,7 +733,7 @@
 		  (24 1)))
 		"a dark colorful theme for Emacs24. [github]" single])
  (solarized-theme .
-		  [(20130826 1805)
+		  [(20130827 1109)
 		   nil "The Solarized color theme, ported to Emacs. [github]" tar])
  (snippet .
 	  [(20130210 1815)
@@ -1241,7 +1241,7 @@
 	 [(20130329 2035)
 	  nil "Popup Window Manager. [github]" single])
  (popup-switcher .
-		 [(20130822 1316)
+		 [(20130827 1508)
 		  ((popup
 		    (0 5 0)))
 		  "switch to other buffers and files via popup. [github]" single])
@@ -1746,18 +1746,18 @@
 		     (9)))
 		   "decompilation extension for nrepl.el [github]" single])
  (nrepl .
-	[(20130822 1103)
+	[(20130827 1421)
 	 ((clojure-mode
 	   (2 0 0))
 	  (cl-lib
 	   (0 3))
 	  (dash
-	   (1 6 0))
+	   (2 1 0))
 	  (pkg-info
 	   (0 1)))
 	 "Client for Clojure nREPL [github]" single])
  (notmuch .
-	  [(20130731 1746)
+	  [(20130827 753)
 	   nil "No description available. [git]" tar])
  (nose .
        [(20110804 819)
@@ -2061,7 +2061,7 @@
 			       [(20130730 1032)
 				nil "Advice for magit-log-edit-commit [github]" single])
  (magit .
-	[(20130826 513)
+	[(20130827 1055)
 	 ((cl-lib
 	   (0 3))
 	  (git-commit-mode
@@ -2378,6 +2378,9 @@
 	     ((sws-mode
 	       (0)))
 	     "Major mode for editing .jade files [github]" single])
+ (jabber .
+	 [(20130827 1009)
+	  nil "A Jabber client for Emacs. [git]" tar])
  (j-mode .
 	 [(20130301 2049)
 	  nil "Major mode for editing J programs [github]" tar])
@@ -2417,7 +2420,7 @@
 	     [(20130104 2221)
 	      nil "add URLs to instapaper from emacs [hg]" single])
  (insert-shebang .
-		 [(20130825 106)
+		 [(20130827 1513)
 		  nil "Inserts shebang line automatically [github]" tar])
  (inlineR .
 	  [(20120520 2332)

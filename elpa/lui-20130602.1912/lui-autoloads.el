@@ -1,10 +1,10 @@
 ;;; lui-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "lui-autopaste" "lui-autopaste.el" (21020 45074
-;;;;;;  0 0))
+;;;### (autoloads (disable-lui-autopaste enable-lui-autopaste) "lui-autopaste"
+;;;;;;  "lui-autopaste.el" (21020 52533))
 ;;; Generated autoloads from lui-autopaste.el
 
 (autoload 'enable-lui-autopaste "lui-autopaste" "\
@@ -24,8 +24,8 @@ Disable the lui autopaste feature.
 
 ;;;***
 
-;;;### (autoloads nil "lui-irc-colors" "lui-irc-colors.el" (21020
-;;;;;;  45074 0 0))
+;;;### (autoloads (enable-lui-irc-colors) "lui-irc-colors" "lui-irc-colors.el"
+;;;;;;  (21020 52533))
 ;;; Generated autoloads from lui-irc-colors.el
 
 (autoload 'enable-lui-irc-colors "lui-irc-colors" "\
@@ -36,13 +36,15 @@ Enable IRC color interpretation for Lui.
 ;;;***
 
 ;;;### (autoloads nil nil ("lui-format.el" "lui-logging.el" "lui-pkg.el"
-;;;;;;  "lui.el") (21020 45074 616643 0))
+;;;;;;  "lui.el") (21020 52534 1077))
 
 ;;;***
 
+(provide 'lui-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; lui-autoloads.el ends here
