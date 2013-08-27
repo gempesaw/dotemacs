@@ -3,8 +3,8 @@
 ;;; Code:
 
 
-;;;### (autoloads nil nil ("hmac-sha1.el" "oauth-pkg.el" "oauth-test.el"
-;;;;;;  "oauth.el") (20813 53578 713000))
+;;;### (autoloads nil nil ("hmac-sha1.el" "oauth-pkg.el" "oauth.el")
+;;;;;;  (21020 52603 908773))
 
 ;;;***
 

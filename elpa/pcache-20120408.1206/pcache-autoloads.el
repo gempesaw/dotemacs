@@ -3,8 +3,8 @@
 ;;; Code:
 
 
-;;;### (autoloads nil nil ("pcache-pkg.el" "pcache-tests.el" "pcache.el")
-;;;;;;  (20801 18095 493000))
+;;;### (autoloads nil nil ("pcache-pkg.el" "pcache.el") (21020 52540
+;;;;;;  593816))
 
 ;;;***
 

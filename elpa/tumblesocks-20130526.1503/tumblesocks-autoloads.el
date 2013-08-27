@@ -1,10 +1,10 @@
 ;;; tumblesocks-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "tumblesocks-compose" "tumblesocks-compose.el"
-;;;;;;  (21020 45012 0 0))
+;;;### (autoloads (tumblesocks-compose-new-post) "tumblesocks-compose"
+;;;;;;  "tumblesocks-compose.el" (21020 52604))
 ;;; Generated autoloads from tumblesocks-compose.el
 
 (autoload 'tumblesocks-compose-new-post "tumblesocks-compose" "\
@@ -16,8 +16,8 @@ Once you're ready to submit your post, press C-c C-c
 
 ;;;***
 
-;;;### (autoloads nil "tumblesocks-view" "tumblesocks-view.el" (21020
-;;;;;;  45012 0 0))
+;;;### (autoloads (tumblesocks-view-dashboard) "tumblesocks-view"
+;;;;;;  "tumblesocks-view.el" (21020 52604))
 ;;; Generated autoloads from tumblesocks-view.el
 
 (autoload 'tumblesocks-view-dashboard "tumblesocks-view" "\
@@ -32,14 +32,15 @@ You can browse around, edit, and delete posts from here.
 ;;;***
 
 ;;;### (autoloads nil nil ("tumblesocks-api.el" "tumblesocks-pkg.el"
-;;;;;;  "tumblesocks-user.el" "tumblesocks.el") (21020 45012 264692
-;;;;;;  0))
+;;;;;;  "tumblesocks-user.el" "tumblesocks.el") (21020 52604 686655))
 
 ;;;***
 
+(provide 'tumblesocks-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; tumblesocks-autoloads.el ends here

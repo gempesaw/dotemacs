@@ -1,10 +1,12 @@
 ;;; ido-ubiquitous-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "ido-ubiquitous" "ido-ubiquitous.el" (21020
-;;;;;;  45110 0 0))
+;;;### (autoloads (ido-ubiquitous-function-compatibility-exceptions
+;;;;;;  ido-ubiquitous-command-compatibility-exceptions ido-ubiquitous-function-exceptions
+;;;;;;  ido-ubiquitous-command-exceptions ido-ubiquitous-mode ido-ubiquitous)
+;;;;;;  "ido-ubiquitous" "ido-ubiquitous.el" (21020 52543))
 ;;; Generated autoloads from ido-ubiquitous.el
 
 (let ((loads (get 'ido-ubiquitous 'custom-loads))) (if (member '"ido-ubiquitous" loads) nil (put 'ido-ubiquitous 'custom-loads (cons '"ido-ubiquitous" loads))))
@@ -101,9 +103,16 @@ https://github.com/DarwinAwardWinner/ido-ubiquitous/issues")
 
 ;;;***
 
+;;;### (autoloads nil nil ("ido-ubiquitous-pkg.el") (21020 52543
+;;;;;;  870443))
+
+;;;***
+
+(provide 'ido-ubiquitous-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; ido-ubiquitous-autoloads.el ends here

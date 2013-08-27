@@ -1,9 +1,9 @@
 ;;; circe-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+
 
-;;;### (autoloads nil "circe" "circe.el" (21020 45146 0 0))
+;;;### (autoloads (circe) "circe" "circe.el" (21020 52535))
 ;;; Generated autoloads from circe.el
 
 (autoload 'circe "circe" "\
@@ -29,8 +29,8 @@ See `circe-network-options' for a list of common options.
 
 ;;;***
 
-;;;### (autoloads nil "circe-color-nicks" "circe-color-nicks.el"
-;;;;;;  (21020 45146 0 0))
+;;;### (autoloads (enable-circe-color-nicks) "circe-color-nicks"
+;;;;;;  "circe-color-nicks.el" (21020 52535))
 ;;; Generated autoloads from circe-color-nicks.el
 
 (autoload 'enable-circe-color-nicks "circe-color-nicks" "\
@@ -41,8 +41,8 @@ This module colors all encountered nicks in a cross-server fashion.
 
 ;;;***
 
-;;;### (autoloads nil "circe-highlight-all-nicks" "circe-highlight-all-nicks.el"
-;;;;;;  (21020 45146 0 0))
+;;;### (autoloads (enable-circe-highlight-all-nicks) "circe-highlight-all-nicks"
+;;;;;;  "circe-highlight-all-nicks.el" (21020 52535))
 ;;; Generated autoloads from circe-highlight-all-nicks.el
 
 (autoload 'enable-circe-highlight-all-nicks "circe-highlight-all-nicks" "\
@@ -54,8 +54,8 @@ channel in messages of other people.
 
 ;;;***
 
-;;;### (autoloads nil "circe-lagmon" "circe-lagmon.el" (21020 45146
-;;;;;;  0 0))
+;;;### (autoloads (circe-lagmon-mode) "circe-lagmon" "circe-lagmon.el"
+;;;;;;  (21020 52535))
 ;;; Generated autoloads from circe-lagmon.el
 
 (defvar circe-lagmon-mode nil "\
@@ -77,13 +77,15 @@ in the mode-line.
 ;;;***
 
 ;;;### (autoloads nil nil ("circe-chanop.el" "circe-fix-minibuffer.el"
-;;;;;;  "circe-pkg.el" "circe-tests.el") (21020 45146 995147 0))
+;;;;;;  "circe-pkg.el" "circe-tests.el") (21020 52535 746337))
 
 ;;;***
 
+(provide 'circe-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
+;; coding: utf-8
 ;; End:
 ;;; circe-autoloads.el ends here
