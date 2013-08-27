@@ -246,6 +246,7 @@
                                (if (switch-between-buffers "*OfflineIMAP*")
                                    (progn (goto-char (point-max))
                                           (offlineimap-resync)))))
+(global-set-key (kbd "s-0") 'offlineimap-rudely-restart)
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
@@ -273,3 +274,6 @@
     nil))
 
 (global-set-key (kbd "C-M-^") (lambda () (interactive) (delete-indentation -1)))
+
+(global-set-key (kbd "s-k") 'delete-window-and-kill-buffer)
+(global-set-key (kbd "C-c k") (lambda () (interactive) (delete-other-window t)))
