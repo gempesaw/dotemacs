@@ -1,6 +1,4 @@
 (require 'ert)
 
-(require 'dg-elisp-macros)
-
-(ert-deftest should-pass ()
-  (should (fboundp 'sc-qa-box-name-conditionals)))
+xfcjdev(ert-deftest macros-are-loaded ()
+  (should (string= "dg-elisp-macros" (require 'dg-elisp-macros))))
