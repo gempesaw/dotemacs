@@ -876,6 +876,35 @@ If we're waiting for user-input, don't show anyhting."
                        (t from)))
       (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
 
+(defun mu4e-toggle-html2text-width ()
+  (interactive)
+  (message
+   (setq mu4e-html2text-command
+         (concat "html2text -nobs -width "
+                 (if (string-match "1000" mu4e-html2text-command)
+                     "72"
+                   "1000")
+                 " -utf8 | sed 's/&quot;/\"/g'"))))
+
+(defun s-second-half (separator string)
+  "Return the second half of a STRING split on SEPARATOR"
+  (cadr (s-split separator string)))
+
+(defun open-cron-env ()
+  "Open up a shell with the same envs as your cron
+
+Prior to using this command, you'll probably want to put the following in your crontab:
+
+    * * * * * env > ~/cronenv
+
+ and then uncomment it once it writes the ~/cronenv file.
+
+http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with"
+  (interactive)
+  (let ((buf "*cronenv*"))
+    (async-shell-command "env - `cat ~/cronenv` /bin/sh" buf buf)))
+
+
 (defun delete-other-window (&optional kill-window-buffer-too)
   "Display an overlay in each window showing a unique key, then
 ask user which window to delete.
