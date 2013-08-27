@@ -19,3 +19,5 @@ The body of the advice is in BODY."
                                              (string= name "scqadata2f")
                                              (string= name "scqawebarmy2f")
                                              (string= name "scqawebauth2f")))))
+
+(provide 'dg-elisp-macros)
