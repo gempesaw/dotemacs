@@ -2,7 +2,22 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Downloads"
+(("default.pm"
+ (filename . "~/opt/dev_hdew/honeydew/modules/default.pm")
+ (front-context-string . "use Reports qw(p")
+ (rear-context-string)
+ (position . 1))
+("gempesaw-selenium-remote-driver"
+ (filename . "~/opt/gempesaw-selenium-remote-driver/")
+ (front-context-string . "  /Users/dgempes")
+ (rear-context-string)
+ (position . 1))
+("prod-lib"
+ (filename . "/ssh:hnew:/opt/honeydew/lib/")
+ (front-context-string . "..\n  -rw-rw-r-- ")
+ (rear-context-string . "96 Aug  7 11:43 ")
+ (position . 152))
+("Downloads"
  (filename . "~/Downloads/")
  (front-context-string . "..\n  -rw-r--r--@")
  (rear-context-string . "70 Aug  9 13:51 ")

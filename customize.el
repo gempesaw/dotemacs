@@ -239,18 +239,17 @@
       mu4e-headers-results-limit 50
       mu4e-use-fancy-chars nil
       mu4e-view-show-images t
-      mu4e-html2text-command "html2text -nobs -style pretty -width 1000 | sed 's/&quot;/\"/g'"
+      ;; mu4e-html2text-command "html2text -nobs -style pretty -width 1000 | sed 's/&quot;/\"/g'"
       mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
       mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
                        ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                        ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
-                       ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied" "QA Builds" ?q)
+                       ("from:squash OR from:root or from:uptime" "Alerts" ?a)
                        ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                        ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                        ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                        ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash" "Inbox" ?i)
                        ("maildir:/INBOX" "All Inbox" ?I)
-                       ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                        ("from:dgempesaw@sharecare.com" "Sent" ?t)
                        ("date:7d..now" "Last 7 days" ?l)
                        ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
@@ -268,9 +267,8 @@
       smtpmail-smtp-user "dgempesaw@sharecare.com"
       smtpmail-smtp-service 587)
 
-(setq split-height-threshold nil
+(setq split-height-threshold 80
       split-width-threshold 160)
-
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
