@@ -8,19 +8,4 @@ The body of the advice is in BODY."
                     ,@body))
                commands)))
 
-(setq sc-restart-type nil)
-(defmacro sc-qa-box-name-conditionals ()
-  (cond ((equal sc-restart-type "all") '(or (string= name "scqawebpub2f")
-                                            (string= name "scqawebarmy2f")
-                                            (string= name "scqadata2f")
-                                            (string= name "scqaschedulemaster2f")
-                                            (string= name "scqawebauth2f")))
-        ((equal sc-restart-type "half") '(or (string= name "scqawebpub2f")
-                                             (string= name "scqawebarmy2f")
-                                             (string= name "scqawebauth2f")))
-        ((equal sc-restart-type "pubs") '(or (string= name "scqawebpub2f")
-                                             (string= name "scqawebarmy2f")))))
-
-(macroexpand '(sc-qa-box-name-conditionals))
-
 (provide 'dg-elisp-macros)
