@@ -249,6 +249,7 @@
 (eval-after-load 'key-chord
   (progn
     (key-chord-mode t)
+    (key-chord-define-global "xw" 'ido-write-file)
     (key-chord-define-global "xg" 'magit-status)
     (key-chord-define-global "qq" 'window-configuration-to-register)
     (key-chord-define-global "wj" 'jump-to-register)
