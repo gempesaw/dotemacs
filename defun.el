@@ -247,7 +247,7 @@ them, asking user for confirmation"
     (if (or (eq nil (get-buffer-process buffer))
             (eq nil (get-buffer buffer)))
         (save-window-excursion
-          (async-shell-command "ssh hnew" buffer)
+          (open-ssh-connection "hnew")
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
     (switch-to-buffer buffer)))
 
@@ -644,11 +644,13 @@ Including indent-buffer, which should not be called automatically on save."
 
 (require 'tramp)
 (defun open-ssh-connection (&optional pfx)
-  (interactive "p")
+  (interactive)
   (let ((remote-info (get-user-for-remote-box))
         (buffer)
         (box))
-    (setq box (ido-completing-read "Which box: " (mapcar 'car remote-info)))
+    (if (eq nil pfx)
+        (setq box (ido-completing-read "Which box: " (mapcar 'car remote-info)))
+      (setq box pfx))
     (setq buffer (concat "*ssh-" box "*"))
     (let ((default-directory (concat "/" box ":/home/" (cadr (assoc box remote-info)) "/")))
       (shell buffer))
