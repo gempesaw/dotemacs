@@ -327,8 +327,28 @@ them, asking user for confirmation"
            (progn
              (setq name (caddr (nth 3 item)))
              (and (not (string-match "Disable" note))
-                  (sc-qa-box-name-conditionals)))))
+                  (sc-qa-box-name-conditionals name sc-restart-type)))))
      parsed-xml)))
+
+(defun sc-qa-box-name-conditionals (name restart-type)
+  (let ((groupings '(("all" . ("scqawebpub2f"
+                               "scqawebarmy2f"
+                               "scqadata2f"
+                               "scqaschedulemaster2f"
+                               "scqawebauth2f"))
+                     ("half" . ("scqawebpub2f"
+                                "scqawebarmy2f"
+                                "scqawebauth2f"))
+                     ("pubs" . ("scqawebpub2f"
+                                "scqawebarmy2f"))))
+        (match nil))
+    (or (mapcar
+         (lambda (it)
+           (if (string= name it)
+               (setq match t)))
+         (cdr (assoc restart-type groupings))))
+    match))
+
 
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
@@ -370,7 +390,8 @@ them, asking user for confirmation"
   (setq sc-restart-type "all")
   (sc--update-build)
   (sc--update-build)
-  (sc--update-build))
+  (sc--update-build)
+  sc-restart-type)
 
 (defun toggle-window-split ()
   (interactive)
