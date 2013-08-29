@@ -274,3 +274,6 @@
 
 (global-set-key (kbd "s-k") 'delete-window-and-kill-buffer)
 (global-set-key (kbd "C-c k") (lambda () (interactive) (delete-other-window t)))
+
+;; I keep accidentally pop-tag-mark'ing when I don't want to.
+(global-unset-key (kbd "M-*"))
