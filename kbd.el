@@ -48,7 +48,7 @@
                      (generate-new-buffer "*shell*"))) nil)))
 
 ;; start hnew shell or switch to it if it's active
-(global-set-key (kbd "C-c ,") 'open-existing-hnew-shell)
+(global-set-key (kbd "C-c ,") 'sc-open-existing-hnew-shell)
 
 ;; Start cterm or switch to it if it's active.
 (require 'term)
