@@ -1,5 +1,6 @@
 (require 'package)
 (require 'cl)
+(require 'tramp)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")))
@@ -7,7 +8,6 @@
 (package-initialize)
 
 (defvar my-packages '() "A list of packages to ensure are installed at launch.")
-(defvar my-melpa-packages '() "A list of MELPA packages (not available on marmalade)")
 
 (setq my-packages '(
                     ace-jump-mode

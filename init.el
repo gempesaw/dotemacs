@@ -9,8 +9,12 @@
                  dg-tabs
                  dg-mu4e
                  dg-misc
+                 dg-sc-defun
                  ))
-(mapcar (lambda (it) (require it)) dg-files)
+
+(mapcar (lambda (it)
+          (require it))
+        dg-files)
 
 (load "passwords.el" 'noerror)
 (load "alias.el" 'noerror)
