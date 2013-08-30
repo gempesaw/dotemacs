@@ -270,4 +270,12 @@
       (setq ticket (read-from-minibuffer "Not sure if this is a ticket: " ticket)))
     (browse-url (concat "http://arnoldmedia.jira.com/browse/" ticket))))
 
+(defun sc-hdew-update-keywords ()
+  (interactive)
+  (let ((buf (get-buffer " *update keywords*"))
+        (update "curl -k https://server-422.lab1a.openstack.internal/keywords/getKeywordsFile.php")
+        (copy "scp honeydew@hnew:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt"))
+    (save-window-excursion
+      (async-shell-command (concat update " && " copy) buf buf))))
+
 (provide 'dg-sc-defun)
