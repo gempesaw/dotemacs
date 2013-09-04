@@ -2,9 +2,9 @@
 (add-to-list 'load-path "./")
 (package-initialize)
 
+(load "init.el")
 (message (mapconcat (lambda (it) (symbol-name (car it))) package-alist " "))
 
-(message "%s" load-path)
 (require 'ert)
 
 ;; (ert-deftest my-files-are-loaded ()

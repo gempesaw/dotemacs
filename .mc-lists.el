@@ -58,6 +58,7 @@
         mc/mark-next-lines
         message-beginning-of-line
         mu4e-headers-mark-for-read
+        next-error
         org-beginning-of-line
         org-delete-char
         org-end-of-line
@@ -106,6 +107,7 @@
         hs-show-block
         jabber-activity-switch-to
         js2-mode-show-node
+        jump-to-register
         magit-status
         markdown-dedent-or-delete
         move-to-window-line-top-bottom
