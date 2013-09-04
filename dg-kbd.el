@@ -277,3 +277,5 @@
 
 ;; I keep accidentally pop-tag-mark'ing when I don't want to.
 (global-unset-key (kbd "M-*"))
+
+(provide 'dg-kbd)

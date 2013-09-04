@@ -6,6 +6,7 @@
 ;; now load my things
 (setq dg-files '(
                  dg-elisp-macros
+                 dg-kbd
                  dg-tabs
                  dg-mu4e
                  dg-misc
