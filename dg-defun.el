@@ -649,3 +649,5 @@ Return nil."
 (defun ert-my-dotemacs ()
   (interactive)
   (compile "cd ~/.emacs.d/ && pwd && emacs --version && emacs -batch -L ./ -L ./elpa/ -L ./ert-tests/ -l ert -l ./ert-tests/dg-init-ert.el -f ert-run-tests-batch-and-exit"))
+
+(provide 'dg-defun)

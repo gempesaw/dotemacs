@@ -11,6 +11,7 @@
                  dg-tabs
                  dg-mu4e
                  dg-misc
+                 dg-defun
                  dg-sc-defun
                  ))
 
@@ -19,14 +20,11 @@
         dg-files)
 
 (load "passwords.el" 'noerror)
-(load "alias.el" 'noerror)
 (load "customize.el" 'noerror)
-(load "defun.el" 'noerror)
 (load "defadvice.el" 'noerror)
 (load "emacs-custom.el" 'noerror)
 (load "feature-mode.el")
 (load "hooks.el" 'noerror)
-(load "kbd.el" 'noerror)
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
 (load "themes.el" 'noerror)
