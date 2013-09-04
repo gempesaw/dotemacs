@@ -116,6 +116,7 @@
         mu4e-mark-execute-all
         org-delete-backward-char
         org-self-insert-command
+        paredit-backslash
         php-send-buffer
         revert-buffer
         scroll-up-command

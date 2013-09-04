@@ -13,6 +13,7 @@
                  dg-misc
                  dg-defun
                  dg-sc-defun
+                 dg-selenium
                  ))
 
 (mapcar (lambda (it)
@@ -28,7 +29,5 @@
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
 (load "themes.el" 'noerror)
-
-(start-selenium-server)
 
 (provide 'init)
