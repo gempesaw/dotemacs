@@ -506,25 +506,6 @@ point reaches the beginning or end of the buffer, stop there."
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
 
-(defun start-selenium-server ()
-  (interactive)
-  (let ((selenium-proc-name "selenium-webdriver")
-        (selenium-version "2.35.0")
-        (selenium-buffer nil)
-        (selenium-file))
-    (setq selenium-buffer (concat "*" selenium-proc-name "-" selenium-version "*"))
-    (setq selenium-file (concat "/opt/selenium-server-standalone-" selenium-version ".jar"))
-    (save-window-excursion
-      (when (and (eq nil (get-buffer selenium-buffer)) (file-exists-p selenium-file))
-        (set-process-query-on-exit-flag
-         (start-process selenium-proc-name selenium-buffer
-                        "java" "-jar" selenium-file "-Dwebdriver.chrome.driver=/opt/chromedriver"
-                        "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
-                        )
-         nil)
-        (switch-to-buffer selenium-buffer)
-        (setq buffer-read-only t)))))
-
 (defun php-send-buffer ()
   (interactive)
   (with-current-buffer "*PHP*"
