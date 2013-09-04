@@ -29,6 +29,7 @@
                     impatient-mode
                     jabber
                     js2-mode
+                    key-chord
                     magit
                     markdown-mode
                     multiple-cursors
