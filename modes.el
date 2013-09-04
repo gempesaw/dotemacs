@@ -34,9 +34,6 @@
 
 (yas-global-mode 1)
 
-;; activate my minor mode to override keybindings
-(my-keys-minor-mode 1)
-
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 

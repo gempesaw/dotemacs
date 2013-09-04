@@ -54,9 +54,6 @@ browsers."
   (set-buffer "run-feature-in-all-browsers")
   (dired-other-window "/Users/dgempesaw/tmp/sauce/"))
 
-(defun my-minibuffer-setup-hook ()
-  (my-keys-minor-mode 0))
-
 (defun reload-my-init ()
   (interactive)
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
