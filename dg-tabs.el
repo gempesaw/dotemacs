@@ -15,7 +15,8 @@
 
 (eval-after-load "smart-tab"
   '(progn
-     ;; smart tab - do i need this? YES
+     (setq smart-tab-using-hippie-expand t)
+     (setq smart-tab-completion-functions-alist '())
      (define-key my-keys-minor-mode-map (kbd "<tab>") 'smart-tab)
      (global-set-key (kbd "<tab>") 'smart-tab)
      (global-smart-tab-mode 1)))
