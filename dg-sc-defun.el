@@ -173,6 +173,13 @@
         (match nil))
     (member name (cdr (assoc restart-type groupings)))))
 
+(defun sc-restart-pubs-only ()
+  (interactive)
+  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
+      (message "Try again from a tail-qa buffer! No accidents :)")
+    (setq sc-restart-type "pubs")
+    (sc-restart-qa-boxes t)))
+
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
   (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
@@ -239,7 +246,7 @@
       (if (string-match-p "Initializing Log4J" string)
           (progn
             (message "pub server has restarted, deploying assets now!")
-            (start-qa-file-copy)
+            (sc-start-qa-file-copy)
             (set-process-filter proc nil))))))
 
 (defun sc-kabocha-test ()

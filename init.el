@@ -29,6 +29,6 @@
 (load "my-macros.el" 'noerror)
 (load "themes.el" 'noerror)
 
-(sc-start-selenium-server)
+(start-selenium-server)
 
 (provide 'init)
