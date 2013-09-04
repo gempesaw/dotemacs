@@ -5,6 +5,7 @@
 
 ;; now load my things
 (setq dg-files '(
+                 dg-override-keys
                  dg-elisp-macros
                  dg-kbd
                  dg-tabs
