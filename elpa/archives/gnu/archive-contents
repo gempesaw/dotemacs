@@ -5,6 +5,9 @@
  (adaptive-wrap .
                 [(0 5)
                  nil "Smart line-wrapping with wrap-prefix" single])
+ (adjust-parens .
+                [(1 0)
+                 nil "Indent and dedent Lisp code, automatically adjust close parens" single])
  (all .
       [(1 0)
        nil "Edit all lines matching a given regexp" single])
@@ -121,7 +124,7 @@
            [(1 0)
             nil "Support for OWL Manchester Notation" single])
  (org .
-      [(20130826)
+      [(20130902)
        nil "Outline-based notes management and organizer" tar])
  (quarter-plane .
                 [(0 1)
