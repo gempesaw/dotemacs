@@ -38,6 +38,7 @@
         delete-indentation
         describe-key
         dired-details-hide
+        dired-do-delete
         dired-mark
         downcase-region
         elpy-shell-send-region-or-buffer
