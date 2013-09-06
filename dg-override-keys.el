@@ -10,5 +10,4 @@
 ;; activate my minor mode to override keybindings
 (my-keys-minor-mode 1)
 
-
 (provide 'dg-override-keys)
