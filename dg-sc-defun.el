@@ -169,7 +169,9 @@
                                 "scqawebarmy2f"
                                 "scqawebauth2f"))
                      ("pubs" . ("scqawebpub2f"
-                                "scqawebarmy2f"))))
+                                "scqawebarmy2f"))
+                     ("pub" . ("scqawebpub2f"))
+                     ("army" . ("scqawebarmy2f"))))
         (match nil))
     (member name (cdr (assoc restart-type groupings)))))
 
