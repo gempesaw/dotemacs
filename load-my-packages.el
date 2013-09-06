@@ -39,7 +39,7 @@
                     regex-tool
                     s
                     simple-httpd
-                    skewer
+                    skewer-mode
                     smart-tab
                     smex
                     switch-window
