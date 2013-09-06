@@ -11,7 +11,8 @@
                                          try-complete-file-name
                                          try-expand-all-abbrevs
                                          try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+                                         try-complete-lisp-symbol
+                                         ))
 
 (eval-after-load "smart-tab"
   '(progn
