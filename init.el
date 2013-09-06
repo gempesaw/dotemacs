@@ -5,6 +5,7 @@
 
 ;; now load my things
 (setq dg-files '(
+                 dg-override-keys       ; needs to be first so other files can use it
                  dg-defun
                  dg-elisp-macros
                  dg-kbd
@@ -12,12 +13,12 @@
                  dg-mu4e
                  dg-misc
                  dg-numpad
-                 dg-override-keys
                  dg-sc-defun
                  dg-selenium
                  ))
 
 (mapcar (lambda (it)
+          (message "    ****Loading %s****    " it)
           (require it))
         dg-files)
 
