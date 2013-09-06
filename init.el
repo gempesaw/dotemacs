@@ -5,13 +5,14 @@
 
 ;; now load my things
 (setq dg-files '(
-                 dg-override-keys
+                 dg-defun
                  dg-elisp-macros
                  dg-kbd
                  dg-tabs
                  dg-mu4e
                  dg-misc
-                 dg-defun
+                 dg-numpad
+                 dg-override-keys
                  dg-sc-defun
                  dg-selenium
                  ))
