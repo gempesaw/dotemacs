@@ -190,7 +190,7 @@
                (1 6 8)))
              "Weblog maintenance via XML-RPC APIs [bzr]" single])
  (web-mode .
-           [(20130831 1025)
+           [(20130904 2310)
             nil "major mode for editing html templates [github]" tar])
  (web .
       [(20130827 1312)
@@ -285,7 +285,7 @@
        [(20120910 951)
         nil "UUID's for EmacsLisp [github]" single])
  (use-package .
-              [(20130815 2135)
+              [(20130903 2155)
                ((bind-key
                  (1 0))
                 (diminish
@@ -742,7 +742,7 @@
                   (24 1)))
                 "a dark colorful theme for Emacs24. [github]" single])
  (solarized-theme .
-                  [(20130903 1443)
+                  [(20130904 2135)
                    nil "The Solarized color theme, ported to Emacs. [github]" tar])
  (snippet .
           [(20130210 1815)
@@ -769,7 +769,7 @@
            [(20130312 1839)
             nil "Support sequential operation which omitted prefix keys. [github]" single])
  (smartparens .
-              [(20130902 2310)
+              [(20130904 1707)
                ((cl-lib
                  (0 1))
                 (dash
@@ -981,7 +981,7 @@
               (0 0 3)))
             "s operations for buffers [github]" single])
  (s .
-    [(20130824 2225)
+    [(20130904 1052)
      nil "The long lost Emacs string manipulation library. [github]" single])
  (rvm .
       [(20130521 902)
@@ -1298,7 +1298,7 @@
                   [(20130319 2233)
                    nil "Interact with Pivotal Tracker through its API [github]" single])
  (pig-mode .
-           [(20130901 1517)
+           [(20130904 1423)
             nil "Major mode for Pig files [github]" tar])
  (php-mode .
            [(20130902 1944)
@@ -1988,6 +1988,11 @@
  (mediawiki .
             [(20130223 1441)
              nil "mediawiki frontend [bzr]" single])
+ (mc-extras .
+            [(20130904 1328)
+             ((multiple-cursors
+               (1 2 1)))
+             "Extra functions for multiple-cursors mode. [github]" tar])
  (maxframe .
            [(20120725 1149)
             nil "maximize the emacs frame based on display size [github]" single])
@@ -2079,7 +2084,7 @@
                                [(20130730 1032)
                                 nil "Advice for magit-log-edit-commit [github]" single])
  (magit .
-        [(20130903 2226)
+        [(20130904 933)
          ((cl-lib
            (0 3))
           (git-commit-mode
@@ -2325,9 +2330,6 @@
          (inflections
           (1 1)))
         "build functions which contextually jump between files [github]" single])
- (jtags .
-        [(20111208 1922)
-         nil "enhanced tags functionality for Java development [git]" tar])
  (jss .
       [(20130508 1623)
        ((emacs
@@ -2438,7 +2440,7 @@
              [(20130104 2221)
               nil "add URLs to instapaper from emacs [hg]" single])
  (insert-shebang .
-                 [(20130903 1803)
+                 [(20130904 1340)
                   nil "Inserts shebang line automatically [github]" tar])
  (inlineR .
           [(20120520 2332)
@@ -2515,7 +2517,7 @@
                     [(20130422 1226)
                      nil "Makes ido-mode display vertically. [github]" single])
  (ido-ubiquitous .
-                 [(20130820 1824)
+                 [(20130904 1158)
                   nil "Use ido (nearly) everywhere. [github]" single])
  (ido-sort-mtime .
                  [(20130427 1211)
@@ -2589,11 +2591,6 @@
  (ht .
      [(20130822 1906)
       nil "The missing hash table library for Emacs [github]" single])
- (hlinum .
-         [(20130616 34)
-          ((cl-lib
-            (0 2)))
-          "Extension for linum.el to highlight current line number [hg]" single])
  (hl-todo .
           [(20130504 359)
            nil "highlight TODO keywords in comments [github]" single])
@@ -2660,7 +2657,7 @@
                [(20130508 2044)
                 nil "Hemisu for Emacs. [github]" tar])
  (helm-themes .
-              [(20121020 2316)
+              [(20130904 2348)
                ((helm
                  (1 0)))
                "Color theme selection with helm interface [github]" single])
@@ -2815,7 +2812,7 @@
             (20120509)))
           "helm-sources and some utilities for GNU R. [github]" single])
  (helm .
-       [(20130902 857)
+       [(20130904 1907)
         nil "Helm is an Emacs incremental and narrowing framework [github]" tar])
  (header2 .
           [(20130723 2321)
@@ -2952,9 +2949,6 @@
  (go-play .
           [(20120914 2148)
            nil "Paste to play.golang.org [github]" single])
- (go-mode .
-          [(20130827 947)
-           nil "Major mode for the Go programming language [hg]" tar])
  (go-errcheck .
               [(20130308 1757)
                nil "errcheck integration for go-mode [github]" single])
@@ -3119,9 +3113,6 @@
  (fuzzy .
         [(20120323 1044)
          nil "Fuzzy Matching [github]" single])
- (furl .
-       [(20110112 1707)
-        nil "Friendly URL retrieval [hg]" single])
  (fullscreen-mode .
                   [(20130524 956)
                    nil "fullscreen window support for Emacs [github]" single])
@@ -3325,7 +3316,7 @@
                    (0 6 0)))
                  "Cask support in Flycheck [github]" single])
  (flycheck .
-           [(20130822 1252)
+           [(20130904 956)
             ((s
               (1 6 0))
              (dash
@@ -3460,7 +3451,7 @@
              (0 0 2)))
            "Alternatives to `message' [github]" single])
  (expand-region .
-                [(20130813 1158)
+                [(20130904 1525)
                  nil "Increase selected region by semantic units. [github]" tar])
  (exec-path-from-shell .
                        [(20130806 925)
@@ -3538,7 +3529,7 @@
       [(20130823 950)
        nil "No description available. [github]" tar])
  (espuds .
-         [(20130901 1451)
+         [(20130904 2012)
           ((s
             (1 7 0))
            (dash
@@ -3583,7 +3574,7 @@
          [(20130827 1016)
           nil "Erlang major mode [github]" tar])
  (ergoemacs-mode .
-                 [(20130902 2219)
+                 [(20130903 2144)
                   ((org-cua-dwim
                     (0 5)))
                   "Emacs mode based on common modern software interface and ergonomics. [github]" tar])
@@ -4034,7 +4025,7 @@
            [(20091203 1912)
             nil "Diminished modes are minor modes with no modeline display [github]" single])
  (diff-hl .
-          [(20130903 1934)
+          [(20130904 1629)
            ((cl-lib
              (0 2)))
            "Highlight uncommitted changes [github]" tar])
@@ -4313,7 +4304,7 @@
           [(20130828 2044)
            nil "screencasting with \"avconv\" or \"ffmpeg\" [github]" tar])
  (caml .
-       [(20130322 1319)
+       [(20130904 1012)
         nil "No description available. [svn]" tar])
  (calfw-gcal .
              [(20120111 1900)
@@ -4722,6 +4713,20 @@
  (abc-mode .
            [(20130607 917)
             nil "Major mode for editing abc music files [github]" single])
+ (hlinum .
+         [(20130616 34)
+          ((cl-lib
+            (0 2)))
+          "Extension for linum.el to highlight current line number [hg]" single])
+ (go-mode .
+          [(20130827 947)
+           nil "Major mode for the Go programming language [hg]" tar])
+ (furl .
+       [(20110112 1707)
+        nil "Friendly URL retrieval [hg]" single])
+ (jtags .
+        [(20111208 1922)
+         nil "enhanced tags functionality for Java development [git]" tar])
  (org-mac-link-grabber .
                        [(20130514 1519)
                         nil "Grab links and url from various mac [git]" single])
