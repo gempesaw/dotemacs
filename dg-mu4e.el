@@ -58,6 +58,31 @@ If we're waiting for user-input, don't show anyhting."
   (defun qa-build-email-pending-p ()
     (let ((qa-email-file "~/.qa-build-ready"))
       (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
-  )
+
+
+  (global-unset-key (kbd "s-m"))
+  (global-set-key (kbd "s-m") (lambda ()
+                                (interactive)
+                                (let ((buf "*mu4e-headers*"))
+                                  (if (not (string-match "mu4e" (buffer-name)))
+                                      (progn
+                                        (window-configuration-to-register 6245)
+                                        (with-current-buffer (get-buffer-create buf)
+                                          (unless (string-match "Search" (buffer-string))
+                                            (execute-kbd-macro 'mu4e-open-inbox))
+                                          (mu4e-update-mail-and-index t)
+                                          (switch-to-buffer buf))
+                                        (delete-other-windows))
+                                    (jump-to-register 6245)))))
+
+
+  (eval-after-load "mu4e"
+    '(progn
+       (define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-all-as-read)
+       (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
+       (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
+       (define-key mu4e-headers-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
+       (define-key mu4e-view-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
+       (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
 
 (provide 'dg-mu4e)

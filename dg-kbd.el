@@ -57,10 +57,6 @@
 (define-key term-mode-map (kbd "C-;") 'term-char-mode)
 (define-key term-raw-map (kbd "C-;") 'term-line-mode)
 
-;; replace buffer-menu with ibuffer
-(global-set-key (kbd "C-c C-b") 'ibuffer)
-(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-
 ;; load file into emacs
 (global-unset-key (kbd "C-c C-l"))
 (global-set-key (kbd "C-c C-l") 'load-file)
@@ -209,33 +205,10 @@
                               (if (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")
                                   (jabber-muc-names))))
 
-(global-unset-key (kbd "s-m"))
-(global-set-key (kbd "s-m") (lambda ()
-                              (interactive)
-                              (let ((buf "*mu4e-headers*"))
-                                (if (not (string-match "mu4e" (buffer-name)))
-                                    (progn
-                                      (window-configuration-to-register 6245)
-                                      (with-current-buffer (get-buffer-create buf)
-                                        (unless (string-match "Search" (buffer-string))
-                                          (execute-kbd-macro 'mu4e-open-inbox))
-                                        (mu4e-update-mail-and-index t)
-                                        (switch-to-buffer buf))
-                                      (delete-other-windows))
-                                  (jump-to-register 6245)))))
-
-
 (global-unset-key (kbd "C-x C-r"))
 (global-set-key (kbd "C-x C-r") 'find-file-as-root)
 
 (global-set-key (kbd "C-c y") 'toggle-window-split)
-
-(eval-after-load "mu4e"
-  '(progn
-     (define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-all-as-read)
-     (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
-     (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
-     (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
 
 (global-unset-key (kbd "s-o"))
 (global-set-key (kbd "s-o") '(lambda () (interactive)
