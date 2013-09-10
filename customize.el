@@ -80,34 +80,6 @@
 ;; don't compile based on last buffer
 (setq compilation-last-buffer nil)
 
-;; ido customization
-(setq ido-enable-prefix nil
-      ido-enable-flex-matching t ; fuzzy matching is a must have
-      flx-ido-use t
-      ido-create-new-buffer 'always
-      ido-use-filename-at-point 'guess
-      ido-max-prospects 10
-      ido-default-file-method 'selected-window
-      ;; ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini" ".cfg" ".cnf")
-      )
-
-;; turn up gc threshold to speed up flx
-(setq gc-cons-threshold 20000000)
-
-;; ignore list http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/
-;; (add-to-list 'ido-ignore-buffers "buffers")
-;; (add-to-list 'ido-ignore-files "files")
-(eval-after-load "ido-mode"
-  '(progn
-     (add-to-list 'ido-ignore-directories "target")
-     (add-to-list 'ido-ignore-directories "svn_HDEW")
-     (add-to-list 'ido-ignore-directories "node_modules")))
-
-;; Display ido results vertically, rather than horizontally
-(setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
-(defun ido-disable-line-trucation () (set (make-local-variable 'truncate-lines) nil))
-(add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation)
-
 ;; make dired-find-file faster
 ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
 (eval-after-load "find-dired"
