@@ -8,6 +8,7 @@
                  dg-override-keys       ; needs to be first so other files can use it
                  dg-defun
                  dg-elisp-macros
+                 dg-minibuffer
                  dg-kbd
                  dg-tabs
                  dg-mu4e

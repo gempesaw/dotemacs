@@ -5,16 +5,6 @@
 (when (fboundp 'winner-mode)
   (winner-mode 1))
 
-;; ido mode
-(ido-mode t) ; enable ido for buffer/file switching
-(ido-everywhere t) ;enable ido everywhere
-
-;; Use ido everywhere
-(ido-ubiquitous 1)
-
-;; auto-completion in minibuffer
-(icomplete-mode +1)
-
 ;; delete the selection with a keypress
 (delete-selection-mode t)
 
