@@ -1,11 +1,8 @@
 (add-to-list 'load-path "~/.emacs.d/")
 
-;; load all the necessary packages
-(load "load-my-packages.el" 'noerror)
-
-;; now load my things
 (setq dg-files '(
-                 dg-override-keys       ; needs to be first so other files can use it
+                 dg-load-my-packages       ;; load all the necessary packages
+                 dg-override-keys       ;; needs to be first so other files can use it
                  dg-defun
                  dg-elisp-macros
                  dg-minibuffer

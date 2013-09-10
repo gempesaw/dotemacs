@@ -73,3 +73,5 @@
 
 ;; manually load some packages
 (load "smart-compile.el" 'noerror)
+
+(provide 'dg-load-my-packages)
