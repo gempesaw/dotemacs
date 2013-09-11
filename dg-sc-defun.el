@@ -2,7 +2,8 @@
   "runs all the tests in the honeydew folder"
   (interactive)
   (let ((buf "*sc-hdew-prove-all*"))
-    (start-process "generate-hdew-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
+    (start-process "hdew-generate-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
+    (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
          "prove -I /opt/honeydew/lib/ -j9 --state=failed  --trap --merge" buf)
