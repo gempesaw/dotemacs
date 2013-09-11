@@ -3,6 +3,7 @@
 (setq dg-files '(
                  dg-load-my-packages       ;; load all the necessary packages
                  dg-override-keys       ;; needs to be first so other files can use it
+                 dg-passwords
                  dg-defun
                  dg-elisp-macros
                  dg-minibuffer
@@ -13,6 +14,7 @@
                  dg-numpad
                  dg-sc-defun
                  dg-selenium
+                 dg-jabber
                  ))
 
 (mapcar (lambda (it)
@@ -20,7 +22,6 @@
           (require it))
         dg-files)
 
-(load "passwords.el" 'noerror)
 (load "customize.el" 'noerror)
 (load "defadvice.el" 'noerror)
 (load "emacs-custom.el" 'noerror)
