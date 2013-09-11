@@ -556,22 +556,6 @@ The output will appear in the buffer *PHP*."
              (file-writable-p buffer-file-name))
     (save-buffer)))
 
-(defun jabber-alert-message-say (from buffer text proposed-alert)
-  (interactive)
-  (unless (eq (window-buffer (selected-window)) buffer)
-    (let ((voice (if (eq 1 (random 2)) "Victoria" "Vicki"))
-          (text (car (s-split "\n" text)))
-          (from (car (s-split "@" (s-chop-prefix "qa@conference.sharecare.com/" from)))))
-      (setq from (cond ((string= from "ebarrsmith") "Erin")
-                       ((string= from "cmitchell") "Carl")
-                       ((string= from "olebedev") "Olivia")
-                       ((string= from "cthompson") "Carmen")
-                       ((string= from "jhall") "Janet")
-                       ((string= from "jcox") "Jeff")
-                       ((string= from "vsatam") "Vikrant")
-                       (t from)))
-      (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
-
 (defun mu4e-toggle-html2text-width ()
   (interactive)
   (message

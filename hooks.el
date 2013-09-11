@@ -42,7 +42,3 @@
             (progn
               (start-process "check-mail" " *temp-mail-check*" "sh" "/opt/dotemacs/checkmail.sh")
               (display-time-update))))
-
-
-
-(setq jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll jabber-alert-message-say))

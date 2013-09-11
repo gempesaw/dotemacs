@@ -139,25 +139,6 @@
 ;; explicitly state bookmarks
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
-;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
-(setq jabber-account-list `(("dgempesaw@sharecare.com"
-                             (:connection-type . starttls))))
-(setq jabber-alert-presence-hooks nil
-      jabber-avatar-verbose nil
-      jabber-vcard-avatars-retrieve nil
-      jabber-chat-buffer-format "*-jabber-%n-*"
-      jabber-history-enabled nil
-      jabber-mode-line-mode t
-      jabber-roster-buffer "*-jabber-*"
-      jabber-roster-line-format " %c %-25n %u %-8s (%r)"
-      jabber-show-offline-contacts nil
-      jabber-auto-reconnect t
-      jabber-muc-autojoin '("qa@conference.sharecare.com")
-      jabber-mode-line-string (list " " 'jabber-mode-line-presence))
-(setq starttls-extra-arguments '("--insecure"))
-(setq starttls-use-gnutls t)
-(jabber-mode-line-mode)
-
 ;; tumblesocks
 (setq tumblesocks-blog "eval-defun.tumblr.com")
 (setq tumblesocks-post-default-state "queue")
