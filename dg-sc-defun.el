@@ -34,6 +34,7 @@
       (sc-switch-to-log-windows))))
 
 (defun sc-switch-to-log-windows ()
+  (jump-to-register 6245)
   (window-configuration-to-register ?p)
   (switch-to-buffer "*scratch*" nil 'force-same-window)
   (delete-other-windows)
@@ -182,6 +183,13 @@
   (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
       (message "Try again from a tail-qa buffer! No accidents :)")
     (setq sc-restart-type "pubs")
+    (sc-restart-qa-boxes t)))
+
+(defun sc-restart-army ()
+  (interactive)
+  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
+      (message "Try again from a tail-qa buffer! No accidents :)")
+    (setq sc-restart-type "army")
     (sc-restart-qa-boxes t)))
 
 (defun sc-restart-qa-boxes (&optional all)
