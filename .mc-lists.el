@@ -80,6 +80,7 @@
         smarter-move-beginning-of-line
         smex
         sp--self-insert-command
+        subword-right
         transpose-sexps
         universal-argument-minus
         upcase-region
@@ -94,7 +95,9 @@
 
 (setq mc/cmds-to-run-once
       '(
+        c-electric-brace
         compilation-previous-file
+        delete-other-window
         delete-window
         dired-next-line
         dired-previous-line

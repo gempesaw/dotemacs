@@ -3,7 +3,7 @@
 (setq dg-files '(
                  dg-load-my-packages       ;; load all the necessary packages
                  dg-override-keys       ;; needs to be first so other files can use it
-                 dg-passwords
+                 dg-passwords           ;; needs to be first so other files can use it
                  dg-defun
                  dg-elisp-macros
                  dg-minibuffer
