@@ -55,6 +55,17 @@ If we're waiting for user-input, don't show anyhting."
       (message "%s" (apply 'mu4e-format frm args))
       nil))
 
+  (defun mu4e-toggle-html2text-width ()
+  (interactive)
+  (message
+   (setq mu4e-html2text-command
+         (concat "html2text -nobs -width "
+                 (if (string-match "1000" mu4e-html2text-command)
+                     "72"
+                   "1000")
+                 " -utf8 | sed 's/&quot;/\"/g'"))
+   (mu4e-view-refresh)))
+
   (defun qa-build-email-pending-p ()
     (let ((qa-email-file "~/.qa-build-ready"))
       (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))

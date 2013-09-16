@@ -556,16 +556,6 @@ The output will appear in the buffer *PHP*."
              (file-writable-p buffer-file-name))
     (save-buffer)))
 
-(defun mu4e-toggle-html2text-width ()
-  (interactive)
-  (message
-   (setq mu4e-html2text-command
-         (concat "html2text -nobs -width "
-                 (if (string-match "1000" mu4e-html2text-command)
-                     "72"
-                   "1000")
-                 " -utf8 | sed 's/&quot;/\"/g'"))))
-
 (defun s-second-half (separator string)
   "Return the second half of a STRING split on SEPARATOR"
   (cadr (s-split separator string)))
