@@ -7,6 +7,7 @@
                  dg-defun
                  dg-elisp-macros
                  dg-minibuffer
+                 dg-js
                  dg-kbd
                  dg-tabs
                  dg-mu4e
