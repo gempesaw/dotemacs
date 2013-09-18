@@ -16,6 +16,7 @@
                  dg-sc-defun
                  dg-selenium
                  dg-tabs
+                 dg-tramp
                  ))
 
 (mapcar (lambda (it)
