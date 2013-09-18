@@ -56,6 +56,7 @@
         kill-region
         mark-whole-buffer
         markdown-cycle
+        markdown-exdent-or-delete
         mc/mark-next-lines
         message-beginning-of-line
         mu4e-headers-mark-for-read
