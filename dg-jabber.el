@@ -1,3 +1,5 @@
+(setq jabber-password (if (boundp 'jabber-password) jabber-password ""))
+
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
 (setq jabber-account-list `(("dgempesaw@sharecare.com"
                              (:connection-type . starttls)
