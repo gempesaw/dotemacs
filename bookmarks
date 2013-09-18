@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("prod-job-log"
+(("prod-js"
+ (filename . "/ssh:hnew:/opt/honeydew-ui/htdocs/js/")
+ (front-context-string . "  /ssh:hnew:/opt")
+ (rear-context-string)
+ (position . 1))
+("prod-job-log"
  (filename . "/ssh:hnew:/opt/honeydew/bin/job.log")
  (front-context-string . "feature=/opt/hon")
  (rear-context-string)
