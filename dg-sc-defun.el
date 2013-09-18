@@ -6,9 +6,9 @@
     (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed  --trap --merge" buf)
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{5,6}-*' --rules='par=**'" buf))))
+       "prove -I /opt/honeydew/lib/ -j9 --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
 
 
 (defun sc-copy-build-numbers ()
