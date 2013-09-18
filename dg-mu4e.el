@@ -18,7 +18,7 @@
         mu4e-headers-results-limit 50
         mu4e-use-fancy-chars nil
         mu4e-view-show-images t
-        mu4e-html2text-command "html2text -nobs -style pretty -width 1000 | sed 's/&quot;/\"/g'"
+        mu4e-mu-binary "/usr/local/bin/mu"
         mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
         mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
                          ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)

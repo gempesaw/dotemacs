@@ -601,4 +601,8 @@ Return nil."
     (delete-window window))
   nil)
 
+(defun cwd ()
+  (interactive)
+  (s-second-half " " (pwd)))
+
 (provide 'dg-defun)
