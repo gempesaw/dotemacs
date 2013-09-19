@@ -4,7 +4,7 @@
   (interactive)
   (let* ((selenium-proc-name "selenium-webdriver")
          (default-directory "/opt/")
-         (selenium-things (cadr (file-expand-wildcards "selenium*")))
+         (selenium-things (car (reverse (file-expand-wildcards "selenium*"))))
          (selenium-file (if (eq nil selenium-things)
                             ""
                           (locate-file selenium-things `(,default-directory))))
