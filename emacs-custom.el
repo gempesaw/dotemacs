@@ -13,7 +13,15 @@
  '(fci-rule-color "#eee8d5")
  '(ido-default-buffer-method (quote selected-window))
  '(js3-indent-level 4)
- '(linum-format " %7d "))
+ '(linum-format " %7d ")
+ '(sql-connection-alist
+   (quote
+    (("remote-hdew"
+      (sql-product
+       (quote mysql))
+      (sql-user "honeydew")
+      (sql-database "honeydew")
+      (sql-server "server-739.lab1a.openstack.internal"))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
