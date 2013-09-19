@@ -6,6 +6,7 @@
                  dg-passwords           ;; needs to be first so other files can use it
                  dg-defun
                  dg-elisp-macros
+                 dg-fullscreen
                  dg-jabber
                  dg-js
                  dg-kbd
