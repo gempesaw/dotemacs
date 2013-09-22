@@ -272,7 +272,7 @@ Including indent-buffer, which should not be called automatically on save."
     (if (eq arg 64)
         (setq command (concat command " -database ")))
     (if (eq arg 16)
-        (setq command (concat "d" command)))
+        (setq command (concat "d -" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
                                             '("phantomjs localhost"
