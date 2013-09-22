@@ -313,79 +313,12 @@ Including indent-buffer, which should not be called automatically on save."
         (buffer-string))))
   (cons (help-buffer) 0))
 
-(defun reset-ssh-connections ()
-  (interactive)
-  (let ((tramp-buffers
-         (-filter (lambda (item)
-                    (string-match "tramp" (buffer-name item)))
-                  (buffer-list))))
-    (while tramp-buffers
-      (kill-buffer (car tramp-buffers))
-      (setq tramp-buffers (cdr tramp-buffers))))
-  (delete-hung-ssh-sessions))
-
-(defun delete-hung-ssh-sessions ()
-  (interactive)
-  (let ((cm-socket-files (directory-files "~/.ssh/cm_socket" nil nil t)))
-    (while cm-socket-files
-      (let ((filename (car cm-socket-files)))
-        (if (not (or (string= "." filename)
-                     (string= ".." filename)))
-            (delete-file (concat "~/.ssh/cm_socket/" filename)))
-        (setq cm-socket-files (cdr cm-socket-files))))))
-
 (defun get-file-as-string (filePath)
   "Return FILEPATH's file content."
   (with-temp-buffer
     (insert-file-contents filePath)
     (split-string
      (buffer-string) "\n" t)))
-
-(defun get-remote-names ()
-  (interactive)
-  (let ((ssh-config (get-file-as-string ssh-config-path) )
-        (ssh-host-names))
-    (while ssh-config
-      (let ((line (car ssh-config)))
-        (if (and (string-match-p "Host " line)
-                 (not (string-match-p "*" line))
-                 (not (string-match-p "^# " line)))
-            (setq ssh-host-names (cons (cadr (split-string line " "))
-                                       ssh-host-names))))
-      (setq ssh-config (cdr ssh-config)))
-    ssh-host-names))
-
-(defun get-user-for-remote-box ()
-  (interactive)
-  (let ((ssh-config (get-file-as-string ssh-config-path) )
-        (ssh-remote-info)
-        (ssh-user-remote-pairs))
-    (while ssh-config
-      (let ((host-line (car ssh-config))
-            (user-line (caddr ssh-config)))
-        (if (and (string-match-p "Host " host-line)
-                 (not (string-match-p "*" host-line))
-                 (not (string-match-p "*" user-line))
-                 (not (string-match-p "^# " host-line))
-                 (not (string-match-p "^# " user-line)))
-            (add-to-list 'ssh-user-remote-pairs
-                         `(,(car (last (split-string host-line " ")))
-                           ,(car (last (split-string user-line " "))))))
-        (setq ssh-config (cdr ssh-config))))
-    ssh-user-remote-pairs))
-
-(defun open-ssh-connection (&optional pfx)
-  (interactive)
-  (let ((remote-info (get-user-for-remote-box))
-        (buffer)
-        (box))
-    (if (eq nil pfx)
-        (setq box (ido-completing-read "Which box: " (mapcar 'car remote-info)))
-      (setq box pfx))
-    (setq buffer (concat "*ssh-" box "*"))
-    (let ((default-directory (concat "/" box ":/home/" (cadr (assoc box remote-info)) "/")))
-      (shell buffer))
-    (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
 
 (defun escape-quotes-in-region ()
   (interactive)
