@@ -3,7 +3,10 @@
 (defun start-selenium-server ()
   (interactive)
   (let* ((selenium-proc-name "selenium-webdriver")
-         (default-directory "/opt/")
+         (default-directory
+           (if (string= system-type "windows-nt")
+               "C:/daniel"
+             "/opt/"))
          (selenium-things (car (reverse (file-expand-wildcards "selenium*"))))
          (selenium-file (if (eq nil selenium-things)
                             ""
