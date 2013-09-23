@@ -21,8 +21,10 @@
                  ))
 
 (mapcar (lambda (it)
-          (message "    ****Loading %s****    " it)
-          (require it))
+          (if (file-exists-p (concat "./" (symbol-name it) ".el"))
+              (progn (message "    ****Loading %s****    " it)
+                     (require it))
+            (message "____****MISSING: %s****____" it)))
         dg-files)
 
 (load "customize.el" 'noerror)
