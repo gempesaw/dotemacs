@@ -7,7 +7,7 @@
            (if (string= system-type "windows-nt")
                "C:/daniel"
              "/opt/"))
-         (selenium-things (car (reverse (file-expand-wildcards "selenium*"))))
+         (selenium-things (car (reverse (file-expand-wildcards "selenium*jar"))))
          (selenium-file (if (eq nil selenium-things)
                             ""
                           (locate-file selenium-things `(,default-directory))))

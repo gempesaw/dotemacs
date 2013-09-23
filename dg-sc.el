@@ -6,9 +6,9 @@
     (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge" buf)
+         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
+       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
 
 
 (defun sc-copy-build-numbers ()
@@ -304,4 +304,46 @@
     (save-window-excursion
       (async-shell-command (concat update " && " copy) buf buf))))
 
-(provide 'dg-sc-defun)
+(defun sc-sql-hdewdb ()
+  (interactive)
+  (let ((sql-user "honeydew")
+        (sql-database "honeydew")
+        (sql-password "Xu3UtREc")
+        (sql-server "server-739")
+        (cwd (cwd)))
+    (cd "/ssh:hnew:/home/honeydew/")
+    (save-window-excursion
+      (sql-mysql))
+    (cd cwd)))
+
+(defun sc-find-server-startup ()
+  (interactive)
+  (goto-char (point-max))
+  (search-backward "INFO: Server startup in " 0 t)
+  (other-window 1))
+
+;;; key settings
+
+;; start hnew shell or switch to it if it's active
+(global-set-key (kbd "C-c ,") 'sc-open-existing-hnew-shell)
+(global-set-key (kbd "s-1") 'sc-update-all-builds)
+(global-set-key (kbd "s-2") 'sc-open-catalina-logs)
+(global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
+(global-set-key (kbd "s-4") 'sc-close-qa-catalina)
+
+(global-unset-key (kbd "s-s"))
+(global-set-key (kbd "s-s") 'sc-find-server-startup)
+
+(defun sc-copy-fuze-meeting ()
+  (interactive)
+  (kill-new "21273875"))
+
+(defun sc-qa-hangout-meeting ()
+  (interactive)
+  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
+
+(defun sc-open-vpn-connection ()
+  (interactive)
+  (async-shell-command "perl ~/vpn.pl" "*vpn-script*"))
+
+(provide 'dg-sc)
