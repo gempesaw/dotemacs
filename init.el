@@ -14,7 +14,7 @@
                  dg-misc
                  dg-mu4e
                  dg-numpad
-                 dg-sc-defun
+                 dg-sc
                  dg-selenium
                  dg-tabs
                  dg-tramp
