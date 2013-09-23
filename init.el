@@ -1,4 +1,5 @@
 (add-to-list 'load-path "~/.emacs.d/")
+;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
 (setq dg-files '(
                  dg-load-my-packages    ;; load all the necessary packages
@@ -21,7 +22,7 @@
                  ))
 
 (mapcar (lambda (it)
-          (if (file-exists-p (concat "./" (symbol-name it) ".el"))
+          (if (file-exists-p (concat "~/.emacs.d/" (symbol-name it) ".el"))
               (progn (message "    ****Loading %s****    " it)
                      (require it))
             (message "____****MISSING: %s****____" it)))
@@ -34,6 +35,5 @@
 (load "hooks.el" 'noerror)
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
-(load "themes.el" 'noerror)
 
 (provide 'init)
