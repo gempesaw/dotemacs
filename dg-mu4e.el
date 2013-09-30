@@ -28,8 +28,8 @@
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                          ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash" "Inbox" ?i)
+                         ("from:dgempesaw to:cbanks AND NOT meeting" "clint" ?c)
                          ("maildir:/INBOX" "All Inbox" ?I)
-                         ;; mu find SC2 QA Build Request from:vsatam@sharecare.com unread
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
                          ("date:7d..now" "Last 7 days" ?l)
                          ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
