@@ -336,7 +336,7 @@
 
 (defun sc-copy-fuze-meeting ()
   (interactive)
-  (kill-new "21273875"))
+  (browse-url "21273875"))
 
 (defun sc-qa-hangout-meeting ()
   (interactive)
