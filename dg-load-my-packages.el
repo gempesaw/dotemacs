@@ -12,7 +12,6 @@
 (setq my-packages '(
                     ace-jump-mode
                     ack-and-a-half
-                    assemblage-theme
                     browse-kill-ring
                     cl-lib
                     cperl-mode
