@@ -39,7 +39,9 @@
         describe-key
         dired-details-hide
         dired-do-delete
+        dired-flag-file-deletion
         dired-mark
+        dired-unmark
         downcase-region
         elpy-shell-send-region-or-buffer
         eval-defun

@@ -1,4 +1,5 @@
 (add-to-list 'load-path "~/.emacs.d/")
+;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
 (setq dg-files '(
                  dg-load-my-packages    ;; load all the necessary packages
@@ -14,15 +15,17 @@
                  dg-misc
                  dg-mu4e
                  dg-numpad
-                 dg-sc-defun
+                 dg-sc
                  dg-selenium
                  dg-tabs
                  dg-tramp
                  ))
 
 (mapcar (lambda (it)
-          (message "    ****Loading %s****    " it)
-          (require it))
+          (if (file-exists-p (concat "~/.emacs.d/" (symbol-name it) ".el"))
+              (progn (message "    ****Loading %s****    " it)
+                     (require it))
+            (message "____****MISSING: %s****____" it)))
         dg-files)
 
 (load "customize.el" 'noerror)
@@ -32,6 +35,5 @@
 (load "hooks.el" 'noerror)
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
-(load "themes.el" 'noerror)
 
 (provide 'init)

@@ -47,9 +47,6 @@
                     (shell
                      (generate-new-buffer "*shell*"))) nil)))
 
-;; start hnew shell or switch to it if it's active
-(global-set-key (kbd "C-c ,") 'sc-open-existing-hnew-shell)
-
 ;; Start cterm or switch to it if it's active.
 (require 'term)
 (global-unset-key (kbd "C-c '"))
@@ -182,12 +179,6 @@
 (global-set-key (kbd "C-x f") 'fetchmacs-view-notes)
 
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
-
-(global-set-key (kbd "s-1") 'sc-update-all-builds)
-(global-set-key (kbd "s-2") 'sc-open-catalina-logs)
-(global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
-(global-set-key (kbd "s-4") 'sc-close-qa-catalina)
-
 
 (global-unset-key (kbd "M-."))
 (global-set-key (kbd "M-.") (lambda () (interactive) (find-tag (thing-at-point 'symbol))))
