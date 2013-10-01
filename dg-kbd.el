@@ -216,13 +216,18 @@
     (key-chord-define-global "xw" 'ido-write-file)
     (key-chord-define-global "xg" 'magit-status)
     (key-chord-define-global "qq" 'window-configuration-to-register)
-    (key-chord-define-global "wj" 'jump-to-register)
+    (key-chord-define-global "xj" 'jump-to-register)
     (key-chord-define-global "xf" 'find-file)
     (key-chord-define-global "xd" '[?\C-x ?d return])
     (key-chord-define-global "xb" 'ido-switch-buffer)
     (key-chord-define-global "xv" 'switch-to-other-buffer)
-    (key-chord-define-global "cj" 'bookmark-jump)
     (key-chord-define-global "xh" 'mark-whole-buffer)
+    (key-chord-define-global "cj" (lambda ()
+                                    (interactive)
+                                    (bookmark-jump
+                                     (ido-completing-read
+                                      "Jump to bookmark: "
+                                      (bookmark-all-names)))))
     nil))
 
 (eval-after-load 'php-mode
