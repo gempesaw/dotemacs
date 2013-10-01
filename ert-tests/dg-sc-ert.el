@@ -1,5 +1,5 @@
 (require 'ert)
-(require 'dg-sc-defun)
+(require 'dg-sc)
 
 (ert-deftest decide-what-to-restart ()
   (should (sc--box-in-restart-group-p "scqaschedulemaster2f" "all"))
