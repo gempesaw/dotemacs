@@ -4,11 +4,13 @@
   (let ((buf "*sc-hdew-prove-all*"))
     (start-process "hdew-generate-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
     (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
+    (setenv "HDEW_TESTS" "1")
     (if (string= buf (buffer-name (current-buffer)))
         (async-shell-command
          "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
+       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))
+    (setenv "HDEW_TESTS" "0")))
 
 
 (defun sc-copy-build-numbers ()
