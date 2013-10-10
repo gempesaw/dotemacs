@@ -43,6 +43,7 @@
                        ((string= from "olebedev") "Olivia")
                        ((string= from "cthompson") "Carmen")
                        ((string= from "jhall") "Janet")
+                       ((string= from "dandonov_cw") "Dian")
                        ((string= from "jcox") "Jeff")
                        ((string= from "vsatam") "Vikrant")
                        (t from)))
