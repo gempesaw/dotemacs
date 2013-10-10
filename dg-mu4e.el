@@ -27,7 +27,7 @@
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                         ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash" "Inbox" ?i)
+                         ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw))" "Inbox" ?i)
                          ("from:dgempesaw to:cbanks AND NOT meeting" "clint" ?c)
                          ("maildir:/INBOX" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
