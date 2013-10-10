@@ -390,28 +390,6 @@ when called with `universal-argument', don't create backup."
       )
     (kill-buffer (current-buffer))))
 
-(defun execute-perl (&optional arg)
-  (interactive "p")
-  (let* ((file-name (buffer-file-name (current-buffer)))
-         (command (concat "w " file-name))
-         (compile-command))
-    (if (string-match-p "default.pm" file-name)
-        (setq compile-command "perl /opt/honeydew/bin/makePod.pl")
-      (if (string-match-p ".t$" file-name)
-          (setq command (concat "I\"./../lib\" -" command)))
-          (when (eq arg 16)
-            ;; debug on C-u C-u
-            (setq command (concat "d" command)))
-        (when (eq arg 4)
-          ;; ask questions on C-u
-          (setq command (read-from-minibuffer "Edit command: perl -" command )))
-        (setq compile-command (concat "perl -" command)))
-      (compile compile-command t)
-      (if (eq arg 16)
-          (progn
-            (pop-to-buffer "*compilation*")
-            (goto-char (point-max))
-            (insert "c")))))
 
 (defun offlineimap-rudely-restart ()
   (interactive)
