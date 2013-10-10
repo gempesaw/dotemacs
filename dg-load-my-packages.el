@@ -17,6 +17,7 @@
                     cperl-mode
                     circe
                     dash
+                    diminish
                     dired-details
                     flx-ido
                     elisp-slime-nav
@@ -28,7 +29,9 @@
                     impatient-mode
                     jabber
                     js2-mode
+                    jujube-theme
                     key-chord
+                    litable
                     magit
                     markdown-mode
                     multiple-cursors
