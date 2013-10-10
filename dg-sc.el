@@ -173,12 +173,20 @@
                                 "scqawebarmy2f"
                                 "scqawebauth2f"
                                 ))
+                     ("data" . ("scqadata2f"))
                      ("pubs" . ("scqawebpub2f"
                                 "scqawebarmy2f"))
                      ("pub" . ("scqawebpub2f"))
                      ("army" . ("scqawebarmy2f"))))
         (match nil))
     (member name (cdr (assoc restart-type groupings)))))
+
+(defun sc-restart-data ()
+  (interactive)
+  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
+      (message "Try again from a tail-qa buffer! No accidents :)")
+    (setq sc-restart-type "data")
+    (sc-restart-qa-boxes t)))
 
 (defun sc-restart-pubs-only ()
   (interactive)
@@ -330,22 +338,27 @@
 (global-set-key (kbd "C-c ,") 'sc-open-existing-hnew-shell)
 (global-set-key (kbd "s-1") 'sc-update-all-builds)
 (global-set-key (kbd "s-2") 'sc-open-catalina-logs)
-(global-set-key (kbd "s-3") 'sc-restart-qa-boxes)
+(global-set-key (kbd "s-3") (lambda () (interactive)
+                              (sc-restart-qa-boxes)
+                              (other-window 1)))
 (global-set-key (kbd "s-4") 'sc-close-qa-catalina)
 
 (global-unset-key (kbd "s-s"))
 (global-set-key (kbd "s-s") 'sc-find-server-startup)
 
-(defun sc-copy-fuze-meeting ()
+(defun sc-bactes-scrum-meeting ()
   (interactive)
-  (browse-url "21273875"))
+  (browse-url "http://fuze.me/21273875"))
 
-(defun sc-qa-hangout-meeting ()
+(defun sc-qa-scrum-meeting ()
   (interactive)
-  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
+  (browse-url "http://fuze.me/21449287"))
 
 (defun sc-open-vpn-connection ()
   (interactive)
   (async-shell-command "perl ~/vpn.pl" "*vpn-script*"))
+
+(fset 'sc-jabber-join-qa-conference
+      [?\C-x ?\C-j ?\C-r ?\C-s ?s ?h ?a ?r ?e ?c ?a ?r ?e ?\C-m ?\C-a ?j ?q ?a ?@ ?c ?o ?n ?f ?r ?e backspace backspace ?e ?r ?e ?n ?c ?e ?. ?s ?h ?a ?r ?e ?c ?a ?r ?e ?. ?c ?o ?m return ?d ?g ?e ?m ?p ?e ?s ?a ?w return ?\s-q])
 
 (provide 'dg-sc)
