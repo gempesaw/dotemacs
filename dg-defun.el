@@ -390,13 +390,6 @@ when called with `universal-argument', don't create backup."
       )
     (kill-buffer (current-buffer))))
 
-
-(defun offlineimap-rudely-restart ()
-  (interactive)
-  (shell-command "pkill -u dgempesaw -s 9 -f offlineimap")
-  (offlineimap-quit)
-  (offlineimap))
-
 (defun smarter-move-beginning-of-line (arg)
   "Move point back to indentation of beginning of line.
 
