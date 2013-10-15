@@ -55,11 +55,11 @@
   (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qascpub*" nil 'force-same-window)
+  (window-configuration-to-register ?q)
   (other-window 1)
   (switch-to-buffer "*mu4e-view*" nil 'force-same-window)
   (balance-windows)
-  (other-window -1)
-  (window-configuration-to-register ?q))
+  (other-window -1))
 
 
 (defun sc-start-qa-file-copy ()
