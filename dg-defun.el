@@ -363,44 +363,6 @@ point reaches the beginning or end of the buffer, stop there."
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
 
-(defun php-send-buffer ()
-  (interactive)
-  (with-current-buffer "*PHP*"
-    (erase-buffer))
-  (php-send-region (point-min) (point-max)))
-
-(defun php-send-line ()
-  (interactive)
-  (with-current-buffer "*PHP*" (erase-buffer))
-  (php-send-region (point-at-bol) (point-at-eol)))
-
-(defun php-send-region (start end)
-  "Send the region between `start' and `end' to PHP for execution.
-The output will appear in the buffer *PHP*."
-  (interactive "r")
-  (let ((php-buffer (get-buffer-create "*PHP*"))
-        (code (buffer-substring-no-properties start end)))
-    ;; Calling 'php -r' will fail if we send it code that starts with
-    ;; '<?php', which is likely.  So we run the code through this
-    ;; function to check for that prefix and remove it.
-    (cl-flet ((clean-php-code (code)
-                              (setq php-most-recent-compilation-code
-                                    (if (string-prefix-p "<?php" code t)
-                                        (substring code 5)
-                                      code))))
-      (display-buffer php-buffer)
-      (call-process "php" nil php-buffer nil "-r" (clean-php-code code))
-      (with-current-buffer php-buffer
-        (insert (current-time-string))))))
-
-(defun php-recompile-php-buffer ()
-  (interactive)
-  (let ((php-buffer "*PHP*"))
-    (with-current-buffer php-buffer
-      (erase-buffer)
-      (call-process "php" nil php-buffer nil "-r" php-most-recent-compilation-code)
-      (insert (current-time-string)))))
-
 ;; http://www.emacswiki.org/emacs/SwitchingBuffers
 (defun switch-to-other-buffer ()
   (interactive)

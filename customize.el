@@ -220,14 +220,3 @@
 (setq ensime-sbt-compile-on-save nil)
 
 (setq iedit-toggle-key-default nil)
-
- ;; If we have the tracking library add compilation buffer when complete
-;; (when (require 'tracking nil 'noerror)
-;;    (defun my-hide-compilation-buffer (proc)
-;;      "Hide the compile buffer"
-;;      (delete-window (get-buffer-window "*compilation*")))
-;;    (defun my-report-compilation-finished (buf exit-string)
-;;      "Report the compilation buffer to tracker"
-;;      (tracking-add-buffer buf))
-;;    (add-hook 'compilation-start-hook 'my-hide-compilation-buffer)
-;;    (add-hook 'compilation-finish-functions 'my-report-compilation-finished))
