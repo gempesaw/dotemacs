@@ -165,8 +165,6 @@
 
 (setq ssh-config-path "~/.ssh/config")
 
-(setq ace-jump-mode-scope 'frame)
-
 (defvar freenode-password nil
   "pass for my freenode acc, it's not in repo obv")
 (setq circe-network-options

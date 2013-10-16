@@ -121,11 +121,6 @@
 
 (global-set-key (kbd "C-c e") 'replace-last-sexp)
 
-;; key binding for ace jump mode
-(eval-after-load "ace-jump-mode"
-  '(progn
-     (define-key my-keys-minor-mode-map (kbd "C-.") 'ace-jump-mode)))
-
 ;; remote compilation of feature files
 (global-set-key (kbd "M-<f6>") 'remote-feature-compile)
 
@@ -187,8 +182,6 @@
 
 (eval-after-load "tracking"
   '(progn
-     (define-key tracking-mode-map (kbd "C-.") 'ace-jump-mode)
-     (define-key tracking-mode-map (kbd "C-c C-@") 'ace-jump-mode)
      (define-key tracking-mode-map (kbd "C-x C-j C-k") 'tracking-next-buffer)))
 
 (global-unset-key (kbd "s-q"))
