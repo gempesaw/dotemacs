@@ -1,7 +1,7 @@
 (mapc (lambda (pass-var)
-        (setq pass-var
-              `(if (boundp ,pass-var)
-                  ,pass-var
+        (set pass-var
+              (if (boundp pass-var)
+                  pass-var
                 "")))
       '(sharecare-jabber-password
         gmail-jabber-password))
