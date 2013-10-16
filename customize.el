@@ -234,18 +234,6 @@
 ;; term face settings
 (setq term-default-bg-color nil)
 
-;; alert settings
-(setq alert-default-style 'growl)
-
-;; offlineimappppy
-(setq offlineimap-buffer-maximum-size 256
-      offlineimap-command "offlineimap -u machineui"
-      offlineimap-enable-mode-line-p (member major-mode
-                                             '(offlineimap-mode
-                                               gnus-group-mode
-                                               mu4e-headers-mode
-                                               mu4e-view-mode)))
-
 (eval-after-load "dired-aux"
    '(add-to-list 'dired-compress-file-suffixes
                  '("\\.zip\\'" ".zip" "unzip")))
