@@ -234,11 +234,6 @@
 ;; term face settings
 (setq term-default-bg-color nil)
 
-(eval-after-load "dired-aux"
-   '(add-to-list 'dired-compress-file-suffixes
-                 '("\\.zip\\'" ".zip" "unzip")))
-
-
 (setq ensime-sbt-compile-on-save nil)
 
 (setq iedit-toggle-key-default nil)
