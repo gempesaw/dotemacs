@@ -10,20 +10,9 @@
 (setq mouse-wheel-scroll-amount '(1))
 (setq mouse-wheel-progressive-speed nil)
 
-;; make OS X command button meta
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-
-;; oh cool we get a super button!
-(setq mac-option-modifier 'super)
-
 ;; I never use downcase-region
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
-;;; don't use the os x horrible fullscreen method
-(setq ns-use-native-fullscreen nil)
 
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
