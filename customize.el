@@ -159,10 +159,6 @@
 (setq global-auto-revert-non-file-buffers t)
 (setq auto-revert-verbose nil)
 
-;; elisp slime nav mode
-;; (autoload 'elisp-slime-nav-mode "elisp-slime-nav")
-;; (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
-
 (setq ssh-config-path "~/.ssh/config")
 
 (defvar freenode-password nil
