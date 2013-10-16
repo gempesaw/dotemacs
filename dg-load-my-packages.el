@@ -70,6 +70,15 @@
       (setq package-archives old-archives))
     (dolist (p list-of-packages) (require p))))
 
+(defun write-personalization-templates (it)
+  (let* ((package (symbol-name it))
+         (dg-file (format "%s/.emacs.d/dg-%s.el" (getenv "HOME") package)))
+    (unless (file-exists-p dg-file)
+      (with-temp-file dg-file
+        (insert (format "(provide 'dg-%s)" package))))))
+
+(mapcar 'write-personalization-templates my-packages)
+
 (load-my-packages my-packages)
 
 (package-initialize)

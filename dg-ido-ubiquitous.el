@@ -1,0 +1,1 @@
+(provide 'dg-ido-ubiquitous)

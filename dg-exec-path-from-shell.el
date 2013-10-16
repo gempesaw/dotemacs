@@ -1,0 +1,1 @@
+(provide 'dg-exec-path-from-shell)
