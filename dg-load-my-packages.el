@@ -13,7 +13,6 @@
                     ace-jump-mode
                     ack-and-a-half
                     browse-kill-ring
-                    cl-lib
                     cperl-mode
                     circe
                     dash
@@ -39,6 +38,7 @@
                     paredit
                     php-mode
                     regex-tool
+                    request
                     s
                     simple-httpd
                     skewer-mode
@@ -46,6 +46,7 @@
                     smex
                     switch-window
                     tumblesocks
+                    tramp
                     wgrep
                     wrap-region
                     yasnippet
