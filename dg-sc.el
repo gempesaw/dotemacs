@@ -1,18 +1,3 @@
-(defun sc-hdew-prove-all ()
-  "runs all the tests in the honeydew folder"
-  (interactive)
-  (let ((buf "*sc-hdew-prove-all*"))
-    (start-process "hdew-generate-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
-    (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
-    (setenv "HDEW_TESTS" "1")
-    (if (string= buf (buffer-name (current-buffer)))
-        (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
-      (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))
-    (setenv "HDEW_TESTS" "0")))
-
-
 (defun sc-copy-build-numbers ()
   (interactive)
   (re-search-forward "auth")
@@ -278,53 +263,12 @@
             (sc-start-qa-file-copy)
             (set-process-filter proc nil))))))
 
-(defun sc-kabocha-test ()
-  (interactive)
-  (async-shell-command "sh /opt/kabocha/run-tests" "*kabocha-run-tests*"))
-
-(defun sc-kabocha-self-test ()
-  (interactive)
-  (async-shell-command "cd /opt/kabocha;prove" "*kabocha-run-tests*"))
-
-(defun sc-kabocha-test-sso ()
-  (interactive)
-  (async-shell-command "sh /opt/kabocha/run-sso-tests" "*kabocha-run-tests*"))
-
-(defun sc-hdew-push-to-prod ()
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (if (and (not (eq nil (search-forward "Result: PASS" nil t)))
-             (not (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
-        (message "Try again from a successful hdew prove buffer!")
-      (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))))
-
 (defun sc-open-jira-ticket-at-point ()
   (interactive)
   (let ((ticket (thing-at-point 'sexp)))
     (unless (string-match-p "^[A-z]+-[0-9]+$" ticket)
       (setq ticket (read-from-minibuffer "Not sure if this is a ticket: " ticket)))
     (browse-url (concat "http://arnoldmedia.jira.com/browse/" ticket))))
-
-(defun sc-hdew-update-keywords ()
-  (interactive)
-  (let ((buf (get-buffer " *update keywords*"))
-        (update "curl -k https://server-422.lab1a.openstack.internal/keywords/getKeywordsFile.php")
-        (copy "scp honeydew@hnew:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt"))
-    (save-window-excursion
-      (async-shell-command (concat update " && " copy) buf buf))))
-
-(defun sc-sql-hdewdb ()
-  (interactive)
-  (let ((sql-user "honeydew")
-        (sql-database "honeydew")
-        (sql-password "Xu3UtREc")
-        (sql-server "server-739")
-        (cwd (cwd)))
-    (cd "/ssh:hnew:/home/honeydew/")
-    (save-window-excursion
-      (sql-mysql))
-    (cd cwd)))
 
 (defun sc-find-server-startup ()
   (interactive)
@@ -358,7 +302,13 @@
   (interactive)
   (async-shell-command "perl ~/vpn.pl" "*vpn-script*"))
 
-(fset 'sc-jabber-join-qa-conference
+(defun sc-jabber-join-qa-conference ()
+  (interactive)
+  (window-configuration-to-register 999)
+  (kmacro-call-macro nil nil nil 'sc-jabber-join-qa-conference-macro)
+  (jump-to-register 999))
+
+(fset 'sc-jabber-join-qa-conference-macro
       [?\C-x ?\C-j ?\C-r ?\C-s ?s ?h ?a ?r ?e ?c ?a ?r ?e ?\C-m ?\C-a ?j ?q ?a ?@ ?c ?o ?n ?f ?r ?e backspace backspace ?e ?r ?e ?n ?c ?e ?. ?s ?h ?a ?r ?e ?c ?a ?r ?e ?. ?c ?o ?m return ?d ?g ?e ?m ?p ?e ?s ?a ?w return ?\s-q])
 
 (provide 'dg-sc)
