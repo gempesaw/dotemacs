@@ -77,7 +77,7 @@
       (with-temp-file dg-file
         (insert (format "(provide 'dg-%s)" package))))))
 
-(mapcar 'write-personalization-templates my-packages)
+;; (mapcar 'write-personalization-templates my-packages)
 
 (load-my-packages my-packages)
 
