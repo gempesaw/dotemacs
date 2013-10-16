@@ -1,1 +1,0 @@
-(provide 'dg-dired-details)
