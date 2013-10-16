@@ -202,13 +202,6 @@
 (setq split-height-threshold 80
       split-width-threshold 160)
 
-;; personal snippets
-(setq yas/snippet-dirs
-      '("~/.emacs.d/snippets"                      ;; personal snippets
-        "~/.emacs.d/el-get/yasnippet/snippets/"    ;; the default collection
-        ))
-(setq yas/trigger-key "C-<tab>")
-
 (eval-after-load "paredit"
   '(progn
      (put 'paredit-forward-delete 'delete-selection 'supersede)
