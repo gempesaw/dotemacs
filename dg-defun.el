@@ -42,18 +42,6 @@ M-x compile.
       (revert-buffer t t))
   (call-interactively 'compile)))
 
-(defun run-feature-in-all-browsers ()
-  "passes the current file to a perl script that runs it in all
-browsers."
-  (interactive)
-  (save-window-excursion
-    (async-shell-command
-     (concat "perl -w /opt/honeydew/bin/multipleBrowsers.pl "
-             (buffer-file-name))
-     "run-feature-in-all-browsers"))
-  (set-buffer "run-feature-in-all-browsers")
-  (dired-other-window "/Users/dgempesaw/tmp/sauce/"))
-
 (defun reload-my-init ()
   (interactive)
   (load-file "/Users/dgempesaw/opt/dotemacs/init.el"))
@@ -262,43 +250,6 @@ Including indent-buffer, which should not be called automatically on save."
   (paredit-newline)
   (yank)
   (exchange-point-and-mark))
-
-(defun execute-feature (&optional arg)
-  (interactive "p")
-  (let ((filename (buffer-file-name (current-buffer)))
-        (command "w /opt/honeydew/bin/honeydew.pl -isMine")
-        (compile-command))
-    (setq command (concat command " -feature=" filename))
-    (if (eq arg 64)
-        (setq command (concat command " -database ")))
-    (if (eq arg 16)
-        (setq command (concat "d -" command)))
-    (if (>= arg 4)
-        (let ((browser (ido-completing-read "browser: "
-                                            '("phantomjs localhost"
-                                              "chrome"
-                                              "firefox"
-                                              "ie 10"
-                                              "ie 9"
-                                              "ie 8")))
-              (hostname (ido-completing-read "hostname: "
-                                             '("localhost"
-                                               "www.qa.sharecare.com"
-                                               "www.stage.sharecare.com"
-                                               "www.sharecare.com"
-                                               "www.qa.startle.com"
-                                               "www.stage.startle.com"
-                                               "www.startle.com"
-                                               "www.qa.doctoroz.com"
-                                               "www.stage.doctoroz.com"
-                                               "www.doctoroz.com")))
-              (sauce (ido-completing-read "sauce: " '("nil" "t"))))
-          (setq command (concat command
-                                (if (string= sauce "t") " -sauce")
-                                " -browser='" browser " webdriver'"
-                                " -hostname='http://" hostname "'"))))
-    (setq compile-command (concat "perl -" command))
-    (compile compile-command t)))
 
 (defun find-function-C-source (fun-or-var &optional file type)
   (save-window-excursion
