@@ -202,16 +202,6 @@
 (setq split-height-threshold 80
       split-width-threshold 160)
 
-(eval-after-load "paredit"
-  '(progn
-     (put 'paredit-forward-delete 'delete-selection 'supersede)
-     (put 'paredit-backward-delete 'delete-selection 'supersede)
-     (put 'paredit-open-round 'delete-selection t)
-     (put 'paredit-open-square 'delete-selection t)
-     (put 'paredit-doublequote 'delete-selection t)
-     (put 'paredit-newline 'delete-selection t)
-     ))
-
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
 (delete '("\\.js\\'" . js-mode) auto-mode-alist)
 (delete '("\\.t$'" . cperl-mode) auto-mode-alist)
