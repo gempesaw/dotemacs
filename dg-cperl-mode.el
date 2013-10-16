@@ -1,0 +1,1 @@
+(provide 'dg-cperl-mode)
