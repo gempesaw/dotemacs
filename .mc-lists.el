@@ -68,6 +68,7 @@
         org-end-of-line
         paredit-backward-kill-word
         paredit-doublequote
+        paredit-forward-barf-sexp
         paredit-forward-delete
         paredit-forward-kill-word
         paredit-forward-slurp-sexp
