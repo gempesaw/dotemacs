@@ -20,7 +20,6 @@
         (setq compile-command "perl /opt/honeydew/bin/makePod.pl")
       (if (string-match-p ".t$" file-name)
           (progn
-            (setenv "HDEW_TESTS" "1")
             (setq command (concat "I\"./../lib\" -" command))))
       (when (eq arg 16)
         ;; debug on C-u C-u
@@ -34,7 +33,10 @@
         (progn
           (pop-to-buffer "*compilation*")
           (goto-char (point-max))
-          (insert "c")))
-    (setenv "HDEW_TESTS" "0")))
+          (insert "c")))))
+
+(advise-around-commands "sc-hdew-set-testing-env"
+                        (execute-perl compile-again sc-hdew-prove-all)
+                        (progn (setenv "HDEW_TESTS" "1") ad-do-it (setenv "HDEW_TESTS" "0")))
 
 (provide 'dg-cperl-mode)
