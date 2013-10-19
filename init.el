@@ -4,6 +4,7 @@
 (setq dg-files '(
                  "dg-load-my-packages" ;; load melpa/marmalade packages
                  "dg-override-keys"    ;; needs to be first so other files can use it
+                 "dg-elisp-macros"
                  ))
 
 (cd "~/")

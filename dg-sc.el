@@ -237,7 +237,6 @@
   (sc--update-build)
   sc-restart-type)
 
-
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
     (with-current-buffer (process-buffer proc)

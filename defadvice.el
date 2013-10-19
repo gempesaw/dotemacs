@@ -25,7 +25,6 @@ still function in special-mode"
 (defadvice bookmark-set (after save-bookmarks-automatically activate)
   (bookmark-save))
 
-
 ;; full screen magit-status
 (defadvice magit-status (around magit-fullscreen activate)
   ;; µ is 265
