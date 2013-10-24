@@ -59,14 +59,15 @@ browsers."
       (async-shell-command
        "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
 
-(defun sc-hdew-push-to-prod ()
-  (interactive)
+(defun sc-hdew-push-to-prod (&optional pfx)
+  (interactive "p")
   (save-excursion
     (goto-char (point-min))
-    (if (and (not (eq nil (search-forward "Result: PASS" nil t)))
-             (not (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
-        (message "Try again from a successful hdew prove buffer!")
-      (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*"))))
+    (if (or (> pfx 1)
+            (and (search-forward "Result: PASS" nil t)
+                 (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
+        (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*")
+      (message "Try again from a successful hdew prove buffer!"))))
 
 (defun sc-kabocha-test ()
   (interactive)
