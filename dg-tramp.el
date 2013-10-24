@@ -3,7 +3,7 @@
 ;; TMPDIR variable is really large
 ;; http://lists.macosforge.org/pipermail/macports-tickets/2011-June/084295.html
 ;; https://github.com/gwtaylor/dotfiles/blob/master/.emacs.d/darwin.el
-(setenv "TMPDIR" "/tmp")
+(setenv "TMPDIR" "~/.ssh/cm/")
 
 (defun reset-ssh-connections ()
   (interactive)
@@ -19,12 +19,13 @@
 
 (defun delete-hung-ssh-sessions ()
   (interactive)
-  (let ((cm-socket-files (directory-files "~/.ssh/cm_socket" nil nil t)))
+  (let* ((dir (getenv "TMPDIR"))
+         (cm-socket-files (directory-files dir nil nil t)))
     (while cm-socket-files
       (let ((filename (car cm-socket-files)))
         (if (not (or (string= "." filename)
                      (string= ".." filename)))
-            (delete-file (concat "~/.ssh/cm_socket/" filename)))
+            (delete-file (concat dir filename)))
         (setq cm-socket-files (cdr cm-socket-files))))))
 
 (defun get-remote-names ()
