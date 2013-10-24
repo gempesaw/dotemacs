@@ -423,4 +423,9 @@ Return nil."
   (interactive)
   (s-second-half " " (pwd)))
 
+(defun open-in-finder ()
+  (interactive)
+  (save-window-excursion
+    (async-shell-command "open -R ." "*open-in-finder*" nil)))
+
 (provide 'dg-defun)
