@@ -12,7 +12,7 @@
     "Given"
     "When"
     "Then")
-  nil                         ;; additional expressions to font-lock
+  '(())                 ;; additional expressions to font-lock
   '("\\.feature$")            ;; placed in auto-mode-alist
   '(feature-mode-hook) ;; list of functions to call)
   "A mode for editing automation .feature files."
