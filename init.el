@@ -24,7 +24,7 @@
 (load "customize.el" 'noerror)
 (load "defadvice.el" 'noerror)
 (load "emacs-custom.el" 'noerror)
-(load "feature-mode.el")
+;; (load "feature-mode.el")
 (load "hooks.el" 'noerror)
 (load "modes.el" 'noerror)
 (load "my-macros.el" 'noerror)
