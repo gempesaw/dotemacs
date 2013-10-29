@@ -125,12 +125,12 @@
                       " updated to "
                       (car (last (split-string build-number "/"))))))))
 
+(defcustom sc-resolved-qa-boxes ""
+  "The result of xml-parse-region, filtered down to boxes with ACTIVE state")
+
 (defun sc-resolve-qa-boxes ()
-  (interactive)
   (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
-        (note)
-        (name)
-        (boxes))
+        (parsed-xml))
     (set-buffer buf)
     (goto-char 1)
     (replace-string "\n" "")
@@ -139,14 +139,23 @@
                               (re-search-forward "/xml")
                               (point-max) buf)))
     (kill-buffer buf)
+    parsed-xml))
+
+(defun sc-refresh-qa-box-information ()
+  (interactive)
+  (setq sc-qa-boxes-parsed-xml (sc-filter-resolved-xml)))
+
+(defun sc-filter-resolved-xml ()
+  (let ((xml sc-qa-boxes-parsed-xml))
     (-filter
      (lambda (item)
-       (if (setq note (caddar (last item)))
-           (progn
-             (setq name (caddr (nth 3 item)))
-             (and (not (string-match "Disable" note))
-                  (sc--box-in-restart-group-p name sc-restart-type)))))
-     parsed-xml)))
+       (let ((state (caddr (nth 5 item)))
+             (name (caddr (nth 3 item)))
+             (case-fold-search nil))
+         (and (string-match-p "ACTIVE" state)
+              (string-match-p "qa" name)
+              (sc--box-in-restart-group-p name sc-restart-type))))
+     xml)))
 
 (defun sc--box-in-restart-group-p (name restart-type)
   (let ((groupings '(("all" . ("scqawebpub2f"
@@ -162,63 +171,58 @@
                      ("pubs" . ("scqawebpub2f"
                                 "scqawebarmy2f"))
                      ("pub" . ("scqawebpub2f"))
+                     ("schedmaster" . ("scqaschedulemaster2f"))
                      ("army" . ("scqawebarmy2f"))))
         (match nil))
     (member name (cdr (assoc restart-type groupings)))))
 
+(defun sc-restart-schedmaster ()
+  (interactive)
+    (setq sc-restart-type "schedmaster")
+    (sc-restart-qa-boxes t))
+
 (defun sc-restart-data ()
   (interactive)
-  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
-      (message "Try again from a tail-qa buffer! No accidents :)")
     (setq sc-restart-type "data")
-    (sc-restart-qa-boxes t)))
+    (sc-restart-qa-boxes t))
 
 (defun sc-restart-pubs-only ()
   (interactive)
-  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
-      (message "Try again from a tail-qa buffer! No accidents :)")
     (setq sc-restart-type "pubs")
-    (sc-restart-qa-boxes t)))
+    (sc-restart-qa-boxes t))
 
 (defun sc-restart-army ()
   (interactive)
-  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
-      (message "Try again from a tail-qa buffer! No accidents :)")
     (setq sc-restart-type "army")
-    (sc-restart-qa-boxes t)))
+    (sc-restart-qa-boxes t))
 
 (defun sc-restart-pub ()
   (interactive)
-  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
-      (message "Try again from a tail-qa buffer! No accidents :)")
     (setq sc-restart-type "pub")
-    (sc-restart-qa-boxes t)))
+    (sc-restart-qa-boxes t))
 
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
-  (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
-      (message "Try again from a tail-qa buffer! No accidents :)")
-    (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
-      (-each
-       (-filter
-        (lambda (item)
-          (if (eq nil all)
-              (string-match "auth" (car item))
-            (not (string-match "auth" (car item)))))
-        (-map
-         (lambda (item)
-           (let ((id-string (split-string (cdaadr item) "\\^")))
-             (cons (caddr (nth 3 item))
-                   (concat restart-url-prefix
-                           (car id-string)
-                           "^"
-                           (cadr id-string)
-                           ",&action=Restart"))))
-         (sc-resolve-qa-boxes)))
-       (lambda (item)
-         (message (concat "restarting " (car item)))
-         ;; (message (cdr item))
-         (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer)))))))))
+  (let ((restart-url-prefix "https://admin.be.jamconsultg.com/kohana/adminui/changeappstate?site=sharecare&appname=tomcat&systems="))
+    (-map (lambda (item)
+            (if (not (string-match "tail.*qa" (buffer-name (current-buffer))))
+                (message "Try again from a tail-qa buffer! No accidents :)")
+              (progn (message (format "restarting %s at: %s" (car item) (cdr item)))
+                     (url-retrieve (cdr item) (lambda (status) (kill-buffer (current-buffer))))))
+            (car item))
+          (-filter (lambda (item)
+                     (if (eq nil all)
+                         (string-match "auth" (car item))
+                       (not (string-match "auth" (car item)))))
+                   (-map (lambda (item)
+                           (let ((id-string (split-string (cdaadr item) "\\^")))
+                             (cons (caddr (nth 3 item))
+                                   (concat restart-url-prefix
+                                           (car id-string)
+                                           "^"
+                                           (cadr id-string)
+                                           ",&action=Restart"))))
+                         (sc-filter-resolved-xml))))))
 
 (defun sc-update-all-builds ()
   (interactive)
@@ -235,7 +239,7 @@
   (sc--update-build)
   (sc--update-build)
   (sc--update-build)
-  sc-restart-type)
+  (message "We will be restarting: %s" sc-restart-type))
 
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
