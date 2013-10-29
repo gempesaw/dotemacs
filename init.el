@@ -16,7 +16,9 @@
 
 (mapcar (lambda (it)
           (message (if (require (intern it))
-                       "    ****Loading %s****    "
+                       ""
+                     ;; for verbose logging, use the line below
+                     ;; "    ****Loading %s****    "
                      "____****MISSING: %s****____")
                    it))
         dg-files)
