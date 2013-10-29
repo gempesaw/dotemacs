@@ -37,7 +37,9 @@
                     multiple-cursors
                     offlineimap
                     paredit
+                    projectile
                     php-mode
+                    pretty-mode-plus
                     regex-tool
                     request
                     s
