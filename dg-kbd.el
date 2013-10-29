@@ -236,7 +236,7 @@
     nil))
 
 (global-set-key (kbd "s-l") 'delete-indentation)
-(global-set-key (kbd "s-p") (lambda () (interactive) (delete-indentation -1)))
+(global-set-key (kbd "s-u") (lambda () (interactive) (delete-indentation -1)))
 
 (global-set-key (kbd "s-k") 'delete-window-and-kill-buffer)
 (global-set-key (kbd "C-c k") (lambda () (interactive) (delete-other-window t)))
