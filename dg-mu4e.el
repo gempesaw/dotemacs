@@ -93,6 +93,7 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
        (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-headers-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
+       (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
        (define-key mu4e-view-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
 
