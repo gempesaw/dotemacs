@@ -10,9 +10,10 @@
 (setq jabber-account-list `(("dgempesaw@sharecare.com"
                              (:connection-type . starttls)
                              (:password . ,sharecare-jabber-password))
-                            ("dgempesaw@gmail.com"
-                             (:connection-type . starttls)
-                             (:password . ,gmail-jabber-password))))
+                            ;; ("dgempesaw@gmail.com"
+                            ;;  (:connection-type . starttls)
+                            ;;  (:password . ,gmail-jabber-password))
+                            ))
 
 (setq jabber-alert-presence-hooks nil
       jabber-avatar-verbose nil
