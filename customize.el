@@ -1,8 +1,3 @@
-;; Turn off mouse interface early in startup to avoid momentary display
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-
 ;; No splash screen please ... jeez
 (setq inhibit-startup-message t)
 
@@ -17,14 +12,6 @@
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Display line and column numbers
-(setq line-number-mode    t)
-(setq column-number-mode  t)
-
-;; Modeline info
-(display-time-mode 1)
-(setq display-time-day-and-date t)
-
 ;; Small fringes
 (set-fringe-mode '(1 . 1))
 
@@ -33,9 +20,6 @@
 
 ;; Make sure all backup files only live in one place
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-
-;; Gotta see matching parens
-(show-paren-mode t)
 
 ;; Various superfluous white-space. Just say no.
 (add-hook 'before-save-hook 'cleanup-buffer-safe)
@@ -140,9 +124,6 @@
   '(progn
      (setq-default dired-details-hidden-string "--- ")
      (dired-details-install)))
-
-;; Auto refresh buffers
-(global-auto-revert-mode 1)
 
 ;; Also auto refresh dired, but be quiet about it
 (setq global-auto-revert-non-file-buffers t)
