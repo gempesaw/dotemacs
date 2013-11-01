@@ -87,6 +87,6 @@
 (package-initialize)
 
 ;; manually load some packages
-(load "smart-compile.el" 'noerror)
+(require 'smart-compile)
 
 (provide 'dg-load-my-packages)
