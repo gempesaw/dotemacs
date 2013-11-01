@@ -247,7 +247,7 @@
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "Initializing Log4J" string)
+      (if (string-match-p "MAGNOLIA LICENSE" string)
           (progn
             (message "auth server has started, restarting pub now!")
             (sc-restart-qa-boxes t)
@@ -260,7 +260,7 @@
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
-      (if (string-match-p "Initializing Log4J" string)
+      (if (string-match-p "MAGNOLIA LICENSE" string)
           (progn
             (message "pub server has restarted, deploying assets now!")
             (sc-start-qa-file-copy)
