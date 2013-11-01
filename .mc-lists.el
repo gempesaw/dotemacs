@@ -75,6 +75,7 @@
         paredit-kill
         paredit-meta-doublequote
         paredit-open-round
+        paredit-raise-sexp
         paredit-wrap-round
         python-indent-dedent-line-backspace
         python-indent-electric-colon
