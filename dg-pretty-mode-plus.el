@@ -1,6 +1,6 @@
 (setq pretty-default-groups
   '(:function
-    :equality
+    ;; :equality
     :nil
     ))
 
