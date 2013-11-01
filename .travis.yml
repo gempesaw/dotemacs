@@ -135,14 +135,13 @@ before_script:
     else
         make downloads;
     fi
-  - pwd && ln -s ./  ~/.emacs.d && cd ~/.emacs.d/ && pwd && $EMACS --version
 
 ###
 ### the actual build/test command
 ###
 
 script:
-   cd ~/.emacs.d/ && which emacs && emacs -batch -L ./ -L ./elpa/ -L ./ert-tests/ -l ert -l ./ert-tests/dg-init-ert.el -f ert-run-tests-batch-and-exit
+   emacs -batch -L ./ -L ./elpa/ -L ./ert-tests/ -l ert -l ./ert-tests/dg-init-ert.el -f ert-run-tests-batch-and-exit
 ###
 ### settings
 ###
