@@ -144,9 +144,11 @@
 
 (defun sc-refresh-qa-box-information ()
   (interactive)
-  (setq sc-qa-boxes-parsed-xml (sc-filter-resolved-xml)))
+  (setq sc-qa-boxes-parsed-xml (sc-resolve-qa-boxes)))
 
 (defun sc-filter-resolved-xml ()
+  (if (eq nil sc-qa-boxes-parsed-xml)
+      (sc-refresh-qa-box-information))
   (let ((xml sc-qa-boxes-parsed-xml))
     (-filter
      (lambda (item)
