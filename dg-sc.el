@@ -129,7 +129,8 @@
   "The result of xml-parse-region, filtered down to boxes with ACTIVE state")
 
 (defun sc-resolve-qa-boxes ()
-  (let ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
+  (let* ((auth (concat "dgempesaw:" sharecare-jabber-password "@"))
+         (buf (url-retrieve-synchronously (concat "https://" auth "admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare")))
         (parsed-xml))
     (set-buffer buf)
     (goto-char 1)
