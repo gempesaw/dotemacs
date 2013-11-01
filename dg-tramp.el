@@ -64,6 +64,7 @@
 (defun open-ssh-connection (&optional pfx)
   (interactive)
   (let ((remote-info (get-user-for-remote-box))
+        (shell-file-name "/bin/bash")
         (buffer)
         (box))
     (if (eq nil pfx)
