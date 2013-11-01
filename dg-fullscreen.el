@@ -1,3 +1,8 @@
+(defun ensure-fullscreen-mode-is-on ()
+  (interactive)
+  (toggle-frame-fullscreen)
+  (toggle-frame-fullscreen))
+
 (defun x11-toggle-fullscreen ()
   "Toggle full screen on X11"
   (interactive)
@@ -5,5 +10,7 @@
     (set-frame-parameter
      nil 'fullscreen
      (when (not (frame-parameter nil 'fullscreen)) 'fullboth))))
+
+(global-set-key (kbd "C-c \\") 'ensure-fullscreen-mode-is-on)
 
 (provide 'dg-fullscreen)
