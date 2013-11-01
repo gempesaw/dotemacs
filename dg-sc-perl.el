@@ -66,7 +66,7 @@ browsers."
     (if (or (> pfx 1)
             (and (search-forward "Result: PASS" nil t)
                  (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
-        (async-shell-command "ssh hnew . pullAndDeployHoneydew" "*hdew-prod*")
+        (async-shell-command "ssh termdew . pullAndDeployHoneydew" "*hdew-prod*")
       (message "Try again from a successful hdew prove buffer!"))))
 
 (defun sc-kabocha-test ()
