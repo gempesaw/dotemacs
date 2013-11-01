@@ -150,6 +150,8 @@
                               (indent-according-to-mode)))
 
 (global-set-key (kbd "C-<return>") 'create-newline-from-anywhere)
+(global-set-key (kbd "RET") 'newline-and-indent)
+
 
 ;; use smex?!
 (global-unset-key (kbd "M-x"))
@@ -203,29 +205,6 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
-(eval-after-load 'key-chord
-  (progn
-    (key-chord-mode t)
-    (key-chord-define-global "xw" 'ido-write-file)
-    (key-chord-define-global "xg" 'magit-status)
-    (key-chord-define-global "qq" 'window-configuration-to-register)
-    (key-chord-define-global "xj" 'jump-to-register)
-    (key-chord-define-global "xf" 'find-file)
-    (key-chord-define-global "xr" 'find-file-as-root)
-    (key-chord-define-global "xd" '[?\C-x ?d return])
-    (key-chord-define-global "xb" 'ido-switch-buffer)
-    (key-chord-define-global "xv" 'switch-to-other-buffer)
-    (key-chord-define-global "xh" 'mark-whole-buffer)
-    (key-chord-define-global "jk" 'eval-defun)
-    (key-chord-define-global "jl" 'jabber-activity-switch-to)
-    (key-chord-define-global "bj" (lambda ()
-                                    (interactive)
-                                    (bookmark-jump
-                                     (ido-completing-read
-                                      "Jump to bookmark: "
-                                      (bookmark-all-names)))))
-    nil))
-
 (eval-after-load 'php-mode
   (progn
     (define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
@@ -235,8 +214,12 @@
     (define-key php-mode-map (kbd "<tab>") 'smart-tab)
     nil))
 
-(global-set-key (kbd "s-l") 'delete-indentation)
-(global-set-key (kbd "s-u") (lambda () (interactive) (delete-indentation -1)))
+(global-set-key (kbd "s-l") '(lambda () (interactive)
+                               (delete-indentation)
+                               (indent-according-to-mode)))
+(global-set-key (kbd "s-u") (lambda () (interactive)
+                              (delete-indentation -1)
+                              (indent-according-to-mode)))
 
 (global-set-key (kbd "s-k") 'delete-window-and-kill-buffer)
 (global-set-key (kbd "C-c k") (lambda () (interactive) (delete-other-window t)))
