@@ -306,6 +306,13 @@
   (kmacro-call-macro nil nil nil 'sc-jabber-join-qa-conference-macro)
   (jump-to-register 999))
 
+(defun tail-log-on-termdew ()
+  (interactive)
+  (with-temp-buffer
+    (let ((file (read-from-minibuffer "File? ")))
+      (cd "/ssh:termdew:/home/honeydew")
+      (async-shell-command (format "tail -f %s" file) (concat "*tail-" file) (concat "*tail-" file) ))))
+
 (fset 'sc-jabber-join-qa-conference-macro
       [?\C-x ?\C-j ?\C-r ?\C-s ?s ?h ?a ?r ?e ?c ?a ?r ?e ?\C-m ?\C-a ?j ?q ?a ?@ ?c ?o ?n ?f ?r ?e backspace backspace ?e ?r ?e ?n ?c ?e ?. ?s ?h ?a ?r ?e ?c ?a ?r ?e ?. ?c ?o ?m return ?d ?g ?e ?m ?p ?e ?s ?a ?w return ?\s-q])
 
