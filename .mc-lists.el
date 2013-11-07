@@ -14,6 +14,8 @@
         autopair-skip-close-maybe
         autopair-skip-close-maybe
         beginning-of-buffer
+        bookmark-bmenu-delete
+        bookmark-bmenu-mark
         c-electric-backspace
         c-electric-colon
         c-electric-delete-forward
