@@ -29,3 +29,5 @@ passwords.el
 /dg-passwords.el
 archive-contents
 /projectile-bookmarks.eld
+/ido.last
+.cask
