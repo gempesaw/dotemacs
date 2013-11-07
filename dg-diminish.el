@@ -1,15 +1,28 @@
-(mapc (lambda (it)
-        (eval-after-load (s-chop-suffix "-mode" (symbol-name it))
-          '(diminish it)))
-      '(eldoc-mode
-        elisp-slime-nav-mode
-        paredit-mode
-        projectile-mode
-        smart-tab-mode
-        wrap-region-mode
-        subword-mode))
+(eval-after-load 'eldoc
+  '(diminish 'eldoc-mode))
 
-(diminish 'yas-minor-mode)
-(diminish 'my-keys-minor-mode)
+(eval-after-load 'smart-tab
+  '(diminish 'smart-tab-mode))
+
+(eval-after-load 'wrap-region
+  '(diminish 'wrap-region-mode))
+
+(eval-after-load 'elisp-slime-nav
+  '(diminish 'elisp-slime-nav-mode))
+
+(eval-after-load 'paredit
+  '(diminish 'paredit-mode "(P)"))
+
+(eval-after-load 'subword
+  '(diminish 'subword-mode))
+
+(eval-after-load 'projectile
+  '(diminish 'projectile-mode))
+
+(eval-after-load 'yas-minor-mode
+  '(diminish 'yas-minor-mode))
+
+(eval-after-load 'yas-global-mode
+  '(diminish 'yas-global-mode))
 
 (provide 'dg-diminish)
