@@ -6,4 +6,8 @@
   (interactive)
   (compile "cd ~/.emacs.d/ && /Applications/Emacs.app/Contents/MacOS/Emacs"))
 
+(defun dg-start-emacs-q ()
+  (interactive)
+  (compile "/Applications/Emacs.app/Contents/MacOS/Emacs -Q"))
+
 (provide 'dg-misc)
