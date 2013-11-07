@@ -2,7 +2,7 @@
 
 (define-minor-mode my-keys-minor-mode
   "A minor mode so that my key settings override annoying major modes."
-  t " my-keys" 'my-keys-minor-mode-map)
+  t "" 'my-keys-minor-mode-map)
 
 (defun my-minibuffer-setup-hook ()
   (my-keys-minor-mode 0))
