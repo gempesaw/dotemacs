@@ -1,16 +1,17 @@
 (add-to-list 'load-path "~/.emacs.d/")
 ;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
+(defvar dg-package-list nil
+  "My customization files, split into different files!")
 
-(cd "~/")
 (let* ((dg-first-packages '(
                             "dg-load-my-packages"
                             "dg-override-keys"
                             "dg-elisp-macros"
                             ))
        (dg-all-packages (mapcar (lambda (it)
-                                  (substring it 9 -3))
-                                (file-expand-wildcards ".emacs.d/dg-*.el")))
+                                  (substring it 11 -3))
+                                (file-expand-wildcards "~/.emacs.d/dg-*.el")))
        (dg-last-packages '(
                            "dg-modes"
                            "dg-diminish"))
