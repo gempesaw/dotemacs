@@ -146,7 +146,7 @@
   (setq sc-qa-boxes-parsed-xml (sc-resolve-qa-boxes)))
 
 (defun sc-filter-resolved-xml ()
-  (if (eq nil sc-qa-boxes-parsed-xml)
+  (if (not (boundp 'sc-qa-boxes-parsed-xml))
       (sc-refresh-qa-box-information))
   (let ((xml sc-qa-boxes-parsed-xml))
     (-filter
@@ -155,23 +155,20 @@
              (name (caddr (nth 3 item)))
              (case-fold-search nil))
          (and (string-match-p "ACTIVE" state)
-              (string-match-p "qa" name)
-              (sc--box-in-restart-group-p name sc-restart-type))))
+            (string-match-p "qa" name)
+            (sc--box-in-restart-group-p name sc-restart-type))))
      xml)))
 
 (defun sc--box-in-restart-group-p (name restart-type)
   (let ((groupings '(("all" . ("scqawebpub2f"
-                               "scqawebarmy2f"
                                "scqadata2f"
                                "scqaschedulemaster2f"
                                "scqawebauth2f"))
                      ("half" . ("scqawebpub2f"
-                                "scqawebarmy2f"
                                 "scqawebauth2f"
                                 ))
                      ("data" . ("scqadata2f"))
-                     ("pubs" . ("scqawebpub2f"
-                                "scqawebarmy2f"))
+                     ("pubs" . ("scqawebpub2f"))
                      ("pub" . ("scqawebpub2f"))
                      ("schedmaster" . ("scqaschedulemaster2f"))
                      ("army" . ("scqawebarmy2f"))))
