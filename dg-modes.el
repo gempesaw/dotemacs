@@ -41,6 +41,7 @@
 
 (global-subword-mode t)
 
+(yas-minor-mode 1)
 (yas-global-mode 1)
 
 (when (memq window-system '(mac ns))
