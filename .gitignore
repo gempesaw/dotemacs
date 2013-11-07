@@ -22,7 +22,6 @@ passwords.el
 *cache/
 /.DS_Store
 /projectile.cache
-/ensime_*
 /ac-comphist.dat
 /libpeerconnection.log
 /whee
