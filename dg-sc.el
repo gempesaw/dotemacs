@@ -221,11 +221,16 @@
                          (not (string-match "auth" name)))))
                    (sc-filter-resolved-xml)))))
 
+
+
+(defun sc-update-all-builds (&optional pfx)
+  (interactive "p")
   (sc-copy-build-numbers)
-  (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
-  (goto-char (point-max))
-  (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
-  (jabber-chat-buffer-send)
+  (when (eq pfx 1)
+    (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+    (goto-char (point-max))
+    (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
+    (jabber-chat-buffer-send))
   (pop-to-buffer (get-buffer-create "*scratch*"))
   (goto-char (point-max))
   (yank)
