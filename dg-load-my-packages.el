@@ -44,6 +44,7 @@
                     regex-tool
                     request
                     s
+                    scala-mode2
                     simple-httpd
                     skewer-mode
                     smart-tab
