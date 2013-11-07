@@ -46,6 +46,7 @@
                        ((string= from "jhall") "Janet")
                        ((string= from "dandonov_cw") "Dian")
                        ((string= from "jcox") "Jeff")
+                       ((string= from "jthatil") "Justin")
                        ((string= from "vsatam") "Vikrant")
                        (t from)))
       (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
