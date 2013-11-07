@@ -11,7 +11,6 @@
   (unless (get-buffer-process "*tail-catalina-qascauth*")
     (let ((qa-boxes '("qaschedmaster"
                       "qascauth"
-                      "qawebarmy"
                       "qascpub"
                       "qascdata")))
       (dolist (remote-box-alias qa-boxes)
@@ -29,9 +28,6 @@
   (switch-to-buffer "*tail-catalina-qascauth*" nil 'force-same-window)
   (split-window-right)
   (split-window-below)
-  (split-window-below)
-  (other-window 1)
-  (switch-to-buffer "*tail-catalina-qawebarmy*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qaschedmaster*" nil 'force-same-window)
   (other-window 1)
@@ -46,7 +42,6 @@
   (balance-windows)
   (other-window -1))
 
-
 (defun sc-start-qa-file-copy ()
   (interactive)
   (save-window-excursion
@@ -57,8 +52,8 @@
   (interactive)
   (kill-matching-buffers-rudely "*tail-catalina-")
   (kill-matching-buffers-rudely "*sc-errors*")
-  (kill-matching-buffers-rudely "*sc-restarted*"))
-
+  (kill-matching-buffers-rudely "*sc-restarted*")
+  (jump-to-register ?p))
 
 (defun sc-open-qa-mongo-db()
   (interactive)
