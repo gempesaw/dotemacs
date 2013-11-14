@@ -1,1 +1,0 @@
-(provide 'dg-smart-tab)
