@@ -1,3 +1,14 @@
+(eval-after-load 'magit
+  '(progn
+     (set-face-foreground 'magit-diff-add "green3")
+     (set-face-foreground 'magit-diff-del "red3")
+     (set-face-attribute 'magit-item-highlight nil :inherit nil)
+     (set-face-background 'magit-item-highlight "gray17")
+     ;; quit magit smartly
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+     ;; magit whitespace
+     (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
+
 (defun kill-magit-git-process ()
   (interactive)
   (let ((magit-process (get-buffer-process "*magit-process*")))

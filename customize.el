@@ -72,24 +72,6 @@
 ;; automatically save buffers when finishing a wgrep session
 (setq wgrep-auto-save-buffer t)
 
-(eval-after-load 'magit
-  '(progn
-     (set-face-foreground 'magit-diff-add "green3")
-     (set-face-foreground 'magit-diff-del "red3")
-     (set-face-attribute 'magit-item-highlight nil :inherit nil)
-     (set-face-background 'magit-item-highlight "gray17")
-     ;; quit magit smartly
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
-     ;; magit whitespace
-     (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
-
-(add-hook 'w3m-display-hook 'my-w3m-rename-buffer)
-
-(add-hook 'w3m-display-hook
-          (lambda (url)
-            (let ((buffer-read-only nil))
-              (delete-trailing-whitespace))))
-
 ;; use the cool js2-mode from yegge and mooz
 (autoload 'js2-mode "js2-mode" nil t)
 
