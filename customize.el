@@ -40,19 +40,6 @@
 (add-to-list 'exec-path "/usr/local/bin")
 (setq epg-gpg-program "/usr/local/bin/gpg")
 
-;; smart compile
-(eval-after-load "smart-compile"
-  '(progn
-     (setq compilation-read-command nil)
-     (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
-     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview-with-syntax-highlighting)))))
-
-;; don't ask about files
-(setq compilation-ask-about-save nil)
-
-;; don't compile based on last buffer
-(setq compilation-last-buffer nil)
-
 ;; make dired-find-file faster
 ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
 (eval-after-load "find-dired"
