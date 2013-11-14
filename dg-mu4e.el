@@ -12,6 +12,7 @@
     func. Note the weekly scope of the command's precision.")
 
   (setq mu4e-get-mail-command "true"
+        mu4e-split-view 'vertical
         mu4e-headers-leave-behavior 'apply
         mu4e-update-interval 180
         mu4e-view-prefer-html nil
@@ -63,7 +64,9 @@ If we're waiting for user-input, don't show anyhting."
                  (if (string-match "1000" mu4e-html2text-command)
                      "72"
                    "1000")
-                 " -utf8 | sed 's/&quot;/\"/g'"))
+                 " -utf8 | sed 's/&quot;/\"/g'"
+                 " | sed 's/if !supportLists]>/\\\n/g'"
+                 " | sed 's/endif]>//g'"))
    (mu4e-view-refresh)))
 
   (defun qa-build-email-pending-p ()
