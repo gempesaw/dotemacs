@@ -27,25 +27,10 @@
 ;; Trash can support
 (setq delete-by-moving-to-trash t)
 
-;; tramp settings
-(eval-after-load "tramp"
-  '(progn
-     (setq tramp-default-method "ssh")
-     (setq tramp-auto-save-directory "~/tmp/tramp/")
-     (setq tramp-chunksize 2000)
-     ))
-
 ;; get gpg into the path
 (add-to-list 'exec-path "/usr/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (setq epg-gpg-program "/usr/local/bin/gpg")
-
-;; make dired-find-file faster
-;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
-(eval-after-load "find-dired"
-  '(progn
-     (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
-     ))
 
 ;; uniquify options
 (require 'uniquify)
@@ -54,20 +39,12 @@
 
 (setq custom-file "~/.emacs.d/emacs-custom.el")
 
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
-(setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
-(setq exec-path (append exec-path '("/usr/local/bin")))
-
 (eval-after-load "saveplace"
   '(progn
      ;; saveplace remembers your location in a file when saving files
      (setq save-place-file (concat user-emacs-directory "saveplace"))
      ;; activate it for all buffers
      (setq-default save-place t)))
-
-(eval-after-load "regex-tool"
-  '(progn
-     (setq regex-tool-backend "perl")))
 
 ;; automatically save buffers when finishing a wgrep session
 (setq wgrep-auto-save-buffer t)
@@ -85,69 +62,15 @@
     (setq oauth-nonce-function #'sasl-unique-id)
   (setq oauth-nonce-function #'oauth-internal-make-nonce))
 
-;; Make dired less verbose
-(eval-after-load "dired-details"
-  '(progn
-     (setq-default dired-details-hidden-string "--- ")
-     (dired-details-install)))
-
 ;; Also auto refresh dired, but be quiet about it
 (setq global-auto-revert-non-file-buffers t)
 (setq auto-revert-verbose nil)
 
-(setq ssh-config-path "~/.ssh/config")
-
-(defvar freenode-password nil
-  "pass for my freenode acc, it's not in repo obv")
-(setq circe-network-options
-      `(("Freenode"
-         :nick "dgempesaw"
-         :channels ("#emacs" "#selenium")
-         :nickserv-password ,freenode-password
-         )))
-
 (put 'narrow-to-region 'disabled nil)
 
-(setq markdown-css-path "/opt/highlight.js/src/styles/ir_black.css")
-(setq markdown-script-path "/opt/highlight.js/build/highlight.pack.js")
-
-(setq mu4e-get-mail-command "true"
-      mu4e-headers-leave-behavior 'apply
-      mu4e-update-interval 180
-      mu4e-view-prefer-html nil
-      mu4e-headers-results-limit 50
-      mu4e-use-fancy-chars nil
-      mu4e-view-show-images t
-      ;; mu4e-html2text-command "html2text -nobs -style pretty -width 1000 | sed 's/&quot;/\"/g'"
-      mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
-      mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
-                       ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
-                       ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
-                       ("from:squash OR from:root or from:uptime" "Alerts" ?a)
-                       ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
-                       ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
-                       ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                       ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash" "Inbox" ?i)
-                       ("maildir:/INBOX" "All Inbox" ?I)
-                       ("from:dgempesaw@sharecare.com" "Sent" ?t)
-                       ("date:7d..now" "Last 7 days" ?l)
-                       ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
-
-(setq user-mail-address "dgempesaw@sharecare.com"
-      user-full-name  "Daniel Gempesaw")
-
-;; with Emacs 23.1, you have to set this explicitly (in MS Windows)
-;; otherwise it tries to send through OS associated mail client
-(setq message-send-mail-function 'message-send-mail-with-sendmail
-      message-send-mail-function 'smtpmail-send-it
-      smtpmail-stream-type 'starttls
-      smtpmail-default-smtp-server "pod51019.outlook.com"
-      smtpmail-smtp-server "pod51019.outlook.com"
-      smtpmail-smtp-user "dgempesaw@sharecare.com"
-      smtpmail-smtp-service 587)
-
-(setq split-height-threshold 80
-      split-width-threshold 160)
+;;; split to side-by-side if it'll leave the remaining windows at least 125 wide
+(setq split-height-threshold nil
+      split-width-threshold 125)
 
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
 (delete '("\\.js\\'" . js-mode) auto-mode-alist)

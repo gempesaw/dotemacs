@@ -5,6 +5,14 @@
 ;; https://github.com/gwtaylor/dotfiles/blob/master/.emacs.d/darwin.el
 (setenv "TMPDIR" "~/.ssh/cm/")
 
+;; tramp settings
+(eval-after-load "tramp"
+  '(progn
+     (setq tramp-default-method "ssh")
+     (setq tramp-auto-save-directory "~/tmp/tramp/")
+     (setq tramp-chunksize 2000)
+     (setq ssh-config-path "~/.ssh/config")))
+
 (defun reset-ssh-connections ()
   (interactive)
   (tramp-cleanup-all-connections)
