@@ -70,6 +70,7 @@
         org-end-of-line
         paredit-backward-kill-word
         paredit-doublequote
+        paredit-forward
         paredit-forward-barf-sexp
         paredit-forward-delete
         paredit-forward-kill-word

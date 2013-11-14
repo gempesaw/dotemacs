@@ -12,6 +12,7 @@
     (key-chord-define-global "xv" 'switch-to-other-buffer)
     (key-chord-define-global "xh" 'mark-whole-buffer)
     (key-chord-define-global "jk" 'eval-defun)
+    (key-chord-define-global "fd" 'edebug-defun)
     (key-chord-define-global "jl" 'jabber-activity-switch-to)
     (key-chord-define-global "bj" (lambda ()
                                     (interactive)
