@@ -170,13 +170,6 @@
 
 (global-set-key (kbd "C-c y") 'toggle-window-split)
 
-(global-unset-key (kbd "s-o"))
-(global-set-key (kbd "s-o") '(lambda () (interactive)
-                               (if (switch-between-buffers "*OfflineIMAP*")
-                                   (progn (goto-char (point-max))
-                                          (offlineimap-resync)))))
-(global-set-key (kbd "s-0") 'offlineimap-rudely-restart)
-
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
 (eval-after-load 'php-mode
