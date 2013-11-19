@@ -15,4 +15,14 @@
                                                mu4e-headers-mode
                                                mu4e-view-mode)))
 
+(global-unset-key (kbd "s-o"))
+(global-set-key (kbd "s-o") '(lambda () (interactive)
+                               (if (switch-between-buffers "*OfflineIMAP*")
+                                   (if (get-buffer-process (current-buffer))
+                                       (progn
+                                         (goto-char (point-max))
+                                         (offlineimap-resync))
+                                     (offlineimap)))))
+(global-set-key (kbd "s-0") 'offlineimap-rudely-restart)
+
 (provide 'dg-offlineimap)
