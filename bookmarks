@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("dev_hdew"
+(("usr/local/bin"
+ (filename . "/usr/local/bin/")
+ (front-context-string . "  total used in ")
+ (rear-context-string . "/usr/local/bin:\n")
+ (position . 19))
+("dev_hdew"
  (filename . "~/opt/dev_hdew/")
  (front-context-string . "  /Users/dgempes")
  (rear-context-string)
