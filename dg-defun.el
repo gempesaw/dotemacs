@@ -419,6 +419,10 @@ Return nil."
     (delete-window window))
   nil)
 
+(defun smother-process-query-on-exit (buffer)
+  (set-process-query-on-exit-flag
+   (get-buffer-process buffer) nil))
+
 (defun cwd ()
   (interactive)
   (s-second-half " " (pwd)))

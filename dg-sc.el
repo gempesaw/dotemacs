@@ -55,14 +55,6 @@
   (kill-matching-buffers-rudely "*sc-restarted*")
   (jump-to-register ?p))
 
-(defun sc-open-qa-mongo-db()
-  (interactive)
-  (async-shell-command (concat "mongo " ip-and-port-of-qa-mongo) "*qa-mongo*"))
-
-(defun sc-open-dev-mongo-db ()
-  (interactive)
-  (async-shell-command (concat "mongo " ip-and-port-of-dev-mongo) "*dev-mongo*"))
-
 (defun sc-open-existing-hnew-shell ()
   (interactive)
   (let ((buffer "*ssh-hnew*"))
