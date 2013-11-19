@@ -21,32 +21,6 @@
 (global-unset-key (kbd "M-0"))
 (global-set-key (kbd "M-0") 'delete-window)
 
-;; Start eshell or switch to it if it's active.
-(global-unset-key (kbd "C-c ;"))
-(global-set-key (kbd "C-c ;") 'eshell)
-
-;; Start a new eshell even if one is active.
-(global-unset-key (kbd "C-c C-;"))
-(global-set-key (kbd "C-c C-;") (lambda () (interactive) (eshell t)))
-
-;; start shell or switch to it if it's active
-(global-unset-key (kbd "C-c /"))
-(global-set-key (kbd "C-c /")
-                (lambda ()
-                  (interactive)
-                  (set-process-query-on-exit-flag
-                   (get-buffer-process (shell)) nil)))
-
-;; start a new shell even if one is active
-(global-unset-key (kbd "C-c C-/"))
-(global-set-key (kbd "C-c C-/")
-                (lambda ()
-                  (interactive)
-                  (set-process-query-on-exit-flag
-                   (get-buffer-process
-                    (shell
-                     (generate-new-buffer "*shell*"))) nil)))
-
 ;; Start cterm or switch to it if it's active.
 (require 'term)
 (global-unset-key (kbd "C-c '"))
