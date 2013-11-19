@@ -3,7 +3,7 @@
 ;; TMPDIR variable is really large
 ;; http://lists.macosforge.org/pipermail/macports-tickets/2011-June/084295.html
 ;; https://github.com/gwtaylor/dotfiles/blob/master/.emacs.d/darwin.el
-(setenv "TMPDIR" "~/.ssh/cm/")
+(setenv "TMPDIR" "/tmp/")
 
 ;; tramp settings
 (eval-after-load "tramp"
