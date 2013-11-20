@@ -1,6 +1,6 @@
 (defun mongo ()
   (interactive)
-  (let* ((titles (mapcar (lambda (it) (car it)) mongo-db-choices))
+  (let* ((titles (mapcar 'car mongo-db-choices))
          (choice (ido-completing-read "Which DB: " titles))
          (mongo-buffer (format "*%s-mongodb*" choice))
          (address (cdr (assoc choice mongo-db-choices)))
@@ -10,7 +10,5 @@
     (smother-process-query-on-exit (pop-to-buffer mongo-buffer))
     (goto-char (point-max))
     (insert "use SharecareDB")))
-
-
 
 (provide 'dg-mongo)
