@@ -32,8 +32,9 @@
     (while cm-socket-files
       (let ((filename (car cm-socket-files)))
         (if (not (or (string= "." filename)
-                     (string= ".." filename)))
-            (delete-file (concat dir filename)))
+                  (string= ".." filename)))
+            (if (string-match "^cm" filename)
+                (delete-file (concat dir filename))))
         (setq cm-socket-files (cdr cm-socket-files))))))
 
 (defun get-remote-names ()
