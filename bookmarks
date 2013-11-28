@@ -19,9 +19,9 @@
  (position . 1))
 ("prod-js"
  (filename . "/ssh:termdew:/opt/honeydew-ui/htdocs/js/")
- (front-context-string . "  /ssh:termdew:/opt")
- (rear-context-string)
- (position . 1))
+ (front-context-string . "hdew-rules.js\n  ")
+ (rear-context-string . "19 Nov 19 17:51 ")
+ (position . 784))
 ("prod-job-log"
  (filename . "/ssh:termdew:/opt/honeydew/bin/job.log")
  (front-context-string . "feature=/opt/hon")
