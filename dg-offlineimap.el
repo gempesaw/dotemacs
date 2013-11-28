@@ -1,9 +1,9 @@
 (defun offlineimap-rudely-restart ()
   (interactive)
+  (offlineimap-quit)
   (shell-command "pkill -u dgempesaw -s 9 -f offlineimap")
   (kill-buffer "*OfflineIMAP*")
-  (offlineimap-quit)
-  (sit-for 0)
+  (sit-for 1)
   (offlineimap))
 
 ;; offlineimappppy
