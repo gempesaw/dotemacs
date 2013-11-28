@@ -194,4 +194,5 @@
 ;; I keep accidentally pop-tag-mark'ing when I don't want to.
 (global-unset-key (kbd "M-*"))
 
+(global-set-key (kbd "<f13>") 'execute-feature)
 (provide 'dg-kbd)
