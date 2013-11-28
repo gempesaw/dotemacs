@@ -253,9 +253,10 @@
 (defun sc-open-jira-ticket-at-point ()
   (interactive)
   (let ((ticket (thing-at-point 'sexp)))
-    (unless (string-match-p "^[A-z]+-[0-9]+$" ticket)
-      (setq ticket (read-from-minibuffer "Not sure if this is a ticket: " ticket)))
-    (browse-url (concat "http://arnoldmedia.jira.com/browse/" ticket))))
+    (string-match "\\([A-Z]+-[0-9]+$\\)" ticket)
+    (browse-url
+     (concat "http://arnoldmedia.jira.com/browse/"
+             (match-string 0 ticket)))))
 
 (defun sc-find-server-startup ()
   (interactive)
