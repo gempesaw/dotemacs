@@ -95,6 +95,7 @@
         wdired-change-to-wdired-mode
         wdired-next-line
         wdired-previous-line
+        web-mode-comment-or-uncomment
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
         yas-expand
