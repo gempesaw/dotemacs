@@ -16,10 +16,9 @@
 (defun reset-ssh-connections ()
   (interactive)
   (tramp-cleanup-all-connections)
-  (let ((tramp-buffers
-         (-filter (lambda (item)
-                    (string-match "tramp" (buffer-name item)))
-                  (buffer-list))))
+  (let ((tramp-buffers (-filter (lambda (item)
+                                  (string-match "*tramp" (buffer-name item)))
+                                (buffer-list))))
     (while tramp-buffers
       (kill-buffer (car tramp-buffers))
       (setq tramp-buffers (cdr tramp-buffers))))
@@ -27,7 +26,7 @@
 
 (defun delete-hung-ssh-sessions ()
   (interactive)
-  (let* ((dir (getenv "TMPDIR"))
+  (let* ((dir "~/.ssh/cm")
          (cm-socket-files (directory-files dir nil nil t)))
     (while cm-socket-files
       (let ((filename (car cm-socket-files)))
