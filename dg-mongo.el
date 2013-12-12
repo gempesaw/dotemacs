@@ -1,4 +1,4 @@
-(defun mongo ()
+(defun dg-mongo ()
   (interactive)
   (let* ((titles (mapcar 'car mongo-db-choices))
          (choice (ido-completing-read "Which DB: " titles))

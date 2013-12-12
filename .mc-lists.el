@@ -61,6 +61,7 @@
         mark-whole-buffer
         markdown-cycle
         markdown-exdent-or-delete
+        markdown-indent-region
         mc/mark-next-lines
         message-beginning-of-line
         mu4e-headers-mark-for-read
@@ -118,6 +119,7 @@
         execute-perl
         handle-switch-frame
         hs-show-block
+        isearch-other-control-char
         jabber-activity-switch-to
         js2-mode-show-node
         jump-to-register
@@ -133,6 +135,7 @@
         revert-buffer
         scroll-up-command
         sgml-delete-tag
+        skewer-eval-defun
         smart-compile
         sql-magic-go
         switch-window

@@ -24,12 +24,12 @@
         mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
                          ("'maildir:/INBOX.JIRA' and flag:unread" "Unread JIRA" ?j)
                          ("'maildir:/INBOX.JIRA'" "All JIRA" ?h)
-                         ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied" "QA Builds" ?q)
+                         ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied AND NOT from:ebarrsmith@sharecare.com AND NOT from:cbanks@sharecare.com AND NOT from:jreynolds@sharecare.com" "QA Builds" ?q)
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                         ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw))" "Inbox" ?i)
-                         ("from:dgempesaw to:cbanks AND NOT meeting" "clint" ?c)
+                         ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:ShareFile" "Inbox" ?i)
+                         ("from:dgempesaw to:cbanks AND update" "clint" ?c)
                          ("maildir:/INBOX" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
                          ("date:7d..now" "Last 7 days" ?l)
@@ -52,22 +52,22 @@
     "Like `message', but prefixed with mu4e.
 If we're waiting for user-input, don't show anyhting."
     (unless (or (active-minibuffer-window)
-                (not (string-match-p "^\(Indexing\|Retrieving\)" frm)))
+               (not (string-match-p "^\(Indexing\|Retrieving\)" frm)))
       (message "%s" (apply 'mu4e-format frm args))
       nil))
 
   (defun mu4e-toggle-html2text-width ()
-  (interactive)
-  (message
-   (setq mu4e-html2text-command
-         (concat "html2text -nobs -width "
-                 (if (string-match "1000" mu4e-html2text-command)
-                     "72"
-                   "1000")
-                 " -utf8 | sed 's/&quot;/\"/g'"
-                 " | sed 's/if !supportLists]>/\\\n/g'"
-                 " | sed 's/endif]>//g'"))
-   (mu4e-view-refresh)))
+    (interactive)
+    (message
+     (setq mu4e-html2text-command
+           (concat "html2text -nobs -width "
+                   (if (string-match "1000" mu4e-html2text-command)
+                       "72"
+                     "1000")
+                   " -utf8 | sed 's/&quot;/\"/g'"
+                   " | sed 's/if !supportLists]>/\\\n/g'"
+                   " | sed 's/endif]>//g'"))
+     (mu4e-view-refresh)))
 
   (defun qa-build-email-pending-p ()
     (let ((qa-email-file "~/.qa-build-ready"))
