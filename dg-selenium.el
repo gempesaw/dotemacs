@@ -1,11 +1,9 @@
-(setq selenium-webdriver-version "2.35.0")
-
 (defun start-selenium-server ()
   (interactive)
   (let* ((selenium-proc-name "selenium-webdriver")
          (default-directory
            (if (string= system-type "windows-nt")
-               "C:/daniel"
+               "~/"
              "/opt/"))
          (selenium-things (car (reverse (file-expand-wildcards "selenium*jar"))))
          (selenium-file (if (eq nil selenium-things)
