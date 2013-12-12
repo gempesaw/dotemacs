@@ -73,6 +73,22 @@ If we're waiting for user-input, don't show anyhting."
     (let ((qa-email-file "~/.qa-build-ready"))
       (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
 
+  ;; http://www.emacswiki.org/emacs/mu4e - message view action
+  (defun mu4e-msgv-action-view-in-browser ()
+    "View the body of the message in a web browser."
+    (interactive)
+    (let ((html (mu4e-msg-field (mu4e-message-at-point t) :body-html))
+          (tmpfile (format "%s/%d.html" temporary-file-directory (random))))
+      (unless html (error "No html part for this message"))
+      (with-temp-file tmpfile
+        (insert
+         "<html>"
+         "<head><meta http-equiv=\"content-type\""
+         "content=\"text/html;charset=UTF-8\">"
+         html))
+      (browse-url (concat "file://" tmpfile))))
+  (add-to-list 'mu4e-view-actions
+               '("View in browser" . mu4e-msgv-action-view-in-browser) t)
 
   (global-unset-key (kbd "s-m"))
   (global-set-key (kbd "s-m") (lambda ()
@@ -98,6 +114,7 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
        (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
        (define-key mu4e-view-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
+       (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
 
 (provide 'dg-mu4e)
