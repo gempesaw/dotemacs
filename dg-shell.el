@@ -19,18 +19,24 @@
   (interactive)
   (let ((shells (mapcar 'buffer-name
                         (-filter (lambda (buffer)
-                                   (string-match "\\*shell" (buffer-name buffer)))
-                                 (buffer-list)))))
+                                   (string-match "\\*shell[^ ]" (buffer-name buffer)))
+                                 (buffer-list))))
+        (buf))
     (if shells
-        (switch-to-buffer
-         (ido-completing-read "Buffer: " shells))
+        (progn (setq buf (ido-completing-read "Buffer: " shells))
+               (unless (get-buffer buf )
+                 (setq buf (create-new-shell-here)))
+               (switch-to-buffer buf))
       (create-new-shell-here))))
+
+(defadvice shell-directory-tracker (after add-cwd-to-buffer activate)
+  (if (string-match "^*shell" (buffer-name (current-buffer)))
+      (rename-buffer (format "*shell<%s>*" default-directory) t)))
 
 (defun create-new-shell-here ()
   (interactive)
-  (set-process-query-on-exit-flag
-   (get-buffer-process
-    (shell
-     (generate-new-buffer "*shell*"))) nil))
+  (let ((buf (shell (generate-new-buffer "*shell*"))))
+    (set-process-query-on-exit-flag (get-buffer-process buf) nil)
+    buf))
 
 (provide 'dg-shell)

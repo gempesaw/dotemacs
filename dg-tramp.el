@@ -78,7 +78,7 @@
     (if (eq nil pfx)
         (setq box (ido-completing-read "Which box: " (mapcar 'car remote-info)))
       (setq box pfx))
-    (setq buffer (concat "*ssh-" box "*"))
+    (setq buffer (concat "*shell<" box ">*"))
     (let ((default-directory (concat "/" box ":/home/" (cadr (assoc box remote-info)) "/")))
       (shell buffer))
     (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))

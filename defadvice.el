@@ -31,7 +31,3 @@ still function in special-mode"
   (window-configuration-to-register 265)
   ad-do-it
   (delete-other-windows))
-
-(defadvice shell-directory-tracker (after add-cwd-to-buffer activate)
-  (if (string-match "^*shell" (buffer-name (current-buffer)))
-      (rename-buffer (format "*shell<%s>*" default-directory) t)))

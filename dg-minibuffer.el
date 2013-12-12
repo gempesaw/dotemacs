@@ -23,15 +23,11 @@
 ;; for vertical ido, C-n/p is more intuitive
 (defun ido-my-keys ()
   "Add my keybindings for ido."
-  (define-key ido-file-completion-map
-              (kbd "~")
-              (lambda ()
-                (interactive)
-                (insert "~/")
-                ;; (if (looking-back "/")
-                ;;     (insert "~/")
-                ;;   (call-interactively 'self-insert-command))
-                )))
+  (define-key ido-file-completion-map (kbd "~") (lambda () (interactive) (insert "~/")))
+  (define-key ido-completion-map (kbd "?") (lambda ()
+                                             (interactive)
+                                             (create-new-shell-here)
+                                             (execute-kbd-macro "\C-g" 1))))
 
 (add-hook 'ido-setup-hook 'ido-my-keys)
 
