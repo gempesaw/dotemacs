@@ -35,6 +35,7 @@
                     magit
                     markdown-mode
                     multiple-cursors
+                    noflet
                     offlineimap
                     paredit
                     projectile
