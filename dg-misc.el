@@ -24,4 +24,24 @@
                      " -l ert"
                      " -f ert-run-tests-batch-and-exit"))))
 
+(defun dg-port-divert (in out)
+  (with-current-buffer (get-buffer-create "*dg-port*")
+    (cd "/sudo::/")
+    (async-shell-command
+     (format "ipfw add 100 fwd 127.0.0.1,%s tcp from any to me %s && ipfw show" in out)
+     "*dg-port*"
+     "*dg-port*"))
+  (message (buffer-string)))
+
+(defun dg-ipfw-webdriver-vm-redirect ()
+  (interactive)
+  (dg-port-divert 4443 4444))
+
+(defun dg-ipfw-port-flush ()
+  (interactive)
+  (with-current-buffer (get-buffer-create "*dg-port*")
+    (cd "/sudo::/")
+    (async-shell-command "ipfw -f flush && ipfw show" "*dg-port*" "*dg-port*")
+    (message (buffer-string))))
+
 (provide 'dg-misc)
