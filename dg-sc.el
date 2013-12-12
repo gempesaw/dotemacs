@@ -278,13 +278,15 @@
 (global-unset-key (kbd "s-s"))
 (global-set-key (kbd "s-s") 'sc-find-server-startup)
 
-(defun sc-bactes-scrum-meeting ()
-  (interactive)
-  (browse-url "http://fuze.me/21273875"))
-
 (defun sc-qa-scrum-meeting ()
   (interactive)
-  (browse-url "http://fuze.me/21449287"))
+  (browse-url "http://fuze.me/21449287")
+  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
+
+(defun sc-dr-who-scrum ()
+  (interactive)
+  (browse-url "http://fuze.me/22147863")
+  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
 
 (defun sc-open-vpn-connection ()
   (interactive)
