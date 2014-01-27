@@ -115,6 +115,8 @@
 
 ;; insert eol semi, reindent, go to next line
 (global-set-key (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
+(define-key my-keys-minor-mode-map (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
+
 (global-set-key (kbd "C-,") (lambda ()
                               (interactive)
                               (end-of-line)
@@ -159,11 +161,6 @@
 (eval-after-load "tracking"
   '(progn
      (define-key tracking-mode-map (kbd "C-x C-j C-k") 'tracking-next-buffer)))
-
-(global-unset-key (kbd "s-q"))
-(global-set-key (kbd "s-q") (lambda () (interactive)
-                              (if (switch-between-buffers "*-jabber-groupchat-qa@conference.sharecare.com-*")
-                                  (jabber-muc-names))))
 
 (global-unset-key (kbd "C-x C-r"))
 (global-set-key (kbd "C-x C-r") 'find-file-as-root)
