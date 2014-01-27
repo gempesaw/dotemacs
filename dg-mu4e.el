@@ -29,7 +29,7 @@
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                          ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:ShareFile" "Inbox" ?i)
-                         ("from:dgempesaw to:cbanks AND update" "clint" ?c)
+                         ("from:dgempesaw AND (to:cbanks OR cc:cbanks) AND update" "clint" ?c)
                          ("maildir:/INBOX" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
                          ("date:7d..now" "Last 7 days" ?l)
