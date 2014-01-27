@@ -7,6 +7,10 @@
         ace-jump-mode
         ace-jump-move
         add-semi-eol-and-goto-next-line-indented
+        archive-flag-deleted
+        archive-mark
+        archive-previous-line
+        archive-unflag
         autopair-backspace
         autopair-insert-opening
         autopair-insert-opening
@@ -68,7 +72,14 @@
         next-error
         org-beginning-of-line
         org-delete-char
+        org-demote-subtree
         org-end-of-line
+        org-insert-heading-respect-content
+        org-kill-line
+        org-meta-return
+        org-metaright
+        org-shiftright
+        org-todo
         paredit-backward-kill-word
         paredit-doublequote
         paredit-forward
@@ -129,6 +140,7 @@
         mu4e-headers-prev
         mu4e-mark-execute-all
         org-delete-backward-char
+        org-goto-calendar
         org-self-insert-command
         paredit-backslash
         php-send-buffer
