@@ -26,13 +26,13 @@
 
 (defun delete-hung-ssh-sessions ()
   (interactive)
-  (let* ((dir "~/.ssh/cm")
+  (let* ((dir "~/.ssh/cm/")
          (cm-socket-files (directory-files dir nil nil t)))
     (while cm-socket-files
       (let ((filename (car cm-socket-files)))
         (if (not (or (string= "." filename)
                   (string= ".." filename)))
-            (if (string-match "^cm" filename)
+            (if (string-match "terminus" filename)
                 (delete-file (concat dir filename))))
         (setq cm-socket-files (cdr cm-socket-files))))))
 
