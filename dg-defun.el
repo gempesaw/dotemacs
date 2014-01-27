@@ -306,6 +306,18 @@ Including indent-buffer, which should not be called automatically on save."
     (switch-to-prev-buffer)
     nil))
 
+(defun toggle-app-and-home (app)
+  (interactive)
+  (if (string-match-p app (buffer-name))
+      (jump-to-register 6245)
+    (progn
+      (window-configuration-to-register 6245)
+      (delete-other-windows)
+      (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+      (split-window-horizontally)
+      (other-window 1)
+      (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*"))))
+
 ;; http://emacs-fu.blogspot.com/2013/03/editing-with-root-privileges-once-more.html
 (defun find-file-as-root ()
   "Like `ido-find-file, but automatically edit the file with

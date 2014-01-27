@@ -274,19 +274,33 @@
                               (sc-restart-qa-boxes)
                               (other-window 1)))
 (global-set-key (kbd "s-4") 'sc-close-qa-catalina)
-
+(global-set-key (kbd "s-5") 'sc-check-qa-build)
+(global-unset-key (kbd "s-z"))
+(global-set-key (kbd "s-z") 'sc-army-login)
 (global-unset-key (kbd "s-s"))
 (global-set-key (kbd "s-s") 'sc-find-server-startup)
 
+(defun sc-army-login ()
+  (interactive)
+  (let ((env (ido-completing-read "Env:" '("https://armyfit.dev.sharecare.com"
+                                           "https://armyfit.stage.sharecare.com"
+                                           "https://test.armyfit.army.mil"
+                                           "https://armyfit.army.mil"
+                                           )))
+        (user (ido-completing-read "User:" '("jesse.watters"
+                                             "erin.graziano"
+                                             "allison.pepper"))))
+    (save-window-excursion
+      (async-shell-command
+       (format "perl -w /Users/dgempesaw/tmp/login.pl '%s' '%s'" env user) " hide" " hide"))))
+
 (defun sc-qa-scrum-meeting ()
   (interactive)
-  (browse-url "http://fuze.me/21449287")
-  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
+  (browse-url "http://fuze.me/21449287"))
 
 (defun sc-dr-who-scrum ()
   (interactive)
-  (browse-url "http://fuze.me/22147863")
-  (browse-url "https://plus.google.com/hangouts/_/calendar/Y2JhbmtzQGdtYWlsLmNvbQ.9v8ce68ui1ncpm4aoeisqni4fg"))
+  (browse-url "http://fuze.me/22147863"))
 
 (defun sc-open-vpn-connection ()
   (interactive)
@@ -307,5 +321,10 @@
 
 (fset 'sc-jabber-join-qa-conference-macro
       [?\C-x ?\C-j ?\C-r ?\C-s ?s ?h ?a ?r ?e ?c ?a ?r ?e ?\C-m ?\C-a ?j ?q ?a ?@ ?c ?o ?n ?f ?r ?e backspace backspace ?e ?r ?e ?n ?c ?e ?. ?s ?h ?a ?r ?e ?c ?a ?r ?e ?. ?c ?o ?m return ?d ?g ?e ?m ?p ?e ?s ?a ?w return ?\s-q])
+
+(defun sc-check-qa-build ()
+  (interactive)
+  (mapc 'browse-url '("https://www.qa.sharecare.com"
+                      "https://author.qa.sharecare.com")))
 
 (provide 'dg-sc)

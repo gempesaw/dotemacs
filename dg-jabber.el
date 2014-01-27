@@ -1,20 +1,15 @@
 (mapc (lambda (pass-var)
         (set pass-var
-              (if (boundp pass-var)
-                  pass-var
-                "")))
-      '(sharecare-jabber-password
-        gmail-jabber-password))
+             (if (boundp pass-var)
+                 pass-var
+               "")))
+      '(sharecare-jabber-password))
 
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
 (setq jabber-account-list `(("dgempesaw@sharecare.com"
                              (:connection-type . starttls)
                              (:password . ,sharecare-jabber-password))
-                            ;; ("dgempesaw@gmail.com"
-                            ;;  (:connection-type . starttls)
-                            ;;  (:password . ,gmail-jabber-password))
                             ))
-
 (setq jabber-alert-presence-hooks nil
       jabber-avatar-verbose nil
       jabber-vcard-avatars-retrieve nil
@@ -25,8 +20,7 @@
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
       jabber-show-offline-contacts nil
       jabber-auto-reconnect nil
-      ;; jabber-muc-autojoin '("qa@conference.sharecare.com")
-      jabber-muc-autojoin nil
+      jabber-muc-autojoin '("qa@conference.sharecare.com" "doctorwhoteamchat@conference.sharecare.com")
       jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
       starttls-extra-arguments '("--insecure")
       starttls-use-gnutls t)
@@ -52,5 +46,13 @@
       (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
 
 (setq jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll jabber-alert-message-say))
+
+(define-key jabber-global-keymap "\C-u" 'jabber-muc-join)
+
+(global-unset-key (kbd "s-q"))
+(global-set-key (kbd "s-q")
+                (lambda ()
+                  (interactive)
+                  (toggle-app-and-home "jabber-")))
 
 (provide 'dg-jabber)

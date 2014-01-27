@@ -22,28 +22,34 @@ browsers."
         (setq command (concat "d -" command)))
     (if (>= arg 4)
         (let ((browser (ido-completing-read "browser: "
-                                            '("phantomjs localhost"
+                                            '(
                                               "chrome"
                                               "firefox"
-                                              "ie 10"
-                                              "ie 9"
-                                              "ie 8")))
+                                              "phantomjs localhost"
+                                              )))
               (hostname (ido-completing-read "hostname: "
-                                             '("localhost"
-                                               "www.qa.sharecare.com"
-                                               "www.stage.sharecare.com"
-                                               "www.sharecare.com"
-                                               "www.qa.startle.com"
-                                               "www.stage.startle.com"
-                                               "www.startle.com"
-                                               "www.qa.doctoroz.com"
-                                               "www.stage.doctoroz.com"
-                                               "www.doctoroz.com")))
+                                             '("http://localhost"
+                                               "http://www.qa.sharecare.com"
+                                               "http://www.stage.sharecare.com"
+                                               "http://www.sharecare.com"
+                                               "http://www.qa.startle.com"
+                                               "http://www.stage.startle.com"
+                                               "http://www.startle.com"
+                                               "http://www.qa.doctoroz.com"
+                                               "http://www.stage.doctoroz.com"
+                                               "http://www.doctoroz.com"
+                                               "https://armyfit.dev.sharecare.com"
+                                               "https://armyfit.stage.sharecare.com"
+                                               "https://test.armyfit.army.mil"
+                                               "https://armyfit.army.mil"
+                                               "https://ultimateme.dev.sharecare.com"
+                                               "https://ultimateme.stage.sharecare.com"
+                                               "https://armyfit.army.mil/UltimateMe")))
               (sauce (ido-completing-read "sauce: " '("nil" "t"))))
           (setq command (concat command
                                 (if (string= sauce "t") " -sauce")
                                 " -browser='" browser " webdriver'"
-                                " -hostname='http://" hostname "'"))))
+                                " -hostname='" hostname "'"))))
     (setq compile-command (concat "perl -" command))
     (compile compile-command t)))
 
