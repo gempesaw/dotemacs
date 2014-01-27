@@ -13,8 +13,8 @@
 (eval-after-load 'paredit
   '(diminish 'paredit-mode "(P)"))
 
-(eval-after-load 'subword
-  '(diminish 'subword-mode))
+;; (eval-after-load 'subword
+;;   '(diminish 'subword-mode))
 
 (eval-after-load 'projectile
   '(diminish 'projectile-mode))
