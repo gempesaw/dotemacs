@@ -1,10 +1,11 @@
 ;;; ido-vertical-mode.el --- Makes ido-mode display vertically.
 
-;; Copyright (C) 2013  Steven Degutis
+;; Copyright (C) 2013, 2014  Steven Degutis
 
 ;; Author: Steven Degutis
 ;; Maintainer: Daniel Gempesaw <gempesaw@gmail.com>
-;; Version: 0.1.1
+;; Version: 20140122.2057
+;; X-Original-Version: 0.1.2
 ;; Keywords: convenience
 ;; URL: https://github.com/gempesaw/ido-vertical-mode.el
 
@@ -64,15 +65,15 @@ so we can restore it when turning `ido-vertical-mode' off")
 
 (defgroup ido-vertical-mode nil
   "Make ido behave vertically."
-  :group 'ido-mode)
+  :group 'ido)
 
 (defcustom ido-vertical-define-keys 'C-n-and-C-p-only
-  "Defines which keys that ido-vertical-mode redefines."
+  "Defines which keys that `ido-vertical-mode' redefines."
   :type '(choice
           (const :tag "Keep default ido keys." nil)
-          (const :tag "C-p and C-n are up & down in match" 'C-n-and-C-p-only)
-          (const :tag "C-p/up and C-n/down are up and down in match." 'C-n-C-p-up-and-down)
-          (const :tag "C-p/up, C-n/down are up/down in match. left or right cycle history or directory." 'C-n-C-p-up-down-left-right))
+          (const :tag "C-p and C-n are up & down in match" C-n-and-C-p-only)
+          (const :tag "C-p/up and C-n/down are up and down in match." C-n-C-p-up-and-down)
+          (const :tag "C-p/up, C-n/down are up/down in match. left or right cycle history or directory." C-n-C-p-up-down-left-right))
   :group 'ido-vertical-mode)
 
 ;; borrowed from ido.el and modified to work better when vertical
@@ -178,7 +179,7 @@ so we can restore it when turning `ido-vertical-mode' off")
   (fset 'ido-completions ido-vertical-old-completions)
 
   (remove-hook 'ido-minibuffer-setup-hook 'ido-vertical-disable-line-truncation)
-  (remove-hook 'ido-setup-hbook 'ido-vertical-define-keys))
+  (remove-hook 'ido-setup-hook 'ido-vertical-define-keys))
 
 (defun ido-vertical-next-match ()
   "Call the correct next-match function for right key.
