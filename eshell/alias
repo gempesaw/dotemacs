@@ -1,6 +1,6 @@
-alias copyphrase scp -r honeydew@hnew:/opt/honeydew/phrases/ /opt/HDEW/honeydew/
-alias prove prove -l -j9
-alias hdew copyphrase;copykey
+alias copykey scp honeydew@termdew:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt
+alias copyreports scp honeydew@termdew:/var/log/honeydew/* /var/log/honeydew
 alias copyphrasesc2 scp -i /Users/dgempesaw/.ssh/honeydew-qa.pem honeydew@honeydew.be.jamconsultg.com:/opt/honeydew/phrases/sc2/* /opt/HDEW/honeydew/phrases
-alias copykey scp honeydew@hnew:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt
-alias copyreports scp honeydew@hnew:/var/log/honeydew/* /var/log/honeydew
+alias hdew copyphrase;copykey
+alias prove prove -l -j9
+alias copyphrase scp -r honeydew@termdew:/opt/honeydew/phrases/ /opt/HDEW/honeydew/
