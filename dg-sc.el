@@ -46,7 +46,7 @@
   (interactive)
   (save-window-excursion
     (message "okay, pub restarted, let's push some assets!")
-    (async-shell-command "ssh qa@qascpub . pushStaticAndAssets.sh" "*sc-qa-file-copy*")))
+    (async-shell-command "ssh build@qascpub . pushStaticAndAssets.sh" "*sc-qa-file-copy*")))
 
 (defun sc-close-qa-catalina ()
   (interactive)
@@ -78,18 +78,20 @@
         (update-build-url))
     ;; (delete-region (line-beginning-position) (line-end-position))
     (loop for cell in product do
-          (when (string-match "UNCHANGED" newVersion)
+          (when (string-match "UNCHANGED" new-version)
             (setq sc-restart-type "half"))
           (let ((vikAbbrev (car cell))
                 (productAndNewTag (cdr cell)))
-            (if (and (string-match vikAbbrev currentLineText)
-                     (not (string-match "UNCHANGED" newVersion)))
+            (if (and (string-match vikAbbrev current-line-text)
+                     (not (string-match "UNCHANGED" new-version)))
                 (progn
                   (setq update-build-url
                         (concat
                          "https://admin.be.jamconsultg.com/kohana/adminui/updatebuildtag?site=sharecare&product="
-                         productAndNewTag newVersion "&buildtype=qa"))
-                  (url-retrieve update-build-url 'sc-check-current-build)))))))
+                         productAndNewTag new-version))
+                  ;; (url-retrieve update-build-url 'sc-check-current-build)
+                  (message update-build-url)
+                  ))))))
 
 (defun sc-check-current-build (&optional rest)
   (let ((json-object-type 'alist)
@@ -142,23 +144,23 @@
              (name (caddr (nth 3 item)))
              (case-fold-search nil))
          (and (string-match-p "ACTIVE" state)
-            (string-match-p "qa" name)
+            (string-match-p "scdw" name)
             (sc--box-in-restart-group-p name sc-restart-type))))
      xml)))
 
 (defun sc--box-in-restart-group-p (name restart-type)
-  (let ((groupings '(("all" . ("scqawebpub2f"
-                               "scqadata2f"
-                               "scqaschedulemaster2f"
-                               "scqawebauth2f"))
-                     ("half" . ("scqawebpub2f"
-                                "scqawebauth2f"
+  (let ((groupings '(("all" . ("scdwwebpub2f"
+                               "scdwdata2f"
+                               "scdwschedulemaster2f"
+                               "scdwwebauth2f"))
+                     ("half" . ("scdwwebpub2f"
+                                "scdwwebauth2f"
                                 ))
-                     ("data" . ("scqadata2f"))
-                     ("pubs" . ("scqawebpub2f"))
-                     ("pub" . ("scqawebpub2f"))
-                     ("schedmaster" . ("scqaschedulemaster2f"))
-                     ("army" . ("scqawebarmy2f"))))
+                     ("data" . ("scdwdata2f"))
+                     ("pubs" . ("scdwwebpub2f"))
+                     ("pub" . ("scdwwebpub2f"))
+                     ("schedmaster" . ("scdwschedulemaster2f"))
+                     ("army" . ("scdwwebarmy2f"))))
         (match nil))
     (member name (cdr (assoc restart-type groupings)))))
 
@@ -219,7 +221,10 @@
   (goto-char (point-max))
   (yank)
   (re-search-backward "SC2")
-  (setq sc-restart-type "all")
+  (setq sc-restart-type "all"
+        sc-deploy-count 0
+        sc-deploy-environment "qa"
+        sc-deploy-time (s-chop-prefix "0" (format-time-string "%I:%M%p")))
   (sc--update-build)
   (sc--update-build)
   (sc--update-build)
@@ -324,7 +329,7 @@
 
 (defun sc-check-qa-build ()
   (interactive)
-  (mapc 'browse-url '("https://www.qa.sharecare.com"
-                      "https://author.qa.sharecare.com")))
+  (mapc 'browse-url '("https://www.dw.sharecare.com"
+                      "https://author.dw.sharecare.com")))
 
 (provide 'dg-sc)
