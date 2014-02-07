@@ -288,13 +288,19 @@
 (defun sc-army-login ()
   (interactive)
   (let ((env (ido-completing-read "Env:" '("https://armyfit.dev.sharecare.com"
+                                           "https://ultimateme.dev.sharecare.com"
+                                           "https://ultimateme.stage.sharecare.com"
                                            "https://armyfit.stage.sharecare.com"
                                            "https://test.armyfit.army.mil"
                                            "https://armyfit.army.mil"
+                                           "https://ultimateme.army.mil"
                                            )))
         (user (ido-completing-read "User:" '("jesse.watters"
                                              "erin.graziano"
-                                             "allison.pepper"))))
+                                             "allison.pepper"
+                                             "amy.emerson"
+                                             "test.maigret"
+                                             "jennifer.walsh"))))
     (save-window-excursion
       (async-shell-command
        (format "perl -w /Users/dgempesaw/tmp/login.pl '%s' '%s'" env user) " hide" " hide"))))
