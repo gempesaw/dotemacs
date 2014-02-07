@@ -4,7 +4,7 @@
          (choice (ido-completing-read "Which DB: " titles))
          (mongo-buffer (format "*%s-mongodb*" choice))
          (address (cdr (assoc choice mongo-db-choices)))
-         (args " --ssl ")
+         (args (if (string-match "SC2" choice) "" "--ssl"))
          (mongo-command (format "mongo %s %s" args address)))
     (async-shell-command mongo-command mongo-buffer)
     (smother-process-query-on-exit (pop-to-buffer mongo-buffer))
