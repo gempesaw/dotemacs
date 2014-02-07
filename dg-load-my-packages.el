@@ -24,6 +24,7 @@
                     expand-region
                     gist
                     htmlize
+                    httprepl
                     ido-ubiquitous
                     ido-vertical-mode
                     impatient-mode
