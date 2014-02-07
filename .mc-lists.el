@@ -118,6 +118,7 @@
       '(
         c-electric-brace
         compilation-previous-file
+        compile-goto-error
         delete-other-window
         delete-window
         dired-next-line
