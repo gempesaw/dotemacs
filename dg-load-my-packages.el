@@ -42,6 +42,7 @@
                     projectile
                     php-mode
                     pretty-mode-plus
+                    rainbow-mode
                     rainbow-delimiters
                     regex-tool
                     request
