@@ -1,11 +1,3 @@
-(defun sc-copy-build-numbers ()
-  (interactive)
-  (re-search-forward "auth")
-  (beginning-of-line)
-  (copy-region-as-kill (point) (save-excursion
-                                 (forward-line 7)
-                                 (point))))
-
 (defun sc-open-catalina-logs ()
   (interactive)
   (unless (get-buffer-process "*tail-catalina-qascauth*")
@@ -46,7 +38,7 @@
   (interactive)
   (save-window-excursion
     (message "okay, pub restarted, let's push some assets!")
-    (async-shell-command "ssh build@qascpub . pushStaticAndAssets.sh" "*sc-qa-file-copy*")))
+    (async-shell-command "ssh build@qascpub sh ./pushStaticAndAssets.sh" "*sc-qa-file-copy*")))
 
 (defun sc-close-qa-catalina ()
   (interactive)
@@ -65,54 +57,8 @@
           (set-process-query-on-exit-flag (get-buffer-process buffer) nil)))
     (switch-to-buffer buffer)))
 
-(defun sc--update-build ()
-  (search-forward "#")
-  ;; (delete-char -1)
-  (let ((currentLineText (buffer-substring (line-beginning-position) (point)))
-        (newVersion (buffer-substring (point) (line-end-position)))
-        (product '(("auth" . "webauth&newtag=builds/sharecare/rc/")
-                   ("pub" . "webpub&newtag=builds/sharecare/rc/")
-                   ("webarmy" . "webarmy&newtag=builds/sharecare/rc/")
-                   ("Data" . "data&newtag=builds/data/rc/")
-                   ("Tasks" . "schedulemaster&newtag=builds/schedulemaster/rc/")))
-        (update-build-url))
-    ;; (delete-region (line-beginning-position) (line-end-position))
-    (loop for cell in product do
-          (when (string-match "UNCHANGED" new-version)
-            (setq sc-restart-type "half"))
-          (let ((vikAbbrev (car cell))
-                (productAndNewTag (cdr cell)))
-            (if (and (string-match vikAbbrev current-line-text)
-                     (not (string-match "UNCHANGED" new-version)))
-                (progn
-                  (setq update-build-url
-                        (concat
-                         "https://admin.be.jamconsultg.com/kohana/adminui/updatebuildtag?site=sharecare&product="
-                         productAndNewTag new-version))
-                  ;; (url-retrieve update-build-url 'sc-check-current-build)
-                  (message update-build-url)
-                  ))))))
-
-(defun sc-check-current-build (&optional rest)
-  (let ((json-object-type 'alist)
-        (build-number))
-    (save-excursion
-      (setq build-number
-            (aref (cdr (assoc 'data (car (-filter
-                                          (lambda (item)
-                                            (cdr (assoc 'selected item)))
-                                          (append
-                                           (cdar (json-read-from-string
-                                                  (extract-json-from-http-response
-                                                   (current-buffer)))) nil) )))) 0)))
-    (kill-buffer (current-buffer))
-    (set-buffer "*scratch*")
-    (end-of-line)
-    (newline)
-    (insert (message (concat
-                      (cadr (split-string build-number "/"))
-                      " updated to "
-                      (car (last (split-string build-number "/"))))))))
+(defun sc-check-current-build (buf)
+  (switch-to-buffer (current-buffer)))
 
 (defcustom sc-resolved-qa-boxes ""
   "The result of xml-parse-region, filtered down to boxes with ACTIVE state")
@@ -135,18 +81,23 @@
   (setq sc-qa-boxes-parsed-xml (sc-resolve-qa-boxes)))
 
 (defun sc-filter-resolved-xml ()
-  (if (not (boundp 'sc-qa-boxes-parsed-xml))
+  (if (not (boundp 'sc-dw-boxes))
       (sc-refresh-qa-box-information))
-  (let ((xml sc-qa-boxes-parsed-xml))
+  (let ((xml sc-dw-boxes))
     (-filter
      (lambda (item)
        (let ((state (caddr (nth 5 item)))
              (name (caddr (nth 3 item)))
              (case-fold-search nil))
-         (and (string-match-p "ACTIVE" state)
-            (string-match-p "scdw" name)
-            (sc--box-in-restart-group-p name sc-restart-type))))
+         (sc--box-in-restart-group-p name sc-restart-type)))
      xml)))
+
+(setq sc-dw-boxes
+      (-filter
+       (lambda (item)
+         (and (string-match-p "ACTIVE" (caddr (nth 5 item)))
+            (string-match-p "scdw" (caddr (nth 3 item)))))
+       sc-qa-boxes-parsed-xml))
 
 (defun sc--box-in-restart-group-p (name restart-type)
   (let ((groupings '(("all" . ("scdwwebpub2f"
@@ -208,27 +159,25 @@
                    (sc-filter-resolved-xml)))))
 
 
-
 (defun sc-update-all-builds (&optional pfx)
   (interactive "p")
-  (sc-copy-build-numbers)
-  (when (eq pfx 1)
-    (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
-    (goto-char (point-max))
-    (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
-    (jabber-chat-buffer-send))
-  (pop-to-buffer (get-buffer-create "*scratch*"))
-  (goto-char (point-max))
-  (yank)
-  (re-search-backward "SC2")
-  (setq sc-restart-type "all"
-        sc-deploy-count 0
-        sc-deploy-environment "qa"
-        sc-deploy-time (s-chop-prefix "0" (format-time-string "%I:%M%p")))
-  (sc--update-build)
-  (sc--update-build)
-  (sc--update-build)
-  (message "We will be restarting: %s" sc-restart-type))
+  (let ((restart-base "https://admin.be.jamconsultg.com/adminui/builds/update?site=sc&env=dw&product=%s&bucket=dw-%s-build&build=builds/sharecare/rc/%s")
+        (boxes '("webauth" "webpub" "data" "schedulemaster")) )
+    (save-excursion
+      (search-forward "Build #")
+      (setq sc-deploy-number (buffer-substring (point) (point-at-eol))
+            sc-restart-type "all"
+            sc-deploy-count 0
+            sc-deploy-environment "DW"
+            sc-deploy-time (s-chop-prefix "0" (format-time-string "%I:%M%p"))))
+    (mapcar (lambda (it) (url-retrieve (format restart-base it it sc-deploy-number) 'sc-check-current-build)) boxes)
+    (message "We will be restarting: %s" sc-restart-type))
+  ;; (when (eq pfx 1)
+  ;;   (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+  ;;   (goto-char (point-max))
+  ;;   (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
+  ;;   (jabber-chat-buffer-send))
+  )
 
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
@@ -307,11 +256,13 @@
 
 (defun sc-qa-scrum-meeting ()
   (interactive)
-  (browse-url "http://fuze.me/21449287"))
+  (browse-url "http://fuze.me/21449287")
+  (message "86753"))
 
 (defun sc-dr-who-scrum ()
   (interactive)
-  (browse-url "http://fuze.me/22147863"))
+  (browse-url "http://fuze.me/22507555")
+  (message "557839#"))
 
 (defun sc-open-vpn-connection ()
   (interactive)
