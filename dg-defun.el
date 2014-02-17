@@ -467,4 +467,10 @@ Return nil."
                                sql-server))
             (sql-set-product 'mysql)))))
 
+(defun open-line-and-indent ()
+  (interactive)
+  (save-excursion
+    (newline 1)
+    (indent-according-to-mode)))
+
 (provide 'dg-defun)

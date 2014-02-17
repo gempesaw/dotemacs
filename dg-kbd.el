@@ -125,6 +125,7 @@
                               (forward-line 1)
                               (indent-according-to-mode)))
 
+(global-set-key (kbd "C-o") 'open-line-and-indent)
 (global-set-key (kbd "C-<return>") 'create-newline-from-anywhere)
 (global-set-key (kbd "RET") 'newline-and-indent)
 
