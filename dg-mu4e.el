@@ -30,7 +30,7 @@
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
                          ("maildir:/INBOX AND date:1d..now AND NOT subject:fitness AND NOT from:root AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:ShareFile AND NOT from:noreply@bactes.com" "Inbox" ?i)
                          ("from:dgempesaw AND (to:cbanks OR cc:cbanks) AND update" "clint" ?c)
-                         ("maildir:/INBOX" "All Inbox" ?I)
+                         ("maildir:/INBOX or maildir:/archive" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
                          ("date:7d..now" "Last 7 days" ?l)
                          ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
@@ -113,6 +113,7 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
        (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
        (define-key mu4e-view-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
+       (define-key mu4e-view-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
 

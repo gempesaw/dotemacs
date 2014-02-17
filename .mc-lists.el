@@ -45,6 +45,7 @@
         describe-key
         dired-details-hide
         dired-do-delete
+        dired-find-file
         dired-flag-file-deletion
         dired-mark
         dired-unmark
@@ -104,6 +105,7 @@
         transpose-sexps
         universal-argument-minus
         upcase-region
+        wdired-abort-changes
         wdired-change-to-wdired-mode
         wdired-next-line
         wdired-previous-line
