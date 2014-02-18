@@ -11,6 +11,11 @@
      ;; magit whitespace
      (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
 
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;; Default to side-by-side comparisons in ediff.
+(setq ediff-split-window-function 'split-window-horizontally)
+
 (defun kill-magit-git-process ()
   (interactive)
   (let ((magit-process (get-buffer-process "*magit-process*")))
