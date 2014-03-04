@@ -114,6 +114,12 @@
 ;; (define-key grep-mode-map (kbd "C-c C-c") 'wgrep-save-all-buffers))
 
 ;; insert eol semi, reindent, go to next line
+(global-set-key (kbd "C-M-;") (lambda () (interactive)
+                                (save-excursion
+                                  (unless (progn
+                                            (end-of-line)
+                                            (equal ";" (string (preceding-char))))
+                                    (insert ";")))))
 (global-set-key (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
 (define-key my-keys-minor-mode-map (kbd "C-;") 'add-semi-eol-and-goto-next-line-indented)
 
