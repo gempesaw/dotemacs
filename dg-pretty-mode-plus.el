@@ -1,8 +1,6 @@
-(setq pretty-default-groups
-  '(:function
-    ;; :equality
-    :nil
-    ))
+(setq pretty-default-groups '(:function :equality ))
+
+(pretty-defaults)
 
 ;; (setq pretty-supported-modes
 ;;   '(ruby-mode
