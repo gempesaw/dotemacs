@@ -71,6 +71,7 @@
         message-beginning-of-line
         mu4e-headers-mark-for-read
         next-error
+        open-line-and-indent
         org-beginning-of-line
         org-delete-char
         org-demote-subtree
@@ -118,16 +119,19 @@
 
 (setq mc/cmds-to-run-once
       '(
+        async-shell-command
         c-electric-brace
         compilation-previous-file
         compile-goto-error
         delete-other-window
         delete-window
+        dired-maybe-insert-subdir
         dired-next-line
         dired-previous-line
         dired-summary
         dired-toggle-marks
         dired-undo
+        dired-up-directory
         end-of-buffer
         eval-last-sexp
         execute-perl
@@ -153,6 +157,7 @@
         skewer-eval-defun
         smart-compile
         sql-magic-go
+        switch-to-other-buffer
         switch-window
         undefined
         wdired-finish-edit
