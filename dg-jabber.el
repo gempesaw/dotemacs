@@ -50,9 +50,17 @@
 (define-key jabber-global-keymap "\C-u" 'jabber-muc-join)
 
 (global-unset-key (kbd "s-q"))
-(global-set-key (kbd "s-q")
-                (lambda ()
-                  (interactive)
-                  (toggle-app-and-home "jabber-")))
+(global-set-key
+ (kbd "s-q")
+ (lambda () (interactive)
+   (toggle-app-and-home
+    "jabber-groupchat"
+    (lambda ()
+      (delete-other-windows)
+      (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
+      (split-window-horizontally)
+      (other-window 1)
+      (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*"))
+    )))
 
 (provide 'dg-jabber)
