@@ -9,6 +9,8 @@
         (tail-log remote-box-alias nil))
       (set-process-filter (get-buffer-process "*tail-catalina-qascauth*") 'sc-auto-restart-pub-after-auth)
       (set-process-filter (get-buffer-process "*tail-catalina-qascpub*") 'sc-deploy-assets-after-pub)
+      (set-process-filter (get-buffer-process "*tail-catalina-qascdata*") 'sc-clear-buffer-on-restart-filter)
+      (set-process-filter (get-buffer-process "*tail-catalina-qaschedmaster*")  'sc-clear-buffer-on-restart-filter)
       (sc-switch-to-log-windows))))
 
 (defun sc-switch-to-log-windows ()
@@ -27,10 +29,10 @@
   (switch-to-buffer "*tail-catalina-qascdata*" nil 'force-same-window)
   (other-window 1)
   (switch-to-buffer "*tail-catalina-qascpub*" nil 'force-same-window)
-  (window-configuration-to-register ?q)
   (split-window-below)
   (other-window 1)
   (switch-to-buffer "*mu4e-view*" nil 'force-same-window)
+  (window-configuration-to-register ?q)
   (balance-windows)
   (other-window -1))
 
@@ -58,7 +60,7 @@
     (switch-to-buffer buffer)))
 
 (defun sc-check-current-build (buf)
-  (switch-to-buffer (current-buffer)))
+  (pop-to-buffer (current-buffer)))
 
 (defcustom sc-resolved-qa-boxes ""
   "The result of xml-parse-region, filtered down to boxes with ACTIVE state")
@@ -78,7 +80,12 @@
 
 (defun sc-refresh-qa-box-information ()
   (interactive)
-  (setq sc-qa-boxes-parsed-xml (sc-resolve-qa-boxes)))
+  (setq sc-dw-boxes
+      (-filter
+       (lambda (item)
+         (and (string-match-p "ACTIVE" (caddr (nth 5 item)))
+            (string-match-p "scdw" (caddr (nth 3 item)))))
+       (sc-resolve-qa-boxes))))
 
 (defun sc-filter-resolved-xml ()
   (if (not (boundp 'sc-dw-boxes))
@@ -92,12 +99,6 @@
          (sc--box-in-restart-group-p name sc-restart-type)))
      xml)))
 
-(setq sc-dw-boxes
-      (-filter
-       (lambda (item)
-         (and (string-match-p "ACTIVE" (caddr (nth 5 item)))
-            (string-match-p "scdw" (caddr (nth 3 item)))))
-       sc-qa-boxes-parsed-xml))
 
 (defun sc--box-in-restart-group-p (name restart-type)
   (let ((groupings '(("all" . ("scdwwebpub2f"
@@ -158,11 +159,13 @@
                          (not (string-match "auth" name)))))
                    (sc-filter-resolved-xml)))))
 
-
 (defun sc-update-all-builds (&optional pfx)
   (interactive "p")
-  (let ((restart-base "https://admin.be.jamconsultg.com/adminui/builds/update?site=sc&env=dw&product=%s&bucket=dw-%s-build&build=builds/sharecare/rc/%s")
-        (boxes '("webauth" "webpub" "data" "schedulemaster")) )
+  (let ((restart-base "https://admin.be.jamconsultg.com/adminui/builds/update?site=sc&env=dw&product=%s&bucket=dw-%s-build&build=builds/%s/rc/%s")
+        (boxes '("webauth"
+                 "webpub"
+                 "data"
+                 "schedulemaster")))
     (save-excursion
       (search-forward "Build #")
       (setq sc-deploy-number (buffer-substring (point) (point-at-eol))
@@ -170,14 +173,64 @@
             sc-deploy-count 0
             sc-deploy-environment "DW"
             sc-deploy-time (s-chop-prefix "0" (format-time-string "%I:%M%p"))))
-    (mapcar (lambda (it) (url-retrieve (format restart-base it it sc-deploy-number) 'sc-check-current-build)) boxes)
+    (mapcar
+     (lambda (it)
+       (url-retrieve
+        (format restart-base it it
+                (if (string-match-p "web" it)
+                    "sharecare"
+                  it)
+                sc-deploy-number)
+        'sc-check-current-build))
+     boxes)
     (message "We will be restarting: %s" sc-restart-type))
-  ;; (when (eq pfx 1)
-  ;;   (pop-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
-  ;;   (goto-char (point-max))
-  ;;   (insert (concat (format-time-string current-time-format (current-time)) " - Restarting QA"))
-  ;;   (jabber-chat-buffer-send))
-  )
+  (when (eq pfx 1)
+    (mapcar (lambda (it)
+              (pop-to-buffer it)
+              (goto-char (point-max))
+              (insert
+               (format "%s - Restarting %s"
+                       (format-time-string current-time-format (current-time))
+                       sc-deploy-environment))
+              (jabber-chat-buffer-send))
+            '("*-jabber-groupchat-qa@conference.sharecare.com-*"
+              "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*"))))
+
+(defun sc-check-current-build (&optional something)
+  (let* ((base "https://admin.be.jamconsultg.com")
+         (endpoint "adminui/builds/get")
+         (query `(("env" "dw")
+                  ("site" "sharecare")
+                  ("product" ,(progn
+                                (string-match "dw-\\(.*\\)-build" (buffer-string))
+                                (match-string 1 (buffer-string))))))
+         (query-string (mapconcat 'identity
+                                  (loop for (param . value) in query
+                                        collect (format "%s=%s" param (car value)))
+                                  "&"))
+         (url (format "%s/%s?%s" base endpoint query-string)))
+    (message "%s" url)
+    (url-retrieve
+     url
+     (lambda (&optional args)
+       (let ((current-build (progn
+                              (string-match "&current=\\(builds/.*/rc/.*\\)'" (buffer-string))
+                              (match-string 1 (buffer-string))))
+             (product (progn
+                        (string-match "&product=\\(.*\\)';" (buffer-string))
+                        (match-string 1 (buffer-string)))))
+         (message (format "%s: %s" product current-build))
+         (kill-buffer (current-buffer)))))))
+
+(defun sc-clear-buffer-on-restart-filter (proc string)
+  (when (buffer-live-p (process-buffer proc))
+    (with-current-buffer (process-buffer proc)
+      (goto-char (process-mark proc))
+      (insert string)
+      (set-marker (process-mark proc) (point))
+      (if (string-match-p "INFO: Stopping Coyote HTTP/1.1 on http-8080" string)
+          (progn
+            (erase-buffer))))))
 
 (defun sc-auto-restart-pub-after-auth (proc string)
   (when (buffer-live-p (process-buffer proc))
@@ -185,12 +238,13 @@
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
+      (if (string-match-p "INFO: Stopping Coyote HTTP/1.1 on http-8080" string)
+          (erase-buffer))
       (if (string-match-p "MAGNOLIA LICENSE" string)
           (progn
             (message "auth server has started, restarting pub now!")
             (sc-restart-qa-boxes t)
-            (set-process-filter proc nil)))
-      )))
+            (set-process-filter proc nil))))))
 
 (defun sc-deploy-assets-after-pub (proc string)
   (when (buffer-live-p (process-buffer proc))
@@ -198,6 +252,8 @@
       (goto-char (process-mark proc))
       (insert string)
       (set-marker (process-mark proc) (point))
+      (if (string-match-p "INFO: Stopping Coyote HTTP/1.1 on http-8080" string)
+          (erase-buffer))
       (if (string-match-p "MAGNOLIA LICENSE" string)
           (progn
             (message "pub server has restarted, deploying assets now!")
@@ -286,6 +342,19 @@
 
 (defun sc-check-qa-build ()
   (interactive)
+  (let ((health "healthcheck?details=true")
+        (boxes '("qascauth" "qascpub" "qascdata" "qaschedmaster")))
+    (if (not (boundp 'ssh-hostname-remote-pairs))
+        (get-user-for-remote-box))
+    (mapc (lambda (it)
+            (url-retrieve
+             (format "http://%s/%s" (cadr (assoc it ssh-hostname-remote-pairs)) health)
+             (lambda (&optional res)
+               (if (string-match "503" (buffer-string))
+                   (progn (pop-to-buffer (current-buffer))
+                          (rename-buffer "dw-restart" t))
+                 (kill-buffer (current-buffer))))))
+          boxes))
   (mapc 'browse-url '("https://www.dw.sharecare.com"
                       "https://author.dw.sharecare.com")))
 

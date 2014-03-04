@@ -52,20 +52,27 @@
 
 (defun get-user-for-remote-box ()
   (interactive)
+  (setq ssh-hostname-remote-pairs '())
   (let ((ssh-config (get-file-as-string ssh-config-path) )
         (ssh-remote-info)
         (ssh-user-remote-pairs))
     (while ssh-config
       (let ((host-line (car ssh-config))
-            (user-line (caddr ssh-config)))
+            (user-line (caddr ssh-config))
+            (name-line (cadr ssh-config)))
         (if (and (string-match-p "Host " host-line)
                (not (string-match-p "*" host-line))
                (not (string-match-p "*" user-line))
                (not (string-match-p "^# " host-line))
                (not (string-match-p "^# " user-line)))
-            (add-to-list 'ssh-user-remote-pairs
-                         `(,(car (last (split-string host-line " ")))
-                           ,(car (last (split-string user-line " "))))))
+            (progn
+              (add-to-list 'ssh-user-remote-pairs
+                           `(,(car (last (split-string host-line " ")))
+                             ,(car (last (split-string user-line " ")))))
+
+              (add-to-list 'ssh-hostname-remote-pairs
+                           `(,(car (last (split-string host-line " ")))
+                             ,(car (last (split-string name-line " ")))))))
         (setq ssh-config (cdr ssh-config))))
     ssh-user-remote-pairs))
 
