@@ -14,6 +14,7 @@
     (key-chord-define-global "jk" 'eval-defun)
     (key-chord-define-global "fd" 'edebug-defun)
     (key-chord-define-global "jl" 'jabber-activity-switch-to)
+    (key-chord-define-global "xm" (lambda () (interactive) (switch-to-buffer "*compilation*")))
     (key-chord-define-global "bj" (lambda ()
                                     (interactive)
                                     (bookmark-jump
