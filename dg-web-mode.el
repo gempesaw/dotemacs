@@ -10,8 +10,7 @@
         web-mode-css-indent-offset 4
         web-mode-code-indent-offset 4))
 
-(define-key web-mode-map (kbd "M-;") 'comment-dwim)
-
+(define-key web-mode-map (kbd "M-;") 'web-mode-comment-or-uncomment)
 
 (add-hook 'web-mode-hook  'web-mode-hook)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
