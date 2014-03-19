@@ -167,4 +167,5 @@
         win-switch-exit
         win-switch-exit-and-redo
         win-switch-right
+        yas-tryout-snippet
         ))
