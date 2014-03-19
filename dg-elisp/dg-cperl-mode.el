@@ -1,12 +1,19 @@
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
 
-(setq cperl-invalid-face 'off
+(setq cperl-invalid-face 'underline
       cperl-electric-keywords t
       cperl-indent-level 4
       cperl-continued-statement-offset 0
-      cperl-extra-newline-before-brace t
+
+      ;; `if () { <-- bracket on the same line as if
+      cperl-extra-newline-before-brace nil
+      ;; }
+      ;; else { <-- uncuddled elses!
+      cperl-merge-trailing-else nil
+
       cperl-indent-parens-as-block t
+      cperl-close-paren-offset -4
       cperl-lazy-help-time 1)
 
 (cperl-lazy-install)

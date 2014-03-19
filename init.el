@@ -1,4 +1,4 @@
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/dg-elisp/")
 ;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
 (defvar dg-package-list nil

@@ -1,9 +1,4 @@
-(mapc (lambda (pass-var)
-        (set pass-var
-             (if (boundp pass-var)
-                 pass-var
-               "")))
-      '(sharecare-jabber-password))
+(defvar sharecare-jabber-password nil "this is defined in passwords.el")
 
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
 (setq jabber-account-list `(("dgempesaw@sharecare.com"
@@ -20,7 +15,11 @@
       jabber-roster-line-format " %c %-25n %u %-8s (%r)"
       jabber-show-offline-contacts nil
       jabber-auto-reconnect nil
-      jabber-muc-autojoin '("qa@conference.sharecare.com" "doctorwhoteamchat@conference.sharecare.com")
+      jabber-muc-autojoin '(
+                            "qa@conference.sharecare.com"
+                            "doctorwhoteamchat@conference.sharecare.com"
+                            "ratmteamchat@conference.sharecare.com"
+                            )
       jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
       starttls-extra-arguments '("--insecure")
       starttls-use-gnutls t)
@@ -48,6 +47,7 @@
 (setq jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll jabber-alert-message-say))
 
 (define-key jabber-global-keymap "\C-u" 'jabber-muc-join)
+(define-key ctl-x-map "\C-j" jabber-global-keymap)
 
 (global-unset-key (kbd "s-q"))
 (global-set-key
@@ -60,7 +60,10 @@
       (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
       (split-window-horizontally)
       (other-window 1)
-      (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*"))
-    )))
+      (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*")
+      (split-window-horizontally)
+      (other-window 1)
+      (switch-to-buffer "*-jabber-groupchat-ratmteamchat@conference.sharecare.com-*")))
+    ))
 
 (provide 'dg-jabber)

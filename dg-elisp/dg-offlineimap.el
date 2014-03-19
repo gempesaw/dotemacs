@@ -1,7 +1,7 @@
 (defun offlineimap-kill ()
   (interactive)
   (save-window-excursion
-    (shell-command "pkill -u dgempesaw -s 9 -f offlineimap")
+    (shell-command "pkill -9 offlineimap")
     (kill-buffer (get-buffer "*OfflineIMAP*"))))
 
 (defun offlineimap-show-or-start ()

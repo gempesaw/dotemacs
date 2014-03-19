@@ -21,8 +21,7 @@
         mu4e-view-show-images t
         mu4e-mu-binary "/usr/local/bin/mu"
         mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
-        mu4e-bookmarks '(("'maildir:/INBOX.JIRA' and date:1d..now and NOT subject:STAR" "Today's JIRA" ?1)
-                         ("'maildir:/INBOX.JIRA'" "Unread JIRA" ?j)
+        mu4e-bookmarks '(("from:(JIRA) and flag:unread" "Unread JIRA" ?j)
                          ("from:root and subject:Honeydew" "Honeydew" ?h)
                          ("(from:vsatam@sharecare.com OR to:vsatam@sharecare.com) and subject:DW" "Vik" ?v)
                          ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied AND NOT from:ebarrsmith@sharecare.com AND NOT from:cbanks@sharecare.com AND NOT from:jreynolds@sharecare.com" "QA Builds" ?q)
@@ -43,7 +42,16 @@
   ;; otherwise it tries to send through OS associated mail client
   (setq message-send-mail-function 'message-send-mail-with-sendmail
         message-send-mail-function 'smtpmail-send-it
-        smtpmail-stream-type 'starttls
+        message-signature "--
+Daniel Gempesaw | Software Testing Architect
+M 302.754.1231
+
+Sharecare, Inc.
+Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book | BACTES
+
+www.sharecare.com/realagetest")
+
+  (setq smtpmail-stream-type 'starttls
         smtpmail-default-smtp-server "pod51019.outlook.com"
         smtpmail-smtp-server "pod51019.outlook.com"
         smtpmail-smtp-user "dgempesaw@sharecare.com"
