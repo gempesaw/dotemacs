@@ -139,6 +139,7 @@
         hs-show-block
         isearch-other-control-char
         jabber-activity-switch-to
+        js2-mode-show-all
         js2-mode-show-node
         jump-to-register
         magit-status
