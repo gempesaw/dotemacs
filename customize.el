@@ -90,3 +90,5 @@
 (setq ensime-sbt-compile-on-save nil)
 
 (setq iedit-toggle-key-default nil)
+
+(set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
