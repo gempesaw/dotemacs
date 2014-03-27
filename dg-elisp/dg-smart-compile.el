@@ -11,4 +11,10 @@
 ;; don't compile based on last buffer
 (setq compilation-last-buffer nil)
 
+(advise-around-commands "sc-hdew-set-testing-env"
+                        (execute-perl compile compile-again sc-hdew-prove-all)
+                        (progn (setenv "HDEW_TESTS" "1")
+                               ad-do-it
+                               (setenv "HDEW_TESTS" "0")))
+
 (provide 'dg-smart-compile)

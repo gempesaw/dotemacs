@@ -42,8 +42,4 @@
           (goto-char (point-max))
           (insert "c")))))
 
-(advise-around-commands "sc-hdew-set-testing-env"
-                        (execute-perl compile-again sc-hdew-prove-all)
-                        (progn (setenv "HDEW_TESTS" "1") ad-do-it (setenv "HDEW_TESTS" "0")))
-
 (provide 'dg-cperl-mode)

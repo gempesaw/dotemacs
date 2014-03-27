@@ -10,8 +10,8 @@
                             "dg-elisp-macros"
                             ))
        (dg-all-packages (mapcar (lambda (it)
-                                  (substring it 11 -3))
-                                (file-expand-wildcards "~/.emacs.d/dg-*.el")))
+                                  (substring it 20 -3))
+                                (file-expand-wildcards "~/.emacs.d/dg-elisp/dg-*.el")))
        (dg-last-packages '(
                            "dg-modes"
                            "dg-diminish"))
@@ -29,9 +29,9 @@
             (message "____****MISSING: %s****____" it)))
         dg-package-list)
 
-(load "customize.el" 'noerror)
-(load "defadvice.el" 'noerror)
-(load "emacs-custom.el" 'noerror)
-;; (load "feature-mode.el")
-(load "hooks.el" 'noerror)
-(load "my-macros.el" 'noerror)
+(load "~/.emacs.d/customize.el" 'noerror)
+(load "~/.emacs.d/defadvice.el" 'noerror)
+(load "~/.emacs.d/emacs-custom.el" 'noerror)
+;; (load "~/.emacs.d/feature-mode.el")
+(load "~/.emacs.d/hooks.el" 'noerror)
+(load "~/.emacs.d/my-macros.el" 'noerror)
