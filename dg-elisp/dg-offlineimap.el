@@ -1,8 +1,6 @@
 (defun offlineimap-kill ()
   (interactive)
-  (save-window-excursion
-    (shell-command "pkill -9 offlineimap")
-    (kill-buffer (get-buffer "*OfflineIMAP*"))))
+  (shell-command "kill -9 $(ps aux | awk '/[o]fflineimap/ {print $2}');ps aux | grep [o]ffline"))
 
 (defun offlineimap-show-or-start ()
   (interactive)
