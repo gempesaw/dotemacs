@@ -138,6 +138,10 @@ them, asking user for confirmation"
   (interactive "sBox to tail: ")
   (switch-to-buffer (tail-log remote-box "-n +0")))
 
+(defun tail-short-log (remote-box)
+  (interactive "sBox to tail: ")
+  (switch-to-buffer (tail-log remote-box "")))
+
 (defun toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
