@@ -23,4 +23,6 @@
       (set-process-query-on-exit-flag magit-process nil)
       (kill-process magit-process))))
 
+(setq magit-emacsclient-executable "/usr/local/Cellar/emacs/HEAD/bin/emacsclient")
+
 (provide 'dg-magit)
