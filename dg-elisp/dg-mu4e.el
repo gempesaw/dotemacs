@@ -1,5 +1,7 @@
-(when (eq system-type 'darwin)
-  (add-to-list 'load-path "/usr/local/Cellar/mu/HEAD/share/emacs/site-lisp/mu4e")
+(when (and nil
+           (eq system-type 'darwin)
+           (file-exists-p "/Users/dgempesaw/projects/mu/mu4e/"))
+  (add-to-list 'load-path "/Users/dgempesaw/projects/mu/mu4e/")
   (require 'mu4e)
 
   ;; display some minibuffer signal when we have QA mail on OS X
@@ -61,7 +63,7 @@ www.sharecare.com/realagetest")
     "Like `message', but prefixed with mu4e.
 If we're waiting for user-input, don't show anyhting."
     (unless (or (active-minibuffer-window)
-               (not (string-match-p "^\(Indexing\|Retrieving\)" frm)))
+                (not (string-match-p "^\(Indexing\|Retrieving\)" frm)))
       (message "%s" (apply 'mu4e-format frm args))
       nil))
 
