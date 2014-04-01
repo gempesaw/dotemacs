@@ -1,7 +1,6 @@
-(when (and nil
-           (eq system-type 'darwin)
-           (file-exists-p "/Users/dgempesaw/projects/mu/mu4e/"))
-  (add-to-list 'load-path "/Users/dgempesaw/projects/mu/mu4e/")
+(when (and (eq system-type 'darwin)
+           (file-exists-p "/Users/dgempesaw/opt/mu/mu4e/"))
+  (add-to-list 'load-path "/Users/dgempesaw/opt/mu/mu4e/")
   (require 'mu4e)
 
   ;; display some minibuffer signal when we have QA mail on OS X
@@ -127,5 +126,8 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-view-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
+
+(unless (executable-find "html2text")
+  (message "Missing `html2text`. Maybe try `brew install html2text` ?"))
 
 (provide 'dg-mu4e)
