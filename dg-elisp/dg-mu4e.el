@@ -4,9 +4,13 @@
   (require 'mu4e)
 
   ;; display some minibuffer signal when we have QA mail on OS X
-  (setq display-time-mail-function 'qa-build-email-pending-p
+  (setq display-time-mail-function nil
         display-time-use-mail-icon t
         display-time-mail-face '((t (:background "red"))))
+
+  (defun qa-build-email-pending-p ()
+    (let ((qa-email-file "~/.qa-build-ready"))
+      (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
 
   (defvar current-time-format "%a %H:%M:%S"
     "Format of date to insert with `insert-current-time'
@@ -78,10 +82,6 @@ If we're waiting for user-input, don't show anyhting."
                    " | sed 's/if !supportLists]>/\\\n/g'"
                    " | sed 's/endif]>//g'"))
      (mu4e-view-refresh)))
-
-  (defun qa-build-email-pending-p ()
-    (let ((qa-email-file "~/.qa-build-ready"))
-      (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
 
   ;; http://www.emacswiki.org/emacs/mu4e - message view action
   (defun mu4e-msgv-action-view-in-browser ()
