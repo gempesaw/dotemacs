@@ -14,10 +14,8 @@ saveplace
 session*
 nil/*
 nil
-passwords.el
 /chromedriver.log
 /.prove
-/passwords.el
 /tumblr-oauth-token
 *cache/
 /.DS_Store
@@ -26,9 +24,9 @@ passwords.el
 /ac-comphist.dat
 /libpeerconnection.log
 /whee
-/dg-passwords.el
 archive-contents
 /projectile-bookmarks.eld
 /ido.last
 .cask
 /mockSauceTunnel
+/dg-elisp/dg-passwords.el
