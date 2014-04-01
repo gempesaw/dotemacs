@@ -27,7 +27,7 @@
         mu4e-mu-binary "/usr/local/bin/mu"
         mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
         mu4e-bookmarks '(("from:(JIRA) and flag:unread" "Unread JIRA" ?j)
-                         ("from:root and subject:Honeydew" "Honeydew" ?h)
+                         ("from:root and subject:Honeydew and flag:unread and date:14d..now" "Honeydew" ?h)
                          ("(from:vsatam@sharecare.com OR to:vsatam@sharecare.com) and subject:DW" "Vik" ?v)
                          ("subject:SC2 AND subject:Build AND subject:QA AND date:today..now AND NOT from:dgempesaw@sharecare.com AND NOT replied AND NOT from:ebarrsmith@sharecare.com AND NOT from:cbanks@sharecare.com AND NOT from:jreynolds@sharecare.com" "QA Builds" ?q)
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
