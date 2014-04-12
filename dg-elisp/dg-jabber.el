@@ -8,7 +8,11 @@
       (defvar sharecare-jabber-password nil "this is defined in passwords.el")
       (setq jabber-account-list `(("dgempesaw@sharecare.com"
                                    (:connection-type . starttls)
-                                   (:password . ,sharecare-jabber-password))))
+                                   (:password . ,(car
+                                                  (reverse
+                                                   (split-string
+                                                    (car
+                                                     (get-file-as-string "~/.authinfo")) " ")))))))
 
       (setq jabber-alert-presence-hooks nil
             jabber-avatar-verbose nil
