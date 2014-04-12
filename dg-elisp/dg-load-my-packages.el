@@ -22,6 +22,8 @@
                     elisp-slime-nav
                     exec-path-from-shell
                     expand-region
+                    f
+                    fancy-narrow
                     gist
                     htmlize
                     httprepl
