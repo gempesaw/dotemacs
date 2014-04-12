@@ -104,6 +104,7 @@
         sp--self-insert-command
         subword-right
         transpose-sexps
+        transpose-words
         universal-argument-minus
         upcase-region
         wdired-abort-changes
@@ -158,6 +159,7 @@
         skewer-eval-defun
         smart-compile
         sql-magic-go
+        suspend-frame
         switch-to-other-buffer
         switch-window
         undefined
