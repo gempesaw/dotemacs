@@ -10,7 +10,7 @@
 In case there is no valid Lisp expression and NOERROR is nil, it
 raises an error."
   (when (string= command "/usr/bin/id -gn | sed -e s/^/\\\"/ -e s/$/\\\"/")
-    (setq command "echo '514'"))
+    (setq command "which id"))
   (when (if noerror
             (tramp-send-command-and-check vec command)
           (tramp-barf-unless-okay
