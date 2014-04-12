@@ -322,6 +322,9 @@
 
 (defun sc-open-vpn-connection ()
   (interactive)
+  (reset-ssh-connections)
+  (tramp-cleanup-all-connections)
+  (tramp-cleanup-all-buffers)
   (async-shell-command "perl ~/vpn.pl" "*vpn-script*"))
 
 (defun sc-jabber-join-qa-conference ()
