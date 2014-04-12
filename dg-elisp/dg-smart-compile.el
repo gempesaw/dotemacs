@@ -11,6 +11,8 @@
 ;; don't compile based on last buffer
 (setq compilation-last-buffer nil)
 
+(setenv "PERL_LWP_SSL_VERIFY_HOSTNAME" "0")
+
 (advise-around-commands "sc-hdew-set-testing-env"
                         (execute-perl compile compile-again sc-hdew-prove-all)
                         (progn (setenv "HDEW_TESTS" "1")
