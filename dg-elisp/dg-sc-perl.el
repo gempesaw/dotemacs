@@ -26,6 +26,7 @@ browsers."
                                               "chrome"
                                               "firefox"
                                               "phantomjs localhost"
+                                              "iPhone Simulator"
                                               )))
               (hostname (ido-completing-read "hostname: "
                                              '("http://localhost"
@@ -44,7 +45,8 @@ browsers."
                                                "https://armyfit.army.mil"
                                                "https://ultimateme.dev.sharecare.com"
                                                "https://ultimateme.stage.sharecare.com"
-                                               "https://armyfit.army.mil/UltimateMe")))
+                                               "https://armyfit.army.mil/UltimateMe"
+                                               "http://s.qa.origin.sharecare.com/honeydew/app.zip")))
               (sauce (ido-completing-read "sauce: " '("nil" "t"))))
           (setq command (concat command
                                 (if (string= sauce "t") " -sauce")
@@ -98,5 +100,6 @@ browsers."
         (copy "scp honeydew@hnew:/opt/honeydew/features/keywords.txt /opt/HDEW/honeydew/features/keywords.txt"))
     (save-window-excursion
       (async-shell-command (concat update " && " copy) buf buf))))
+
 
 (provide 'dg-sc-perl)
