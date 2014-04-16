@@ -7,7 +7,7 @@
     (key-chord-mode t)
 
     ;; movement, shells, smex
-    (key-chord-define-global "./" 'ace-jump-mode)
+    (key-chord-define-global ";'" 'ace-jump-mode)
     (key-chord-define-global ",." 'switch-to-shell-or-create)
     (key-chord-define-global ",/" 'smex)
 
@@ -16,7 +16,7 @@
     (key-chord-define-global "xg" 'magit-status)
     (key-chord-define-global "qq" 'window-configuration-to-register)
     (key-chord-define-global "xj" 'jump-to-register)
-    (key-chord-define-global "j." (lambda ()
+    (key-chord-define-global "jj" (lambda ()
                                     (interactive)
                                     (bookmark-jump
                                      (ido-completing-read
