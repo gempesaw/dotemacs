@@ -52,6 +52,7 @@
         downcase-region
         elpy-shell-send-region-or-buffer
         eval-defun
+        eval-expression
         execute-feature
         fill-paragraph
         ibuffer-mark-for-delete
