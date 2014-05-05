@@ -47,14 +47,14 @@
   ;; otherwise it tries to send through OS associated mail client
   (setq message-send-mail-function 'message-send-mail-with-sendmail
         message-send-mail-function 'smtpmail-send-it
-        message-signature "--
-Daniel Gempesaw | Software Testing Architect
+        message-signature "Daniel Gempesaw | Software Testing Architect
 M 302.754.1231
 
 Sharecare, Inc.
 Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book | BACTES
 
-www.sharecare.com/realagetest")
+www.sharecare.com/realagetest"
+        mu4e-compose-signature message-signature)
 
   (setq smtpmail-stream-type 'starttls
         smtpmail-default-smtp-server "pod51019.outlook.com"
