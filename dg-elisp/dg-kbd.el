@@ -156,8 +156,6 @@
 (global-unset-key (kbd "C-c C-j"))
 (global-set-key (kbd "C-c C-j") 'join-line)
 
-(global-set-key (kbd "C-x f") 'fetchmacs-view-notes)
-
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
 
 (global-unset-key (kbd "M-."))
@@ -176,14 +174,14 @@
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
-(eval-after-load 'php-mode
-  (progn
-    (define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
-    ;; (define-key php-mode-map (kbd "<f5>") 'php-send-buffer)
-    ;; (define-key php-mode-map (kbd "<f6>") 'php-recompile-php-buffer)
-    (define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
-    (define-key php-mode-map (kbd "<tab>") 'smart-tab)
-    nil))
+;; (eval-after-load 'php-mode
+;;   (progn
+;;     (define-key php-mode-map (kbd "C-c C-r") 'php-send-region)
+;;     ;; (define-key php-mode-map (kbd "<f5>") 'php-send-buffer)
+;;     ;; (define-key php-mode-map (kbd "<f6>") 'php-recompile-php-buffer)
+;;     (define-key php-mode-map (kbd "C-x C-e") 'php-send-line)
+;;     (define-key php-mode-map (kbd "<tab>") 'smart-tab)
+;;     nil))
 
 (global-set-key (kbd "s-l") '(lambda () (interactive)
                                (delete-indentation)
