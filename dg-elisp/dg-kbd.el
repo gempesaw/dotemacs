@@ -197,4 +197,11 @@
 (global-unset-key (kbd "M-*"))
 
 (global-set-key (kbd "<f13>") 'execute-feature)
+
+;;; use regexp isearchs by default; switch 'em with their
+;;; counterparts.
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+
 (provide 'dg-kbd)
