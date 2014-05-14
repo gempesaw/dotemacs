@@ -27,7 +27,6 @@
             jabber-muc-autojoin '(
                                   "qa@conference.sharecare.com"
                                   "doctorwhoteamchat@conference.sharecare.com"
-                                  "ratmteamchat@conference.sharecare.com"
                                   )
             jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
             starttls-extra-arguments '("--insecure")
@@ -70,9 +69,7 @@
             (split-window-horizontally)
             (other-window 1)
             (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*")
-            (split-window-horizontally)
-            (other-window 1)
-            (switch-to-buffer "*-jabber-groupchat-ratmteamchat@conference.sharecare.com-*")))
+            ))
          )))
   (message "Looks like you're missing `gnutls-cli`. Try `brew install gnutls`"))
 
