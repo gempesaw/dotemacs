@@ -204,4 +204,9 @@
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 
+;;; shortcut for fat fingering C-x z
+(progn
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z") 'repeat))
+
 (provide 'dg-kbd)
