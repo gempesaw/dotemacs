@@ -1,5 +1,3 @@
-
-
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
 
 ;; brew install gnutls
@@ -14,6 +12,8 @@
                                                     (car
                                                      (get-file-as-string "~/.authinfo")) " ")))))))
 
+      (jabber-mode-line-mode)
+
       (setq jabber-alert-presence-hooks nil
             jabber-avatar-verbose nil
             jabber-vcard-avatars-retrieve nil
@@ -24,15 +24,10 @@
             jabber-roster-line-format " %c %-25n %u %-8s (%r)"
             jabber-show-offline-contacts nil
             jabber-auto-reconnect nil
-            jabber-muc-autojoin '(
-                                  "qa@conference.sharecare.com"
-                                  "doctorwhoteamchat@conference.sharecare.com"
-                                  )
+            jabber-muc-autojoin '("qa@conference.sharecare.com" "doctorwhoteamchat@conference.sharecare.com")
             jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
             starttls-extra-arguments '("--insecure")
             starttls-use-gnutls t)
-
-      (jabber-mode-line-mode)
 
       (defun jabber-alert-message-say (from buffer text proposed-alert)
         (interactive)
