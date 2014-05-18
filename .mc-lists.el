@@ -150,6 +150,7 @@
         move-to-window-line-top-bottom
         mu4e-headers-prev
         mu4e-mark-execute-all
+        offlineimap-show-or-start
         org-delete-backward-char
         org-goto-calendar
         org-self-insert-command
