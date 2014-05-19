@@ -33,7 +33,7 @@
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                         ("maildir:/INBOX AND NOT subject:Cron AND date:3d..now AND NOT subject:fitness AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:ShareFile AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew " "Inbox" ?i)
+                         ("maildir:/INBOX AND NOT subject:Cron AND date:1m..now AND NOT subject:fitness AND NOT from:squash AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:ShareFile AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew " "Inbox" ?i)
                          ("from:dgempesaw AND (to:cbanks OR cc:cbanks) AND update" "clint" ?c)
                          ("(maildir:/INBOX or maildir:/archive) AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew AND NOT from:adminui" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
