@@ -23,6 +23,12 @@
       (set-process-query-on-exit-flag magit-process nil)
       (kill-process magit-process))))
 
-(setq magit-emacsclient-executable "/usr/local/Cellar/emacs/HEAD/bin/emacsclient")
+(let ((homebrew-emacsclient "/usr/local/Cellar/emacs/HEAD/bin/emacsclient"))
+  (when (file-exists-p homebrew-emacsclient) 
+    (setq magit-emacsclient-executable homebrew-emacsclient)))
+
+(let ((homebrew-emacsclient "E:/emacs/bin/emacsclient.exe"))
+  (when (file-exists-p homebrew-emacsclient) 
+    (setq magit-emacsclient-executable homebrew-emacsclient)))
 
 (provide 'dg-magit)
