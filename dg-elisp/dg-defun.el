@@ -463,7 +463,7 @@ Return nil."
          (remote (cadr (assoc 'remote server))))
     (noflet ((sql-get-login (&rest args)))
           (with-temp-buffer
-            (unless (eq nil remote) (cd remote))
+            (when remote (cd remote))
             (sql-mysql (concat sql-user "@"
                                sql-database "."
                                sql-server))
