@@ -2,9 +2,17 @@
 (defalias 'perl-mode 'cperl-mode)
 
 (setq cperl-invalid-face 'underline
+
+      ;; autoinsert stuff via spacebar after if, elsif, foreach,
       cperl-electric-keywords t
+
       cperl-indent-level 4
-      cperl-continued-statement-offset 0
+      cperl-continued-statement-offset 2
+
+      ;; don't automatically newline when semicoloning at the end of a
+      ;; line
+      cperl-auto-newline nil
+
 
       ;; `if () { <-- bracket on the same line as if
       cperl-extra-newline-before-brace nil
