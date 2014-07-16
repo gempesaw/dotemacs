@@ -25,6 +25,7 @@
                     f
                     fancy-narrow
                     gist
+                    grunt
                     htmlize
                     httprepl
                     ido-ubiquitous
