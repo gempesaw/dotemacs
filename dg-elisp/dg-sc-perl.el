@@ -81,6 +81,10 @@ browsers."
         (async-shell-command "ssh termdew . pullAndDeployHoneydew" "*hdew-prod*")
       (message "Try again from a successful hdew prove buffer!"))))
 
+(defun sc-hdew-push-to-prod-backend ()
+  (interactive)
+  (async-shell-command "ssh termdew \"cd stage_hdew && git pull --rebase && . deploy.sh ui\""))
+
 (defun sc-kabocha-test ()
   (interactive)
   (async-shell-command "sh /opt/kabocha/run-tests" "*kabocha-run-tests*"))
