@@ -1,4 +1,4 @@
-(grep-apply-setting 'grep-find-command (cons "find . -type f \\! -name \"ido.last*\" \\! -path \"*git*\" \\! -path \"*elpa*\" \\! -path \"*backups*\" -exec grep -nH -e  {} +" 111))
+(grep-apply-setting 'grep-find-command (cons "find . -type f \\! -name \"ido.last*\" \\! -path \"*git*\" \\! -path \"*elpa*\" \\! -path \"*backups*\" \\! -path \"*bower_components*\" -exec grep -nH -e \"\" {} +" 142))
 
 (setq grep-find-ignored-directories '("app/bower_components"
                                       "node_modules"
