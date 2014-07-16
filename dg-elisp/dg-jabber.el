@@ -24,7 +24,7 @@
             jabber-roster-line-format " %c %-25n %u %-8s (%r)"
             jabber-show-offline-contacts nil
             jabber-auto-reconnect nil
-            jabber-muc-autojoin '("qa@conference.sharecare.com" "doctorwhoteamchat@conference.sharecare.com")
+            jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
             jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
             starttls-extra-arguments '("--insecure")
             starttls-use-gnutls t)
@@ -63,7 +63,7 @@
             (switch-to-buffer "*-jabber-groupchat-qa@conference.sharecare.com-*")
             (split-window-horizontally)
             (other-window 1)
-            (switch-to-buffer "*-jabber-groupchat-doctorwhoteamchat@conference.sharecare.com-*")
+            (switch-to-buffer "*-jabber-groupchat-sharecare-mobile@conference.sharecare.com-*")
             ))
          )))
   (message "Looks like you're missing `gnutls-cli`. Try `brew install gnutls`"))
