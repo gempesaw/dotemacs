@@ -102,6 +102,7 @@
 (global-unset-key (kbd "C-h C-f"))
 (global-set-key (kbd "C-h C-f") 'find-function-at-point)
 (global-set-key (kbd "C-h C-g") 'find-function)
+(global-set-key (kbd "C-h C-k") 'find-function-on-key)
 
 ;; and variables
 (global-set-key (kbd "C-h C-v") 'describe-variable-at-point)
