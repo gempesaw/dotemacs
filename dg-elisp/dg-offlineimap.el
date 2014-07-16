@@ -1,6 +1,6 @@
 (defun offlineimap-kill ()
   (interactive)
-  (shell-command "kill -9 $(ps aux | awk '/[o]fflineimap/ {print $2}');ps aux | grep [o]ffline"))
+  (shell-command "ps aux | awk '/[o]fflineimap/ {print $2}' | xargs -I{} kill -9 {}"))
 
 (defun offlineimap-show-or-start ()
   (interactive)
