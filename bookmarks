@@ -2,7 +2,14 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("time-machine-~"
+(("prod-honeydew.ini"
+ (filename .
+           #("/ssh:termdew:/opt/honeydew/honeydew.ini" 1 4
+             (tramp-default t)))
+ (front-context-string . "[Accounts]\narmy=")
+ (rear-context-string)
+ (position . 1))
+("time-machine-~"
  (filename . "/Volumes/My Passport/Backups.backupdb/dgempesaw/Latest/Untitled/Users/dgempesaw/")
  (front-context-string . ".#.ido.last -> d")
  (rear-context-string . "31 Nov  1 16:31 ")

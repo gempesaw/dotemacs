@@ -61,6 +61,11 @@
         ignore
         indent-for-tab-command
         insert-parentheses
+        isearch-delete-char
+        isearch-exit
+        isearch-forward-regexp
+        isearch-printing-char
+        isearch-repeat-forward
         js2-beginning-of-line
         js2-end-of-line
         kill-region
