@@ -361,4 +361,8 @@
   (mapc 'browse-url '("https://www.dw.sharecare.com"
                       "https://author.dw.sharecare.com")))
 
+(defun sc-restart-sauce-tunnel ()
+  (interactive)
+  (async-shell-command "ssh arnoldmedia-sauce ./sauce restart"))
+
 (provide 'dg-sc)
