@@ -59,7 +59,7 @@
 (setq bookmarks-default-file "~/.emacs.d/bookmarks")
 
 ;; tumblesocks
-(setq tumblesocks-blog "eval-defun.tumblr.com")
+(setq tumblesocks-blog "blog.danielgempesaw.com")
 (setq tumblesocks-post-default-state "queue")
 (if (require 'sasl nil t)
     (setq oauth-nonce-function #'sasl-unique-id)
