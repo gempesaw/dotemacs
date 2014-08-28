@@ -116,4 +116,12 @@ raises an error."
       (set-process-query-on-exit-flag
        (get-buffer-process buffer) nil))))
 
+(defun load-my-tramp-settings ()
+  (interactive)
+  (let ((my-tramp-customization "~/.emacs.d/dg-elisp/dg-tramp.el"))
+    (save-window-excursion
+      (with-temp-buffer
+        (insert-file-contents my-tramp-customization)
+        (eval-buffer)))))
+
 (provide 'dg-tramp)
