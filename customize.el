@@ -27,6 +27,9 @@
 ;; Trash can support
 (setq delete-by-moving-to-trash t)
 
+;; faster keystroke echoes
+(setq echo-keystrokes 0.1)
+
 ;; get gpg into the path
 (add-to-list 'exec-path "/usr/bin")
 (add-to-list 'exec-path "/usr/local/bin")
