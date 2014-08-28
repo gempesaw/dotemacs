@@ -37,7 +37,6 @@
                 (from (car (s-split "@" (s-chop-prefix "qa@conference.sharecare.com/" from)))))
             (setq from (cond ((string= from "ebarrsmith") "Erin")
                              ((string= from "cmitchell") "Carl")
-                             ((string= from "olebedev") "Olivia")
                              ((string= from "cthompson") "Carmen")
                              ((string= from "jhall") "Janet")
                              ((string= from "dandonov_cw") "Dian")
@@ -45,6 +44,7 @@
                              ((string= from "jthatil") "Justin")
                              ((string= from "vsatam") "Vikrant")
                              (t from)))
+            (start-process "jabber-hello" " *jabber-say-buffer*" "pkill" "say")
             (start-process "jabber-hello" " *jabber-say-buffer*" "say" "-v" voice " \"" from " says, '" text "'\""))))
 
       (setq jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll jabber-alert-message-say))
