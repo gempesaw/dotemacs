@@ -67,7 +67,7 @@
 
 (defun sc-resolve-qa-boxes ()
   (let* ((buf (url-retrieve-synchronously "https://admin.be.jamconsultg.com/kohana/adminui/showrunningsystems?site=sharecare"))
-        (parsed-xml))
+         (parsed-xml))
     (set-buffer buf)
     (goto-char 1)
     (replace-string "\n" "")
@@ -81,11 +81,11 @@
 (defun sc-refresh-qa-box-information ()
   (interactive)
   (setq sc-dw-boxes
-      (-filter
-       (lambda (item)
-         (and (string-match-p "ACTIVE" (caddr (nth 5 item)))
-            (string-match-p "scdw" (caddr (nth 3 item)))))
-       (sc-resolve-qa-boxes))))
+        (-filter
+         (lambda (item)
+           (and (string-match-p "ACTIVE" (caddr (nth 5 item)))
+                (string-match-p "scdw" (caddr (nth 3 item)))))
+         (sc-resolve-qa-boxes))))
 
 (defun sc-filter-resolved-xml ()
   (if (not (boundp 'sc-dw-boxes))
@@ -118,28 +118,28 @@
 
 (defun sc-restart-schedmaster ()
   (interactive)
-    (setq sc-restart-type "schedmaster")
-    (sc-restart-qa-boxes t))
+  (setq sc-restart-type "schedmaster")
+  (sc-restart-qa-boxes t))
 
 (defun sc-restart-data ()
   (interactive)
-    (setq sc-restart-type "data")
-    (sc-restart-qa-boxes t))
+  (setq sc-restart-type "data")
+  (sc-restart-qa-boxes t))
 
 (defun sc-restart-pubs-only ()
   (interactive)
-    (setq sc-restart-type "pubs")
-    (sc-restart-qa-boxes t))
+  (setq sc-restart-type "pubs")
+  (sc-restart-qa-boxes t))
 
 (defun sc-restart-army ()
   (interactive)
-    (setq sc-restart-type "army")
-    (sc-restart-qa-boxes t))
+  (setq sc-restart-type "army")
+  (sc-restart-qa-boxes t))
 
 (defun sc-restart-pub ()
   (interactive)
-    (setq sc-restart-type "pub")
-    (sc-restart-qa-boxes t))
+  (setq sc-restart-type "pub")
+  (sc-restart-qa-boxes t))
 
 (defun sc-restart-qa-boxes (&optional all)
   (interactive)
