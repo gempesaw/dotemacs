@@ -11,7 +11,7 @@
 (global-set-key (kbd "C-c g") 'magit-blame-mode)
 
 ;; shortcut for revert buffer
-(global-set-key (kbd "C-x r") (lambda () (interactive) (revert-buffer t t)))
+(global-set-key (kbd "C-x r") (lambda () (interactive) (revert-buffer t t t)))
 
 ;; Easier buffer killing
 (global-unset-key (kbd "M-k"))
