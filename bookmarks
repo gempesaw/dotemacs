@@ -2,9 +2,14 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("prod-honeydew.ini"
+(("Monosnap"
+ (filename . "~/Pictures/Monosnap/")
+ (front-context-string . "-rw-r--r--@  1 d")
+ (rear-context-string . "y 16 23:38 ..\n  ")
+ (position . 243))
+("prod-honeydew.ini"
  (filename .
-           #("/ssh:termdew:/opt/honeydew/honeydew.ini" 1 4
+           #("/ssh:honeydew:/opt/honeydew/honeydew.ini" 1 4
              (tramp-default t)))
  (front-context-string . "[Accounts]\narmy=")
  (rear-context-string)
@@ -30,12 +35,12 @@
  (rear-context-string)
  (position . 1))
 ("prod-js"
- (filename . "/ssh:termdew:/opt/honeydew-ui/htdocs/js/")
+ (filename . "/ssh:honeydew:/opt/honeydew-ui/htdocs/js/")
  (front-context-string . "hdew-rules.js\n  ")
  (rear-context-string . "19 Nov 19 17:51 ")
  (position . 784))
 ("prod-job-log"
- (filename . "/ssh:termdew:/opt/honeydew/bin/job.log")
+ (filename . "/ssh:honeydew:/opt/honeydew/bin/job.log")
  (front-context-string . "feature=/opt/hon")
  (rear-context-string)
  (position . 1))
@@ -50,7 +55,7 @@
  (rear-context-string)
  (position . 1))
 ("prod-lib"
- (filename . "/ssh:termdew:/opt/honeydew/lib/")
+ (filename . "/ssh:honeydew:/opt/honeydew/lib/")
  (front-context-string . "..\n  -rw-rw-r-- ")
  (rear-context-string . "96 Aug  7 11:43 ")
  (position . 152))
@@ -99,7 +104,7 @@
  (rear-context-string . "g>True</string>\n")
  (position . 310))
 ("prod-kabocha"
- (filename . "/ssh:termdew:/opt/kabocha/")
+ (filename . "/ssh:honeydew:/opt/kabocha/")
  (front-context-string . "lib\n  -rw-rw-r--")
  (rear-context-string . "96 Mar 28 15:56 ")
  (position . 1144))
@@ -114,7 +119,7 @@
  (rear-context-string . "76 Mar  8 14:35 ")
  (position . 301))
 ("prod-features"
- (filename . "/ssh:termdew:/opt/honeydew/features/")
+ (filename . "/ssh:honeydew:/opt/honeydew/features/")
  (front-context-string . "Sharecare\n  drwx")
  (rear-context-string . "96 Nov 21 16:25 ")
  (position . 537))
@@ -135,7 +140,7 @@
  (rear-context-string . " 0 Nov 15 09:54 ")
  (position . 299))
 ("prod-keywords"
- (filename . "/ssh:termdew:/opt/honeydew/features/keywords.txt")
+ (filename . "/ssh:honeydew:/opt/honeydew/features/keywords.txt")
  (front-context-string . "Given I am on th")
  (rear-context-string)
  (position . 1))
@@ -145,7 +150,7 @@
  (rear-context-string)
  (position . 1))
 ("prod-sets"
- (filename . "/ssh:termdew:/opt/honeydew/sets/")
+ (filename . "/ssh:honeydew:/opt/honeydew/sets/")
  (front-context-string . "DrOzRC.set\n  -rw")
  (rear-context-string . "96 Oct  4 14:25 ")
  (position . 203))
@@ -155,12 +160,12 @@
  (rear-context-string . "55 Oct  9 11:59 ")
  (position . 317))
 ("prod-phrases"
- (filename . "/ssh:termdew:/opt/honeydew/phrases/")
+ (filename . "/ssh:honeydew:/opt/honeydew/phrases/")
  (front-context-string . "Startle\n  drwxr-")
  (rear-context-string . "88 Sep 27 21:58 ")
  (position . 215))
 ("stage-hdew-home"
- (filename . "/ssh:termdew:/home/honeydew/stage_hdew/")
+ (filename . "/ssh:honeydew:/home/honeydew/stage_hdew/")
  (front-context-string . ".git\n  -rw-rw-r-")
  (rear-context-string . "96 Sep 26 10:58 ")
  (position . 212))
@@ -190,22 +195,22 @@
  (rear-context-string . "10 Aug 16 15:41 ")
  (position . 231))
 ("prod-features-sharecare-sc2"
- (filename . "/ssh:termdew:/opt/honeydew/features/Sharecare/SC2/")
+ (filename . "/ssh:honeydew:/opt/honeydew/features/Sharecare/SC2/")
  (front-context-string . "accountSettings\n")
  (rear-context-string . "96 Aug  3 21:33 ")
  (position . 227))
 ("prod-user-home"
- (filename . "/ssh:termdew:/home/honeydew/")
+ (filename . "/ssh:honeydew:/home/honeydew/")
  (front-context-string . "._datafile\n  -rw")
  (rear-context-string . "25 Nov 17  2011 ")
  (position . 215))
 ("prod-perl-honeydew-home"
- (filename . "/ssh:termdew:/opt/honeydew/")
+ (filename . "/ssh:honeydew:/opt/honeydew/")
  (front-context-string . "etc\n  drwxrwxrwx")
  (rear-context-string . "96 Aug 24  2011 ")
  (position . 392))
 ("prod-htdocs"
- (filename . "/ssh:termdew:/opt/honeydew-ui/htdocs/")
+ (filename . "/ssh:honeydew:/opt/honeydew-ui/htdocs/")
  (front-context-string . "..\n  -rwxrwxrwx ")
  (rear-context-string . "96 Aug  7 12:38 ")
  (position . 158))

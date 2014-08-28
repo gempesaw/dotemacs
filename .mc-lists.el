@@ -55,6 +55,7 @@
         eval-expression
         execute-feature
         fill-paragraph
+        forward-sexp
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
@@ -143,6 +144,7 @@
         end-of-buffer
         eval-last-sexp
         execute-perl
+        fancy-widen
         handle-switch-frame
         hs-show-block
         isearch-other-control-char
