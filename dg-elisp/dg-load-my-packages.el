@@ -42,6 +42,7 @@
                     noflet
                     offlineimap
                     paredit
+                    pcre2el
                     projectile
                     php-mode
                     pretty-mode-plus
