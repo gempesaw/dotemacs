@@ -365,4 +365,55 @@
   (interactive)
   (async-shell-command "ssh arnoldmedia-sauce ./sauce restart"))
 
+
+(when nil
+  (progn
+  (setq talk-index-html-file "/opt/ya-ng-intro/ng/app/index.html")
+  (defun restart-talk (&optional copy)
+    (interactive)
+    (setq current-slide-number 0)
+    (unless copy
+      (copy-next-file-here)))
+  (restart-talk t)
+
+  (defun copy-next-file-here ()
+    (interactive)
+    (let* ((next-number (1+ current-slide-number))
+           (next-file (expand-file-name
+                       (car
+                        (file-expand-wildcards
+                         (format "%s-*" next-number))))))
+      (copy-file next-file talk-index-html-file t)
+      (revert-buffer t t t)
+      (revert-buffer t t t)
+      (setq current-slide-number (1+ current-slide-number))))
+
+  (defun copy-previous-file-here ()
+    (interactive)
+    (let* ((next-number (1- current-slide-number))
+           (next-file (expand-file-name
+                       (car
+                        (file-expand-wildcards
+                         (format "%s-*" next-number))))))
+      (copy-file next-file talk-index-html-file t)
+      (revert-buffer t t t)
+      (revert-buffer t t t)
+      (setq current-slide-number (1- current-slide-number))))
+
+  (global-set-key (kbd "<M-up>")
+                  (lambda ()
+                    (interactive)
+                    (if (use-region-p)
+                        (fancy-narrow-to-region
+                         (region-beginning)
+                         (region-end))
+                      (fancy-narrow-to-region
+                       (progn (beginning-of-line) (point))
+                       (progn (end-of-line) (point))))))
+  (global-set-key (kbd "<M-down>") 'fancy-widen)
+  (global-set-key (kbd "<M-left>") 'copy-previous-file-here)
+  (global-set-key (kbd "<M-right>") 'copy-next-file-here)))
+
+
+
 (provide 'dg-sc)
