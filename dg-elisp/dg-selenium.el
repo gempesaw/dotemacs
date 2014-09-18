@@ -13,7 +13,7 @@
 (defun start-appium-server ()
   (interactive)
   (let* ((appium-proc-name "appium")
-         (appium-buffer (concat "*" appium-proc-name "*")))
+         (appium-buffer (concat "*<" appium-proc-name ">*")))
     (with-current-buffer (get-buffer-create appium-buffer)
       (comint-mode)
       (set-process-query-on-exit-flag
@@ -32,14 +32,15 @@
 (defun start-browsermob-proxy ()
   (interactive)
   (let* ((bmp-proc-name "browsermob-proxy")
-         (bmp-executable (executable-find "browsermob-proxy"))
-         (default-directory (f-dirname bmp-executable))
-         (buf (format "*%s*<bmp>" bmp-proc-name)))
-    (with-current-buffer (get-buffer-create buf)
-      (comint-mode)
-      (set-process-query-on-exit-flag
-       (start-process bmp-proc-name buf "browsermob-proxy")
-       nil))))
+       (bmp-executable (or (executable-find "browsermob-proxy")
+                           "/opt/dev_hdew/browsermob-proxy/bin/browsermob-proxy"))
+       (default-directory (f-dirname bmp-executable))
+       (buf (format "*%s*<bmp>" bmp-proc-name)))
+  (with-current-buffer (get-buffer-create buf)
+    (comint-mode)
+    (set-process-query-on-exit-flag
+     (start-process bmp-proc-name buf "/Users/dgempesaw/.jenv/bin/jenv" "exec" bmp-executable)
+     nil))))
 
 (defun reset-emulator ()
   (interactive)
