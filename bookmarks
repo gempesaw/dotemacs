@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Monosnap"
+(("selenium"
+ (filename . "/usr/local/lib/node_modules/protractor/selenium/")
+ (front-context-string . "chromedriver\n  -")
+ (rear-context-string . "40 Jul  7 09:00 ")
+ (position . 333))
+("Monosnap"
  (filename . "~/Pictures/Monosnap/")
  (front-context-string . "-rw-r--r--@  1 d")
  (rear-context-string . "y 16 23:38 ..\n  ")
