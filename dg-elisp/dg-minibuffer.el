@@ -1,4 +1,3 @@
-(require 'flx-ido)
 
 ;; ido mode
 (ido-mode t) ; enable ido for buffer/file switching
@@ -6,9 +5,6 @@
 
 ;; Use ido everywhere
 (ido-ubiquitous 1)
-
-;;; use flx sorting
-(flx-ido-mode 1)
 
 ;;; use vertical mode
 (ido-vertical-mode 1)
@@ -31,12 +27,7 @@
 
 (add-hook 'ido-setup-hook 'ido-my-keys)
 
-;; turn up gc threshold to speed up flx
-(setq gc-cons-threshold 20000000
-      ;; disable ido faces to see flx highlights.
-      ido-use-faces nil
-
-      ido-enable-prefix nil
+(setq ido-enable-prefix nil
       ido-create-new-buffer 'always
       ido-use-filename-at-point 'guess
       ido-max-prospects 10
