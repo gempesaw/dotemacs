@@ -414,6 +414,15 @@
   (global-set-key (kbd "<M-left>") 'copy-previous-file-here)
   (global-set-key (kbd "<M-right>") 'copy-next-file-here)))
 
+(defun dg-sc-check-status ()
+  (interactive)
+  (async-shell-command "ssh honeydew ./status.pl" "honeydew-nightly" nil)
+  (async-shell-command "ssh sauce-connect ./sauce status" "sauce-status" nil)
+  (switch-to-buffer "honeydew-nightly")
+  (delete-other-windows)
+  (split-window-right)
+  (switch-to-buffer "sauce-status"))
+
 
 
 (provide 'dg-sc)
