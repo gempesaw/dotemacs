@@ -45,11 +45,14 @@
         describe-key
         dired-details-hide
         dired-do-delete
+        dired-do-flagged-delete
         dired-find-file
         dired-flag-file-deletion
         dired-mark
+        dired-show-file-type
         dired-unmark
         downcase-region
+        duplicate-thing
         elpy-shell-send-region-or-buffer
         eval-defun
         eval-expression
@@ -117,6 +120,7 @@
         upcase-region
         wdired-abort-changes
         wdired-change-to-wdired-mode
+        wdired-downcase-word
         wdired-next-line
         wdired-previous-line
         web-mode-comment-or-uncomment
@@ -161,6 +165,7 @@
         org-delete-backward-char
         org-goto-calendar
         org-self-insert-command
+        other-frame
         paredit-backslash
         php-send-buffer
         revert-buffer
