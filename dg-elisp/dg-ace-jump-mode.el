@@ -1,8 +1,4 @@
 (setq ace-jump-mode-scope 'frame)
-(define-key my-keys-minor-mode-map (kbd "C-.") 'ace-jump-mode)
-
-(eval-after-load "tracking"
-  '(progn
-     (define-key tracking-mode-map (kbd "C-.") 'ace-jump-mode)))
+;;; ace jump mode is now on a key chord
 
 (provide 'dg-ace-jump-mode)
