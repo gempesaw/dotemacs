@@ -13,6 +13,7 @@
 (setq my-packages '(
                     ace-jump-mode
                     ack-and-a-half
+                    aggressive-indent
                     browse-kill-ring
                     cperl-mode
                     circe
