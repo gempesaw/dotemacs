@@ -46,3 +46,5 @@
   (async-shell-command "sh /Users/dgempesaw/opt/AndroidSC/emulator.sh"))
 
 (provide 'dg-selenium)
+
+(setenv "PATH" "/usr/local/bin:/opt/adt-bundle-mac-x86_64-20140321/sdk/tools:/opt/adt-bundle-mac-x86_64-20140321/sdk/platform-tools:/opt/dev_hdew/browsermob-proxy/bin:/Users/dgempesaw/.jenv/bin:/Users/dgempesaw/perl5/bin:usr/local/bin:/opt/adt-bundle-mac-x86_64-20140321/sdk/tools:/opt/adt-bundle-mac-x86_64-20140321/sdk/platform-tools:/opt/dev_hdew/browsermob-proxy/bin:/Users/dgempesaw/perl5/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/texbin:/usr/texbin:/usr/texbin")
