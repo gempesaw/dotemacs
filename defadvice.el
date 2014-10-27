@@ -13,6 +13,11 @@ still function in special-mode"
                   (switch-to-buffer other-window switch-window)
                   (prelude-auto-save-command))
 
+;;; save everything when we focus another frame (even potentially
+;;; another emacs frame)
+(add-hook 'focus-out-hook 'prelude-auto-save-command)
+
+
 (defadvice split-window-below (after restore-balanace-below activate)
   (balance-windows))
 
