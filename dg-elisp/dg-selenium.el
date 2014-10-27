@@ -6,8 +6,7 @@
       (set-process-query-on-exit-flag
        (start-process selenium-proc-name selenium-buffer "webdriver-manager" "start")
        nil)
-      (switch-to-buffer selenium-buffer)
-      (setq buffer-read-only t))))
+      (switch-to-buffer selenium-buffer))))
 ;; "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
 
 (defun start-appium-server ()
