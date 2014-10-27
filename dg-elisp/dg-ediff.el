@@ -139,3 +139,5 @@ ARG is a prefix argument.  If nil, copy the current difference region."
 
 (defun add-d-to-ediff-mode-map ()
   (define-key ediff-mode-map "d" 'ediff-copy-D-to-C))
+
+(provide 'dg-ediff)
