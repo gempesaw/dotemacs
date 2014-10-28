@@ -26,6 +26,8 @@
 
 (cperl-lazy-install)
 
+(setenv "PERL5LIB" (concat (getenv "HOME") "/perl5/lib/perl5"))
+
 (defun execute-perl (&optional arg)
   (interactive "p")
   (let* ((file-name (buffer-file-name (current-buffer)))
