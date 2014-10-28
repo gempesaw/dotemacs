@@ -30,3 +30,4 @@ archive-contents
 .cask
 /mockSauceTunnel
 /dg-elisp/dg-passwords.el
+/recentf
