@@ -27,9 +27,6 @@
        nil))
     (switch-to-buffer appium-buffer)))
 
-(if (executable-find "protractor")
-    (start-selenium-server))
-
 (defun start-browsermob-proxy ()
   (interactive)
   (let* ((bmp-proc-name "browsermob-proxy")
@@ -57,6 +54,13 @@
       (set-process-query-on-exit-flag
        (start-process proc-name buffer executable)
        nil))))
+
+(if (executable-find "protractor")
+    (start-selenium-server))
+
+(if (executable-find "redis-server")
+    (start-redis-server))
+
 
 (provide 'dg-selenium)
 
