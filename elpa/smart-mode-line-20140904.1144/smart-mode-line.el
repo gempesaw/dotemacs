@@ -4,129 +4,158 @@
 
 ;; Author: Artur Malabarba <bruce.connor.am@gmail.com>
 ;; URL: http://github.com/Bruce-Connor/smart-mode-line
-;; Version: 20140501.1233
-;; X-Original-Version: 2.4.5
-;; Package-Requires: ((emacs "24.3") (dash "2.2.0"))
+;; Version: 2.6
+;; Package-Requires: ((emacs "24.3") (dash "2.2.0") (rich-minority "0.1"))
 ;; Keywords: mode-line faces theme themes
 ;; Prefix: sml
 ;; Separator: /
 
 ;;; Commentary:
-;;
-;; Smart Mode Line is a sexy mode-line for Emacs, that aims to be easy to
-;; read from small to large monitors by using a *prefix feature* and
+;; 
+;; Smart Mode Line is a sexy mode-line for Emacs. It aims to be easy to
+;; read from small to large monitors by using *colors*, a *prefix feature*, and
 ;; *smart truncation*.
-;;
+;; 
+;; New in v2.5
+;; ===========
+;; - Emacs 24.4 compatible.
+;; - Integration with [Projectile](https://github.com/bbatsov/projectile)!
+;; - Display `current-directory' in Shell and eshell.
+;; - New value for `sml/theme': `automatic' (highly recommended).
+;; - `sml/apply-theme' is interactive and has completion.
+;; - Smart-mode-line themes are now regular themes.
+;; 
 ;; Installation
 ;; ===
-;; Make sure "smart-mode-line.el" is in your load path, then place
-;; this code in your .emacs file:
-;;
-;;     (setq sml/theme 'dark)
+;; **smart-mode-line** is available on Melpa, and that's the recommended
+;; way of installing it. If you do that, you can simply activate it with:
+;; 
+;;     (sml/setup)
+;; 
+;; To install it manually, you need **emacs-version >= 24.3**. First
+;; make sure you install [dash.el](https://github.com/magnars/dash.el)
+;; (which is a dependency), then make sure "smart-mode-line.el" is in
+;; your load path, and finally place this code in your `.emacs' file:
+;; 
 ;;     (require 'smart-mode-line)
 ;;     (sml/setup)
-;;
+;; 
+;; To change the color theme, do one of the following:
+;; 
+;;     (sml/apply-theme 'dark)
+;;     (sml/apply-theme 'light)
+;;     (sml/apply-theme 'respectful)
+;; 
 ;; Features
 ;; ===
 ;; Its main features include:
-;;
+;; 
 ;;  1. **Color coded**:
 ;;     Highlights the most important information for you
 ;;     (buffer name, modified state, line number). Don't
-;;     like the colors? See item 5)!
-;;
+;;     like the colors? See item *5.*!
+;; 
 ;;  2. **Fixed width** (if you want):
 ;;     Lets you set a maxium width for the path name and mode names, and
 ;;     truncates them intelligently (truncates the directory, not the
 ;;     buffer name). Also let's you **right indent** strings in the
 ;;     mode-line (see `sml/mode-width').
-;;
+;; 
 ;;  3. **Directory as Prefixes**:
-;;     Prefix feature saves a LOT of space. e.g. "~/.emacs.d/"
-;;     is translated to ":ED:" in the path (open a file inside
+;;     Prefix feature saves a LOT of space. e.g. *"~/.emacs.d/"*
+;;     is translated to *":ED:"* in the path (open a file inside
 ;;     this folder to see it in action). Long path names you
 ;;     are commmonly working on are displayed as short
 ;;     abbreviations. Set your own prefixes to make best use
 ;;     of it (by configuring `sml/replacer-regexp-list'). Mousing
 ;;     over the abbreviated path will show you the full
 ;;     path. See below for examples.
-;;
-;;  4. **Hide minor-modes**:__
+;; 
+;;  4. **Hide or Highlight minor-modes**:  
+;;     The [rich-minority](https://github.com/Bruce-Connor/rich-minority)
+;;     package saves even more space. Select which minor modes you don't
+;;     want to see listed by adding them to the variable
+;;     `rm-excluded-modes', or even highlight the modes that are more
+;;     important with the variable `rm-text-properties'. This will filter
+;;     out the modes you don't care about and unclutter the modes list
+;;     (mousing over the modes list still shows the full list).
+;;  
+;;  4. **Hide minor-modes**:
 ;;     Hidden-modes feature saves even more space. Select
 ;;     which minor modes you don't want to see listed by
 ;;     customizing the `sml/hidden-modes' variable. This will
 ;;     filter out the modes you don't care about and unclutter
 ;;     the modes list (mousing over the modes list still shows
 ;;     the full list).
-;;
+;; 
 ;;  5. **Very easy to configure**:
 ;;     All colors and variables are customizable. You can change the
 ;;     whole theme with `sml/apply-theme', or just customize anything
 ;;     manually with `sml/customize' and `sml/customize-faces'. There are
 ;;     *DOZENS* of variables to customize your mode-line, just pop over
 ;;     there and have a look!
-;;
+;; 
 ;;  6. **Compatible with absolutely anything**:
 ;;     I'm serious. Versions 2.0 and above should be compatible with
 ;;     **any** other packages that display information in the mode-line
 ;;     (evil, nyan-mode, elscreen, display-battery-mode, etc). If you
 ;;     find *ANYTHING* that does not appear as it should, file a bug report
 ;;     and I'll get to it.
-;;
+;;     
 ;; Important Variables:
 ;; ===
 ;; All variables can be edited by running `sml/customize', and the
 ;; documentations are mostly self explanatory, I list here only the
 ;; most important ones.
-;;
-;;  1. `sml/shorten-directory' and `sml/shorten-modes'
-;;   Choose what theme ou want to use for the mode-line colors. For now
+;; 
+;;  1. `sml/theme'
+;;   Choose what theme you want to use for the mode-line colors. For now
 ;;   there are 3 different themes: `dark', `light', and `respectful'.
-;;
+;;  
 ;;  1. `sml/shorten-directory' and `sml/shorten-modes'
 ;;   Setting both of these to `t' garantees a fixed width mode-line
 ;;   (directory name and minor-modes list will be truncated to fit). To
 ;;   actually define the width, see below.
-;;
+;;   
 ;;  2. `sml/name-width' and `sml/mode-width'
-;;   Customize these according to the width of your emacs frame. I set
+;;   Customize these according to the width of your Emacs frame. I set
 ;;   them to `40' and `full' respectively, and the mode-line fits
 ;;   perfectly when the frame is split in two even on my laptop's small
 ;;   17" monitor. `full' means everything after the minor-modes will be
 ;;   right-indented.
-;;
+;;   
 ;;  3. `sml/replacer-regexp-list'
 ;;   This variable is a list of (REGEXP REPLACEMENT) that is used
 ;;   to parse the path. The replacements are applied
 ;;   sequentially. This allows you to greatly abbreviate the path
 ;;   that's shown in the mode-line. If this abbreviation is of
-;;   the form ":SOMETHING:", it is considered a prefix and get's
+;;   the form *":SOMETHING:"*, it is considered a prefix and get's
 ;;   a different color (you can change what's considered a prefix
 ;;   by customizing `sml/prefix-regexp').
 ;;   For example, if you do a lot of work on a folder called
-;;   "~/Dropbox/Projects/In-Development/" almost half the
+;;   *"~/Dropbox/Projects/In-Development/"* almost half the
 ;;   mode-line would be occupied just by the folder name, which
 ;;   is much less important than the buffer name. But, you can't
 ;;   just hide the folder name, since editting a file in
-;;   "~/Dropbox/Projects/In-Development/Source" is VERY different
-;;   from editting a file in "~/Dropbox/Projects/Source". By
+;;   *"~/Dropbox/Projects/In-Development/Source"* is VERY different
+;;   from editting a file in *"~/Dropbox/Projects/Source"*. By
 ;;   setting up a prefix for your commonly used folders, you get
 ;;   all that information without wasting all that space. In this
-;;   example you could set the replacement to ":ProjDev:" or just
-;;   ":InDev:", so the path shown in the mode-line will be
-;;   ":ProjDev:Source/" (saves a lot of space without hiding
+;;   example you could set the replacement to *":ProjDev:"* or just
+;;   *":InDev:"*, so the path shown in the mode-line will be
+;;   *":ProjDev:Source/"* (saves a lot of space without hiding
 ;;   information).
-;;
+;; 
 ;; Here go some more useful examples:
-;;
-;;     (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/Projects/In-Development/" ":ProjDev:"))
-;;     (add-to-list 'sml/replacer-regexp-list '("^~/Documents/Work/" ":Work:"))
-;;
+;; 
+;;     (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/Projects/In-Development/" ":ProjDev:") t)
+;;     (add-to-list 'sml/replacer-regexp-list '("^~/Documents/Work/" ":Work:") t)
+;;     
 ;;     ;; Added in the right order, they even work sequentially:
-;;     (add-to-list 'sml/replacer-regexp-list '("^:DB:Documents" ":DDocs:"))
-;;     (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/" ":DB:"))
-;;     (add-to-list 'sml/replacer-regexp-list '("^:Git:\\(.*\\)/src/main/java/" ":G/\\1/SMJ:"))
-;;     (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:"))
+;;     (add-to-list 'sml/replacer-regexp-list '("^~/Dropbox/" ":DB:") t)
+;;     (add-to-list 'sml/replacer-regexp-list '("^:DB:Documents" ":DDocs:") t)
+;;     (add-to-list 'sml/replacer-regexp-list '("^~/Git-Projects/" ":Git:") t)
+;;     (add-to-list 'sml/replacer-regexp-list '("^:Git:\\(.*\\)/src/main/java/" ":G/\\1/SMJ:") t)
 
 ;;; License:
 ;;
@@ -144,6 +173,15 @@
 ;;
 
 ;;; Change Log:
+;; 2.6     - 2014/08/15 - Allow for sml/name-width to have different mininum and maximum values.
+;; 2.6     - 2014/08/15 - Delegated minor-mode filtering to rich-minority package.
+;; 2.5.3   - 2014/06/18 - Fix custom-theme-load-path for manual installations.
+;; 2.5.2   - 2014/06/16 - sml/no-confirm-load-theme variable to skip theme confirmation.
+;; 2.5.1   - 2014/06/16 - sml/apply-theme no-confirm in daemon mode.
+;; 2.5     - 2014/05/15 - sml/theme: New possible values: 'automatic (highly recommended) or nil.
+;; 2.5     - 2014/05/14 - sml/mode-width: New possible value: 'right.
+;; 2.5     - 2014/05/14 - Themes engine completely redone.
+;; 2.5     - 2014/05/14 - sml/apply-theme is interactive.
 ;; 2.4.5   - 2014/04/24 - Changed default value of sml/mode-width back to 'full.
 ;; 2.4.3   - 2014/03/25 - sml/mode-line-buffer-identification fix for ggtags.
 ;; 2.4.2   - 2014/03/13 - Perspective support simplified to sml/apply-theme.
@@ -279,10 +317,10 @@
 (require 'custom)
 (require 'cus-face)
 
-(defconst sml/version "2.4.5" "Version of the smart-mode-line.el package.")
-(defconst sml/version-int 71 "Version of the smart-mode-line.el package, as an integer.")
+(defconst sml/version "2.6" "Version of the smart-mode-line.el package.")
+(defconst sml/version-int 76 "Version of the smart-mode-line.el package, as an integer.")
 (defun sml/bug-report ()
-  "Opens github issues page in a web browser. Please send me any bugs you find, and please inclue your emacs and sml versions."
+  "Opens github issues page in a web browser. Please send me any bugs you find, and please inclue your Emacs and sml versions."
   (interactive)
   (browse-url "https://github.com/Bruce-Connor/smart-mode-line/issues/new")
   (message "Your sml/version is: %s, and your emacs version is: %s.\nPlease include this in your report!" sml/version emacs-version))
@@ -342,7 +380,8 @@ customization menu or via the `sml/toggle-shorten-directory'
 function (which are the only ways you should change it).")
 
 (defun sml/set-shortener-func (sym val)
-  "Configure `sml/shortener-func' according to `sml/shorten-directory'."
+  "Configure `sml/shortener-func' according to `sml/shorten-directory'.
+Set SYM to VAL."
   (set-default sym val)
   (if val (setq sml/shortener-func 'sml/do-shorten-directory)
     (setq sml/shortener-func 'sml/not-shorten-directory)))
@@ -351,32 +390,49 @@ function (which are the only ways you should change it).")
 (define-obsolete-variable-alias 'sml/show-time 'display-time-mode)
 (define-obsolete-variable-alias 'sml/override-theme 'sml/theme)
 
-(defcustom sml/theme 'dark
+(defcustom sml/theme 'automatic
   "Defines which theme `smart-mode-line' should use.
 
-This can be 'dark, 'light or 'respectful.
+This is usually one of the symbols:
+'automatic, 'respectful, 'dark, 'light or nil;
+but it can be something else if there are other smart-mode-line
+themes defined.
 
 Setting this to 'light and 'dark will apply some predefined
 colors to the mode-line, which are designed to be easy to read.
 
+Setting this to nil will apply almost no colors. Use this if your
+global color theme already customizes sml faces (flatui-theme is
+an example).
+
+Setting this to 'automatic will let sml decide between 'light or
+'dark or nil, to best match the global theme that is active when
+`sml/setup' is called.
+
 Setting it to 'respectful will try to use the colors defined by
-your current emacs theme (emphasis on the \"try\"). This will
-make the mode-line colors more consistent with buffer colors, but
-it's a bit of a shot in the dark. The result will vary for each
-color theme, and you may get colors that don't read well.
+your current Emacs theme (emphasis on the \"try\"). Use this if
+you color theme does NOT customize sml faces, AND if you're not
+happy with 'light or 'dark.
+This option will make the mode-line colors more consistent with
+buffer colors (when compared to 'light or 'dark, which have fixed
+colors) , but it's a bit of a shot in the dark. The result will
+vary for each color theme, and you may get colors that don't read
+well.
 
 But don't forget, ALL COLORS ARE CUSTOMIZABLE!
 `sml/customize-faces'
 Any color you change manually won't get affected by this
 variable.
 
-Setting this variable via `setq' only has effect BEFORE loading
-`smart-mode-line'. If smart-mode-line is already loaded, use
-either `sml/apply-theme' or the customization interface
-instead (M-x customize-variable RET sml/theme RET)."
-  :type '(choice (const :tag "Use a dark color-theme. (Default)" dark)
+Setting this variable via `setq' only has effect BEFORE calling
+`sml/setup'. If smart-mode-line is already loaded, use
+ `sml/apply-theme' instead (or the customization interface)."
+  :type '(choice (const :tag "Automatically choose between 'light, 'dark, or nil during setup. (Default and Recommended)" automatic)
+                 (const :tag "Don't use a theme." nil)
+                 (const :tag "Use a dark color-theme." dark)
                  (const :tag "Use a light color-theme." light)
-                 (const :tag "Respect the color-theme's colors." respectful))
+                 (const :tag "Respect the color-theme's colors." respectful)
+                 (symbol :tag "Other smart-mode-line theme you installed."))
   :set 'sml/apply-theme
   :initialize 'custom-initialize-default
   :group 'smart-mode-line-faces :group 'smart-mode-line)
@@ -457,7 +513,7 @@ just set this to \"\" to save an extra char of space."
   :group 'smart-mode-line-path-and-prefix)
 (put 'sml/show-file-name 'safe-local-variable 'booleanp)
 
-(defcustom sml/fill-char ?\ 
+(defcustom sml/fill-char ?\s
   "The char to be used for filling."
   :type 'char
   :group 'smart-mode-line-path-and-prefix)
@@ -489,7 +545,7 @@ Replacement doesn't stop on first match, so you can have stacking replacements:
     (add-to-list 'sml/replacer-regexp-list '(\"^:DB:Org/\" \":Org:\") t)
 
 Remember that `add-to-list' adds items to the FRONT, and you'll
-usually want to add them to the back (thus the `t' at the end).
+usually want to add them to the back (thus the t at the end).
 
 You can also set custom colors (faces) for these prefixes, just
 set `sml/prefix-face-list' accordingly."
@@ -522,8 +578,14 @@ FACE is applied to it (and checking stops there)."
   "Minimum and maximum size of the file name in the mode-line.
 
 If `sml/shorten-directory' is nil, this is the minimum width.
-Otherwise, this is both the minimum and maximum width."
-  :type 'integer
+Otherwise, this is both the minimum and maximum width.
+
+Alternatively, you can set the minimum and maximum widths
+separately, by setting this variable to a cons cell of integers:
+    (MIN-WIDTH . MAX-WIDTH)
+"
+  :type '(choice integer (cons (integer :tag "Minimum width")
+                               (integer :tag "Maximum width")))
   :group 'smart-mode-line-path-and-prefix)
 
 (defcustom sml/shorten-directory t
@@ -541,19 +603,19 @@ When the buffer+directory name is longer than
 (defun sml/toggle-shorten-directory (&rest val)
   "Toggle the variable `sml/shorten-directory'.
 
-If given an argument the variable is set to the argument,
+If given an argument VAL, the variable is set to the argument,
 otherwise it is toggled. This can be used as an alternative to
 customizing the variable with `customize-group'. Setting the
 variable with `setq' will NOT work and should be avoided."
   (interactive)
   (sml/set-shortener-func 'sml/shorten-directory
-                          (if val (car val)
+                          (if val (car-safe val)
                             (not sml/shorten-directory))))
 
 (defun sml/toggle-shorten-modes (&rest val)
   "Toggle the variable `sml/shorten-modes'.
 
-If given an argument the variable is set to the argument,
+If given an argument VAL, the variable is set to the argument,
 otherwise it is toggled. This can be used as an alternative to
 customizing the variable with `customize-group'. Equivalent to
 setting the variable with `setq'."
@@ -561,25 +623,6 @@ setting the variable with `setq'."
   (setq sml/shorten-modes (if val (car val)
                             (not sml/shorten-modes)))
   (force-mode-line-update))
-
-(defcustom sml/hidden-modes '(" hl-p")
-  "List of minor modes you want to hide from the mode-line.
-
-If empty (or nil), all minor modes are shown in the mode-line.
-Otherwise this is a list of minor mode names that will be hidden
-in the minor-modes list.
-
-The elements are strings. If you want to use REGEXPs instead, you
-can set this variable to a single string (instead of a list) and
-this will be compared to each minor-mode lighter as a regexp.
-If you'd like to use a list of regexps, simply use something like the following:
-    (setq sml/hidden-modes (mapconcat 'identity list-of-regexps \"\\\\|\"))
-
-Don't forget to start each string with a blank space, as most
-minor-mode lighters start with a space."
-  :type '(choice (repeat string)
-                 (regexp :tag "Regular expression."))
-  :group 'smart-mode-line-mode-list)
 
 (defcustom sml/mode-width 'full
   "Maximum and/or minimum size of the modes list in the mode-line.
@@ -590,6 +633,9 @@ characters.
 If it is the symbol `full', then the mode-list fills all the
 empty space is available in the mode-line (this has the effect of
 indenting right anything after the mode-list).
+
+If it is the symbol `right', then it behaves like `full', but the
+minor-modes list is moved al the way to the right.
 
 If `sml/shorten-modes' is nil, this is the minimum width.
 Otherwise, this is both the minimum and maximum width."
@@ -634,15 +680,12 @@ name."
   :type 'string
   :group 'smart-mode-line-others)
 
-(defconst sml/major-help-echo
-  "Mouse-1: Mode Menu.\nMouse-2: Mode Help.\nMouse-3: Toggle Minor Modes.")
-
 (defcustom sml/extra-filler 0
   "The number of extra filling chars to use.
 It comes into play when `sml/mode-width' is set to 'full.
 
 This is necessary because the mode-line width (which we need but
-don't have acess to) is larger than the window-width (which we
+don't have acess to) is larger than the `window-width' (which we
 have access to).
 
 Decrease this if right indentation seems to be going too far (or
@@ -650,34 +693,20 @@ if you just want to fine-tune it)."
   :type 'integer
   :group 'smart-mode-line-mode-list)
 
-;; Color definitions
-(defcustom sml/active-foreground-color "gray60" "Foreground mode-line color for the active frame."
-  :type 'color :group 'smart-mode-line-faces :set 'sml/set-face-color :initialize 'custom-initialize-default)
-(defcustom sml/active-background-color "black" "Background mode-line color for the active frame."
-  :type 'color :group 'smart-mode-line-faces :set 'sml/set-face-color :initialize 'custom-initialize-default)
-(defcustom sml/inactive-foreground-color "gray60" "Foreground mode-line color for the inactive frame."
-  :type 'color :group 'smart-mode-line-faces :set 'sml/set-face-color :initialize 'custom-initialize-default)
-(defcustom sml/inactive-background-color "#404045" "Background mode-line color for the inactive frame."
-  :type 'color :group 'smart-mode-line-faces :set 'sml/set-face-color :initialize 'custom-initialize-default)
-
 ;; Face definitions
-(defface sml/global           '((t :foreground "gray50" :inverse-video nil :font-family "Monospace"))
+(defface sml/global           '((t :inverse-video nil)) "" :group 'smart-mode-line-faces)
+(defface sml/modes            '((t :inherit sml/global)) "" :group 'smart-mode-line-faces)
+(defface sml/filename         '((t :inherit sml/global :weight bold)) "" :group 'smart-mode-line-faces)
+(defface sml/prefix           '((t :inherit sml/global)) "" :group 'smart-mode-line-faces)
+(defface sml/read-only        '((t :inherit sml/not-modified)) "" :group 'smart-mode-line-faces)
+(defface sml/modified         '((t :inherit sml/not-modified :foreground "Red" :weight bold))
   "" :group 'smart-mode-line-faces)
-(defface sml/modes            '((t :inherit sml/global :foreground "White"))
-  "" :group 'smart-mode-line-faces)
-(defface sml/filename         '((t :inherit sml/global :foreground "#eab700" :weight bold))
-  "" :group 'smart-mode-line-faces)
-(defface sml/prefix           '((t :inherit sml/global :foreground "#bf6000"))
-  "" :group 'smart-mode-line-faces)
-(defface sml/read-only        '((t :inherit sml/global :foreground "DeepSkyBlue"))
-  "" :group 'smart-mode-line-faces)
-(defface sml/outside-modified '((t :inherit sml/global :foreground "#ffffff" :background "#c82829"))
-  "" :group 'smart-mode-line-faces)
-(defface sml/modified         '((t :inherit sml/global :foreground "Red" :weight bold))
+(defface sml/outside-modified '((t :inherit sml/not-modified :foreground "#ffffff" :background "#c82829"))
   "" :group 'smart-mode-line-faces)
 
 (defface sml/line-number         '((t :inherit sml/modes :weight bold))               "" :group 'smart-mode-line-faces)
 (defface sml/remote              '((t :inherit sml/global))                           "" :group 'smart-mode-line-faces)
+(defface sml/name-filling        '((t :inherit sml/position-percentage))              "" :group 'smart-mode-line-faces)
 (defface sml/position-percentage '((t :inherit sml/prefix :weight normal))            "" :group 'smart-mode-line-faces)
 (defface sml/col-number          '((t :inherit sml/global))                           "" :group 'smart-mode-line-faces)
 (defface sml/numbers-separator   '((t :inherit sml/col-number))                       "" :group 'smart-mode-line-faces)
@@ -685,7 +714,7 @@ if you just want to fine-tune it)."
 (defface sml/not-modified        '((t :inherit sml/global))                           "" :group 'smart-mode-line-faces)
 (defface sml/mule-info           '((t :inherit sml/global))                           "" :group 'smart-mode-line-faces)
 (defface sml/sudo                '((t :inherit sml/outside-modified))                 "" :group 'smart-mode-line-faces)
-(defface sml/git                 '((t :inherit sml/read-only))                        "" :group 'smart-mode-line-faces)
+(defface sml/git                 '((t :inherit (sml/read-only sml/prefix)))           "" :group 'smart-mode-line-faces)
 (defface sml/folder              '((t :inherit sml/global :weight normal))            "" :group 'smart-mode-line-faces)
 (defface sml/process             '((t :inherit sml/prefix))                           "" :group 'smart-mode-line-faces)
 (defface sml/vc                  '((t :inherit sml/git))                              "" :group 'smart-mode-line-faces)
@@ -694,112 +723,80 @@ if you just want to fine-tune it)."
 (defface sml/discharging         '((t :inherit sml/global :foreground "Red"))         "" :group 'smart-mode-line-faces)
 (defface sml/time                '((t :inherit sml/modes))                            "" :group 'smart-mode-line-faces)
 
-;;; For changing between themes.
-(defconst sml/mode-line-active-foreground-original (internal-get-lisp-face-attribute 'mode-line :foreground))
-(defconst sml/mode-line-active-background-original (internal-get-lisp-face-attribute 'mode-line :background))
-(defconst sml/mode-line-inactive-foreground-original (internal-get-lisp-face-attribute 'mode-line-inactive :foreground))
-(defconst sml/mode-line-inactive-background-original (internal-get-lisp-face-attribute 'mode-line-inactive :background))
-
-(deftheme smart-mode-line)
-(defun sml/set-mode-line-buffer-id-face ()
-  "Re-apply our face to major-modes that change mode-line-buffer-id."
-  ;; Our buffer-file-name display.
-  ;; For buffers which edit mode-line-identification, make sure they use OUR color.
-  (ignore-errors
-    (set-face-attribute
-     'mode-line-buffer-id nil
-     :foreground (internal-get-lisp-face-attribute 'sml/filename :foreground)
-     :background (internal-get-lisp-face-attribute 'sml/filename :background)
-     :weight     (internal-get-lisp-face-attribute 'sml/filename :weight)
-     :underline  (internal-get-lisp-face-attribute 'sml/filename :underline)
-     :overline   (internal-get-lisp-face-attribute 'sml/filename :overline))))
-
-(defun sml/set-face-color (&optional sym val)
-  "Re-apply our fore/background faces because theme may have changed it."
-  (if sym (set-default sym val))
-  (set-face-attribute 'mode-line nil
-                      :inverse-video nil
-                      :foreground sml/active-foreground-color
-                      :background sml/active-background-color)
-  (set-face-attribute 'mode-line-inactive nil
-                      :inverse-video nil
-                      :background sml/inactive-background-color
-                      :foreground sml/inactive-foreground-color)
-  (sml/set-mode-line-buffer-id-face))
-
 (defvar sml/-apply-theme-is-running nil "Avoid nesting in `sml/apply-theme'.")
 
-(defun sml/apply-theme (theme &optional value silent)
-  "Apply THEME.
+(defcustom sml/no-confirm-load-theme nil
+  "If non-nil, `sml/apply-theme' will pass the NO-CONFIRM flag to `load-theme'.
+If you're having problems with Emacs always asking for permission
+to load a theme (and not remembering your choice), you can set
+this to t to workaround the problem. But it's recommended that
+you try the problem instead."
+  :type 'boolean
+  :group 'smart-mode-line-faces
+  :package-version '(smart-mode-line . "2.5.2"))
 
-THEME can be one of the symbols: respectful, dark, or light.
+;;;###autoload
+(when load-file-name
+  (let ((dir (file-name-as-directory (file-name-directory load-file-name))))
+    (add-to-list 'custom-theme-load-path dir)
+    (when (file-directory-p (file-name-as-directory (concat dir "themes")))
+      (add-to-list 'custom-theme-load-path
+                   (file-name-as-directory (concat dir "themes"))))))
+
+(defun sml/apply-theme (theme &optional value silent)
+  "Apply the theme called smart-mode-line-THEME.
+
+THEME is usually one of the symbols: respectful, dark, or light;
+but it can be something else if there are other smart-mode-line
+themes defined.
+See the `sml/theme' variable for the meaning of each symbol.
+
+This function will call `disable-theme' on any enabled themes
+whose name starts with \"smart-mode-line-\", then it will call
+`load-theme' on the theme called \"smart-mode-line-THEME\".
 
 This also sets the `sml/theme' variable, see its documentation
 for more information on each value.
 
-The second argument (VALUE) is for internal use only, don't use it."
+The second argument (VALUE) is for internal use only, DON'T USE IT.
+
+Third argument SILENT prevents messages."
+  (interactive
+   (list
+    (intern
+     (completing-read
+      "Load smart-mode-line theme: "
+      (mapcar
+       (lambda (x) (replace-regexp-in-string "\\`smart-mode-line-" "" (symbol-name x)))
+       (-filter 'sml/theme-p (custom-available-themes)))))
+    nil nil))
+  (when (eq theme (intern "")) (setq theme nil))
   (unless silent (message "[sml] %s set to %s" 'sml/theme (or value theme)))
   (unless sml/-apply-theme-is-running
     (let ((sml/-apply-theme-is-running t)) ;Avoid nesting.
-      (if value (setq-default sml/theme value)
-        (if theme
-            (setq-default sml/theme theme)
-          (setq-default sml/theme 'respectful)))
-      (case sml/theme
-        ('respectful (custom-theme-set-variables
-                      'smart-mode-line
-                      `(sml/active-foreground-color ,sml/mode-line-active-foreground-original)
-                      `(sml/active-background-color ,sml/mode-line-active-background-original)
-                      `(sml/inactive-foreground-color ,sml/mode-line-inactive-foreground-original)
-                      `(sml/inactive-background-color ,sml/mode-line-inactive-background-original))
-                     (custom-theme-set-faces
-                      'smart-mode-line
-                      '(sml/global    ((t :inherit font-lock-preprocessor-face)))
-                      `(sml/filename  ((t :inherit (font-lock-function-name-face sml/global) :weight bold
-                                          :foreground ,(internal-get-lisp-face-attribute 'default :foreground))))
-                      '(sml/prefix    ((t :inherit (font-lock-variable-name-face sml/global))))
-                      '(sml/read-only ((t :inherit (font-lock-type-face sml/global))))
-                      `(sml/modes     ((t :inherit sml/global :foreground ,sml/active-foreground-color)))
-                      '(persp-selected-face nil)
-                      '(helm-candidate-number nil)))
-        ('light (custom-theme-set-variables
-                 'smart-mode-line
-                 '(sml/active-foreground-color "black")
-                 '(sml/active-background-color "grey85")
-                 '(sml/inactive-foreground-color "grey20")
-                 '(sml/inactive-background-color "#fdf6e3"))
-                (custom-theme-set-faces
-                 'smart-mode-line
-                 '(sml/global    ((t :foreground "gray20" :inverse-video nil)))
-                 '(sml/modes     ((t :inherit sml/global :foreground "Black")))
-                 '(sml/filename  ((t :inherit sml/global :foreground "Blue" :weight bold)))
-                 '(sml/prefix    ((t :inherit sml/global :foreground "#5b2507" :weight bold)))
-                 '(sml/read-only ((t :inherit sml/global :foreground "DarkGreen" :weight bold)))
-                 '(persp-selected-face nil)
-                 '(helm-candidate-number nil)))
-        ((dark t)
-         (custom-theme-set-variables
-          'smart-mode-line
-          '(sml/active-foreground-color "gray60")
-          '(sml/active-background-color "black")
-          '(sml/inactive-foreground-color "gray60")
-          '(sml/inactive-background-color "#404045"))
-         (custom-theme-set-faces
-          'smart-mode-line
-          '(sml/global    ((t :foreground "gray50" :inverse-video nil)))
-          '(sml/modes     ((t :inherit sml/global :foreground "White")))
-          '(sml/filename  ((t :inherit sml/global :foreground "#eab700" :weight bold)))
-          '(sml/prefix    ((t :inherit sml/global :foreground "#bf6000")))
-          '(sml/read-only ((t :inherit sml/global :foreground "DeepSkyBlue")))
-          '(persp-selected-face ((t :foreground "ForestGreen" :inherit sml/filename)))
-          '(helm-candidate-number ((t :foreground nil :background nil :inherit sml/filename))))
-         (if (eq sml/theme t)
-             (message "[WARNING] smart-mode-line: setting `sml/override-theme' to t is obsolete.
-Use the `sml/theme' variable instead.")))))
-    ;; Respect the user's configurations.
-    (enable-theme 'user)
-    ;; Re-apply our fore/background faces because theme may have changed it.
-    (sml/set-face-color)))
+      ;; Set the variable
+      (setq-default sml/theme (or value theme))
+      
+      ;; Disable any previous smart-mode-line themes.
+      (mapc (lambda (x) (when (sml/theme-p x) (disable-theme x))) custom-enabled-themes)
+      
+      ;; Load the theme requested.
+      (when (and sml/theme (null (eq sml/theme 'automatic)))
+        (load-theme
+         (if (sml/theme-p sml/theme)
+             sml/theme
+           (intern (format "smart-mode-line-%s" sml/theme)))
+         sml/no-confirm-load-theme)))))
+
+(defadvice enable-theme (after sml/after-enable-theme-advice (theme) activate)
+  "Make sure smart-mode-line themes take priority over global themes that don't customize sml faces."
+  (unless (or (eq theme 'user) (sml/faces-from-theme theme))
+    (mapc 'enable-theme (reverse (-filter 'sml/faces-from-theme custom-enabled-themes)))))
+
+(defun sml/theme-p (theme)
+  "Return non-nil if theme named THEME is a smart-mode-line theme.
+Takes symbols and strings."
+  (string-match "\\`smart-mode-line-" (if (symbolp theme) (symbol-name theme) theme)))
 
 (defvaralias 'sml/show-encoding 'sml/mule-info)
 
@@ -869,18 +866,22 @@ If you want it to show the backend, just set it to t."
 (put 'sml/buffer-identification 'risky-local-variable t)
 
 (defadvice rename-buffer (after sml/after-rename-buffer-advice ())
-  "Regenerate buffer-identification after rename-buffer."
+  "Regenerate buffer-identification after `rename-buffer'."
   (sml/generate-buffer-identification))
 (defadvice set-visited-file-name (after sml/after-set-visited-file-name-advice ())
-  "Regenerate buffer-identification after set-visited-file-name."
+  "Regenerate buffer-identification after `set-visited-file-name'."
   (sml/generate-buffer-identification))
 
 (defvar sml/name-width-old nil "Used for recalculating buffer identification filling only when necessary.")
 (make-variable-buffer-local 'sml/name-width-old)
+(defvar sml/shorten-directory-old nil "Used for recalculating buffer identification filling only when necessary.")
+(make-variable-buffer-local 'sml/shorten-directory-old)
 (defun sml/generate-buffer-identification-if-necessary ()
-  "Calls `sml/generate-buffer-identification' only if `sml/name-width' has changed."
-  (unless (equal sml/name-width-old sml/name-width)
+  "Call `sml/generate-buffer-identification' only if `sml/name-width' has changed."
+  (unless (and (equal sml/name-width-old sml/name-width)
+               (equal sml/shorten-directory-old sml/shorten-directory))
     (setq sml/name-width-old sml/name-width)
+    (setq sml/shorten-directory-old sml/shorten-directory)
     (sml/generate-buffer-identification))
   nil)
 
@@ -897,31 +898,59 @@ If you want it to show the backend, just set it to t."
         (:eval (sml/generate-buffer-identification))))
   "Replace the default `mode-line-buffer-identification' with our own.")
 
-(defvar sml/projectile-loaded-p nil "t if projectile has been loaded.")
+(defvar sml/projectile-loaded-p nil "Non-nil if projectile has been loaded.")
+
+(defcustom sml/pos-id-separator " "
+  "Miscellaneous mode-line construct.")
+(put 'sml/pos-id-separator 'risky-local-variable t)
+(defcustom sml/pre-modes-separator " "
+  "Miscellaneous mode-line construct.")
+(put 'sml/pre-modes-separator 'risky-local-variable t)
+(defcustom sml/pre-id-separator ""
+  "Miscellaneous mode-line construct.")
+(put 'sml/pre-id-separator 'risky-local-variable t)
+(defcustom sml/pre-minor-modes-separator ""
+  "Miscellaneous mode-line construct.")
+(put 'sml/pre-minor-modes-separator 'risky-local-variable t)
+(defcustom sml/pos-minor-modes-separator ""
+  "Miscellaneous mode-line construct.")
+(put 'sml/pos-minor-modes-separator 'risky-local-variable t)
 
 ;;;###autoload
 (defun sml/setup (&optional arg)
   "Setup the mode-line to be smart and sexy.
 
-Argument is ignored. Just call this function in your init file,
-and it will be evaluated after emacs finished initializing (we do
-this to make sure that we are loaded after any themes)."
+ARG is ignored. Just call this function in your init file, and it
+will be evaluated after Emacs finished initializing (we do this
+to make sure that we are loaded after any themes)."
   (interactive)
   ;; Just a couple of useful variables
   (setq sml/simplified nil)
   (setq battery-mode-line-format sml/battery-format)
 
-  ;; Set the theme the user requested.
-  (let ((set-theme sml/theme))
-    (setq sml/theme 'initializing)    
-    (sml/apply-theme set-theme nil :silent))
-
-  ;; Make sure the user's theme doesn't override the main faces
-  ;; (mode-line and mode-line-inactive)
-  (if after-init-time
-      (sml/set-face-color)
-    (add-hook 'after-init-hook 'sml/set-face-color))
+  ;; Activate rich-minority, and configure it for us.
+  (require 'rich-minority)
+  (setq rm-base-text-properties
+        (append rm-base-text-properties '('face 'sml/folder)))
   
+  ;; Set the theme the user requested.
+  (when sml/theme
+    (let ((set-theme sml/theme))
+      (setq sml/theme nil)
+      (when (eq set-theme 'automatic)
+        (if (sml/global-theme-support-sml-p)
+            (setq set-theme nil)
+          (let ((bg (ignore-errors
+                      (or (face-background 'mode-line nil t)
+                          (face-background 'default nil t)))))
+            (setq set-theme
+                  (if (ignore-errors
+                        (and (stringp bg)
+                             (> (color-distance "white" bg)
+                                (color-distance "black" bg))))
+                      'dark 'light)))))
+      (sml/apply-theme set-theme nil :silent)))
+
   ;;;; And this is where the magic happens.
   ;; Remove elements we implement separately, and improve the ones not removed.
   (sml/filter-mode-line-list 'mode-line-mule-info)
@@ -929,7 +958,8 @@ this to make sure that we are loaded after any themes)."
   (sml/filter-mode-line-list 'mode-line-modified)
   (sml/filter-mode-line-list 'mode-line-remote)
   (setq-default mode-line-frame-identification
-                '(sml/show-frame-identification "%F"))
+                '("" (sml/show-frame-identification "%F")
+                  sml/pre-id-separator))
 
   ;; (setq-default mode-line-buffer-identification '("%b"))
   
@@ -968,14 +998,20 @@ this to make sure that we are loaded after any themes)."
   (add-to-list 'mode-line-position
                '(sml/buffer-identification-filling
                  sml/buffer-identification-filling
-                 (:eval (progn (sml/generate-buffer-identification)
-                               sml/buffer-identification-filling))))
+                 (:eval (setq sml/buffer-identification-filling
+                              (sml/fill-for-buffer-identification)))))
 
   ;; Remove some annoying big spaces
   (setq-default mode-line-format
                 (mapcar
-                 (lambda (x) (if (and (stringp x) (string-match "\\` +\\'" x))
-                                 " " x))
+                 (lambda (x) (cond
+                         ;; ((eq x 'mode-line-buffer-identification)
+                         ;;  '(:propertize mode-line-buffer-identification face sml/id))
+                         ((and (stringp x) (string= x "   "))
+                          'sml/pos-id-separator)
+                         ((and (stringp x) (string= x "  "))
+                          'sml/pre-modes-separator)
+                         (t x)))
                  mode-line-format))
 
       ;;;; And here comes support for a bunch of extra stuff. Some of
@@ -1084,12 +1120,26 @@ Might implement a quick flash eventually."
                (null erc-track-position-in-mode-line))
     (setq erc-track-position-in-mode-line t)))
 
+(defun sml/global-theme-support-sml-p ()
+  "Non-nil if any of the enabled themes supports smart-mode-line."
+  (--filter
+   (null (sml/theme-p it))
+   (-filter
+    'sml/faces-from-theme
+    custom-enabled-themes)))
+
+(defun sml/faces-from-theme (theme)
+  "Return the sml faces that THEME customizes."
+  (--filter (string-match "\\`sml/" (symbol-name it))
+            (mapcar 'cadr (get theme 'theme-settings))))
 
 (defun sml/set-buffer-identification (&rest ignored)
   "Setq the buffer-identification of this buffer back to ours.
 
 Currently, we only this for dired. For other modes (like info) we
-respect their changes."
+respect their changes.
+
+Argument IGNORED is obsolete."
   (setq mode-line-buffer-identification sml/mode-line-buffer-identification))
 
 (defvar sml/-this-buffer-changed-p nil
@@ -1097,10 +1147,13 @@ respect their changes."
 (make-variable-buffer-local 'sml/-this-buffer-changed-p)
 
 (defun sml/-this-buffer-changed (&rest ignored)
+  "Set variable `sml/-this-buffer-changed-p' to t.
+Argument IGNORED is ignored."
   (setq sml/-this-buffer-changed-p t) nil)
 
 (defun sml/generate-position-help (&rest ignored)
-  "Set the string describing various buffer content information."
+  "Set the string describing various buffer content information.
+Argument IGNORED is ignored."
   (when (and sml/-this-buffer-changed-p
              (get-buffer-window (current-buffer)))
     (setq sml/-this-buffer-changed-p nil)
@@ -1130,7 +1183,8 @@ It can only be t or nil.
   :package-version '(smart-mode-line . "2.4"))
 
 (defun sml/compile-position-construct (&optional symbol value)
-  "Recompile the `sml/position-construct' after one of the formats was edited."
+  "Recompile the `sml/position-construct' after one of the formats was edited.
+Also sets SYMBOL to VALUE."
   (when (and symbol value) (set symbol value))
   (sml/generate-position-help)
   (setq sml/position-construct
@@ -1176,7 +1230,7 @@ It can only be t or nil.
 
 (defun sml/generate-modified-status ()
   "Return a string describing the modified status of the buffer."
-  (cond ;; ((file-remote-p (buffer-file-name)) "%1+")
+  (cond
    ((not (or (and (buffer-file-name) (file-remote-p buffer-file-name))
              (verify-visited-file-modtime (current-buffer))))
     (propertize sml/outside-modified-char 'face 'sml/outside-modified
@@ -1193,7 +1247,7 @@ It can only be t or nil.
                                 (nth 5 (file-attributes (buffer-file-name))))
                              "Buffer Modified")
                 'local-map '(keymap (mode-line keymap (mouse-1 . save-buffer)))))
-   (t " ")))
+   (t (propertize " " 'face 'sml/not-modified))))
 
 (defmacro sml/propertize-position (s face help)
   "Propertize string S as a line/column number, using FACE and help-echo HELP."
@@ -1220,43 +1274,47 @@ L must be a symbol! We asign right back to it"
     (error "l must be a symbol to a list!")))
 
 (defun sml/fill-for-buffer-identification ()
-  "Returns a string of spaces so that `mode-line-buffer-identification' is fixed-width.
+  "Return a string such that `mode-line-buffer-identification' is fixed-width.
 In buffers where `mode-line-buffer-identification' is nil, we
 don't do any filling. That's because the given mode probably
 doesn't want any buffer-id."
   (if mode-line-buffer-identification
-      (make-string (max (- sml/name-width (length (format-mode-line mode-line-buffer-identification)))
-                        0) sml/fill-char)
+      (propertize
+       (make-string (max (- (or (car-safe sml/name-width) sml/name-width)
+                            (length (format-mode-line mode-line-buffer-identification))) 
+                         0)
+                    sml/fill-char)
+       'face 'sml/name-filling)
     ""))
 
 (defun sml/generate-buffer-identification (&rest ignored)
-  "Return fully propertized prefix+path+buffername."
+  "Return fully propertized prefix+path+buffername.
+Argument IGNORED is ignored."
   (setq sml/name-width-old sml/name-width)
-  (if (or ;; Only calculate all this if it will actually be used
-       (equal sml/mode-line-buffer-identification mode-line-buffer-identification)
-       (member (cadr sml/mode-line-buffer-identification) mode-line-buffer-identification)
-       (member sml/mode-line-buffer-identification mode-line-buffer-identification))
-      (setq sml/buffer-identification-filling ""
-            sml/buffer-identification
-            (let* ((got-directory (sml/get-directory))
-                   (sml/use-projectile-p (if (or (not sml/projectile-loaded-p)
-                                                 (file-remote-p got-directory))
-                                             nil
-                                           sml/use-projectile-p))
-                   (prefix (sml/get-prefix (sml/replacer got-directory)))
-                   (bufname (sml/buffer-name))
-                   (dirsize (max 0 (- (abs sml/name-width) (length prefix) (length bufname))))
-                   (dirstring (funcall sml/shortener-func got-directory dirsize)))
+  (setq sml/buffer-identification-filling nil)
+  (when (or ;; Only calculate all this if it will actually be used
+         (equal sml/mode-line-buffer-identification mode-line-buffer-identification)
+         (member (cadr sml/mode-line-buffer-identification) mode-line-buffer-identification)
+         (member sml/mode-line-buffer-identification mode-line-buffer-identification))
+    (setq sml/buffer-identification
+          (let* ((got-directory (sml/get-directory))
+                 (sml/use-projectile-p (if (or (not sml/projectile-loaded-p)
+                                               (file-remote-p got-directory))
+                                           nil
+                                         sml/use-projectile-p))
+                 (prefix (sml/get-prefix (sml/replacer got-directory)))
+                 (bufname (sml/buffer-name))
+                 (dirsize (max 0 (- (abs (or (cdr-safe sml/name-width) sml/name-width))
+                                    (length prefix) (length bufname))))
+                 (dirstring (funcall sml/shortener-func got-directory dirsize)))
 
-              (propertize (concat (sml/propertize-prefix (replace-regexp-in-string "%" "%%" prefix))
-                                  (propertize (replace-regexp-in-string "%" "%%" dirstring) 'face 'sml/folder)
-                                  (propertize (replace-regexp-in-string "%" "%%" bufname) 'face 'sml/filename)
-                                  (make-string (max 0 (- dirsize (length dirstring))) ?\ ))
-                          'help-echo (format "%s\n\nmouse-1: Previous buffer\nmouse-3: Next buffer"
-                                             (or (buffer-file-name) (buffer-name)))
-                          'mouse-face 'mode-line-highlight
-                          'local-map   mode-line-buffer-identification-keymap)))
-    (setq sml/buffer-identification-filling (sml/fill-for-buffer-identification))))
+            (propertize (concat (sml/propertize-prefix (replace-regexp-in-string "%" "%%" prefix))
+                                (propertize (replace-regexp-in-string "%" "%%" dirstring) 'face 'sml/folder)
+                                (propertize (replace-regexp-in-string "%" "%%" bufname) 'face 'sml/filename))
+                        'help-echo (format "%s\n\nmouse-1: Previous buffer\nmouse-3: Next buffer"
+                                           (or (buffer-file-name) (buffer-name)))
+                        'mouse-face 'mode-line-highlight
+                        'local-map   mode-line-buffer-identification-keymap)))))
 
 (defun sml/parse-mode-line-elements (el)
   "Propertize or delete EL.
@@ -1264,7 +1322,7 @@ doesn't want any buffer-id."
 To be used in mapcar and accumulate results."
   (cond
    ;; These are implemented separately
-   ((member el '("%1+" "(" ")" (t erc-modified-channels-object)
+   ((member el '("%[" "%]" "%1+" "(" ")" (t erc-modified-channels-object)
                  (:eval (if (display-graphic-p) " " "-"))
                  (:eval (unless (display-graphic-p) "-%-"))
                  (:eval (mode-line-frame-control))))
@@ -1300,17 +1358,21 @@ mouse-1: Display Line and Column Mode Menu"))))
    ;;;; mode-line-mule-info
    ;; Partially hide some MULE info
    ((and (stringp el) (string-match "\\s-*%[-0-9]*z" el))
-    `(sml/mule-info ((1 (current-input-method
-                         (:propertize ("" current-input-method-title)
-                                      help-echo (concat
-                                                 ,(purecopy "Current input method: ")
-                                                 current-input-method
-                                                 ,(purecopy "\n\
+    `(sml/mule-info ((1 (:propertize
+                         (current-input-method
+                          ("" current-input-method-title)
+                          " ")
+                         face sml/mule-info
+                         help-echo (concat
+                                    ,(purecopy "Current input method: ")
+                                    current-input-method
+                                    ,(purecopy "\n\
 mouse-2: Disable input method\n\
 mouse-3: Describe current input method"))
-                                      local-map ,mode-line-input-method-map
-                                      mouse-face mode-line-highlight)))
+                         local-map ,mode-line-input-method-map
+                         mouse-face mode-line-highlight))
                      (:propertize (:eval sml/mule-info)
+                                  face sml/mule-info
                                   help-echo mode-line-mule-info-help-echo
                                   mouse-face mode-line-highlight
                                   local-map ,mode-line-coding-system-map))))
@@ -1318,7 +1380,7 @@ mouse-3: Describe current input method"))
    ((equal el '(:eval (mode-line-eol-desc)))
     '(sml/show-eol (:eval (mode-line-eol-desc))))
 
-   ;;;; mode-line-mods
+   ;;;; mode-line-modes
    ;; Color the mode line process
    ((or (equal el '("" mode-line-process))
         (equal (car (cdr-safe el)) '("" mode-line-process)))
@@ -1327,12 +1389,18 @@ mouse-3: Describe current input method"))
    ((and (listp el)
          (equal (car el) :propertize)
          (equal (cadr el) '("" mode-name)))
+    (setf (cadr el) '("" "%[" mode-name "%]"))
     (append el '(face sml/modes)))
    ;; Completely replace the minor modes (so we can truncate)
    ((and (listp el)
          (equal (car el) :propertize)
          (equal (cadr el) '("" minor-mode-alist)))
     '(:eval (sml/generate-minor-modes)))
+   
+   ;; ;;; Propertize misc-info
+   ;; ((memq (car-safe el) '(which-func-mode global-mode-string))
+   ;;  `(:eval (add-text-properties (format-mode-line ',el))))
+
    ;; If it's something we don't recognize, just leave it as-is.
    (t el)))
 
@@ -1345,7 +1413,8 @@ mouse-3: Describe current input method"))
            (string-match ".*%p.*" x))))
 
 (defun sml/buffer-name ()
-  "Uses `sml/show-file-name' to decide between buffer name or file name to show on the mode-line.
+  "Return either buffer name or file name to be shown on the mode-line.
+Uses `sml/show-file-name' to decide between the two.
 
 Unless `sml/strip-N' is nil, prevents the \"<N>\" (used in
 duplicated buffer names) from being displayed."
@@ -1365,45 +1434,15 @@ duplicated buffer names) from being displayed."
              (let ((sml/simplified t))
                (length (format-mode-line mode-line-format)))))))
 
-(defun sml/mode-list-to-string-list (ml) ;;Credits to Constantin
-  "Try to read the mode-list (which contains almost anything) and return a sensible list of strings."
-  (case (type-of ml)
-    ('string (list ml))
-    ('symbol
-     (if ml
-         (sml/mode-list-to-string-list (symbol-value ml))
-       nil))
-    (('function 'subr) (sml/mode-list-to-string-list (list (funcall ml))))
-    ('cons
-     (let ((kar (car ml))
-           (kdr (cdr ml)))
-       (case (type-of kar)
-         ('symbol
-          (let ((val (when (boundp kar) (symbol-value kar)))
-                (kadr (if (listp kdr) (car kdr) nil)))
-            (case val
-              (:eval (sml/mode-list-to-string-list (eval kadr)))
-              ;; properties now handled properly
-              (:propertize `((:propertize ,@(sml/mode-list-to-string-list kadr) ,@(cdr-safe kdr))))
-              (t
-               (if val
-                   (sml/mode-list-to-string-list kadr)
-                 (sml/mode-list-to-string-list (cdr kdr)))))))
-         ('integer
-          ;; heh, now do nothing, must reduce max width if < 0 or do padding if > 0
-          (sml/mode-list-to-string-list kdr))
-         (t (append (sml/mode-list-to-string-list kar) (sml/mode-list-to-string-list kdr))))))
-    ;; unknown
-    (t ;;(message "mode-list-to-string-error Unknown: type: %s;\nval: %s" ml (type-of ml))
-     (list (format "%s" ml)))))
-
 (defconst sml/propertized-shorten-mode-string
   '(:propertize sml/shorten-mode-string
+                face sml/folder
                 help-echo "mouse-1: Shorten minor modes"
                 local-map (keymap (mode-line keymap (mouse-1 . sml/toggle-shorten-modes)))
                 mouse-face mode-line-highlight))
 (defconst sml/propertized-full-mode-string
   '(:propertize sml/full-mode-string
+                face sml/folder
                 help-echo "mouse-1: Show all modes"
                 local-map (keymap (mode-line keymap (mouse-1 . sml/toggle-shorten-modes)))
                 mouse-face mode-line-highlight))
@@ -1414,58 +1453,57 @@ duplicated buffer names) from being displayed."
       (+ 1 (sml/count-occurrences-starting-at regex string (match-end 0)))
     0))
 
+;;; Patch, in case the user is using the wrong variable.
+(when (boundp 'sml/hidden-modes)
+  (message "[smart-mode-line] Warning: `sml/hidden-modes' is obsolete. Use `rm-excluded-modes' instead.")
+  (setq rm-excluded-modes sml/hidden-modes))
+(define-obsolete-variable-alias 'sml/hidden-modes 'rm-excluded-modes)
+
 (defun sml/generate-minor-modes ()
   "Extracts all rich strings necessary for the minor mode list."
   (if sml/simplified
       ""
-    (let* ((nameList (sml/mode-list-to-string-list minor-mode-alist))
-           (finalNameList (mapconcat 'format-mode-line  nameList ""))
-           (size (if (equal sml/mode-width 'full) (sml/fill-width-available) sml/mode-width))
-           (helpString (concat "Full list:" (replace-regexp-in-string " " "\n    " finalNameList)
-                               "\n\n" sml/major-help-echo))
-           needs-removing)
-      ;; Remove hidden-modes
-      (setq nameList (sml/remove-hidden-modes nameList))
-      ;; Truncate
-      (setq finalNameList (mapconcat 'format-mode-line  nameList ""))
+    (let* (;; The minor-mode-alist
+           (nameList (rm--mode-list-as-string-list))
+           ;; The size available
+           (size (if (member sml/mode-width '(full right))
+                     ;; Calculate how much width is available
+                     (sml/fill-width-available)
+                   ;; or use what the user requested.
+                   sml/mode-width))
+           ;; Used for counting size.
+           (finalNameList (mapconcat 'identity  nameList ""))
+           needs-removing filling)
+      
+      ;; Calculate whether truncation is necessary.
       (when (and sml/shorten-modes (> (length finalNameList) size))
-        ;; We need to remove 1+"the number of spaces found". We use
-        ;; 2+ because the car of the list element returned by `last'
-        ;; (below) won't actually be removed.
+        ;; We need to remove 1+ "the number of spaces found". 
         (setq needs-removing
-              (+ 2 (sml/count-occurrences-starting-at
-                    " " finalNameList (- size (length sml/full-mode-string))))))
+              (1+ 
+               (sml/count-occurrences-starting-at
+                " " finalNameList 
+                (- size (string-width sml/full-mode-string))))))
       ;; Add truncation string if necessary
       (when needs-removing
-        (setcdr (last nameList needs-removing)
+        (setcdr (last nameList (1+ needs-removing))
                 (list t sml/propertized-full-mode-string)))
       ;; If we're not shortenning, add " -" at the end.
       (unless sml/shorten-modes
         (add-to-list 'nameList sml/propertized-shorten-mode-string t))
 
-      (list size ;; Padding
-            (list ':propertize nameList
-                  'help-echo helpString
-                  'mouse-face 'mode-line-highlight
-                  'face 'sml/folder
-                  'local-map mode-line-minor-mode-keymap)))))
-
-(defun sml/remove-hidden-modes (li)
-  "Return LI removing any elements that match `sml/hidden-modes'."
-  (remove
-   nil
-   (if (listp sml/hidden-modes)
-       (mapcar (lambda (x) (unless (and (stringp x)
-                                   (member x sml/hidden-modes))
-                        x))
-               li)
-     (mapcar (lambda (x) (unless (and (stringp x)
-                                 (string-match sml/hidden-modes x))
-                      x))
-             li))))
+      ;; Padding
+      (setq filling (- size (length (format-mode-line nameList))))
+      (setq filling (make-string (max 0 filling) sml/fill-char))
+      
+      (if (eq sml/mode-width 'right)
+          (list (propertize filling 'face 'sml/modes)
+                'sml/pre-minor-modes-separator nameList
+                'sml/pos-minor-modes-separator)
+        (list "" 'sml/pre-minor-modes-separator nameList
+              'sml/pos-minor-modes-separator filling)))))
 
 (defun sml/propertize-prefix (prefix)
-  "Set the color of the prefix according to its contents."
+  "Set the color of PREFIX according to its contents."
   (let ((out prefix))
     (dolist (pair sml/prefix-face-list)
       (if (string-match (car pair) prefix)
@@ -1495,11 +1533,12 @@ duplicated buffer names) from being displayed."
       (copy-face 'sml/discharging 'sml/battery))))
 
 (defadvice battery-update (before sml/set-battery-font activate)
+  "Fontify the battery display."
   (sml/set-battery-font))
 
 (defun sml/replacer (in)
-  "Runs the replacements specified in `sml/replacer-regexp-list',
-first on the given path, and if that doesn't have any affect,
+  "Run on string IN the replacements from `sml/replacer-regexp-list'.
+Runs first on the given path, and if that doesn't have any affect,
 runs them again on a version of the given path with all symlinks
 expanded via `file-truename'.  If neither run succeeds in making
 any replacements, returns the path originally given.
@@ -1523,11 +1562,11 @@ Used by `sml/strip-prefix' and `sml/get-prefix'."
             out))))))
 
 (defun sml/replacer-raw (in)
-  "Runs the replacements specified in `sml/replacer-regexp-list'.
+  "Run on the string IN the replacements from `sml/replacer-regexp-list'.
 
 If projectile is loaded, also performs replacements specified by
 project name first."
-  (let ((out in) 
+  (let ((out in)
         proj)
     (when (and sml/projectile-loaded-p (eq sml/use-projectile-p 'before-prefixes))
       (setq out (sml/perform-projectile-replacement out)))
@@ -1539,17 +1578,18 @@ project name first."
     out))
 
 (defun sml/perform-projectile-replacement (in)
-  "If inside a project, use its name as a prefix."
+  "If path IN is inside a project, use its name as a prefix."
   (let ((proj (projectile-project-p)))
     (if (stringp proj)
         (replace-regexp-in-string
-         (concat "^" (abbreviate-file-name proj)) 
+         (concat "^" (abbreviate-file-name proj))
          (format sml/projectile-replacement-format (projectile-project-name))
          in)
       in)))
 
 (defun sml/regexp-composer (getter)
-  "Prepares the actual regexp using `sml/prefix-regexp'."
+  "Prepare the actual regexp using `sml/prefix-regexp'.
+If GETTER is non-nil, result regexp also accepts empty match."
   (let ((left "^\\(")
         (right (if getter "\\|\\).*" "\\)")))
     (if (stringp sml/prefix-regexp)
@@ -1559,25 +1599,26 @@ project name first."
       (concat left (mapconcat 'identity sml/prefix-regexp "\\|") right))))
 
 (defun sml/strip-prefix (path)
-  "Remove prefix from string.
+  "Remove prefix from string PATH.
 
 A prefix is anything at the begining of the line that matches a
 regexp in `sml/prefix-regexp'."
   (replace-regexp-in-string (sml/regexp-composer nil) "" path))
 
 (defun sml/get-prefix (path)
-  "Get prefix from string.
+  "Get prefix from string PATH.
 
 A prefix is anything at the begining of the line that matches a
 regexp in `sml/prefix-regexp'."
   (replace-regexp-in-string (sml/regexp-composer t) "\\1" path))
 
 (defun sml/not-shorten-directory (dir ml)
-  "Dummy function. Just returns abbreviated dir."
+  "Return DIR, abbreviated and prefixed.
+ML isn't used."
   (sml/strip-prefix (sml/replacer (abbreviate-file-name dir))))
 
 (defun sml/do-shorten-directory (dir max-length)
-  "Show up to `max-length' characters of a directory name `dir'."
+  "Show up to MAX-LENGTH characters of a directory name DIR."
   (let ((longname (sml/strip-prefix (sml/replacer (abbreviate-file-name dir)))))
     ;; If it fits, return the string.
     (if (<= (length longname) max-length) longname
@@ -1600,8 +1641,6 @@ regexp in `sml/prefix-regexp'."
   "Backs up the `mode-line-format' before SML was required.")
 (defconst sml/battery-format-backup (if (boundp 'battery-mode-line-format) battery-mode-line-format "")
   "Backs up the `battery-mode-line-format' before SML was required.")
-(copy-face 'mode-line 'sml/active-backup)
-(copy-face 'mode-line-inactive 'sml/inactive-backup)
 
 (provide 'smart-mode-line)
 ;;; smart-mode-line.el ends here
