@@ -7,7 +7,6 @@
     (key-chord-mode t)
 
     ;; movement, shells, smex
-    (key-chord-define-global ";'" 'ace-jump-mode)
     (key-chord-define-global "zf" 'ace-jump-mode)
     (key-chord-define-global ",." 'switch-to-shell-or-create)
     (key-chord-define-global ",/" 'smex)
