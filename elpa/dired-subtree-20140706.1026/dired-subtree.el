@@ -5,7 +5,7 @@
 ;; Author: Matus Goljer <matus.goljer@gmail.com>
 ;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
 ;; Keywords: files
-;; Version: 20140408.1154
+;; Version: 20140706.1026
 ;; X-Original-Version: 0.0.1
 ;; Created: 25th February 2014
 ;; Package-requires: ((dash "2.5.0") (dired-hacks-utils "0.0.1"))
@@ -96,7 +96,7 @@
 The prefix is repeated \"depth\" times.
 
 Alternatively, it can be a function taking one argument---the
-depth---taht creates the prefix."
+depth---that creates the prefix."
   :type '(choice string function)
   :group 'dired-subtree)
 
@@ -425,6 +425,7 @@ Return a string suitable for insertion in `dired' buffer."
     (delete-char -1)
     (goto-char (point-min))
     (kill-line 3)
+    (setq kill-ring (cdr kill-ring))
     (insert "  ")
     (while (= (forward-line) 0)
       (insert "  "))
