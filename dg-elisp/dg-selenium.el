@@ -18,10 +18,12 @@
       (set-process-query-on-exit-flag
        (start-process appium-proc-name appium-buffer
                       "appium"
-                      "--avd"
-                      "appium"
+                      ;; "--avd"
+                      ;; "appium"
                       "--full-reset"
-                      "--log-no-colors")
+                      "--log-no-colors"
+                      "--port" "4723"
+                      )
        nil))
     (switch-to-buffer appium-buffer)))
 
