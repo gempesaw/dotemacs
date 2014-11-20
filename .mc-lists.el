@@ -93,6 +93,7 @@
         org-shiftright
         org-todo
         paredit-backward-kill-word
+        paredit-close-square
         paredit-doublequote
         paredit-forward
         paredit-forward-barf-sexp
