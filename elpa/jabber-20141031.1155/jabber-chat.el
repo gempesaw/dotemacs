@@ -226,27 +226,28 @@ Either a string or a buffer is returned, so use `get-buffer' or
 This function is idempotent."
   (with-current-buffer (get-buffer-create (jabber-chat-get-buffer chat-with))
     (unless (eq major-mode 'jabber-chat-mode)
-      (jabber-chat-mode jc #'jabber-chat-pp))
+      (jabber-chat-mode jc #'jabber-chat-pp)
+
+      (make-local-variable 'jabber-chatting-with)
+      (setq jabber-chatting-with chat-with)
+      (setq jabber-send-function 'jabber-chat-send)
+      (setq header-line-format jabber-chat-header-line-format)
+
+      (make-local-variable 'jabber-chat-earliest-backlog)
+
+      ;; insert backlog
+      (when (null jabber-chat-earliest-backlog)
+	(let ((backlog-entries (jabber-history-backlog chat-with)))
+	  (if (null backlog-entries)
+	      (setq jabber-chat-earliest-backlog (jabber-float-time))
+	    (setq jabber-chat-earliest-backlog
+		  (jabber-float-time (jabber-parse-time
+				      (aref (car backlog-entries) 0))))
+	    (mapc 'jabber-chat-insert-backlog-entry (nreverse backlog-entries))))))
+
     ;; Make sure the connection variable is up to date.
     (setq jabber-buffer-connection jc)
 
-    (make-local-variable 'jabber-chatting-with)
-    (setq jabber-chatting-with chat-with)
-    (setq jabber-send-function 'jabber-chat-send)
-    (setq header-line-format jabber-chat-header-line-format)
-    
-    (make-local-variable 'jabber-chat-earliest-backlog)
-    
-    ;; insert backlog
-    (when (null jabber-chat-earliest-backlog)
-      (let ((backlog-entries (jabber-history-backlog chat-with)))
-	(if (null backlog-entries)
-	    (setq jabber-chat-earliest-backlog (jabber-float-time))
-	  (setq jabber-chat-earliest-backlog 
-		(jabber-float-time (jabber-parse-time
-				    (aref (car backlog-entries) 0))))
-	  (mapc 'jabber-chat-insert-backlog-entry (nreverse backlog-entries)))))
-    
     (current-buffer)))
 
 (defun jabber-chat-insert-backlog-entry (msg)
@@ -373,18 +374,22 @@ This function is used as an ewoc prettyprinter."
 	       (string= (substring body 0 4) "/me "))))
 
     ;; Print prompt...
-    (let ((delayed (or original-timestamp (plist-get (cddr data) :delayed))))
+    (let ((delayed (or original-timestamp (plist-get (cddr data) :delayed)))
+	  (prompt-start (point)))
       (case (car data)
 	(:local
 	 (jabber-chat-self-prompt (or original-timestamp internal-time)
 				  delayed
 				  /me-p))
 	(:foreign
-	 ;; For :error and :notice, this might be a string... beware
-	 (jabber-chat-print-prompt (when (listp (cadr data)) (cadr data)) 
-				   (or original-timestamp internal-time)
-				   delayed
-				   /me-p))
+	 (if (and (listp (cadr data))
+		  (jabber-muc-private-message-p (cadr data)))
+	     (jabber-muc-private-print-prompt (cadr data))
+	   ;; For :error and :notice, this might be a string... beware
+	   (jabber-chat-print-prompt (when (listp (cadr data)) (cadr data))
+				     (or original-timestamp internal-time)
+				     delayed
+				     /me-p)))
 	((:error :notice :subscription-request)
 	 (jabber-chat-system-prompt (or original-timestamp internal-time)))
 	(:muc-local
@@ -392,7 +397,8 @@ This function is used as an ewoc prettyprinter."
         (:muc-foreign
          (jabber-muc-print-prompt (cadr data) nil /me-p))
 	((:muc-notice :muc-error)
-	 (jabber-muc-system-prompt))))
+	 (jabber-muc-system-prompt)))
+      (put-text-property prompt-start (point) 'field 'jabber-prompt))
     
     ;; ...and body
     (case (car data)
@@ -570,7 +576,8 @@ If DONT-PRINT-NICK-P is true, don't include nickname."
 		  (nick (cond
 			 ((eq who :local)
 			  (plist-get (fsm-get-state-data jabber-buffer-connection) :username))
-			 ((jabber-muc-message-p xml-data)
+			 ((or (jabber-muc-message-p xml-data)
+			      (jabber-muc-private-message-p xml-data))
 			  (jabber-jid-resource (jabber-xml-get-attribute xml-data 'from)))
 			 (t
 			  (jabber-jid-displayname (jabber-xml-get-attribute xml-data 'from))))))
@@ -608,8 +615,15 @@ If DONT-PRINT-NICK-P is true, don't include nickname."
 (defun jabber-chat-goto-address (xml-data who mode)
   "Call `goto-address' on the newly written text."
   (when (eq mode :insert)
-    (ignore-errors 
-      (goto-address))))
+    (ignore-errors
+      ;; `goto-address' is autoloaded, but `goto-address-fontify' is not.
+      (require 'goto-addr)
+      (let ((end (point))
+	    (limit (max (- (point) 1000) (1+ (point-min)))))
+	;; We only need to fontify the text written since the last
+	;; prompt.  The prompt has a field property, so we can find it
+	;; using `field-beginning'.
+	(goto-address-fontify (field-beginning nil nil limit) end)))))
 
 ;; jabber-compose is autoloaded in jabber.el
 (add-to-list 'jabber-jid-chat-menu

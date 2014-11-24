@@ -21,7 +21,7 @@
             jabber-auto-reconnect nil
             jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
             jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
-            starttls-extra-arguments '("--insecure")
+            starttls-extra-arguments '("--insecure --verbose")
             starttls-use-gnutls t)
 
       (defun jabber-alert-message-say (from buffer text proposed-alert)

@@ -243,6 +243,23 @@ This function is idempotent."
     (setq jabber-muc-participants
 	  (delq whichparticipants jabber-muc-participants))))
 
+(defun jabber-muc-connection-closed (bare-jid)
+  "Remove MUC data for BARE-JID.
+Forget all information about rooms that had been entered with
+this JID.  Suitable to call when the connection is closed."
+  (dolist (room-entry jabber-muc-participants)
+    (let* ((room (car room-entry))
+	   (buffer (get-buffer (jabber-muc-get-buffer room))))
+      (when (bufferp buffer)
+	(with-current-buffer buffer
+	  (when (string= bare-jid
+			 (jabber-connection-bare-jid jabber-buffer-connection))
+	    (setq *jabber-active-groupchats*
+		  (delete* room *jabber-active-groupchats*
+			   :key #'car :test #'string=))
+	    (setq jabber-muc-participants
+		  (delq room-entry jabber-muc-participants))))))))
+
 (defun jabber-muc-participant-plist (group nickname)
   "Return plist associated with NICKNAME in GROUP.
 Return nil if nothing known about that combination."
@@ -387,6 +404,20 @@ JID; only provide completion as a guide."
     (list (jabber-muc-read-nickname jabber-group "Nickname: "))))
     (let ((muc-name (format "%s/%s" group nickname)))
 	(jabber-vcard-get jc muc-name)))
+
+(defun jabber-muc-instant-config (jc group)
+  "Accept default configuration for GROUP.
+This can be used for a newly created room, as an alternative to
+filling out the configuration form with `jabber-muc-get-config'.
+Both of these methods unlock the room, so that other users can
+enter it."
+  (interactive (jabber-muc-argument-list))
+  (jabber-send-iq jc group
+		  "set"
+		  '(query ((xmlns . "http://jabber.org/protocol/muc#owner"))
+			  (x ((xmlns . "jabber:x:data") (type . "submit"))))
+		  #'jabber-report-success "MUC instant configuration"
+		  #'jabber-report-success "MUC instant configuration"))
 
 (add-to-list 'jabber-jid-muc-menu
    (cons "Configure groupchat" 'jabber-muc-get-config))
@@ -981,19 +1012,24 @@ Return nil if X-MUC is nil."
 	 (group (jabber-jid-user from))
 	 (nickname (jabber-jid-resource from))
 	 (symbol (jabber-jid-symbol from))
+	 (our-nickname (gethash symbol jabber-pending-groupchats))
 	 (item (car (jabber-xml-get-children x-muc 'item)))
 	 (actor (jabber-xml-get-attribute (car (jabber-xml-get-children item 'actor)) 'jid))
 	 (reason (car (jabber-xml-node-children (car (jabber-xml-get-children item 'reason)))))
 	 (error-node (car (jabber-xml-get-children presence 'error)))
-	 (status-code (if error-node
-			  (jabber-xml-get-attribute error-node 'code)
-			(jabber-xml-get-attribute (car (jabber-xml-get-children x-muc 'status)) 'code))))
+	 (status-codes (if error-node
+			   (list (jabber-xml-get-attribute error-node 'code))
+			 (mapcar
+			  (lambda (status-element)
+			    (jabber-xml-get-attribute status-element 'code))
+			  (jabber-xml-get-children x-muc 'status)))))
     ;; handle leaving a room
     (cond 
      ((or (string= type "unavailable") (string= type "error"))
       ;; error from room itself? or are we leaving?
       (if (or (null nickname)
-	      (string= nickname (gethash (jabber-jid-symbol group) jabber-pending-groupchats)))
+	      (member "110" status-codes)
+	      (string= nickname our-nickname))
 	  ;; Assume that an error means that we were thrown out of the
 	  ;; room...
 	  (let* ((leavingp t)
@@ -1001,8 +1037,8 @@ Return nil if X-MUC is nil."
 			   ((string= type "error")
 			    (cond
 			     ;; ...except for certain cases.
-			     ((or (equal status-code "406")
-				  (equal status-code "409"))
+			     ((or (member "406" status-codes)
+				  (member "409" status-codes))
 			      (setq leavingp nil)
 			      (concat "Nickname change not allowed"
 				      (when error-node
@@ -1011,11 +1047,11 @@ Return nil if X-MUC is nil."
 			      (concat "Error entering room"
 				      (when error-node
 					(concat ": " (jabber-parse-error error-node)))))))
-			   ((equal status-code "301")
+			   ((member "301" status-codes)
 			    (concat "You have been banned"
 				    (when actor (concat " by " actor))
 				    (when reason (concat " - '" reason "'"))))
-			   ((equal status-code "307")
+			   ((member "307" status-codes)
 			    (concat "You have been kicked"
 				    (when actor (concat " by " actor))
 				    (when reason (concat " - '" reason "'"))))
@@ -1051,15 +1087,15 @@ Return nil if X-MUC is nil."
 	      jabber-chat-ewoc
 	      (list :muc-notice
 		    (cond
-		     ((equal status-code "301")
+		     ((member "301" status-codes)
 		      (concat name " has been banned"
 			      (when actor (concat " by " actor))
 			      (when reason (concat " - '" reason "'"))))
-		     ((equal status-code "307")
+		     ((member "307" status-codes)
 		      (concat name " has been kicked"
 			      (when actor (concat " by " actor))
 			      (when reason (concat " - '" reason "'"))))
-		     ((equal status-code "303")
+		     ((member "303" status-codes)
 		      (concat name " changes nickname to "
 			      (jabber-xml-get-attribute item 'nick)))
 		     (t
@@ -1068,12 +1104,24 @@ Return nil if X-MUC is nil."
      (t 
       ;; someone is entering
 
-      (when (string= nickname (gethash (jabber-jid-symbol group) jabber-pending-groupchats))
-	;; Our own nick?  We just succeeded in entering the room.
+      (when (or (member "110" status-codes) (string= nickname our-nickname))
+	;; This is us.  We just succeeded in entering the room.
+	;;
+	;; The MUC server is supposed to send a 110 code whenever this
+	;; is our presence ("self-presence"), but at least one
+	;; (ejabberd's mod_irc) doesn't, so check the nickname as well.
+	;;
+	;; This check might give incorrect results if the server
+	;; changed our nickname to avoid collision with an existing
+	;; participant, but even in this case the window where we have
+	;; incorrect information should be very small, as we should be
+	;; getting our own 110+210 presence shortly.
 	(let ((whichgroup (assoc group *jabber-active-groupchats*)))
 	  (if whichgroup
 	      (setcdr whichgroup nickname)
-	    (add-to-list '*jabber-active-groupchats* (cons group nickname)))))	
+	    (add-to-list '*jabber-active-groupchats* (cons group nickname))))
+	;; The server may have changed our nick.  Record the new one.
+	(puthash symbol nickname jabber-pending-groupchats))
 
       ;; Whoever enters, we create a buffer (if it didn't already
       ;; exist), and print a notice.  This is where autojoined MUC
@@ -1090,7 +1138,33 @@ Return nil if X-MUC is nil."
 	       (ewoc-enter-last
 		jabber-chat-ewoc
 		(list :muc-notice report
-		      :time (current-time))))))))))))
+		      :time (current-time))))
+	      ;; Did the server change our nick?
+	      (when (member "210" status-codes)
+		(ewoc-enter-last
+		 jabber-chat-ewoc
+		 (list :muc-notice
+		       (concat "Your nick was changed to " nickname " by the server")
+		       :time (current-time))))
+	      ;; Was this room just created?  If so, it's a locked
+	      ;; room.  Notify the user.
+	      (when (member "201" status-codes)
+		(ewoc-enter-last
+		 jabber-chat-ewoc
+		 (list :muc-notice
+		       (with-temp-buffer
+			 (insert "This room was just created, and is locked to other participants.\n"
+				 "To unlock it, ")
+			 (insert-text-button
+			  "configure the room"
+			  'action (apply-partially 'call-interactively 'jabber-muc-get-config))
+			 (insert " or ")
+			 (insert-text-button
+			  "accept the default configuration"
+			  'action (apply-partially 'call-interactively 'jabber-muc-instant-config))
+			 (insert ".")
+			 (buffer-string))
+		       :time (current-time))))))))))))
 	      
 (provide 'jabber-muc)
 

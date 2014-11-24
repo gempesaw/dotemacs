@@ -3,7 +3,7 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "jabber" "jabber.el" (21393 49936 0 0))
+;;;### (autoloads nil "jabber" "jabber.el" (21615 23527 0 0))
 ;;; Generated autoloads from jabber.el
 
 (defvar jabber-account-list nil "\
@@ -64,8 +64,8 @@ open jabber.el manual
 
 ;;;***
 
-;;;### (autoloads nil "jabber-activity" "jabber-activity.el" (21393
-;;;;;;  49934 0 0))
+;;;### (autoloads nil "jabber-activity" "jabber-activity.el" (21615
+;;;;;;  23528 0 0))
 ;;; Generated autoloads from jabber-activity.el
 
 (defvar jabber-activity-mode t "\
@@ -86,8 +86,8 @@ With a numeric arg, enable this display if arg is positive.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-autoaway" "jabber-autoaway.el" (21393
-;;;;;;  49936 0 0))
+;;;### (autoloads nil "jabber-autoaway" "jabber-autoaway.el" (21615
+;;;;;;  23528 0 0))
 ;;; Generated autoloads from jabber-autoaway.el
 
 (autoload 'jabber-autoaway-start "jabber-autoaway" "\
@@ -99,8 +99,8 @@ The IGNORED argument is there so you can put this function in
 
 ;;;***
 
-;;;### (autoloads nil "jabber-bookmarks" "jabber-bookmarks.el" (21393
-;;;;;;  49935 0 0))
+;;;### (autoloads nil "jabber-bookmarks" "jabber-bookmarks.el" (21615
+;;;;;;  23527 0 0))
 ;;; Generated autoloads from jabber-bookmarks.el
 
 (autoload 'jabber-get-conference-data "jabber-bookmarks" "\
@@ -142,7 +142,7 @@ Create a buffer for editing bookmarks interactively.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-chat" "jabber-chat.el" (21393 49934
+;;;### (autoloads nil "jabber-chat" "jabber-chat.el" (21615 23527
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-chat.el
 
@@ -159,7 +159,7 @@ Either a string or a buffer is returned, so use `get-buffer' or
 ;;;***
 
 ;;;### (autoloads nil "jabber-chatbuffer" "jabber-chatbuffer.el"
-;;;;;;  (21393 49934 0 0))
+;;;;;;  (21615 23528 0 0))
 ;;; Generated autoloads from jabber-chatbuffer.el
 
 (defvar jabber-buffer-connection nil "\
@@ -169,8 +169,8 @@ The connection used by this buffer.")
 
 ;;;***
 
-;;;### (autoloads nil "jabber-compose" "jabber-compose.el" (21393
-;;;;;;  49934 0 0))
+;;;### (autoloads nil "jabber-compose" "jabber-compose.el" (21615
+;;;;;;  23527 0 0))
 ;;; Generated autoloads from jabber-compose.el
 
 (autoload 'jabber-compose "jabber-compose" "\
@@ -180,8 +180,8 @@ Create a buffer for composing a Jabber message.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-console" "jabber-console.el" (21393
-;;;;;;  49936 0 0))
+;;;### (autoloads nil "jabber-console" "jabber-console.el" (21615
+;;;;;;  23527 0 0))
 ;;; Generated autoloads from jabber-console.el
 
 (autoload 'jabber-process-console "jabber-console" "\
@@ -191,7 +191,7 @@ Log XML-DATA i/o as XML in \"*-jabber-console-JID-*\" buffer
 
 ;;;***
 
-;;;### (autoloads nil "jabber-core" "jabber-core.el" (21393 49935
+;;;### (autoloads nil "jabber-core" "jabber-core.el" (21615 23529
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-core.el
  (autoload 'jabber-connect-all "jabber" "Connect to all configured Jabber accounts.\nSee `jabber-account-list'.\nIf no accounts are configured (or ARG supplied), call `jabber-connect' interactively." t)
@@ -199,7 +199,7 @@ Log XML-DATA i/o as XML in \"*-jabber-console-JID-*\" buffer
 
 ;;;***
 
-;;;### (autoloads nil "jabber-disco" "jabber-disco.el" (21393 49936
+;;;### (autoloads nil "jabber-disco" "jabber-disco.el" (21615 23527
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-disco.el
 
@@ -224,7 +224,7 @@ Look for entity capabilities in presence stanzas.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-export" "jabber-export.el" (21393 49935
+;;;### (autoloads nil "jabber-export" "jabber-export.el" (21615 23528
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-export.el
 
@@ -240,7 +240,7 @@ Create buffer for roster import for connection JC from FILE.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-gmail" "jabber-gmail.el" (21393 49935
+;;;### (autoloads nil "jabber-gmail" "jabber-gmail.el" (21615 23529
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-gmail.el
 
@@ -258,8 +258,8 @@ See http://code.google.com/apis/talk/jep_extensions/gmail.html#requestmail
 
 ;;;***
 
-;;;### (autoloads nil "jabber-keepalive" "jabber-keepalive.el" (21393
-;;;;;;  49935 0 0))
+;;;### (autoloads nil "jabber-keepalive" "jabber-keepalive.el" (21615
+;;;;;;  23528 0 0))
 ;;; Generated autoloads from jabber-keepalive.el
 
 (let ((loads (get 'jabber-keepalive 'custom-loads))) (if (member '"jabber-keepalive" loads) nil (put 'jabber-keepalive 'custom-loads (cons '"jabber-keepalive" loads))))
@@ -287,7 +287,7 @@ accounts.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-keymap" "jabber-keymap.el" (21393 49936
+;;;### (autoloads nil "jabber-keymap" "jabber-keymap.el" (21615 23527
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-keymap.el
 
@@ -298,7 +298,7 @@ Global Jabber keymap (usually under C-x C-j)")
 
 ;;;***
 
-;;;### (autoloads nil "jabber-menu" "jabber-menu.el" (21393 49934
+;;;### (autoloads nil "jabber-menu" "jabber-menu.el" (21615 23527
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-menu.el
 
@@ -317,7 +317,7 @@ if any of `jabber-account-list' or `jabber-connections' is non-nil.")
 
 ;;;***
 
-;;;### (autoloads nil "jabber-muc" "jabber-muc.el" (21393 49934 0
+;;;### (autoloads nil "jabber-muc" "jabber-muc.el" (21615 23528 0
 ;;;;;;  0))
 ;;; Generated autoloads from jabber-muc.el
 
@@ -369,7 +369,7 @@ Return non-nil if MESSAGE is a private message in a groupchat.
 ;;;***
 
 ;;;### (autoloads nil "jabber-muc-nick-completion" "jabber-muc-nick-completion.el"
-;;;;;;  (21393 49936 0 0))
+;;;;;;  (21615 23528 0 0))
 ;;; Generated autoloads from jabber-muc-nick-completion.el
 
 (autoload 'jabber-muc-looks-like-personal-p "jabber-muc-nick-completion" "\
@@ -380,8 +380,8 @@ Optional argument GROUP to look.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-presence" "jabber-presence.el" (21393
-;;;;;;  49934 0 0))
+;;;### (autoloads nil "jabber-presence" "jabber-presence.el" (21615
+;;;;;;  23529 0 0))
 ;;; Generated autoloads from jabber-presence.el
 
 (autoload 'jabber-send-presence "jabber-presence" "\
@@ -398,8 +398,8 @@ Default presence is specified by `jabber-default-show',
 
 ;;;***
 
-;;;### (autoloads nil "jabber-private" "jabber-private.el" (21393
-;;;;;;  49935 0 0))
+;;;### (autoloads nil "jabber-private" "jabber-private.el" (21615
+;;;;;;  23529 0 0))
 ;;; Generated autoloads from jabber-private.el
 
 (autoload 'jabber-private-get "jabber-private" "\
@@ -424,7 +424,7 @@ ERROR-CLOSURE-DATA are used as in `jabber-send-iq'.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-roster" "jabber-roster.el" (21393 49935
+;;;### (autoloads nil "jabber-roster" "jabber-roster.el" (21615 23528
 ;;;;;;  0 0))
 ;;; Generated autoloads from jabber-roster.el
 
@@ -444,7 +444,7 @@ three being lists of JID symbols.
 
 ;;;***
 
-;;;### (autoloads nil "jabber-rtt" "jabber-rtt.el" (21393 49936 0
+;;;### (autoloads nil "jabber-rtt" "jabber-rtt.el" (21615 23527 0
 ;;;;;;  0))
 ;;; Generated autoloads from jabber-rtt.el
 
@@ -474,15 +474,15 @@ XEP-0301, In-Band Real Time Text.
 ;;;;;;  "jabber-ft-client.el" "jabber-ft-common.el" "jabber-ft-server.el"
 ;;;;;;  "jabber-history.el" "jabber-iq.el" "jabber-libnotify.el"
 ;;;;;;  "jabber-logon.el" "jabber-modeline.el" "jabber-muc-nick-coloring.el"
-;;;;;;  "jabber-osd.el" "jabber-ourversion.el" "jabber-ping.el" "jabber-pkg.el"
-;;;;;;  "jabber-ratpoison.el" "jabber-register.el" "jabber-sasl.el"
-;;;;;;  "jabber-sawfish.el" "jabber-screen.el" "jabber-search.el"
+;;;;;;  "jabber-notifications.el" "jabber-osd.el" "jabber-ourversion.el"
+;;;;;;  "jabber-ping.el" "jabber-pkg.el" "jabber-ratpoison.el" "jabber-register.el"
+;;;;;;  "jabber-sasl.el" "jabber-sawfish.el" "jabber-screen.el" "jabber-search.el"
 ;;;;;;  "jabber-si-client.el" "jabber-si-common.el" "jabber-si-server.el"
 ;;;;;;  "jabber-socks5.el" "jabber-time.el" "jabber-tmux.el" "jabber-truncate.el"
 ;;;;;;  "jabber-util.el" "jabber-vcard-avatars.el" "jabber-vcard.el"
 ;;;;;;  "jabber-version.el" "jabber-watch.el" "jabber-widget.el"
 ;;;;;;  "jabber-wmii.el" "jabber-xmessage.el" "jabber-xml.el" "srv.el")
-;;;;;;  (21393 49936 836759 0))
+;;;;;;  (21615 23529 656104 0))
 
 ;;;***
 
