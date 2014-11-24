@@ -1,7 +1,22 @@
 (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
-(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
+
+
+(define-key projectile-mode-map [?\s-b] 'projectile-switch-to-buffer)
+(define-key projectile-mode-map (kbd "C-c p B")
+  (lambda ()
+    (interactive)
+    (let ((projectile-switch-project-action 'projectile-find-file))
+      (projectile-switch-project))))
+
+(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+(define-key projectile-mode-map (kbd "C-c p F")
+  (lambda ()
+    (interactive)
+    (let ((projectile-switch-project-action 'projectile-find-file))
+      (projectile-switch-project))))
 
 (setq projectile-switch-project-action 'projectile-vc)
 
@@ -9,7 +24,6 @@
 (defvar projectile-perl-dzil '("dist.ini lib t"))
 (setq projectile-test-files-suffices (cddr projectile-test-files-suffices))
 (add-to-list 'projectile-test-files-suffices "\\.t")
-
 
 (defun projectile-project-type ()
   "Determine the project's type based on its structure."
