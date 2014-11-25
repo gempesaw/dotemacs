@@ -15,12 +15,14 @@
          (appium-buffer (concat "*<" appium-proc-name ">*")))
     (with-current-buffer (get-buffer-create appium-buffer)
       (comint-mode)
+      (setq-local comint-output-filter-functions '(comint-postoutput-scroll-to-bottom
+                                                   comint-truncate-buffer))
       (set-process-query-on-exit-flag
        (start-process appium-proc-name appium-buffer
                       "appium"
                       ;; "--avd"
                       ;; "appium"
-                      "--full-reset"
+                      ;; "--full-reset"
                       "--log-no-colors"
                       "--port" "4723"
                       )
@@ -37,6 +39,8 @@
     (with-current-buffer (get-buffer-create buf)
       (message (concat "/Users/dgempesaw/.jenv/bin/jenv" "exec" bmp-executable "-port" "8081"))
       (comint-mode)
+      (setq-local comint-output-filter-functions '(comint-postoutput-scroll-to-bottom
+                                                   comint-truncate-buffer))
       (set-process-query-on-exit-flag
        (start-process bmp-proc-name buf "/Users/dgempesaw/.jenv/bin/jenv" "exec" bmp-executable "-port" "8081")
        nil))))
