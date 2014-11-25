@@ -13,15 +13,15 @@
                                    (text-scale-adjust 0)
                                    (text-scale-adjust 2)
                                    (recenter-top-bottom)))))
-                                   
+
 (defun remind-me-daily (msg time)
-  (when (and (boundp 'reminder) 
+  (when (and (boundp 'reminder)
              (timerp reminder))
     (cancel-timer reminder))
   (let ((daily (* 60 60 24)))
-    (setq reminder 
+    (setq reminder
           (run-at-time time daily 'message msg))))
-  
-(remind-me-daily "Update your diary now!" "4:30pm")                                   
+
+(remind-me-daily "Update your diary now!" "4:30pm")
 
 (provide 'dg-diary)
