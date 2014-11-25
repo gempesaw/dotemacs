@@ -5,18 +5,18 @@
 
 
 (define-key projectile-mode-map [?\s-b] 'projectile-switch-to-buffer)
-(define-key projectile-mode-map (kbd "C-c p B")
-  (lambda ()
-    (interactive)
-    (let ((projectile-switch-project-action 'projectile-find-file))
-      (projectile-switch-project))))
+(key-chord-define-global "/b"
+                         (lambda ()
+                           (interactive)
+                           (let ((projectile-switch-project-action 'projectile-switch-to-buffer))
+                             (projectile-switch-project))))
 
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-(define-key projectile-mode-map (kbd "C-c p F")
-  (lambda ()
-    (interactive)
-    (let ((projectile-switch-project-action 'projectile-find-file))
-      (projectile-switch-project))))
+(key-chord-define-global "/f"
+                         (lambda ()
+                           (interactive)
+                           (let ((projectile-switch-project-action 'projectile-find-file))
+                             (projectile-switch-project))))
 
 (setq projectile-switch-project-action 'projectile-vc)
 
