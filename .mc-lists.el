@@ -17,6 +17,7 @@
         autopair-insert-or-skip-quote
         autopair-skip-close-maybe
         autopair-skip-close-maybe
+        backward-sexp
         beginning-of-buffer
         bookmark-bmenu-delete
         bookmark-bmenu-mark
