@@ -11,15 +11,6 @@
 
 (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 
-(add-hook 'cperl-mode-hook
-          (lambda()
-            (local-set-key (kbd "C-c C-s C-k") 'hs-show-block)
-            (local-set-key (kbd "C-c C-s C-j") 'hs-hide-block)
-            (local-set-key (kbd "C-c C-s C-p") 'hs-hide-all)
-            (local-set-key (kbd "C-c C-s C-n") 'hs-show-all)
-            (local-set-key (kbd "<f5>") 'execute-perl)
-            (hs-minor-mode t)))
-
 ;; (setq mu4e-index-updated-hook nil)
 (add-hook 'mu4e-index-updated-hook
           (lambda ()
