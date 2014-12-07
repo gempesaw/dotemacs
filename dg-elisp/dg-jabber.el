@@ -63,4 +63,15 @@
          )))
   (message "Looks like you're missing `gnutls-cli`. Try `brew install gnutls`"))
 
+
+(defun bitlbee ()
+  (interactive)
+  (circe "Bitlbee")
+  (save-window-excursion
+    (set-buffer "localhost:6667")
+    (with-circe-server-buffer
+      (circe-server-send
+       (format "PRIVMSG &bitlbee :identify %s"
+               "")))))
+
 (provide 'dg-jabber)
