@@ -1,4 +1,7 @@
-(add-hook 'prog-mode-hook #'hs-minor-mode)
+(mapcar (lambda (it) (add-hook it #'hs-minor-mode))
+        '(cperl-mode-hook
+          js2-mode-hook
+          emacs-lisp-mode-hook))
 
 (progn
   (key-chord-define-global "l;" nil)
