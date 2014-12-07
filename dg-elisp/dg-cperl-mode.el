@@ -52,4 +52,10 @@
           (goto-char (point-max))
           (insert "c")))))
 
+(add-hook 'cperl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "<f5>") 'execute-perl)))
+
+(add-hook 'cperl-mode-hook 'er/add-cperl-mode-expansions)
+
 (provide 'dg-cperl-mode)
