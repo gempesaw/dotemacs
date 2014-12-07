@@ -55,6 +55,7 @@
         downcase-region
         duplicate-thing
         elpy-shell-send-region-or-buffer
+        ensure-fullscreen-mode-is-on
         eval-defun
         eval-expression
         execute-feature
@@ -73,6 +74,7 @@
         isearch-repeat-forward
         js2-beginning-of-line
         js2-end-of-line
+        js2-mode-toggle-element
         kill-region
         mark-whole-buffer
         markdown-cycle
