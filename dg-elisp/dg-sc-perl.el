@@ -66,7 +66,7 @@ browsers."
         (async-shell-command
          "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
       (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='seq=0{2,5,6}-*' --rules='par=**'" buf))))
+       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='par=**'" buf))))
 
 (defun sc-execute-file-at-point ()
   (interactive)
