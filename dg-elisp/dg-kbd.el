@@ -85,8 +85,7 @@
 
 (eval-after-load "cperl-mode"
   '(progn
-     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)
-     ))
+     (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "coffee-mode"
   '(progn
