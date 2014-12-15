@@ -20,7 +20,8 @@
             jabber-show-offline-contacts nil
             jabber-auto-reconnect nil
             jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
-            jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
+            ;; jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
+            jabber-mode-line-string '("")
             starttls-extra-arguments '("--insecure --verbose")
             starttls-use-gnutls t)
 
