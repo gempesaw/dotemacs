@@ -22,7 +22,7 @@
 
       cperl-indent-parens-as-block t
       cperl-close-paren-offset -4
-      cperl-lazy-help-time 1)
+      cperl-lazy-help-time 0.1)
 
 (cperl-lazy-install)
 
