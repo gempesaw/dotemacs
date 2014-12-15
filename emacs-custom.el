@@ -11,6 +11,7 @@
  '(doc-view-ghostscript-program "E:\\Program Files\\gs\\gs9.06\\bin\\gswin64.exe")
  '(fci-rule-color "#eee8d5")
  '(fringe-mode 10 nil (fringe))
+ '(global-aggressive-indent-mode nil)
  '(ido-default-buffer-method (quote selected-window))
  '(linum-format " %7d ")
  '(main-line-color1 "#222912")
@@ -20,6 +21,12 @@
  '(safe-local-variable-values
    (quote
     ((eval progn
+           (require
+            (quote projectile))
+           (puthash
+            (projectile-project-root)
+            "./jenkins.sh" projectile-compilation-cmd-map))
+     (eval progn
            (require
             (quote projectile))
            (puthash
