@@ -1,4 +1,6 @@
 ;; jabby wabby - http://stackoverflow.com/a/5731090/1156644
+(setq starttls-extra-arguments '("--insecure")
+      starttls-use-gnutls t)
 
 ;; brew install gnutls
 (if (executable-find "gnutls-cli")
@@ -21,9 +23,7 @@
             jabber-auto-reconnect nil
             jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
             ;; jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
-            jabber-mode-line-string '("")
-            starttls-extra-arguments '("--insecure --verbose")
-            starttls-use-gnutls t)
+            jabber-mode-line-string '(""))
 
       (defun jabber-alert-message-say (from buffer text proposed-alert)
         (interactive)
