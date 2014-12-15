@@ -3,7 +3,9 @@
   '(progn
      (setq compilation-read-command nil)
      (add-to-list 'smart-compile-alist '("\\.php\\'" . "php %F") )
-     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview-with-syntax-highlighting)))))
+     (add-to-list 'smart-compile-alist '("\\.md\\'" . (markdown-preview-with-syntax-highlighting)))
+     (add-to-list 'smart-compile-alist '("\\.js\\'" . "node %F"))
+     ))
 
 ;; don't ask about files
 (setq compilation-ask-about-save nil)
