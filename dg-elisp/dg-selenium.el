@@ -9,10 +9,11 @@
       (switch-to-buffer selenium-buffer))))
 ;; "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
 
-(defun start-appium-server ()
+(defun restart-appium-server ()
   (interactive)
   (let* ((appium-proc-name "appium")
          (appium-buffer (concat "*<" appium-proc-name ">*")))
+    (when (get-buffer appium-buffer) (kill-buffer appium-buffer))
     (with-current-buffer (get-buffer-create appium-buffer)
       (comint-mode)
       (setq-local comint-output-filter-functions '(comint-postoutput-scroll-to-bottom
