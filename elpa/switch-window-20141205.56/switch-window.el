@@ -4,7 +4,7 @@
 ;;
 ;; Author: Dimitri Fontaine <dim@tapoueh.org>
 ;; URL: http://tapoueh.org/emacs/switch-window.html
-;; Version: 20130914.1540
+;; Version: 20141205.56
 ;; X-Original-Version: 0.11
 ;; Created: 2010-04-30
 ;; Keywords: window navigation
@@ -71,6 +71,12 @@
   "After this many seconds, cancel the window switching"
   :type 'integer
   :group 'switch-window)
+
+(defcustom switch-window-threshold 2
+  "Only active switch-window after this many windows open"
+  :type 'integer
+  :group 'switch-window)
+
 
 (defcustom switch-window-relative nil
   "Control the ordering of windows, when true this depends on current-window"
@@ -189,7 +195,7 @@ ask user which window to delete"
   "Display an overlay in each window showing a unique key, then
 ask user for the window where move to"
   (interactive)
-  (if (< (length (window-list)) 3)
+  (if (<= (length (window-list)) switch-window-threshold)
       (call-interactively 'other-window)
     (progn
       (let ((index (prompt-for-selected-window "Move to window: "))
@@ -203,6 +209,7 @@ ask user for the window to select"
     (let ((config (current-window-configuration))
 	  (num 1)
 	  (minibuffer-num nil)
+	  (original-cursor cursor-type)
 	  (eobps (switch-window-list-eobp))
 	  key buffers
 	  window-points
@@ -211,6 +218,8 @@ ask user for the window to select"
       ;; arrange so that C-g will get back to previous window configuration
       (unwind-protect
 	  (progn
+	    ;; hide cursor during window selection process
+	    (setq-default cursor-type nil)
 	    ;; display big numbers to ease window selection
 	    (dolist (win (switch-window-list))
 	      (push (cons win (window-point win)) window-points)
@@ -246,6 +255,8 @@ ask user for the window to select"
 			  (switch-window-restore-eobp eobps)
 			  (keyboard-quit)))))))))
 
+	;; restore original cursor
+	(setq-default cursor-type original-cursor)
 	;; get those huge numbers away
 	(mapc 'kill-buffer buffers)
 	(set-window-configuration config)
