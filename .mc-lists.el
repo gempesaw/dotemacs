@@ -76,6 +76,7 @@
         js2-end-of-line
         js2-mode-toggle-element
         kill-region
+        magit-discard-item
         mark-whole-buffer
         markdown-cycle
         markdown-exdent-or-delete
@@ -83,6 +84,7 @@
         mc/mark-next-lines
         message-beginning-of-line
         mu4e-headers-mark-for-read
+        multiple-cursors-mode
         next-error
         open-line-and-indent
         org-beginning-of-line
@@ -96,6 +98,7 @@
         org-shiftright
         org-todo
         paredit-backward-kill-word
+        paredit-close-round
         paredit-close-square
         paredit-doublequote
         paredit-forward
