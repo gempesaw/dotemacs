@@ -55,7 +55,7 @@
 
 (defun sc-restart-sauce-tunnel ()
   (interactive)
-  (async-shell-command "ssh arnoldmedia-sauce ./sauce restart"))
+  (async-shell-command "ssh sauce-connect ./sauce restart"))
 
 (when nil
   (progn
