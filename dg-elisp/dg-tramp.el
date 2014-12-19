@@ -109,12 +109,24 @@ raises an error."
                     "Which box: " (mapcar 'car remote-info))
                  pfx))
           (buffer (concat "*shell<" box ">*"))
+          ;; get tramp to open the ssh connection by opening a folder
+          ;; on the remote box
           (default-directory
-            (concat "/" box ":/home/"
+            (concat "/ssh:" box ":/home/"
                     (cadr (assoc box remote-info)) "/")))
-      (shell buffer)
+      ;; open a shell from the tramp ssh buffer created by setting the
+      ;; default directory to a remote directory. I was having trouble
+      ;; connecting to an OS X box that allowed ssh conenctions via
+      ;; user&pass, since this method relies pretty explicitly on the
+      ;; sshconfig, which doesn't really use passwords, only .pem kind
+      ;; of stuff.
+      (with-current-buffer (format "*tramp/ssh %s*" box)
+        (shell buffer))
       (set-process-query-on-exit-flag
-       (get-buffer-process buffer) nil))))
+       (get-buffer-process buffer) nil)
+      (with-current-buffer buffer
+        (insert "cd")
+        (comint-send-input nil t)))))
 
 (defun load-my-tramp-settings ()
   (interactive)
