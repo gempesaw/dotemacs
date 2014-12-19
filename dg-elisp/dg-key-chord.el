@@ -8,7 +8,6 @@
 
     ;; movement, shells, smex
     (key-chord-define-global "zf" 'ace-jump-mode)
-    (key-chord-define-global ",." 'switch-to-shell-or-create)
     (key-chord-define-global ",/" 'smex)
 
 
@@ -45,6 +44,7 @@
     (key-chord-define-global "zc" 'jabber-chat-with)
     (key-chord-define-global "hk" 'tracking-next-buffer)
 
+    (key-chord-define-global ",." (lambda () (interactive) (switch-to-buffer "*<appium>*")))
     nil))
 
 (provide 'dg-key-chord)
