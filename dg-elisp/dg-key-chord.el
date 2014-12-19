@@ -36,7 +36,9 @@
 
     ;; elisp
     (key-chord-define emacs-lisp-mode-map "jk" 'eval-defun)
+    (key-chord-define lisp-interaction-mode-map "jk" 'eval-defun)
     (key-chord-define emacs-lisp-mode-map "fd" 'edebug-defun)
+    (key-chord-define lisp-interaction-mode-map "fd" 'edebug-defun)
 
     ;; jabber & activity
     (key-chord-define-global "jl" 'jabber-activity-switch-to)
