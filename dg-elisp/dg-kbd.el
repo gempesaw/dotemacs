@@ -76,13 +76,6 @@
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
      (global-set-key (kbd "C-*") 'mc/mark-all-like-this)))
 
-;; window switching - win-switch + switch-window = winner
-(global-unset-key (kbd "M-j"))
-(eval-after-load "switch-window"
-  '(progn
-     (define-key my-keys-minor-mode-map (kbd "M-j") 'switch-window)
-     (define-key my-keys-minor-mode-map (kbd "C-c j") 'delete-other-window)))
-
 (eval-after-load "cperl-mode"
   '(progn
      (define-key cperl-mode-map (kbd "RET") 'newline-and-indent)))
@@ -191,7 +184,6 @@
                               (indent-according-to-mode)))
 
 (global-set-key (kbd "s-k") 'delete-window-and-kill-buffer)
-(global-set-key (kbd "C-c k") (lambda () (interactive) (delete-other-window t)))
 
 ;; I keep accidentally pop-tag-mark'ing when I don't want to.
 (global-unset-key (kbd "M-*"))
