@@ -31,3 +31,6 @@ archive-contents
 /mockSauceTunnel
 /dg-elisp/dg-passwords.el
 /recentf
+/elpa/gnupg/
+/network-security.data
+/elpa/archives/gnu/archive-contents.signed
