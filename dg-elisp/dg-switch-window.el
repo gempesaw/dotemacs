@@ -28,6 +28,9 @@ Return nil."
     (delete-window window))
   nil)
 
+(defadvice prompt-for-selected-window (around shadow-change-hook activate)
+  (let ((window-configuration-change-hook nil))
+    ad-do-it))
 
 ;; window switching - win-switch + switch-window = winner
 (global-unset-key (kbd "M-j"))
