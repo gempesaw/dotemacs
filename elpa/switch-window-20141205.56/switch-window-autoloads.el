@@ -3,7 +3,7 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "switch-window" "switch-window.el" (21648 40336
+;;;### (autoloads nil "switch-window" "switch-window.el" (21656 26836
 ;;;;;;  0 0))
 ;;; Generated autoloads from switch-window.el
 
@@ -18,6 +18,11 @@ Display an overlay in each window showing a unique key, then
 ask user for the window where move to
 
 \(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads nil nil ("switch-window-pkg.el") (21656 26836 77154
+;;;;;;  0))
 
 ;;;***
 
