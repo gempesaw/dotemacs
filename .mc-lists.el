@@ -100,6 +100,7 @@
         paredit-backward-kill-word
         paredit-close-round
         paredit-close-square
+        paredit-comment-dwim
         paredit-doublequote
         paredit-forward
         paredit-forward-barf-sexp
@@ -156,6 +157,7 @@
         eval-last-sexp
         execute-perl
         fancy-widen
+        grunt-exec
         handle-switch-frame
         hs-show-block
         isearch-other-control-char
