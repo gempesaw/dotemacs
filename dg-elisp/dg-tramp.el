@@ -55,7 +55,7 @@ raises an error."
     (while cm-socket-files
       (let ((filename (car cm-socket-files)))
         (if (not (or (string= "." filename)
-                  (string= ".." filename)))
+                     (string= ".." filename)))
             (if (string-match "terminus" filename)
                 (delete-file (concat dir filename))))
         (setq cm-socket-files (cdr cm-socket-files))))))
@@ -67,8 +67,8 @@ raises an error."
     (while ssh-config
       (let ((line (car ssh-config)))
         (if (and (string-match-p "Host " line)
-               (not (string-match-p "*" line))
-               (not (string-match-p "^# " line)))
+                 (not (string-match-p "*" line))
+                 (not (string-match-p "^# " line)))
             (setq ssh-host-names (cons (cadr (split-string line " "))
                                        ssh-host-names))))
       (setq ssh-config (cdr ssh-config)))
@@ -85,10 +85,10 @@ raises an error."
             (user-line (caddr ssh-config))
             (name-line (cadr ssh-config)))
         (if (and (string-match-p "Host " host-line)
-               (not (string-match-p "*" host-line))
-               (not (string-match-p "*" user-line))
-               (not (string-match-p "^# " host-line))
-               (not (string-match-p "^# " user-line)))
+                 (not (string-match-p "*" host-line))
+                 (not (string-match-p "*" user-line))
+                 (not (string-match-p "^# " host-line))
+                 (not (string-match-p "^# " user-line)))
             (progn
               (add-to-list 'ssh-user-remote-pairs
                            `(,(car (last (split-string host-line " ")))
