@@ -37,6 +37,7 @@
     (key-chord-define-global "xv" 'switch-to-other-buffer)
     (key-chord-define-global "xh" 'mark-whole-buffer)
     (key-chord-define-global "vv" (lambda () (interactive) (switch-to-buffer "*compilation*")))
+    (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
 
     ;; elisp
     (key-chord-define emacs-lisp-mode-map "jk" 'eval-defun)
