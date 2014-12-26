@@ -49,10 +49,6 @@
 ;; recursive file search ??? there's gotta be a better way!
 (global-set-key (kbd "C-x M-f") `find-name-dired)
 
-;; expanding region
-;; this gets overwritten in cterm mode :(
-(global-set-key (kbd "C-'") 'er/expand-region)
-
 ;; shortcuts for compilation
 (global-set-key (kbd "<f5>") 'smart-compile)
 (global-set-key (kbd "<f6>") 'compile-again)
