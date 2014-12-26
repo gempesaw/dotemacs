@@ -104,23 +104,24 @@ raises an error."
   (interactive)
   (with-temp-buffer
     (let* ((remote-info (get-user-for-remote-box))
-          (box (if (eq nil pfx)
-                   (ido-completing-read
-                    "Which box: " (mapcar 'car remote-info))
-                 pfx))
-          (buffer (concat "*shell<" box ">*"))
-          ;; get tramp to open the ssh connection by opening a folder
-          ;; on the remote box
-          (default-directory
-            (concat "/ssh:" box ":/home/"
-                    (cadr (assoc box remote-info)) "/")))
+           (box (if (eq nil pfx)
+                    (ido-completing-read
+                     "Which box: " (mapcar 'car remote-info))
+                  pfx))
+           (buffer (concat "*shell<" box ">*"))
+           ;; get tramp to open the ssh connection by opening a folder
+           ;; on the remote box
+           (default-directory
+             (concat "/ssh:" box ":/home/"
+                     (cadr (assoc box remote-info)) "/")))
       ;; open a shell from the tramp ssh buffer created by setting the
       ;; default directory to a remote directory. I was having trouble
       ;; connecting to an OS X box that allowed ssh conenctions via
       ;; user&pass, since this method relies pretty explicitly on the
       ;; sshconfig, which doesn't really use passwords, only .pem kind
       ;; of stuff.
-      (with-current-buffer (format "*tramp/ssh %s*" box)
+      (with-current-buffer (get-buffer-create
+                            (format "*tramp/ssh %s*" box))
         (shell buffer))
       (set-process-query-on-exit-flag
        (get-buffer-process buffer) nil)
