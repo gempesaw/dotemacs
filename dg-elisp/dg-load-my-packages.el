@@ -65,6 +65,8 @@
                     wgrep
                     wrap-region
                     yasnippet
+
+                    company
                     flycheck
                     inf-ruby
                     robe
