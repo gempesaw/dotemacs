@@ -5,14 +5,14 @@
 
 
 (define-key projectile-mode-map [?\s-b] 'projectile-switch-to-buffer)
-(key-chord-define-global "\\b"
+(key-chord-define-global "[b"
                          (lambda ()
                            (interactive)
                            (let ((projectile-switch-project-action 'projectile-switch-to-buffer))
                              (projectile-switch-project))))
 
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-(key-chord-define-global "\\f"
+(key-chord-define-global "[f"
                          (lambda ()
                            (interactive)
                            (let ((projectile-switch-project-action 'projectile-find-file))
