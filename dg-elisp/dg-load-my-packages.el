@@ -65,6 +65,7 @@
                     wgrep
                     wrap-region
                     yasnippet
+                    company
                     ))
 
 (defun my-packages-installed-p (list-of-packages)
