@@ -65,6 +65,10 @@
                     wgrep
                     wrap-region
                     yasnippet
+                    flycheck
+                    inf-ruby
+                    robe
+                    rvm
                     ))
 
 (defun my-packages-installed-p (list-of-packages)
