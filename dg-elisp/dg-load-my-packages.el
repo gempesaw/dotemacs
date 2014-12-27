@@ -18,6 +18,7 @@
                     cperl-mode
                     circe
                     dash
+                    discover
                     diminish
                     dired-details
                     flx-ido
