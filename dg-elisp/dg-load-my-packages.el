@@ -69,6 +69,7 @@
                     company
                     flycheck
                     inf-ruby
+                    projectile-rails
                     robe
                     rvm
                     ))
