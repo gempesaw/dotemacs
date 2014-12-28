@@ -21,6 +21,7 @@
                     discover
                     diminish
                     dired-details
+                    discover
                     flx-ido
                     elisp-slime-nav
                     exec-path-from-shell

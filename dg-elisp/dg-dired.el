@@ -1,3 +1,5 @@
+(require 'dired)
+(require 'dired-x)
 (require 'dired-aux)
 
 (eval-after-load "dired-aux"
