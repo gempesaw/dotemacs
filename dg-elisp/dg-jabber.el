@@ -5,9 +5,13 @@
 ;; brew install gnutls
 (if (executable-find "gnutls-cli")
     (progn
-      ;; password for this needs to be in ~/.authinfo
       (setq jabber-account-list `(("dgempesaw@sharecare.com"
-                                   (:connection-type . starttls))))
+                                   (:connection-type . starttls)
+                                   (:password . ,(car
+                                                  (reverse
+                                                   (split-string
+                                                    (car
+                                                     (get-file-as-string "~/.authinfo")) " ")))))))
 
       (jabber-mode-line-mode)
 
