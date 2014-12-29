@@ -12,9 +12,19 @@
      (delete-other-windows)
      (text-scale-adjust 3)
      (execute-kbd-macro [?m ?. ?i ?d])
+     (delete-duplicate-dates)
      (text-scale-adjust 0)
      (text-scale-adjust 2)
      (recenter-top-bottom))))
+
+(defun delete-duplicate-dates ()
+  (let ((date (substring-no-properties (thing-at-point 'line))))
+    (while (and (string-match "[[:digit:]][[:digit:]][[:space:]]$" (substring-no-properties (thing-at-point 'line)))
+                (search-backward date))
+      (delete-region (line-beginning-position) (line-end-position))
+      (forward-line -1)
+      (end-of-line)
+      (insert " "))))
 
 (global-set-key (kbd "C-s-d") 'toggle-diary-windows)
 
