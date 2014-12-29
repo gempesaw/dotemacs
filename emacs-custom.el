@@ -21,6 +21,23 @@
  '(safe-local-variable-values
    (quote
     ((eval progn
+           (key-chord-define
+            (current-local-map)
+            "jk"
+            (quote projectile-rails-command-map))
+           (key-chord-define
+            (current-local-map)
+            "qr"
+            (quote makey-key-mode-popup-projectile-rails-mode)))
+     (eval progn
+           (key-chord-define
+            (current-local-map)
+            "jk"
+            (quote projectile-rails-command-map)))
+     (eval progn
+           (key-chord-define-local "jk"
+                                   (quote projectile-rails-command-map)))
+     (eval progn
            (require
             (quote projectile))
            (puthash
