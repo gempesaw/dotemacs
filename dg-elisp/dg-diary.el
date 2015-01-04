@@ -18,9 +18,13 @@
      (recenter-top-bottom))))
 
 (defun delete-duplicate-dates ()
-  (let ((date (substring-no-properties (thing-at-point 'line))))
-    (while (and (string-match "[[:digit:]][[:digit:]][[:space:]]$" (substring-no-properties (thing-at-point 'line)))
-                (search-backward date))
+  (let ((date (s-trim
+               (substring-no-properties
+                (thing-at-point 'line)))))
+    (while (and (string-match "[[:digit:]][[:digit:]][[:space:]]$"
+                              (substring-no-properties (thing-at-point 'line)))
+                (save-excursion  (search-backward date)
+                                 (search-backward date)))
       (delete-region (line-beginning-position) (line-end-position))
       (forward-line -1)
       (end-of-line)
