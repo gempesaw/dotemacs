@@ -52,6 +52,15 @@
     (key-chord-define-global "hk" 'tracking-next-buffer)
 
     (key-chord-define-global ",." (lambda () (interactive) (switch-to-buffer "*<appium>*")))
+
+    (defun dg-key-chord-clear (key &optional map)
+      (interactive "sKey to clear: ")
+      (if map
+          (key-chord-define map key nil)
+        (key-chord-define-global key nil)))
+
     nil))
+
+
 
 (provide 'dg-key-chord)
