@@ -26,8 +26,18 @@
             jabber-show-offline-contacts nil
             jabber-auto-reconnect nil
             jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
-            ;; jabber-mode-line-string (list " " 'jabber-mode-line-presence " ")
-            jabber-mode-line-string '(""))
+            jabber-mode-line-string (list " " 'jabber-mode-line-presence " "))
+      (substring jabber-mode-line-presence 0 2)
+
+      (defun dg-jabber-mode-line ()
+        (let ((length (if (and jabber-connections
+                               (not *jabber-disconnecting*))
+                          2
+                        3)))
+          (setq jabber-mode-line-presence (substring jabber-mode-line-presence 0 length))))
+
+      (defadvice jabber-mode-line-presence-update (after shorten-mode-line activate)
+        (dg-jabber-mode-line))
 
       (defun jabber-alert-message-say (from buffer text proposed-alert)
         (interactive)
