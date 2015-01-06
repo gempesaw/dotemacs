@@ -13,7 +13,7 @@
     ;; expanding region
     ;; this gets overwritten in cterm mode :(
     ;; (global-set-key (kbd "C-'") 'er/expand-region)
-    (key-chord-define-global "kl" 'er/expand-region)
+    (key-chord-define-global "ql" 'er/expand-region)
 
     ;; registers
     (key-chord-define-global "xg" 'magit-status)
