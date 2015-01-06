@@ -1,3 +1,5 @@
+(load "~/.emacs.d/emacs-custom.el" 'noerror)
+
 (add-to-list 'load-path "~/.emacs.d/dg-elisp/")
 ;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
@@ -31,7 +33,6 @@
 
 (load "~/.emacs.d/customize.el" 'noerror)
 (load "~/.emacs.d/defadvice.el" 'noerror)
-(load "~/.emacs.d/emacs-custom.el" 'noerror)
 ;; (load "~/.emacs.d/feature-mode.el")
 (load "~/.emacs.d/hooks.el" 'noerror)
 (load "~/.emacs.d/my-macros.el" 'noerror)
