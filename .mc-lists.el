@@ -29,6 +29,7 @@
         c-electric-semi&comma
         c-electric-slash
         cleanup-buffer
+        coffee-dedent-line-backspace
         comint-copy-old-input
         comint-delchar-or-maybe-eof
         comment-dwim
@@ -61,6 +62,7 @@
         execute-feature
         fill-paragraph
         forward-sexp
+        haml-electric-backspace
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         ido-switch-buffer
@@ -177,6 +179,7 @@
         other-frame
         paredit-backslash
         php-send-buffer
+        projectile-test-project
         revert-buffer
         scroll-up-command
         sgml-delete-tag
