@@ -13,6 +13,12 @@
        (list (lambda (arg) 'no-indent))))
 
 (add-hook 'coffee-mode-hook 'disable-electric-indent)
+
+(add-to-list 'hs-special-modes-alist
+             '(ruby-mode
+               "\\(def\\|do\\|{\\)" "\\(end\\|end\\|}\\)" "#"
+               (lambda (arg) (ruby-end-of-block)) nil))
+
 (eval-after-load 'projectile-rails
   (progn
     (rvm-use-default)
