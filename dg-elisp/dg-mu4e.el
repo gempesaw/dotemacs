@@ -39,7 +39,8 @@
                          ("(maildir:/INBOX or maildir:/archive) AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew AND NOT from:adminui" "All Inbox" ?I)
                          ("from:dgempesaw@sharecare.com" "Sent" ?t)
                          ("date:7d..now" "Last 7 days" ?l)
-                         ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)))
+                         ("Meeting AND NOT from:dgempesaw@sharecare.com" "Meetings" ?m)
+                         ("maildir:/DRAFTS" "Drafts" ?d)))
 
   (setq user-mail-address "dgempesaw@sharecare.com"
         user-full-name  "Daniel Gempesaw")
