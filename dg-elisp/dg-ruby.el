@@ -18,6 +18,7 @@
     (rvm-use-default)
 
     (setq company-idle-delay 0)
+    (setq company-minimum-prefix-length 2)
 
     (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
       (rvm-activate-corresponding-ruby))
