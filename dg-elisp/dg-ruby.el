@@ -1,7 +1,7 @@
 (push 'company-robe company-backends)
 (add-hook 'ruby-mode-hook 'robe-mode)
 (add-hook 'ruby-mode-hook 'company-mode)
-(add-hook 'ruby-mode-hook 'flycheck-mode)
+;; (add-hook 'ruby-mode-hook 'flycheck-mode)
 (add-hook 'ruby-mode-hook 'projectile-rails-on)
 
 (add-hook 'coffee-mode-hook 'projectile-rails-on)
