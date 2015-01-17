@@ -33,11 +33,11 @@
 (global-set-key (kbd "C-s-d") 'toggle-diary-windows)
 
 (defun remind-me-daily (fn time)
-  (when (and (boundp 'reminder)
-             (timerp reminder))
-    (cancel-timer reminder))
+  (when (and (boundp 'daily-reminder)
+             (timerp daily-reminder))
+    (cancel-timer daily-reminder))
   (let ((daily (* 60 60 24)))
-    (setq reminder
+    (setq daily-reminder
           (run-at-time time daily 'funcall fn))))
 
 (remind-me-daily 'toggle-diary-windows "4:30pm")
