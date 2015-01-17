@@ -1,4 +1,5 @@
 (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
+(define-key projectile-mode-map (kbd "C-c p p") 'projectile-test-project)
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
