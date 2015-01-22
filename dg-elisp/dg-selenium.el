@@ -62,6 +62,24 @@
        (start-process proc-name buffer executable)
        nil))))
 
+(defun start-bitlbee-server ()
+  (interactive)
+  (start-process "" " *kill*" "pkill" "bitlbee")
+  (start-buffer-process "bitlbee" (executable-find "bitlbee") "-F"))
+
+(defun start-buffer-process (name cmd &rest opts)
+  (let* ((proc-name (concat name "-server"))
+         (buffer (format "*%s*<%s>" proc-name name))
+         (args (append `(,proc-name ,buffer ,cmd) opts)))
+    (with-current-buffer (get-buffer-create buffer)
+      (make-local-variable 'process-environment)
+      (comint-mode)
+      (setq-local comint-output-filter-functions '(comint-postoutput-scroll-to-bottom
+                                                   comint-truncate-buffer))
+      (set-process-query-on-exit-flag
+       (apply 'start-process args) nil))
+    buffer))
+
 (if (executable-find "protractor")
     (start-selenium-server))
 
