@@ -146,6 +146,7 @@
         c-electric-brace
         compilation-previous-file
         compile-goto-error
+        create-new-shell-here
         delete-other-window
         delete-window
         dired-maybe-insert-subdir
