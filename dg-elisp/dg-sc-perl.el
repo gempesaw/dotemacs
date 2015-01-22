@@ -84,7 +84,7 @@ browsers."
 
 (defun sc-hdew-push-to-prod-backend ()
   (interactive)
-  (async-shell-command "ssh honeydew \"cd stage_hdew && git pull --rebase && . deploy.sh ui\""))
+  (async-shell-command "ssh honeydew \"cd stage_hdew && git submodule update && git pull --rebase && . deploy.sh ui\""))
 
 (defun sc-kabocha-test ()
   (interactive)
