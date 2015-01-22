@@ -426,4 +426,8 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
     (newline 1)
     (indent-according-to-mode)))
 
+(defun epoch (time)
+  (interactive "nTime as epoch: ")
+  (message "%s" (format-time-string "%D %r" (seconds-to-time time))))
+
 (provide 'dg-defun)
