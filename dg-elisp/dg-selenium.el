@@ -86,6 +86,11 @@
 (if (executable-find "redis-server")
     (start-redis-server))
 
+(if (executable-find "appium")
+    (save-window-excursion (restart-appium-server)))
+
+(if (executable-find "bitlbee")
+    (save-window-excursion (start-bitlbee-server)))
 
 (provide 'dg-selenium)
 
