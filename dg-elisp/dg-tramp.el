@@ -111,23 +111,29 @@ raises an error."
            (buffer (concat "*shell<" box ">*"))
            ;; get tramp to open the ssh connection by opening a folder
            ;; on the remote box
-           (default-directory
+           (centos-home-dir
              (concat "/ssh:" box ":/home/"
-                     (cadr (assoc box remote-info)) "/")))
+                     (cadr (assoc box remote-info)) "/"))
+           (osx-home-dir
+             (concat "/ssh:" box ":/Users/"
+                     (cadr (assoc box remote-info)) "/"))
+           (default-directory centos-home-dir))
       ;; open a shell from the tramp ssh buffer created by setting the
       ;; default directory to a remote directory. I was having trouble
       ;; connecting to an OS X box that allowed ssh conenctions via
       ;; user&pass, since this method relies pretty explicitly on the
       ;; sshconfig, which doesn't really use passwords, only .pem kind
       ;; of stuff.
+      (condition-case nil
+          (cd default-directory)
+        (error
+         (setq default-directory osx-home-dir)
+         (cd default-directory)))
       (with-current-buffer (get-buffer-create
                             (format "*tramp/ssh %s*" box))
         (shell buffer))
       (set-process-query-on-exit-flag
-       (get-buffer-process buffer) nil)
-      (with-current-buffer buffer
-        (insert "cd")
-        (comint-send-input nil t)))))
+       (get-buffer-process buffer) nil))))
 
 (defun load-my-tramp-settings ()
   (interactive)
