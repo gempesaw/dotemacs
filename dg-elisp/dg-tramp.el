@@ -133,7 +133,10 @@ raises an error."
                             (format "*tramp/ssh %s*" box))
         (shell buffer))
       (set-process-query-on-exit-flag
-       (get-buffer-process buffer) nil))))
+       (get-buffer-process buffer) nil)
+      (with-current-buffer buffer
+        (insert "cd")
+        (comint-send-input nil t)))))
 
 (defun load-my-tramp-settings ()
   (interactive)
