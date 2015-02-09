@@ -430,6 +430,25 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
   (interactive "nTime as epoch: ")
   (message "%s" (format-time-string "%D %r" (seconds-to-time time))))
 
+(progn
+  (defun dg-vsplit-last-buffer (prefix)
+    "Split the window vertically and display the previous buffer."
+    (interactive "p")
+    (split-window-vertically)
+    (other-window 1 nil)
+    (if (= prefix 1)
+        (switch-to-next-buffer)))
+
+  (defun dg-hsplit-last-buffer (prefix)
+    "Split the window horizontally and display the previous buffer."
+    (interactive "p")
+    (split-window-horizontally)
+    (other-window 1 nil)
+    (if (= prefix 1) (switch-to-next-buffer)))
+
+  (global-set-key (kbd "C-x 2") 'dg-vsplit-last-buffer)
+  (global-set-key (kbd "C-x 3") 'dg-hsplit-last-buffer))
+
 (defun dg-reset-tags-table-list ()
   (interactive)
   (setq tags-table-list
