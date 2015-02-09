@@ -3,7 +3,7 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "dired-subtree" "dired-subtree.el" (21593 172
+;;;### (autoloads nil "dired-subtree" "dired-subtree.el" (21718 16102
 ;;;;;;  0 0))
 ;;; Generated autoloads from dired-subtree.el
 
@@ -75,6 +75,22 @@ Insert subtree under this directory.
 Remove subtree at point.
 
 \(fn)" t nil)
+
+(autoload 'dired-subtree-toggle "dired-subtree" "\
+Insert subtree at point or remove it if it was not present.
+
+\(fn)" t nil)
+
+(autoload 'dired-subtree-cycle "dired-subtree" "\
+Org-mode like cycle visibility:
+
+1) Show subtree
+2) Show subtree recursively (if previous command was cycle)
+3) Remove subtree
+
+Numeric prefix will set max depth
+
+\(fn &optional MAX-DEPTH)" t nil)
 
 (autoload 'dired-subtree-only-this-file "dired-subtree" "\
 Remove all the siblings on the route from this file to the top-most directory.

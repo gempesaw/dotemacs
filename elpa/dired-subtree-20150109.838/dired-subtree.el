@@ -5,7 +5,7 @@
 ;; Author: Matus Goljer <matus.goljer@gmail.com>
 ;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
 ;; Keywords: files
-;; Version: 20140706.1026
+;; Version: 20150109.838
 ;; X-Original-Version: 0.0.1
 ;; Created: 25th February 2014
 ;; Package-requires: ((dash "2.5.0") (dired-hacks-utils "0.0.1"))
@@ -62,6 +62,8 @@
 
 ;; * `dired-subtree-insert'
 ;; * `dired-subtree-remove'
+;; * `dired-subtree-toggle'
+;; * `dired-subtree-cycle'
 ;; * `dired-subtree-revert'
 ;; * `dired-subtree-narrow'
 ;; * `dired-subtree-up'
@@ -84,6 +86,7 @@
 
 (require 'dired-hacks-utils)
 (require 'dash)
+(require 'cl-lib)
 
 (defgroup dired-subtree ()
   "Insert subdirectories in a tree-like fashion."
@@ -111,6 +114,27 @@ depth---that creates the prefix."
 (defcustom dired-subtree-use-backgrounds t
   "When non-nil, add a background face to a subtree listing."
   :type 'boolean
+  :group 'dired-subtree)
+
+(defcustom dired-subtree-after-insert-hook ()
+  "Hook run at the end of `dired-subtree-insert'."
+  :type 'hook
+  :group 'dired-subtree)
+
+(defcustom dired-subtree-after-remove-hook ()
+  "Hook run at the end of `dired-subtree-remove'."
+  :type 'hook
+  :group 'dired-subtree)
+
+(defcustom dired-subtree-cycle-depth 3
+  "Default depth expanded by `dired-subtree-cycle'."
+  :type 'integer
+  :group 'dired-subtree)
+
+(defcustom dired-subtree-ignored-regexp
+  (concat "^" (regexp-opt vc-directory-exclusion-list) "$")
+  "Matching directories will not be expanded in `dired-subtree-cycle'."
+  :type 'string
   :group 'dired-subtree)
 
 (defgroup dired-subtree-faces ()
@@ -244,8 +268,12 @@ If no SUBTREES are specified, use `dired-subtree-overlays'."
 (defun dired-subtree--is-expanded-p ()
   "Return non-nil if directory under point is expanded."
   (save-excursion
-    (-when-let (file (dired-utils-get-filename))
-      (and (file-directory-p file)
+    (when (dired-utils-get-filename)
+      ;; TODO: this should work 99% of the time (what about links?).
+      ;; We've replaced `file-directory-p' with the regexp test to
+      ;; speed up filters over TRAMP.  So long as dired/ls format
+      ;; doesn't change, we're good.
+      (and (save-excursion (beginning-of-line) (looking-at "..d"))
            (let ((depth (dired-subtree--get-depth (dired-subtree--get-ov))))
              (dired-next-line 1)
              (< depth (dired-subtree--get-depth (dired-subtree--get-ov))))))))
@@ -424,8 +452,14 @@ Return a string suitable for insertion in `dired' buffer."
     (insert-directory dir-name dired-listing-switches nil t)
     (delete-char -1)
     (goto-char (point-min))
-    (kill-line 3)
-    (setq kill-ring (cdr kill-ring))
+    (delete-region
+     (progn (beginning-of-line) (point))
+     (progn (forward-line
+             (if (save-excursion
+                   (forward-line 1)
+                   (end-of-line)
+                   (looking-back "\\."))
+                 3 1)) (point)))
     (insert "  ")
     (while (= (forward-line) 0)
       (insert "  "))
@@ -489,7 +523,8 @@ Return a string suitable for insertion in `dired' buffer."
       (push ov dired-subtree-overlays))
     (goto-char beg)
     (dired-move-to-filename)
-    (read-only-mode 1)))
+    (read-only-mode 1)
+    (run-hooks 'dired-subtree-after-insert-hook)))
 
 ;;;###autoload
 (defun dired-subtree-remove ()
@@ -503,7 +538,73 @@ Return a string suitable for insertion in `dired' buffer."
       (dired-subtree-up)
       (delete-region (overlay-start ov)
                      (overlay-end ov))
-      (dired-subtree--remove-overlays ovs))))
+      (dired-subtree--remove-overlays ovs)))
+  (run-hooks 'dired-subtree-after-remove-hook))
+
+;;;###autoload
+(defun dired-subtree-toggle ()
+  "Insert subtree at point or remove it if it was not present."
+  (interactive)
+  (cond
+   ((dired-subtree--is-expanded-p)
+    (dired-next-line 1)
+    (dired-subtree-remove))
+   (t
+    (save-excursion
+      (dired-subtree-insert)))))
+
+(defun dired-subtree--insert-recursive (depth max-depth)
+  "Insert full subtree at point."
+  (save-excursion
+    (let ((name (dired-get-filename nil t)))
+      (when (and name (file-directory-p name)
+                 (<= depth (or max-depth depth))
+                 (or (= 1 depth)
+		     (not (string-match-p dired-subtree-ignored-regexp
+					  (file-name-nondirectory name)))))
+	(if (dired-subtree--is-expanded-p)
+	    (dired-next-line 1)
+	  (dired-subtree-insert))
+	(dired-subtree-end)
+	(dired-subtree--insert-recursive (1+ depth) max-depth)
+	(while (dired-subtree-previous-sibling)
+	  (dired-subtree--insert-recursive (1+ depth) max-depth))))))
+
+(defvar dired-subtree--cycle-previous nil
+  "Remember previous action for `dired-subtree-cycle'")
+
+;;;###autoload
+(defun dired-subtree-cycle (&optional max-depth)
+  "Org-mode like cycle visibility:
+
+1) Show subtree
+2) Show subtree recursively (if previous command was cycle)
+3) Remove subtree
+
+Numeric prefix will set max depth"
+  (interactive "P")
+  (save-excursion
+    (cond
+     ;; prefix - show subtrees up to max-depth
+     (max-depth
+      (when (dired-subtree--is-expanded-p)
+	(dired-next-line 1)
+	(dired-subtree-remove))
+      (dired-subtree--insert-recursive 1 (if (integerp max-depth) max-depth nil))
+      (setq dired-subtree--cycle-previous :full))
+     ;; if directory is not expanded, expand one level
+     ((not (dired-subtree--is-expanded-p))
+      (dired-subtree-insert)
+      (setq dired-subtree--cycle-previous :insert))
+     ;; hide if previous command was not cycle or tree was fully expanded
+     ((or (not (eq last-command 'dired-subtree-cycle))
+	  (eq dired-subtree--cycle-previous :full))
+      (dired-next-line 1)
+      (dired-subtree-remove)
+      (setq dired-subtree--cycle-previous :remove))
+     (t
+      (dired-subtree--insert-recursive 1 dired-subtree-cycle-depth)
+      (setq dired-subtree--cycle-previous :full)))))
 
 (defun dired-subtree--filter-up (keep-dir kill-siblings)
   (save-excursion
@@ -517,7 +618,7 @@ Return a string suitable for insertion in `dired' buffer."
         (dired-subtree--unmark))
       (while (and (dired-subtree-up)
                   (> (dired-subtree--get-depth (dired-subtree--get-ov)) 0))
-        (if (not arg)
+        (if (not kill-siblings)
             (dired-subtree--unmark)
           (dired-subtree--unmark)
           (let ((here (point)))
@@ -587,13 +688,13 @@ the subtree.  The filter action is read from `dired-filter-map'."
             (glob (current-global-map))
             (loc (current-local-map))
             cmd)
-        (flet ((dired-filter--update
-                ()
-                (save-restriction
-                  (overlay-put ov 'dired-subtree-filter dired-filter-stack)
-                  (widen)
-                  (dired-subtree-revert)
-                  (dired-subtree--filter-update-bs ov))))
+        (cl-flet ((dired-filter--update
+                   ()
+                   (save-restriction
+                     (overlay-put ov 'dired-subtree-filter dired-filter-stack)
+                     (widen)
+                     (dired-subtree-revert)
+                     (dired-subtree--filter-update-bs ov))))
           (unwind-protect
               (progn
                 (use-global-map dired-filter-map)
