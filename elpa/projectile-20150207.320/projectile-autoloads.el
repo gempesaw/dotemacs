@@ -3,7 +3,7 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "projectile" "projectile.el" (21663 3035 0
+;;;### (autoloads nil "projectile" "projectile.el" (21718 15981 0
 ;;;;;;  0))
 ;;; Generated autoloads from projectile.el
 
@@ -37,6 +37,72 @@ Only buffers not visible in windows are returned.
 Do a `multi-occur' in the project's buffers.
 
 \(fn)" t nil)
+
+(autoload 'projectile-find-file-dwim "projectile" "\
+Jump to a project's files using completion based on context.
+
+With a prefix ARG invalidates the cache first.
+
+If point is on a filename, Projectile first tries to search for that
+file in project:
+
+- If it finds just a file, it switches to that file instantly.  This works even
+if the filename is incomplete, but there's only a single file in the current project
+that matches the filename at point.  For example, if there's only a single file named
+\"projectile/projectile.el\" but the current filename is \"projectile/proj\" (incomplete),
+`projectile-find-file' still switches to \"projectile/projectile.el\" immediately
+ because this is the only filename that matches.
+
+- If it finds a list of files, the list is displayed for selecting.  A list of
+files is displayed when a filename appears more than one in the project or the
+filename at point is a prefix of more than two files in a project.  For example,
+if `projectile-find-file' is executed on a filepath like \"projectile/\", it lists
+the content of that directory.  If it is executed on a partial filename like
+ \"projectile/a\", a list of files with character 'a' in that directory is presented.
+
+- If it finds nothing, display a list of all files in project for selecting.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'projectile-find-file-dwim-other-window "projectile" "\
+Jump to a project's files using completion based on context in other window.
+
+With a prefix ARG invalidates the cache first.
+
+If point is on a filename, Projectile first tries to search for that
+file in project:
+
+- If it finds just a file, it switches to that file instantly.  This works even
+if the filename is incomplete, but there's only a single file in the current project
+that matches the filename at point.  For example, if there's only a single file named
+\"projectile/projectile.el\" but the current filename is \"projectile/proj\" (incomplete),
+`projectile-find-file' still switches to \"projectile/projectile.el\"
+immediately because this is the only filename that matches.
+
+- If it finds a list of files, the list is displayed for selecting.  A list of
+files is displayed when a filename appears more than one in the project or the
+filename at point is a prefix of more than two files in a project.  For example,
+if `projectile-find-file' is executed on a filepath like \"projectile/\", it lists
+the content of that directory.  If it is executed on a partial filename
+like \"projectile/a\", a list of files with character 'a' in that directory
+is presented.
+
+- If it finds nothing, display a list of all files in project for selecting.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'projectile-find-file "projectile" "\
+Jump to a project's file using completion.
+With a prefix ARG invalidates the cache first.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'projectile-find-file-other-window "projectile" "\
+Jump to a project's file using completion and show it in another window.
+
+With a prefix ARG invalidates the cache first.
+
+\(fn &optional ARG)" t nil)
 
 (autoload 'projectile-find-implementation-or-test-other-window "projectile" "\
 Open matching implementation or test file in other window.
