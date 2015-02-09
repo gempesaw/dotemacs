@@ -430,4 +430,10 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
   (interactive "nTime as epoch: ")
   (message "%s" (format-time-string "%D %r" (seconds-to-time time))))
 
+(defun dg-reset-tags-table-list ()
+  (interactive)
+  (setq tags-table-list
+        (-reject (lambda (file) (string-match (pcre-to-elisp ":|Trash") file))
+                 tags-table-list)))
+
 (provide 'dg-defun)
