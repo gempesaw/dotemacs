@@ -10,6 +10,8 @@
 ;; don't ask about files
 (setq compilation-ask-about-save nil)
 
+(setq compilation-scroll-output t)
+
 ;; don't compile based on last buffer
 (setq compilation-last-buffer nil)
 
