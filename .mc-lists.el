@@ -62,6 +62,7 @@
         execute-feature
         fill-paragraph
         forward-sexp
+        git-rebase-reword
         haml-electric-backspace
         ibuffer-mark-for-delete
         ibuffer-mark-forward
