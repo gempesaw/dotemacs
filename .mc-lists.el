@@ -45,6 +45,7 @@
         delete-horizontal-space
         delete-indentation
         describe-key
+        dg-save-buffer
         dired-details-hide
         dired-do-delete
         dired-do-flagged-delete
