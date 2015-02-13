@@ -459,6 +459,7 @@ They are temporarily disabled when multiple-cursors are active.")
   :group 'multiple-cursors)
 (put 'mc/mode-line 'risky-local-variable t)
 
+;;;###autoload
 (define-minor-mode multiple-cursors-mode
   "Mode while multiple cursors are active."
   nil mc/mode-line mc/keymap
@@ -596,6 +597,9 @@ for running commands with multiple cursors.")
                                      mc/skip-to-next-like-this
                                      mc/skip-to-previous-like-this
                                      rrm/switch-to-multiple-cursors
+                                     mc-hide-unmatched-lines-mode
+                                     hum/keyboard-quit
+                                     hum/unhide-invisible-overlays
                                      save-buffer
                                      ido-exit-minibuffer
                                      exit-minibuffer
@@ -683,6 +687,7 @@ for running commands with multiple cursors.")
                                         py-electric-backspace
                                         c-electric-backspace
                                         org-delete-backward-char
+                                        cperl-electric-backspace
                                         python-indent-dedent-line-backspace
                                         paredit-backward-delete
                                         autopair-backspace
@@ -693,6 +698,7 @@ for running commands with multiple cursors.")
                                         exchange-point-and-mark
                                         cua-set-mark
                                         cua-replace-region
+                                        cua-delete-region
                                         move-end-of-line
                                         beginning-of-line
                                         move-beginning-of-line
