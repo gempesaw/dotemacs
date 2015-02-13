@@ -4,7 +4,7 @@
 
 ;; Author: Steven Degutis
 ;; Maintainer: Daniel Gempesaw <gempesaw@gmail.com>
-;; Version: 20140516.1920
+;; Version: 20150210.2156
 ;; X-Original-Version: 0.1.5
 ;; Keywords: convenience
 ;; URL: https://github.com/gempesaw/ido-vertical-mode.el
@@ -126,7 +126,11 @@ so we can restore it when turning `ido-vertical-mode' off")
           (if ind (setq first (concat first ind)))
           (setq comps (cons first (cdr comps)))))
 
-    (cond ((null comps)
+    ;; Previously we'd check null comps to see if the list was
+    ;; empty. We pad the list with empty items to keep the list at a
+    ;; constant height, so we have to check if the entire list is
+    ;; empty, instead of (null comps)
+    (cond ((or (eq "" (mapconcat #'append comps "")))
            (cond
             (ido-show-confirm-message
              (or (nth 10 ido-decorations) " [Confirm]"))
@@ -159,7 +163,7 @@ so we can restore it when turning `ido-vertical-mode' off")
                               ((< items 0) ())
                               ((= items 0) (list additional-items-indicator)) ; " | ..."
                               (t
-                               (list (or ido-separator (nth 2 ido-decorations)) ; " | "
+                               (list (nth 2 ido-decorations) ; " | "
                                      (let ((str (substring com 0)))
                                        (if (and ido-use-faces
                                                 (not (string= str first))
@@ -186,7 +190,7 @@ so we can restore it when turning `ido-vertical-mode' off")
 
 (defun turn-on-ido-vertical ()
   (if (and (eq nil ido-vertical-old-decorations)
-         (eq nil ido-vertical-old-completions))
+           (eq nil ido-vertical-old-completions))
       (progn
         (setq ido-vertical-old-decorations ido-decorations)
         (setq ido-vertical-old-completions (symbol-function 'ido-completions))))
@@ -251,4 +255,7 @@ This is based on:
     (turn-off-ido-vertical)))
 
 (provide 'ido-vertical-mode)
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
 ;;; ido-vertical-mode.el ends here
