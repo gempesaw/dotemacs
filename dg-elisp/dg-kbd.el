@@ -132,11 +132,12 @@
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; save easier! c'monnnn
-(global-unset-key (kbd "C-x C-s"))
-(define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
-(eval-after-load "paredit"
-  '(progn
-     (define-key paredit-mode-map (kbd "M-s") 'save-buffer)))
+(progn
+  (global-unset-key (kbd "C-x C-s"))
+  (define-key my-keys-minor-mode-map (kbd "M-s") 'dg-save-buffer)
+  (eval-after-load "paredit"
+    '(progn
+       (define-key paredit-mode-map (kbd "M-s") 'dg-save-buffer))))
 
 ;; open a new ssh connection easily
 (define-key my-keys-minor-mode-map (kbd "C-c .") 'open-ssh-connection)

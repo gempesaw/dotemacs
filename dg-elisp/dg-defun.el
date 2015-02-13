@@ -455,4 +455,17 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
         (-reject (lambda (file) (string-match (pcre-to-elisp ":|Trash") file))
                  tags-table-list)))
 
+(setq dg-auto-recompile nil)
+(defun dg-save-buffer ()
+  (interactive)
+  (save-buffer)
+  (if (and dg-auto-recompile
+           (get-buffer-window "*compilation*"))
+      (compile-again nil)))
+
+(defun dg-auto-re-compile ()
+  (interactive)
+  (setq dg-auto-recompile (if dg-auto-recompile nil t))
+  (message (format "Your auto recompile is now %s: %s" (if dg-auto-recompile "ON" "OFF") compile-command)))
+
 (provide 'dg-defun)
