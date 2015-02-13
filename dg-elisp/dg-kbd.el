@@ -160,7 +160,7 @@
 (global-unset-key (kbd "C-x C-r"))
 (global-set-key (kbd "C-x C-r") 'find-file-as-root)
 
-(global-set-key (kbd "C-c y") 'toggle-window-split)
+(global-set-key (kbd "C-c y") 'rotate-windows)
 
 (global-set-key [remap move-beginning-of-line] 'smarter-move-beginning-of-line)
 
