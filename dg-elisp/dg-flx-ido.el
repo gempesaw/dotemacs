@@ -9,6 +9,6 @@
       ido-use-faces nil)
 
 ;;; try to use flx-ido more often at the expense of speed
-(setq flx-ido-threshhold 10000)
+(setq flx-ido-threshhold 15000)
 
 (provide 'dg-flx-ido)
