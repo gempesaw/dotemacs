@@ -101,6 +101,7 @@
         org-metaright
         org-shiftright
         org-todo
+        paredit-backward
         paredit-backward-kill-word
         paredit-close-round
         paredit-close-square
