@@ -4,7 +4,7 @@
 
 ;; Author: Steven Degutis
 ;; Maintainer: Daniel Gempesaw <gempesaw@gmail.com>
-;; Version: 20150210.2156
+;; Version: 20150215.913
 ;; X-Original-Version: 0.1.5
 ;; Keywords: convenience
 ;; URL: https://github.com/gempesaw/ido-vertical-mode.el
@@ -80,6 +80,14 @@ so we can restore it when turning `ido-vertical-mode' off")
   "Make ido behave vertically."
   :group 'ido)
 
+(defcustom ido-vertical-show-count nil
+  "Non nil means show the count of candidates while completing."
+  :type 'boolean
+  :group 'ido-vertical-mode)
+
+(defvar ido-vertical-count-active nil
+  "Used internally to track whether we're already showing the count")
+
 (defcustom ido-vertical-define-keys 'C-n-and-C-p-only
   "Defines which keys that `ido-vertical-mode' redefines."
   :type '(choice
@@ -87,6 +95,21 @@ so we can restore it when turning `ido-vertical-mode' off")
           (const :tag "C-p and C-n are up & down in match" C-n-and-C-p-only)
           (const :tag "C-p/up and C-n/down are up and down in match." C-n-C-p-up-and-down)
           (const :tag "C-p/up, C-n/down are up/down in match. left or right cycle history or directory." C-n-C-p-up-down-left-right))
+  :group 'ido-vertical-mode)
+
+(defface ido-vertical-first-match-face
+  '((t (:inherit ido-first-match)))
+  "Face used by Ido Vertical for highlighting first match."
+  :group 'ido-vertical-mode)
+
+(defface ido-vertical-only-match-face
+  '((t (:inherit ido-only-match)))
+  "Face used by Ido Vertical for highlighting only match."
+  :group 'ido-vertical-mode)
+
+(defface ido-vertical-match-face
+  '((t (:inherit font-lock-variable-name-face :bold t :underline t)))
+  "Face used by Ido Vertical for the matched part."
   :group 'ido-vertical-mode)
 
 ;; borrowed from ido.el and modified to work better when vertical
@@ -99,6 +122,7 @@ so we can restore it when turning `ido-vertical-mode' off")
                    ido-merged-indicator))
          (lencomps (length comps))
          (additional-items-indicator (nth 3 ido-decorations))
+         (comps-empty (null comps))
          first)
 
     ;; Keep the height of the suggestions list constant by padding
@@ -109,20 +133,52 @@ so we can restore it when turning `ido-vertical-mode' off")
           (setq additional-items-indicator "\n")
           (setq comps (append comps (make-list (- (1+ ido-max-prospects) lencomps) "")))))
 
+    (when ido-use-faces
+      (dotimes (i ido-max-prospects)
+        (setf (nth i comps) (substring (if (listp (nth i comps))
+                                           (car (nth i comps))
+                                         (nth i comps))
+                                       0))
+        (when (string-match name (nth i comps))
+          (ignore-errors
+            (add-face-text-property (match-beginning 0)
+                                    (match-end 0)
+                                    'ido-vertical-match-face
+                                    nil (nth i comps))))))
+
     (if (and ind ido-use-faces)
         (put-text-property 0 1 'face 'ido-indicator ind))
+
+    (when ido-vertical-show-count
+      (setcar ido-vertical-decorations (format " [%d]\n-> " lencomps))
+      (setq ido-vertical-count-active t))
+    (when (and (not ido-vertical-show-count)
+               ido-vertical-count-active)
+      (setcar ido-vertical-decorations "\n-> ")
+      (setq ido-vertical-count-active nil))
 
     (if (and ido-use-faces comps)
         (let* ((fn (ido-name (car comps)))
                (ln (length fn)))
           (setq first (format "%s" fn))
-          (put-text-property 0 ln 'face
-                             (if (= (length comps) 1)
-                                 (if ido-incomplete-regexp
-                                     'ido-incomplete-regexp
-                                   'ido-only-match)
-                               'ido-first-match)
-                             first)
+          (if (fboundp 'add-face-text-property)
+              (add-face-text-property 0 (length first)
+                                      (cond ((> lencomps 1)
+                                             'ido-vertical-first-match-face)
+
+                                            (ido-incomplete-regexp
+                                             'ido-incomplete-regexp)
+
+                                            (t
+                                             'ido-vertical-only-match-face))
+                                      nil first)
+            (put-text-property 0 ln 'face
+                               (if (= lencomps 1)
+                                   (if ido-incomplete-regexp
+                                       'ido-incomplete-regexp
+                                     'ido-vertical-only-match-face)
+                                 'ido-vertical-first-match-face)
+                               first))
           (if ind (setq first (concat first ind)))
           (setq comps (cons first (cdr comps)))))
 
@@ -130,7 +186,7 @@ so we can restore it when turning `ido-vertical-mode' off")
     ;; empty. We pad the list with empty items to keep the list at a
     ;; constant height, so we have to check if the entire list is
     ;; empty, instead of (null comps)
-    (cond ((or (eq "" (mapconcat #'append comps "")))
+    (cond (comps-empty
            (cond
             (ido-show-confirm-message
              (or (nth 10 ido-decorations) " [Confirm]"))
