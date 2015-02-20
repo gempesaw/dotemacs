@@ -3,6 +3,30 @@
   (add-to-list 'load-path "/Users/dgempesaw/opt/mu/mu4e/")
   (require 'mu4e)
 
+  (defun mu4e-shr2text ()
+    "Html to text using the shr engine; this can be used in
+`mu4e-html2text-command' in a new enough emacs. Based on code by
+Titus von der Malsburg."
+    (interactive)
+    (let ((dom (libxml-parse-html-region (point-min) (point-max)))
+          ;; When HTML emails contain references to remote images,
+          ;; retrieving these images leaks information. For example,
+          ;; the sender can see when I openend the email and from which
+          ;; computer (IP address). For this reason, it is preferrable
+          ;; to not retrieve images.
+          ;; See this discussion on mu-discuss:
+          ;; https://groups.google.com/forum/#!topic/mu-discuss/gr1cwNNZnXo
+          (shr-width 80))
+      (erase-buffer)
+      (shr-insert-document dom)
+      (goto-char (point-min))))
+
+  (setq mu4e-html2text-command 'mu4e-shr2text
+        shr-color-visible-distance-min 10
+        shr-color-visible-luminance-min 100)
+
+  (add-hook 'mu4e-view-mode-hook 'turn-on-visual-line-mode)
+
   ;; display some minibuffer signal when we have QA mail on OS X
   (setq display-time-mail-function nil
         display-time-use-mail-icon t
@@ -25,7 +49,6 @@
         mu4e-use-fancy-chars nil
         mu4e-view-show-images t
         mu4e-mu-binary "/usr/local/bin/mu"
-        mu4e-html2text-command "html2text -nobs -width 72 -utf8 | sed 's/&quot;/\"/g'"
         mu4e-bookmarks '(("from:(JIRA) and flag:unread" "Unread JIRA" ?j)
                          ("from:root and subject:Honeydew and flag:unread and date:14d..now" "Honeydew" ?h)
                          ("(from:vsatam@sharecare.com OR to:vsatam@sharecare.com) and subject:DW" "Vik" ?v)
@@ -122,9 +145,7 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "@") 'mu4e-headers-mark-all-as-read)
        (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
        (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
-       (define-key mu4e-headers-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
        (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
-       (define-key mu4e-view-mode-map (kbd "T") 'mu4e-toggle-html2text-width)
        (define-key mu4e-view-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
