@@ -16,10 +16,12 @@ Titus von der Malsburg."
           ;; to not retrieve images.
           ;; See this discussion on mu-discuss:
           ;; https://groups.google.com/forum/#!topic/mu-discuss/gr1cwNNZnXo
-          (shr-width 80))
+          (shr-width 80)
+          (max-specpdl-size 10000))
       (erase-buffer)
       (shr-insert-document dom)
       (goto-char (point-min))))
+
 
   (setq mu4e-html2text-command 'mu4e-shr2text
         shr-color-visible-distance-min 10
