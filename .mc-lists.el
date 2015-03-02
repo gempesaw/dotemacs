@@ -139,6 +139,7 @@
         web-mode-comment-or-uncomment
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
+        where-is
         yas-expand
         yas-expand
         ))
@@ -193,6 +194,7 @@
         suspend-frame
         switch-to-other-buffer
         switch-window
+        toggle-input-method
         undefined
         wdired-finish-edit
         wgrep-toggle-readonly-area
