@@ -317,6 +317,7 @@ Including indent-buffer, which should not be called automatically on save."
             (other-window 1)
             (string-match-p app (buffer-name))))
       (jump-to-register 6245)
+    (when (window-configuration-p 6245) (jump-to-register 6245))
     (window-configuration-to-register 6245)
     (funcall cb)))
 
