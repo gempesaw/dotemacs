@@ -15,6 +15,7 @@
                     ack-and-a-half
                     async
                     browse-kill-ring
+                    calfw
                     cperl-mode
                     circe
                     dash
