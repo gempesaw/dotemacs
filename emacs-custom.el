@@ -16,6 +16,7 @@
  '(linum-format " %7d ")
  '(main-line-color1 "#222912")
  '(main-line-color2 "#09150F")
+ '(org-agenda-files (quote ("/opt/ical2org/test.org")))
  '(powerline-color1 "#222912")
  '(powerline-color2 "#09150F")
  '(safe-local-variable-values
