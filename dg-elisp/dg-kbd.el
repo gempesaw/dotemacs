@@ -134,10 +134,10 @@
 ;; save easier! c'monnnn
 (progn
   (global-unset-key (kbd "C-x C-s"))
-  (define-key my-keys-minor-mode-map (kbd "M-s") 'dg-save-buffer)
+  (define-key my-keys-minor-mode-map (kbd "M-s") 'save-buffer)
   (eval-after-load "paredit"
     '(progn
-       (define-key paredit-mode-map (kbd "M-s") 'dg-save-buffer))))
+       (define-key paredit-mode-map (kbd "M-s") 'save-buffer))))
 
 ;; open a new ssh connection easily
 (define-key my-keys-minor-mode-map (kbd "C-c .") 'open-ssh-connection)

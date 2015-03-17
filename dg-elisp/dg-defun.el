@@ -457,17 +457,16 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
                  tags-table-list)))
 
 (progn
-  (setq dg-auto-recompile nil)
-  (defun dg-save-buffer ()
+  (setq ar-auto-recompile nil)
+  (defun ar-auto-re-compile ()
     (interactive)
-    (save-buffer)
-    (if (and dg-auto-recompile
-             (get-buffer-window "*compilation*"))
-        (compile-again 1)))
+    (setq ar-auto-recompile (not ar-auto-recompile))
+    (message (format "Auto recompile is now %s" (if ar-auto-recompile "ON" "OFF"))))
 
-  (defun dg-auto-re-compile ()
-    (interactive)
-    (setq dg-auto-recompile (if dg-auto-recompile nil t))
-    (message (format "Auto recompile is now %s" (if dg-auto-recompile "ON" "OFF")))))
+  (defadvice save-buffer (after ar-auto-recompile activate)
+    (when (and ar-auto-recompile
+               (get-buffer-window "*compilation*"))
+      (set-buffer compilation-last-buffer)
+      (revert-buffer t t))))
 
 (provide 'dg-defun)
