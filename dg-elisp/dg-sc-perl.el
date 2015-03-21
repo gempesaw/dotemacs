@@ -62,11 +62,19 @@ browsers."
   (let ((buf "*sc-hdew-prove-all*"))
     (start-process "hdew-generate-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
     (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
-    (if (string= buf (buffer-name (current-buffer)))
-        (async-shell-command
-         "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
-      (async-shell-command
-       "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='par=**'" buf))))
+    (if (sc-hdew-config-local-p)
+        (if (string= buf (buffer-name (current-buffer)))
+            (async-shell-command
+             "prove -I /opt/honeydew/lib/ -j9 --state=failed,save  --trap --merge --verbose" buf)
+          (async-shell-command
+           "prove -I /opt/honeydew/lib/ -j9 --verbose --trap --merge --state=save,slow /opt/honeydew/t/ --rules='par=**'" buf))
+      (message "you're dumb, check your local config"))))
+
+(defun sc-hdew-config-local-p ()
+  (let ((config (with-temp-buffer
+                  (insert-file-contents "/opt/honeydew/honeydew.ini")
+                  (buffer-string))))
+    (string-match "^host=127\.0\.0\.1" config)))
 
 (defun sc-execute-file-at-point ()
   (interactive)
