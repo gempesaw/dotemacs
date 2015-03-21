@@ -2,7 +2,7 @@
 (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
 (when (getenv "PERL5LIB")
-  (exec-path-from-shell-copy-env "PERL5LIB"))
+  (ignore-errors (exec-path-from-shell-copy-env "PERL5LIB")))
 
 ;;; reset the path if necessary
 ;; (setq exec-path '("/usr/local/bin"

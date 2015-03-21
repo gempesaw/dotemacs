@@ -16,7 +16,8 @@
     (when (get-buffer appium-buffer) (kill-buffer appium-buffer))
     (with-current-buffer (get-buffer-create appium-buffer)
       (make-local-variable 'process-environment)
-      (exec-path-from-shell-copy-env "ANDROID_HOME")
+      (ignore-errors 
+	(exec-path-from-shell-copy-env "ANDROID_HOME"))
       (comint-mode)
       (setq-local comint-output-filter-functions '(comint-postoutput-scroll-to-bottom
                                                    comint-truncate-buffer))

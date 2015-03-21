@@ -1,4 +1,5 @@
 (require 'perlbrew)
+(ignore-errors 
 (perlbrew-switch "perl-5.14.4")
 
 ;;; manually set the PERL5LIB. This will mess things up; sure hope you
@@ -10,6 +11,6 @@
                ,version
                ,(format "%s/darwin-2level" version)))
        (perl5lib (mapconcat (lambda (dir) (format "%s%s" prefix dir)) dirs ":")))
-  (setenv "PERL5LIB" perl5lib))
+  (setenv "PERL5LIB" perl5lib)))
 
 (provide 'dg-perlbrew)
