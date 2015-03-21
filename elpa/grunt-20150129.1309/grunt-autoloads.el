@@ -3,7 +3,7 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "grunt" "grunt.el" (21403 30043 0 0))
+;;;### (autoloads nil "grunt" "grunt.el" (21772 34323 0 0))
 ;;; Generated autoloads from grunt.el
 
 (autoload 'grunt-exec "grunt" "\
