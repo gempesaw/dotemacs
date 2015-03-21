@@ -150,7 +150,22 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
        (define-key mu4e-view-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
-       (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket))))
+       (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
+
+  ;; give me ISO(ish) format date-time stamps in the header list
+  (setq mu4e-headers-date-format "%Y-%m-%d %l:%M %P")
+  (setq mu4e-headers-fields
+        '( (:date          .  20)
+           (:flags         .   6)
+           (:from          .  22)
+           (:subject       .  nil)))
+
+  ;; show full addresses in view message (instead of just names)
+  ;; toggle per name with M-RET
+  (setq mu4e-view-show-addresses 't)
+
+  ;; don't keep message buffers around
+  (setq message-kill-buffer-on-exit t))
 
 (unless (executable-find "html2text")
   (message "Missing `html2text`. Maybe try `brew install html2text` ?"))
