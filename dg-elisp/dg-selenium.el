@@ -36,7 +36,7 @@
   (interactive)
   (let* ((bmp-proc-name "browsermob-proxy")
          (bmp-executable (or (executable-find "browsermob-proxy")
-                             "/opt/dev_hdew/browsermob-proxy/bin/browsermob-proxy"))
+                             "/opt/bmp-service/browsermob-proxy/bin/browsermob-proxy"))
          (default-directory (f-dirname bmp-executable))
          (buf (format "*%s*<bmp>" bmp-proc-name)))
     (with-current-buffer (get-buffer-create buf)
