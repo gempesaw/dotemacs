@@ -92,6 +92,11 @@
 
 (setq ensime-sbt-compile-on-save nil)
 
+;;; something turned iedit on, but we don't want it
 (setq iedit-toggle-key-default nil)
 
+;;; todo: add default fonts for windows and linux
 (set-face-attribute 'default nil :family "Monaco" :height 120 :weight 'normal)
+
+;;; ignore undo-too-big warning
+(push '(undo discard-info) warning-suppress-types)
