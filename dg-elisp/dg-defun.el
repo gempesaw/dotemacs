@@ -469,4 +469,13 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
       (set-buffer compilation-last-buffer)
       (revert-buffer t t))))
 
+(defun dg-remove-remote-items ()
+  (interactive)
+  (let* ((lists '(tags-table-list projectile-known-projects)))
+    (mapc (lambda (list)
+            (set list (-filter (lambda (it)
+                                 (not (string-match ":" it)))
+                               (symbol-value list))))
+          lists)))
+
 (provide 'dg-defun)
