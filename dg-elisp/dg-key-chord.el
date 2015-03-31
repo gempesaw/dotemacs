@@ -46,12 +46,13 @@
     (key-chord-define lisp-interaction-mode-map "fd" 'edebug-defun)
 
     ;; jabber & activity
-    (key-chord-define-global "jl" 'jabber-activity-switch-to)
+    (key-chord-define-global "jl" (lambda ()
+                                    (interactive)
+                                    (unless (tracking-next-buffer)
+                                      (jabber-activity-switch-to))))
     (key-chord-define-global "zx" (lambda () (interactive)
-                                    (jabber-connect-all)
                                     (bitlbee-login-to-sip-server)))
     (key-chord-define-global "zc" 'jabber-chat-with)
-    (key-chord-define-global "hk" 'tracking-next-buffer)
 
     (key-chord-define-global ",." (lambda () (interactive) (switch-to-buffer "*<appium>*")))
 
@@ -62,7 +63,5 @@
         (key-chord-define-global key nil)))
 
     nil))
-
-
 
 (provide 'dg-key-chord)
