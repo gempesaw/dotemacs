@@ -478,4 +478,9 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
                                (symbol-value list))))
           lists)))
 
+(defun dg-cleanup-tags-table ()
+  (interactive)
+  (dg-remove-remote-items)
+  (setq tags-table-list (--filter (file-exists-p it) tags-table-list)))
+
 (provide 'dg-defun)
