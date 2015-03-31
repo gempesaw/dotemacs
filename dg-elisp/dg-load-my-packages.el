@@ -36,7 +36,6 @@
                     ido-ubiquitous
                     ido-vertical-mode
                     impatient-mode
-                    jabber
                     js2-mode
                     jujube-theme
                     key-chord
