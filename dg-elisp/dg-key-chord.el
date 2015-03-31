@@ -8,7 +8,6 @@
 
     ;; movement, shells, smex
     (key-chord-define-global "fj" 'ace-jump-mode)
-    (key-chord-define-global "zf" (lambda () (interactive) (message "Use fj ya big dummy")))
     (key-chord-define-global ",/" 'smex)
 
     ;; expanding region
