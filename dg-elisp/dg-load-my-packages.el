@@ -56,6 +56,7 @@
                     regex-tool
                     request
                     s
+                    scss-mode
                     simple-httpd
                     skewer-mode
                     smart-tab
