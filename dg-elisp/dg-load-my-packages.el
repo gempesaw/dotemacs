@@ -16,6 +16,8 @@
                     async
                     browse-kill-ring
                     calfw
+                    company-mode
+                    company-tern
                     cperl-mode
                     circe
                     dash
@@ -59,6 +61,7 @@
                     smart-tab
                     smex
                     switch-window
+                    tern
                     tumblesocks
                     tramp
                     wgrep
