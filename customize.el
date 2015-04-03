@@ -99,3 +99,6 @@
 
 ;;; ignore undo-too-big warning
 (push '(undo discard-info) warning-suppress-types)
+
+(setq dired-recursive-copies 'top)
+(setq dired-recursive-deletes 'top)
