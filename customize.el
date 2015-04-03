@@ -102,3 +102,12 @@
 
 (setq dired-recursive-copies 'top)
 (setq dired-recursive-deletes 'top)
+
+;;; http://mixandgo.com/blog/how-i-ve-convinced-emacs-to-dance-with-ruby
+(progn
+  (defun dg-create-non-existent-directory ()
+    (let ((parent-directory (file-name-directory buffer-file-name)))
+      (when (and (not (file-exists-p parent-directory))
+                 (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
+        (make-directory parent-directory t))))
+  (add-to-list 'find-file-not-found-functions #'dg-create-non-existent-directory))
