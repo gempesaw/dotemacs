@@ -16,7 +16,7 @@
                     async
                     browse-kill-ring
                     calfw
-                    company-mode
+                    company
                     company-tern
                     cperl-mode
                     circe
