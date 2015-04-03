@@ -12,6 +12,7 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+(add-hook 'js2-mode-hook (lambda () (company-mode t)))
 (eval-after-load 'tern
   '(require 'company-tern))
 
