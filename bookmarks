@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("selenium"
+(("dev-honeydew.ini"
+ (filename . "~/opt/dev_hdew/honeydew/honeydew.ini")
+ (front-context-string . "[Accounts]\narmy=")
+ (rear-context-string)
+ (position . 1))
+("selenium"
  (filename . "/usr/local/lib/node_modules/protractor/selenium/")
  (front-context-string . "chromedriver\n  -")
  (rear-context-string . "40 Jul  7 09:00 ")
