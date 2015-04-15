@@ -23,6 +23,8 @@
                     dash
                     diminish
                     dired-details
+                    dired-filter
+                    dired-hacks-utils
                     flx-ido
                     elisp-slime-nav
                     exec-path-from-shell
