@@ -26,11 +26,18 @@
       (kill-process magit-process))))
 
 (let ((homebrew-emacsclient "/usr/local/Cellar/emacs/HEAD/bin/emacsclient"))
-  (when (file-exists-p homebrew-emacsclient) 
+  (when (file-exists-p homebrew-emacsclient)
     (setq magit-emacsclient-executable homebrew-emacsclient)))
 
 (let ((homebrew-emacsclient "E:/emacs/bin/emacsclient.exe"))
-  (when (file-exists-p homebrew-emacsclient) 
+  (when (file-exists-p homebrew-emacsclient)
     (setq magit-emacsclient-executable homebrew-emacsclient)))
+
+(defun dg-clone-github ()
+  (interactive)
+  (when (file-exists-p "/opt")
+    (let ((buf " *github clone*")
+          (url (read-from-minibuffer "Repository to clone: " (current-kill 0) )))
+      (async-shell-command (format "cd /opt && git clone %s" url) buf buf ))))
 
 (provide 'dg-magit)
