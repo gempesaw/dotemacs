@@ -25,7 +25,7 @@
             jabber-roster-line-format " %c %-25n %u %-8s (%r)"
             jabber-show-offline-contacts nil
             jabber-auto-reconnect nil
-            jabber-muc-autojoin nil
+            jabber-muc-autojoin '("qa@conference.sharecare.com" "sharecare-mobile@conference.sharecare.com")
             jabber-mode-line-string (list " " 'jabber-mode-line-presence " "))
       (substring jabber-mode-line-presence 0 2)
 
