@@ -167,7 +167,9 @@
         grunt-exec
         handle-switch-frame
         hs-show-block
+        isearch-backward-regexp
         isearch-other-control-char
+        isearch-repeat-backward
         jabber-activity-switch-to
         js2-mode-show-all
         js2-mode-show-node
