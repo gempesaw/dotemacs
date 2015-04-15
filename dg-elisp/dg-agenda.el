@@ -7,7 +7,8 @@
   (delete-other-windows)
   (split-window-horizontally)
   (cfw:open-org-calendar)
-  (org-agenda-list))
+  (org-agenda-list)
+  (kill-buffer (get-buffer "test.org")))
 
 (global-set-key (kbd "s-a")
                 (lambda ()
