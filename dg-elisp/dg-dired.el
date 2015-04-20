@@ -25,8 +25,6 @@
   (add-to-list 'dired-omit-extensions ".js")
   (add-to-list 'dired-omit-extensions ".map")
 
-  (add-hook 'dired-mode-hook 'dired-filter-mode)
-
   (key-chord-define dired-mode-map "hh" 'dired-filter-mode))
 
 (provide 'dg-dired)
