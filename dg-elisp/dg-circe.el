@@ -7,9 +7,14 @@
 (setq circe-network-options
       `(("Freenode"
          :nick "dgempesaw"
-         :channels ("#emacs" "#selenium")
+         :channels (;; "#emacs"
+                    "#selenium")
          :nickserv-password ,circe-freenode-password
-         )))
+         )
+        ("Perl"
+         :host "irc.perl.org"
+         :port 6667
+         :channels ("#perl" "#moose"))))
 
 (defun bitlbee ()
   (interactive)
