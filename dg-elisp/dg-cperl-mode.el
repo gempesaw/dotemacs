@@ -54,7 +54,25 @@
 
 (add-hook 'cperl-mode-hook
           (lambda ()
-            (local-set-key (kbd "<f5>") 'execute-perl)))
+            (local-set-key (kbd "<f5>") 'execute-perl)
+            (local-set-key (kbd "M-.") 'dg-cperl-smarter-find-tag)))
+
+(define-key cperl-mode-map (kbd "M-.") 'dg-cperl-smarter-find-tag)
+
+(progn
+  (defun dg-cperl-smarter-find-tag ()
+    (interactive)
+    (let ((thing (substring-no-properties (thing-at-point 'symbol))))
+      (unless (dg-cperl-find-perldoc-tag thing)
+        (message "finding tag")
+        (find-tag thing))))
+
+  (defun dg-cperl-find-perldoc-tag (arg)
+    (let* ((file (substring (shell-command-to-string (concat "perldoc -l " arg)) 0 -1)))
+      (message "%s" file)
+      (when (file-exists-p file)
+        (ring-insert find-tag-marker-ring (point-marker))
+        (find-file file)))))
 
 (add-hook 'cperl-mode-hook 'er/add-cperl-mode-expansions)
 
