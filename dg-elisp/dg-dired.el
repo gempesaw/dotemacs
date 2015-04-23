@@ -27,4 +27,13 @@
 
   (key-chord-define dired-mode-map "hh" 'dired-filter-mode))
 
+(defun dg-dired-browse-file-at-point ()
+  (interactive)
+  (let ((path (dired-copy-filename-as-kill 0)))
+    (unless (string-match "html$" path)
+      (setq path (concat path "/index.html")))
+    (browse-url path)))
+
+(define-key dired-mode-map "b" 'dg-dired-browse-file-at-point)
+
 (provide 'dg-dired)
