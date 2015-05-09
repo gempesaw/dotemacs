@@ -27,11 +27,13 @@
                     dired-hacks-utils
                     flx-ido
                     elisp-slime-nav
+                    ensime
                     exec-path-from-shell
                     expand-region
                     f
                     fancy-narrow
                     gist
+                    git-timemachine
                     grunt
                     htmlize
                     httprepl
