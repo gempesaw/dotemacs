@@ -1,4 +1,4 @@
-(setq company-idle-delay .1)
-(setq company-minimum-prefix-length 3)
+(setq company-idle-delay .275
+      company-minimum-prefix-length 2)
 
 (provide 'dg-company)
