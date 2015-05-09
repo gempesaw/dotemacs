@@ -11,8 +11,6 @@
     (key-chord-define-global ",/" 'smex)
 
     ;; expanding region
-    ;; this gets overwritten in cterm mode :(
-    ;; (global-set-key (kbd "C-'") 'er/expand-region)
     (key-chord-define-global "qk" 'er/expand-region)
 
     ;; registers
