@@ -502,4 +502,18 @@ out side of git, of course.")
     (interactive)
     (insert (format "%s" dg-stratopan-password))))
 
+(progn
+  (defun dg-camelcase-to-hyphen (&optional text)
+    (if text
+        (let ((string (substring-no-properties text)))
+          (substring-no-properties
+           (replace-regexp-in-string "." 'dg-hyphenate-char string t)
+           1))
+      ""))
+
+  (defun dg-hyphenate-char (char)
+    (if (string= char (upcase char))
+        (format "-%s" (downcase char))
+      char)))
+
 (provide 'dg-defun)
