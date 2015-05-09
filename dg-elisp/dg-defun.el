@@ -491,4 +491,15 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
   (dg-remove-remote-items)
   (setq tags-table-list (--filter (file-exists-p it) tags-table-list)))
 
+
+(progn
+  (defvar dg-stratopan-password ""
+    "My password to stratopan.
+
+The defvar keeps things from going nuts; it's actually defined
+out side of git, of course.")
+  (defun dg-stratopan-password ()
+    (interactive)
+    (insert (format "%s" dg-stratopan-password))))
+
 (provide 'dg-defun)
