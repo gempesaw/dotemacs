@@ -65,6 +65,7 @@
                     skewer-mode
                     smart-tab
                     smex
+                    solarized-theme
                     switch-window
                     tern
                     tumblesocks
