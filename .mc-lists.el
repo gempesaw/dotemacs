@@ -45,6 +45,7 @@
         delete-horizontal-space
         delete-indentation
         describe-key
+        dg-dired-browse-file-at-point
         dg-save-buffer
         dired-details-hide
         dired-do-delete
@@ -153,6 +154,7 @@
         create-new-shell-here
         delete-other-window
         delete-window
+        dired-details-show
         dired-maybe-insert-subdir
         dired-next-line
         dired-previous-line
