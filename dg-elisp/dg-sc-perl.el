@@ -87,7 +87,7 @@ browsers."
     (if (or (> pfx 1)
             (and (search-forward "Result: PASS" nil t)
                  (string= "*sc-hdew-prove-all*" (buffer-name (current-buffer)))))
-        (async-shell-command "ssh honeydew \"cd stage_hdew && git reset --hard HEAD && git pull --rebase && . deploy.sh\"" "*hdew-prod*")
+        (async-shell-command "ssh honeydew \"cd stage_hdew && . deploy.sh\"" "*hdew-prod*")
       (message "Try again from a successful hdew prove buffer!"))))
 
 (defun sc-hdew-push-to-prod-backend ()
