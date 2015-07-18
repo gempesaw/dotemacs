@@ -75,12 +75,13 @@ Titus von der Malsburg."
   (setq message-send-mail-function 'message-send-mail-with-sendmail
         message-send-mail-function 'smtpmail-send-it
         message-signature "Daniel Gempesaw | Software Testing Architect
-M 302.754.1231
+M 302.754.1231 - dgempesaw@sharecare.com
 
 Sharecare, Inc.
-Sharecare.com | DoctorOz.com | DailyStrength.org | the little blue book | BACTES
 
-www.sharecare.com/realagetest"
+My RealAge is 6.3 years younger. What's yours? Take the test now!
+https://www.sharecare.com/realage-test
+"
         mu4e-compose-signature message-signature)
 
   (setq smtpmail-stream-type 'starttls
