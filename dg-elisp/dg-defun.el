@@ -473,7 +473,7 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
 
   (defadvice save-buffer (after ar-auto-recompile activate)
     (when (and ar-auto-recompile
-               (get-buffer-window "*compilation*"))
+               (get-buffer-window "*compilation*" t))
       (set-buffer compilation-last-buffer)
       (revert-buffer t t))))
 
