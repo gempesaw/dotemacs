@@ -14,7 +14,7 @@
         ("Perl"
          :host "irc.perl.org"
          :port 6667
-         :channels ("#perl" "#moose" "#dzil"))))
+         :channels ("#perl" "#dzil"))))
 
 (defun bitlbee ()
   (interactive)
