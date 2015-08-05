@@ -2,8 +2,14 @@
                            "angular"
                            "CodeMirror"
                            "describe"
+                           "fdescribe"
                            "it"
-                           "iit"
+                           "fit"
+                           "expect"
+                           "beforeEach"
+                           "module"
+                           "inject"
+
                            ))
 
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
