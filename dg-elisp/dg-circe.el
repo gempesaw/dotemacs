@@ -8,13 +8,14 @@
       `(("Freenode"
          :nick "dgempesaw"
          :channels (;; "#emacs"
-                    "#selenium")
+                    "#selenium"
+                    "#chrome-devtools")
          :nickserv-password ,circe-freenode-password
          )
         ("Perl"
          :host "irc.perl.org"
          :port 6667
-         :channels ("#perl" "#dzil"))))
+         :channels ("#perl"))))
 
 (defun bitlbee ()
   (interactive)
