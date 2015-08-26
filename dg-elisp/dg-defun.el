@@ -203,11 +203,17 @@ might be bad."
   (delete-trailing-whitespace)
   (set-buffer-file-coding-system 'utf-8))
 
-(defun cleanup-buffer-toggle-tabs ()
+(defun dg-cleanup-buffer-toggle-tabs ()
   (interactive)
   (message
    (format "tabs cleanup: %s"
            (setq cleanup-buffer-tabs (not cleanup-buffer-tabs)))))
+
+(defun dg-use-tabs-for-whitespace ()
+  (interactive)
+  (setq-local cleanup-buffer-tabs nil)
+  (setq-local indent-tabs-mode t)
+  (setq-local tab-width 4))
 
 (defun cleanup-buffer ()
   "Perform a bunch of operations on the whitespace content of a buffer.
