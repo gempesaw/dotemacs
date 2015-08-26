@@ -15,7 +15,14 @@
         ("Perl"
          :host "irc.perl.org"
          :port 6667
-         :channels ("#perl"))))
+         :channels ("#perl"))
+        ("my-bitlbee" :host "localhost" :port 6667
+         :nickserv-mask "\\(bitlbee\\|root\\)!\\(bitlbee\\|root\\)@"
+         :nickserv-identify-challenge "use the \x02identify\x02 command to identify yourself"
+         :nickserv-identify-command "PRIVMSG &bitlbee :identify {password}"
+         :nickserv-identify-confirmation "Password accepted, settings and accounts loaded"
+         )
+        ))
 
 (defun bitlbee ()
   (interactive)
