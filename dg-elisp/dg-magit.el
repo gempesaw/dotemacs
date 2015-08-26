@@ -9,6 +9,10 @@
      ;; magit whitespace
      (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
 
+(setq magit-revert-buffers nil     ;; reverting all the buffers is pretty slow
+      magit-push-always-verify nil ;; stop asking if I want to PP to origin
+      )
+
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;; Default to side-by-side comparisons in ediff.
