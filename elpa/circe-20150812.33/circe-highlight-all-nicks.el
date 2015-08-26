@@ -8,7 +8,7 @@
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
+;; as published by the Free Software Foundation; either version 3
 ;; of the License, or (at your option) any later version.
 
 ;; This program is distributed in the hope that it will be useful,
@@ -83,11 +83,12 @@ See `enable-circe-highlight-all-nicks'."
           (nicks '())
           (regex nil))
       (when body
-        (when circe-channel-users
-          (maphash (lambda (nick _)
-                     (when (not (circe-server-my-nick-p nick))
-                       (setq nicks (cons nick nicks))))
-                   circe-channel-users))
+        (let ((channel-nicks (circe-channel-nicks)))
+          (when channel-nicks
+            (mapc (lambda (nick)
+                    (when (not (circe-server-my-nick-p nick))
+                      (setq nicks (cons nick nicks))))
+                  channel-nicks)))
         (setq regex (regexp-opt nicks 'words))
         (goto-char body)
         (while (re-search-forward regex nil t)

@@ -1,6 +1,6 @@
 ;;; circe-chanop.el --- Provide common channel operator commands
 
-;; Copyright (C) 2006  Jorgen Schaefer
+;; Copyright (C) 2006, 2015  Jorgen Schaefer
 
 ;; Author: Jorgen Schaefer <forcer@forcix.cx>
 
@@ -8,7 +8,7 @@
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
+;; as published by the Free Software Foundation; either version 3
 ;; of the License, or (at your option) any later version.
 
 ;; This program is distributed in the hope that it will be useful,
@@ -42,46 +42,53 @@
   (interactive "sMode change: ")
   (cond
    ((not (string-match "^[+-]" mode))
-    (circe-server-send (format "MODE %s" mode)))
+    (irc-send-raw (circe-server-process)
+                  (format "MODE %s" mode)))
    ((eq major-mode 'circe-channel-mode)
-    (circe-server-send (format "MODE %s %s" circe-chat-target mode)))
+    (irc-send-raw (circe-server-process)
+                  (format "MODE %s %s" circe-chat-target mode)))
    (t
-    (circe-server-message "Not in a channel buffer."))))
+    (circe-display-server-message "Not in a channel buffer."))))
 
 (defun circe-command-BANS (&optional ignored)
   "Show channel bans"
   (if (not circe-chat-target)
-      (circe-server-message "No target for current buffer")
-    (circe-server-send (format "MODE %s +b" circe-chat-target))))
+      (circe-display-server-message "No target for current buffer")
+    (irc-send-raw (circe-server-process)
+                  (format "MODE %s +b" circe-chat-target))))
 
 (defun circe-command-KICK (nick &optional reason)
   "Kick WHO from the current channel with optional REASON."
   (interactive "sKick who: \nsWhy: ")
   (if (not (eq major-mode 'circe-channel-mode))
-      (circe-server-message "Not in a channel buffer.")
+      (circe-display-server-message "Not in a channel buffer.")
     (when (not reason)
       (if (string-match "^\\([^ ]*\\) +\\(.+\\)" nick)
           (setq reason (match-string 2 nick)
                 nick (match-string 1 nick))
         (setq reason "-")))
-    (circe-server-send (format "KICK %s %s :%s"
-                               circe-chat-target nick reason))))
+    (irc-send-raw (circe-server-process)
+                  (format "KICK %s %s :%s"
+                          circe-chat-target nick reason))))
 
 (defun circe-command-GETOP (&optional ignored)
   "Ask chanserv for op on the current channel."
   (interactive)
   (if (not (eq major-mode 'circe-channel-mode))
-      (circe-server-message "Not in a channel buffer.")
-    (circe-server-send (format "PRIVMSG chanserv :op %s" circe-chat-target))))
+      (circe-display-server-message "Not in a channel buffer.")
+    (irc-send-PRIVMSG (circe-server-process)
+                      "chanserv"
+                      (format "op %s" circe-chat-target))))
 
 (defun circe-command-DROPOP (&optional ignored)
   "Lose op mode on the current channel."
   (interactive)
   (if (not (eq major-mode 'circe-channel-mode))
-      (circe-server-message "Not in a channel buffer.")
-    (circe-server-send (format "MODE %s -o %s"
-                               circe-chat-target
-                               (circe-server-nick)))))
+      (circe-display-server-message "Not in a channel buffer.")
+    (irc-send-raw (circe-server-process)
+                  (format "MODE %s -o %s"
+                          circe-chat-target
+                          (circe-nick)))))
 
 ;; For KICKBAN (requested by Riastradh), we'd need a callback on a
 ;; USERHOST command.

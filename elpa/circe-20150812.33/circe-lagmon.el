@@ -9,7 +9,7 @@
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
-;; as published by the Free Software Foundation; either version 2
+;; as published by the Free Software Foundation; either version 3
 ;; of the License, or (at your option) any later version.
 
 ;; This program is distributed in the hope that it will be useful,
@@ -37,7 +37,7 @@
 (require 'circe)
 
 ;;; User variables
-;;;
+
 (defgroup circe-lagmon nil
   "Lag Monitor for Circe"
   :prefix "circe-lagmon-"
@@ -55,7 +55,7 @@ Increase this to improve performance at the cost of accuracy."
   :type 'number
   :group 'circe-lagmon)
 
-(defcustom circe-lagmon-reconnect-interval 40
+(defcustom circe-lagmon-reconnect-interval 120
   "Seconds after which to automatically reconnect upon a timeout
 of a lag monitor message. A value of nil disables the feature."
   :type '(choice (const :tag "Disable auto-reconnect" nil)
@@ -102,7 +102,9 @@ run sufficiently often with the timer."
   (dolist (buffer (circe-server-buffers))
     (with-current-buffer buffer
       (when (and (eq major-mode 'circe-server-mode)
-                 circe-server-registered-p
+                 circe-server-process
+                 (eq (irc-connection-state circe-server-process)
+                     'registered)
                  (not circe-lagmon-disabled))
         (circe-lagmon-server-check)))))
 
@@ -137,43 +139,19 @@ send a request if it's time for that. See
           (> now
              (+ circe-lagmon-last-send-time
                 circe-lagmon-check-interval)))
-      (circe-server-send (format "PRIVMSG %s :\C-aLAGMON %s\C-a"
-                                 circe-server-nick now)
-                         t)
+      (irc-send-raw (circe-server-process)
+                    (format "PRIVMSG %s :\C-aLAGMON %s\C-a"
+                            (circe-nick) now)
+                    :nowait)
       (setq circe-lagmon-last-send-time now
             circe-lagmon-last-receive-time nil))
      )))
-
-(defun circe-lagmon-ctcp-LAGMON-display-handler (nick user host command args)
-  "Suppress the default display of the CTCP LAGMON message."
-  'ignored)
-
-(defun circe-lagmon-message-handler (nick user host command args)
-  "Handle relevant message to lagmon
-
-On a CTCP LAGMON message, store the time and updating the
-mode-line display.
-
-On a NICK change for us, reset the timer as well, as might be
-missing a CTCP response sent to the old nick."
-  (cond
-   ((and (string= command "CTCP-LAGMON")
-         (circe-server-my-nick-p nick))
-    (let* ((now (float-time))
-           (lag (/ (- now (string-to-number (cadr args)))
-                   2)))
-      (setq circe-lagmon-server-lag lag
-            circe-lagmon-last-receive-time now)
-      (circe-lagmon-force-mode-line-update)))
-   ((and (string= command "NICK")
-         (circe-server-my-nick-p nick))
-    (setq circe-lagmon-last-send-time nil))))
 
 (defun circe-lagmon-force-mode-line-update ()
   "Call force-mode-line-update on a circe server buffer and all
 of its chat buffers."
   (force-mode-line-update)
-  (dolist (b (circe-chat-buffers))
+  (dolist (b (circe-server-chat-buffers))
     (with-current-buffer b
       (force-mode-line-update))))
 
@@ -209,6 +187,25 @@ start the lag monitor if it has not been started."
           (run-at-time nil circe-lagmon-timer-tick
                        'circe-lagmon-timer-tick))))
 
+(defun circe-lagmon--rpl-welcome-handler (conn &rest ignored)
+  (with-current-buffer (irc-connection-get conn :server-buffer)
+    (circe-lagmon-init)))
+
+(defun circe-lagmon--ctcp-lagmon-handler (conn event sender target argument)
+  (when (irc-current-nick-p conn (irc-userstring-nick sender))
+    (with-current-buffer (irc-connection-get conn :server-buffer)
+      (let* ((now (float-time))
+             (lag (/ (- now (string-to-number argument))
+                     2)))
+        (setq circe-lagmon-server-lag lag
+              circe-lagmon-last-receive-time now)
+        (circe-lagmon-force-mode-line-update)))))
+
+(defun circe-lagmon--nick-handler (conn event sender new-nick)
+  (when (irc-current-nick-p conn (irc-userstring-nick sender))
+    (with-current-buffer (irc-connection-get conn :server-buffer)
+      (setq circe-lagmon-last-send-time nil))))
+
 ;;;###autoload
 (define-minor-mode circe-lagmon-mode
   "Circe-lagmon-mode monitors the amount of lag on your
@@ -216,26 +213,31 @@ connection to each server, and displays the lag time in seconds
 in the mode-line."
   :global t
   (let ((mode-line-entry '(:eval (circe-lagmon-format-mode-line-entry))))
-    (remove-hook 'circe-server-connected-hook 'circe-lagmon-init)
     (remove-hook 'mode-line-modes mode-line-entry)
-    (remove-hook 'circe-receive-message-functions
-                 'circe-lagmon-ctcp-LAGMON-handler)
-    (circe-set-display-handler "CTCP-LAGMON" nil)
+    (let ((table (circe-irc-handler-table)))
+      (irc-handler-remove table "001" 'circe-lagmon--rpl-welcome-handler)
+      (irc-handler-remove table "irc.ctcp.LAGMON"
+                          'circe-lagmon--ctcp-lagmon-handler)
+      (irc-handler-remove table "NICK" 'circe-lagmon--nick-handler))
+    (circe-set-display-handler "irc.ctcp.LAGMON" nil)
     (when circe-lagmon-timer
       (cancel-timer circe-lagmon-timer)
       (setq circe-lagmon-timer nil))
     (when circe-lagmon-mode
       (add-hook 'mode-line-modes mode-line-entry)
-      (add-hook 'circe-receive-message-functions
-                'circe-lagmon-message-handler)
-      (circe-set-display-handler "CTCP-LAGMON"
-                                 'circe-lagmon-ctcp-LAGMON-display-handler)
+      (let ((table (circe-irc-handler-table)))
+        (irc-handler-add table "001" 'circe-lagmon--rpl-welcome-handler)
+        (irc-handler-add table "irc.ctcp.LAGMON"
+                         'circe-lagmon--ctcp-lagmon-handler)
+        (irc-handler-add table "NICK" 'circe-lagmon--nick-handler))
+      (circe-set-display-handler "irc.ctcp.LAGMON" 'circe-display-ignore)
       (dolist (buffer (circe-server-buffers))
         (with-current-buffer buffer
           (setq circe-lagmon-server-lag nil)
-          (when circe-server-registered-p
-            (circe-lagmon-init))))
-      (add-hook 'circe-server-connected-hook 'circe-lagmon-init))))
+          (when (and circe-server-process
+                     (eq (irc-connection-state circe-server-process)
+                         'registered))
+            (circe-lagmon-init)))))))
 
 (provide 'circe-lagmon)
 ;;; circe-lagmon.el ends here
