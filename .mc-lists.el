@@ -122,6 +122,7 @@
         python-indent-dedent-line-backspace
         python-indent-electric-colon
         repeat
+        replace-last-sexp
         sgml-slash
         smart-tab
         smarter-move-beginning-of-line
@@ -154,6 +155,7 @@
         create-new-shell-here
         delete-other-window
         delete-window
+        dg-hsplit-last-buffer
         dired-details-show
         dired-maybe-insert-subdir
         dired-next-line
