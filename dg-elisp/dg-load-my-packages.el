@@ -40,6 +40,7 @@
                     httprepl
                     ido-ubiquitous
                     ido-vertical-mode
+                    ido-completing-read+ ;; needed for new magit
                     impatient-mode
                     js2-mode
                     jujube-theme
