@@ -2,10 +2,6 @@
 
 (eval-after-load 'magit
   '(progn
-     (set-face-foreground 'magit-diff-add "green3")
-     (set-face-foreground 'magit-diff-del "red3")
-     (set-face-attribute 'magit-item-highlight nil :inherit nil)
-     (set-face-background 'magit-item-highlight "gray17")
      ;; be like dired, use d for killing
      (define-key magit-status-mode-map (kbd "d") 'magit-discard-item)
      ;; quit magit smartly
