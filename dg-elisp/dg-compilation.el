@@ -7,4 +7,7 @@
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+(setq compilation-error-regexp-alist
+      (delete 'maven compilation-error-regexp-alist))
+
 (provide 'dg-compilation)
