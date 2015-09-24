@@ -33,6 +33,7 @@
                     expand-region
                     f
                     fancy-narrow
+                    ggtags
                     gist
                     git-timemachine
                     grunt
@@ -72,6 +73,7 @@
                     tumblesocks
                     tramp
                     wgrep
+                    which-key
                     wrap-region
                     yasnippet
                     company
