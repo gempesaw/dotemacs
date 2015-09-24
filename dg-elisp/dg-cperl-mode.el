@@ -64,7 +64,6 @@
     (interactive)
     (let ((thing (substring-no-properties (thing-at-point 'symbol))))
       (unless (dg-cperl-find-perldoc-tag thing)
-        (message "finding tag")
         (find-tag thing))))
 
   (defun dg-cperl-find-perldoc-tag (arg)
@@ -75,5 +74,6 @@
         (find-file file)))))
 
 (add-hook 'cperl-mode-hook 'er/add-cperl-mode-expansions)
+(add-hook 'cperl-mode-hook 'ggtags-mode)
 
 (provide 'dg-cperl-mode)
