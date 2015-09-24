@@ -61,8 +61,7 @@ browsers."
   (interactive)
   (let ((buf "*sc-hdew-prove-all*"))
     (start-process "hdew-generate-js-rules" nil "perl" "/opt/honeydew/bin/parseRules.pl")
-    (start-process "hdew-make-pod" nil "perl" "/opt/honeydew/bin/makePod.pl")
-    (call-process-shell-command "cd /opt/honeydew && dzil build &" nil nil)
+    (call-process-shell-command "cd /opt/honeydew && dzil build && dzil clean &" nil nil)
     (if (sc-hdew-config-local-p)
         (if (string= buf (buffer-name (current-buffer)))
             (async-shell-command
