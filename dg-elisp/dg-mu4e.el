@@ -171,4 +171,8 @@ If we're waiting for user-input, don't show anyhting."
 (unless (executable-find "html2text")
   (message "Missing `html2text`. Maybe try `brew install html2text` ?"))
 
+(defadvice browse-url (around use-existant-default-directory activate)
+  (let ((default-directory "/"))
+    ad-do-it))
+
 (provide 'dg-mu4e)
