@@ -533,7 +533,10 @@ out side of git, of course.")
           (kill-new code)
           (setq dg-vpn-list rest))
       (let ((codes (read-from-minibuffer "Enter space delimited codes: ")))
-        (setq dg-vpn-list (s-split " " codes)))))
+        (setq dg-vpn-list
+              (mapcar 's-trim
+                      (-filter (lambda (it) (string-match "[[:digit:]]+" it))
+                               (s-split " " codes)))))))
 
   (defun dg-vpn-reset ()
     (interactive)
