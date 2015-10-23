@@ -36,6 +36,7 @@
                     ggtags
                     gist
                     git-timemachine
+                    groovy-mode
                     grunt
                     htmlize
                     httprepl
