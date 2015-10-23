@@ -68,4 +68,17 @@
 
 (projectile-global-mode 1)
 
+;;; open a shell at the root of the directory
+(progn
+  (defun dg-projectile-open-shell-in-root ()
+         (interactive)
+         (projectile-with-default-dir (projectile-project-root)
+           (call-interactively 'switch-to-shell-or-create)))
+
+  (define-key projectile-mode-map (kbd "C-c p /") 'dg-projectile-open-shell-in-root))
+
+;;; open dired at the root of the directory
+(setq projectile-find-dir-includes-top-level t)
+
+
 (provide 'dg-projectile)
