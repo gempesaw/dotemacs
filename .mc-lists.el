@@ -64,6 +64,7 @@
         execute-feature
         fill-paragraph
         forward-sexp
+        ggtags-navigation-mode-done
         git-rebase-reword
         haml-electric-backspace
         ibuffer-mark-for-delete
@@ -139,6 +140,7 @@
         wdired-next-line
         wdired-previous-line
         web-mode-comment-or-uncomment
+        wgrep-abort-changes
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
         where-is
@@ -165,6 +167,7 @@
         dired-undo
         dired-up-directory
         end-of-buffer
+        ensime-refactor-rename
         eval-last-sexp
         execute-perl
         fancy-widen
