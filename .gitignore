@@ -34,3 +34,4 @@ archive-contents
 /elpa/gnupg/
 /network-security.data
 /elpa/archives/gnu/archive-contents.signed
+classpath*SNAPSHOT
