@@ -47,7 +47,6 @@
     (key-chord-define-global "jl" 'jabber-activity-switch-to)
     (key-chord-define-global "hk" 'tracking-next-buffer)
     (key-chord-define-global "zx" 'jabber-connect-all)
-    (key-chord-define-global "zc" 'jabber-chat-with)
 
     (key-chord-define-global ",." (lambda () (interactive) (switch-to-buffer "*<appium>*")))
 
