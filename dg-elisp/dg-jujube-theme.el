@@ -1,1 +1,0 @@
-(provide 'dg-jujube-theme)
