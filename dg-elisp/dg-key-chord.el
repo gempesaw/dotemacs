@@ -24,6 +24,11 @@
                                       "Jump to bookmark: "
                                       (bookmark-all-names)))))
 
+    ;; windows
+    (key-chord-define-global "1q" 'delete-other-windows)
+    (key-chord-define-global "2w" 'dg-vsplit-last-buffer)
+    (key-chord-define-global "3e" 'dg-hsplit-last-buffer)
+
     ;; files
     (key-chord-define-global "xw" 'ido-write-file)
     (key-chord-define-global "xf" 'find-file)
