@@ -9,7 +9,7 @@
       (find-file current-file)
       (message (format "Ensime: turning semantic highlighting %s" state))))
 
-  (define-key ensime-mode-map (vconcat ensime-mode-key-prefix [?\C-v h]) 'dg-ensime-toggle-semantic-highlight))
+  (define-key ensime-mode-map (vconcat ensime-mode-key-prefix [?\v h]) 'dg-ensime-toggle-semantic-highlight))
 
 (face-spec-set 'ensime-compile-infoline '((t (:inherit nil))))
 (setq  ensime-sem-high-faces
@@ -30,8 +30,8 @@
 
 (let ((prefix-map (make-sparse-keymap)))
   (define-key prefix-map (kbd "v i") 'ensime-inspect-type-at-point)
-  (define-key prefix-map (kbd "v 5 i")
-    'ensime-inspect-type-at-point-other-frame)
+  (define-key prefix-map (kbd "v 5 i") 'ensime-inspect-type-at-point-other-frame)
+
   (define-key prefix-map (kbd "v p") 'ensime-inspect-package-at-point)
   (define-key prefix-map (kbd "v o") 'ensime-inspect-project-package)
   (define-key prefix-map (kbd "v r") 'ensime-show-uses-of-symbol-at-point)
@@ -46,11 +46,11 @@
   (define-key prefix-map (kbd "v e") 'ensime-print-errors-at-point)
   (define-key prefix-map (kbd "v .") 'ensime-expand-selection-command)
 
-  (define-key prefix-map (kbd "v C-r") 'ensime-inf-eval-region)
+  (define-key prefix-map (kbd "v r") 'ensime-inf-eval-region)
   (define-key prefix-map (kbd "v b") 'ensime-inf-eval-buffer)
   (define-key prefix-map (kbd "v l") 'ensime-inf-load-file)
 
-  (define-key prefix-map (kbd "c c") 'ensime-typecheck-current-file)
+  (define-key prefix-map (kbd "c c") 'ensime-typecheck-current-buffer)
   (define-key prefix-map (kbd "c a") 'ensime-typecheck-all)
   (define-key prefix-map (kbd "c r") 'ensime-reload-open-files)
   (define-key prefix-map (kbd "c e") 'ensime-show-all-errors-and-warnings)
@@ -75,11 +75,12 @@
   (define-key prefix-map (kbd "b S") 'ensime-stacktrace-switch)
   (define-key prefix-map (kbd "b c") 'ensime-sbt-do-compile)
   (define-key prefix-map (kbd "b n") 'ensime-sbt-do-clean)
-  (define-key prefix-map (kbd "b o") 'ensime-sbt-do-test-only)
+  (define-key prefix-map (kbd "b E") 'ensime-sbt-do-gen-ensime)
+  (define-key prefix-map (kbd "b o") 'ensime-sbt-do-test-only-dwim)
   (define-key prefix-map (kbd "b p") 'ensime-sbt-do-package)
   (define-key prefix-map (kbd "b r") 'ensime-sbt-do-run)
-  (define-key prefix-map (kbd "b T") 'ensime-sbt-do-test)
-  (define-key prefix-map (kbd "b t") 'ensime-sbt-do-test-quick)
+  (define-key prefix-map (kbd "b t") 'ensime-sbt-do-test-dwim)
+  (define-key prefix-map (kbd "b q") 'ensime-sbt-do-test-quick-dwim)
 
   (define-key prefix-map (kbd "d u") 'ensime-db-clear-break)
   (define-key prefix-map (kbd "d s") 'ensime-db-step)
@@ -94,9 +95,10 @@
   (define-key prefix-map (kbd "r l") 'ensime-refactor-extract-local)
   (define-key prefix-map (kbd "r m") 'ensime-refactor-extract-method)
   (define-key prefix-map (kbd "r i") 'ensime-refactor-inline-local)
-  (define-key prefix-map (kbd "r p") 'ensime-import-type-at-point)
   (define-key prefix-map (kbd "r t") 'ensime-import-type-at-point)
 
   (key-chord-define-global "zc" prefix-map))
+
+(setq ensime-sbt-command "/usr/local/bin/sbt")
 
 (provide 'dg-ensime)
