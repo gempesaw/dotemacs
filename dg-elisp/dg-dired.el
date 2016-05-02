@@ -27,6 +27,8 @@
 
   (key-chord-define dired-mode-map "hh" 'dired-filter-mode))
 
+(setq dired-filter-verbose nil)
+
 (defun dg-dired-browse-file-at-point ()
   (interactive)
   (let ((path (dired-copy-filename-as-kill 0)))
