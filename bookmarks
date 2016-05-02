@@ -3,7 +3,7 @@
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
 (("dev-honeydew.ini"
- (filename . "~/opt/dev_hdew/honeydew/honeydew.ini")
+ (filename . "~/opt/honeydew/honeydew.ini")
  (front-context-string . "[Accounts]\narmy=")
  (rear-context-string)
  (position . 1))
