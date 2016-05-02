@@ -3,6 +3,11 @@
   (add-to-list 'load-path "/Users/dgempesaw/opt/mu/mu4e/")
   (require 'mu4e)
 
+  (set-face-attribute 'variable-pitch nil
+                      :family "Monaco"
+                      :height 120
+                      :weight 'normal)
+
   (defun mu4e-shr2text ()
     "Html to text using the shr engine; this can be used in
 `mu4e-html2text-command' in a new enough emacs. Based on code by
@@ -45,10 +50,10 @@ Titus von der Malsburg."
   (setq mu4e-get-mail-command "true"
         mu4e-split-view 'vertical
         mu4e-headers-leave-behavior 'apply
-        mu4e-update-interval 180
+        mu4e-update-interval nil
         mu4e-view-prefer-html nil
         mu4e-headers-results-limit 50
-        mu4e-use-fancy-chars nil
+        mu4e-use-fancy-chars t
         mu4e-view-show-images t
         mu4e-mu-binary "/usr/local/bin/mu"
         mu4e-bookmarks '(("from:(JIRA) and flag:unread" "Unread JIRA" ?j)
@@ -58,7 +63,7 @@ Titus von der Malsburg."
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw" "Tagged in JIRA" ?J)
-                         ("maildir:/INBOX AND date:1m..now AND NOT subject:fitness AND NOT from:squash@sharecare.com AND NOT from:root@sharecare.com AND NOT (from:root@honeydew.be.jamconsultg.com AND NOT subject:ios) AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:noreply@sf-notifications.com AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios@be.jamconsultg.com AND NOT (subject:Build AND subject:Feature) AND NOT to:SC2-Build-Notifications@sharecare.com AND NOT to:devteam@bactes.com AND NOT subject:Sonar AND NOT from:nagios" "Inbox" ?i)
+                         ("maildir:/INBOX AND date:1m..now AND NOT subject:fitness AND NOT from:squash@sharecare.com AND NOT from:root@sharecare.com AND NOT (from:root@honeydew.be.jamconsultg.com AND NOT subject:ios) AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:noreply@sf-notifications.com AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios@be.jamconsultg.com AND NOT (subject:Build AND subject:Feature) AND NOT to:SC2-Build-Notifications@sharecare.com AND NOT to:devteam@bactes.com AND NOT subject:Sonar AND NOT from:nagios AND NOT subject:Jenkins" "Inbox" ?i)
                          ("maildir:/INBOX AND subject:Build and flag:unread" "Build Requests" ?b)
                          ("from:dgempesaw AND (to:cbanks OR cc:cbanks) AND update" "clint" ?c)
                          ("(maildir:/INBOX or maildir:/archive) AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew AND NOT from:adminui" "All Inbox" ?I)
