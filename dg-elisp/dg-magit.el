@@ -3,15 +3,12 @@
 (eval-after-load 'magit
   '(progn
      ;; be like dired, use d for killing
-     (define-key magit-status-mode-map (kbd "d") 'magit-discard-item)
+     (define-key magit-status-mode-map (kbd "d") 'magit-discard)
      ;; quit magit smartly
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
-     ;; magit whitespace
-     (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
-(setq magit-revert-buffers nil     ;; reverting all the buffers is pretty slow
-      magit-push-always-verify nil ;; stop asking if I want to PP to origin
-      )
+(magit-auto-revert-mode -1)
+(setq magit-save-repository-buffers nil)
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
