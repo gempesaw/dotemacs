@@ -542,4 +542,13 @@ out side of git, of course.")
     (interactive)
     (setq dg-vpn-list nil)))
 
+(defun dg-browse-url-or-file ()
+  (interactive)
+  (let ((url (or (thing-at-point 'filename)
+                 (thing-at-point 'url))))
+    (when url
+      (when (s-starts-with-p "/" url)
+        (setq url (format "file://%s" url)))
+      (browse-url url))))
+
 (provide 'dg-defun)
