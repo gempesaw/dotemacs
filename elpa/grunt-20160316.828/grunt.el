@@ -1,13 +1,13 @@
 ;;; grunt.el --- Some glue to stick Emacs and Gruntfiles together
-;; Version: 1.3.0
-;; Package-Version: 20150820.36
+;; Version: 1.3.2
+;; Package-Version: 20160316.828
 
 ;; Copyright (C) 2014  Daniel Gempesaw
 
 ;; Author: Daniel Gempesaw <dgempesaw@sharecare.com>
 ;; Keywords: convenience, grunt
 ;; URL: https://github.com/gempesaw/grunt.el
-;; Package-Requires: ((dash "2.9.0") (ansi-color "3.4.2"))
+;; Package-Requires: ((dash "2.9.0") (ansi-color "3.4.2") (emacs "24.3"))
 ;; Created: 2014 Apr 1
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -141,6 +141,8 @@ happening.")
 (defvar grunt-previous-task nil
   "Previous task that was run.")
 
+(defvar grunt-buffer-task nil)
+
 ;;;###autoload
 (defun grunt-exec (&optional pfx)
   "Run tasks from gruntfile.  Calling with PFX will clear the cache of tasks.
@@ -183,6 +185,10 @@ immaterial."
     (grunt--set-process-buffer-task buf task)
   proc))
 
+(defmacro grunt--scroll-body (scroll &rest body)
+  "Switch on SCROLL through the output of a process while executing BODY."
+  `(if ,scroll (progn ,@body) (save-excursion ,@body)))
+
 (defun grunt--apply-ansi-color (proc string)
   "Filter to function for process PROC to apply ansi color to STRING."
   (when (buffer-live-p (process-buffer proc))
@@ -196,10 +202,6 @@ immaterial."
          (ansi-color-apply-on-region (process-mark proc) (point))
          (set-marker (process-mark proc) (point)))))))
 
-(defmacro grunt--scroll-body (scroll &rest body)
-  "Switch on SCROLL through the output of a process while executing BODY."
-  `(if ,scroll (progn ,@body) (save-excursion ,@body)))
-
 (defun grunt--project-task-buffer (task)
   "Create a process buffer for the grunt TASK."
   (let* ((bufname (format "*grunt-%s*<%s>" task grunt-current-project))
@@ -209,7 +211,10 @@ immaterial."
       (set-process-query-on-exit-flag proc nil)
       (kill-buffer bufname))
     (grunt--clear-task-buffer buf)
-    (get-buffer-create bufname)))
+    (prog1
+        (get-buffer-create bufname)
+      (with-current-buffer bufname
+        (compilation-mode)))))
 
 (defun grunt--clear-task-buffer (buf)
   "Clears the task buffer BUF.
@@ -239,7 +244,7 @@ extracting the tasks using regexp."
     (let* ((contents (grunt--get-help-tasks))
            (result
             (-non-nil
-             (-map (lambda (line) (when (string-match "^[\s\t]*\\([a-zA-Z:\-]+?\\)  " line)
+             (-map (lambda (line) (when (string-match "^[\s\t]*\\([a-zA-Z:\_\-]+?\\)  " line)
                                     (match-string 1 line))) contents))))
       (if grunt-cache-tasks (setq grunt-current-tasks-cache result) result))))
 

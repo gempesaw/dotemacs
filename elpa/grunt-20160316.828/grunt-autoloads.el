@@ -1,9 +1,9 @@
 ;;; grunt-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
+(add-to-list 'load-path (directory-file-name (or (file-name-directory #$) (car load-path))))
 
-;;;### (autoloads nil "grunt" "grunt.el" (21979 11780 0 0))
+;;;### (autoloads nil "grunt" "grunt.el" t)
 ;;; Generated autoloads from grunt.el
 
 (autoload 'grunt-exec "grunt" "\
