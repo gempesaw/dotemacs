@@ -50,6 +50,9 @@
  '(main-line-color1 "#222912")
  '(main-line-color2 "#09150F")
  '(org-agenda-files (quote ("/opt/ical2org/test.org")))
+ '(package-selected-packages
+   (quote
+    (wrap-region which-key wgrep web-mode tumblesocks tabulated-list switch-window solarized-theme smex smart-tab smart-mode-line skewer-mode scss-mode sass-mode rvm request regex-tool rainbow-mode rainbow-delimiters projectile pretty-mode-plus php-mode perlbrew pcre2el paredit org-plus-contrib org offlineimap noflet names multiple-cursors mocker makey magit lui litable lcs key-chord jujube-theme json-mode inflections impatient-mode ido-vertical-mode ido-ubiquitous ido-completing-read+ ido-at-point httprepl groovy-mode gradle-mode git-timemachine gist ggtags flycheck flx-ido fancy-narrow f expand-region exec-path-from-shell ensime elisp-slime-nav duplicate-thing docker dired-subtree dired-filter dired-details diminish dash-at-point cperl-mode company-tern cl-lib-highlight circe cider calfw browse-kill-ring auto-complete assemblage-theme android-mode anchored-transpose ack-and-a-half ace-jump-mode)))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-color1 "#222912")
