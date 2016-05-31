@@ -65,14 +65,19 @@
   :group 'circe)
 
 (defface circe-server-face
-  '((((type tty)) :foreground "blue" :weight bold)
+  '((((type tty)) (:foreground "blue" :weight bold))
+    (((background dark)) (:foreground "#5095cf"))
+    (((background light)) (:foreground "#3840b0"))
     (t (:foreground "SteelBlue")))
   "The face used to highlight server messages."
   :group 'circe)
 
 (defface circe-highlight-nick-face
-  '((((type tty)) (:foreground "cyan" :weight bold))
-    (t (:foreground "CadetBlue3" :weight bold)))
+  '((default (:weight bold))
+    (((type tty)) (:foreground "cyan"))
+    (((background dark)) (:foreground "#82e2ed"))
+    (((background light)) (:foreground "#0445b7"))
+    (t (:foreground "CadetBlue3")))
   "The face used to highlight messages directed to us."
   :group 'circe)
 
@@ -96,7 +101,7 @@ See the {topic-diff} parameter to `circe-format-server-topic'."
 
 (defface circe-fool-face
   '((((type tty)) (:foreground "grey40" :bold t))
-    (((type x)) (:foreground "grey40")))
+    (t (:foreground "grey40")))
   "The face used for fools.
 See `circe-fool-list'."
   :group 'circe)
@@ -370,8 +375,8 @@ This can be one of the following values:
 This can be one of the following values:
   ask - Ask the user for confirmation
   nil - Don't ask, just kill"
-  :type '(choid (const :tag "Ask before killing" ask)
-                (const :tag "Don't ask" nil))
+  :type '(choice (const :tag "Ask before killing" ask)
+                 (const :tag "Don't ask" nil))
   :group 'circe)
 
 (defcustom circe-track-faces-priorities '(circe-highlight-nick-face
@@ -1183,16 +1188,25 @@ See `circe-server-max-reconnect-attempts'.")
   (interactive)
   (with-circe-server-buffer
     (when (or (called-interactively-p 'any)
-              (not circe-server-inhibit-auto-reconnect-p)
-              (not circe-server-max-reconnect-attempts)
-              (<= circe-server-reconnect-attempts
-                  circe-server-max-reconnect-attempts))
+              (circe--reconnect-p))
       (setq circe-server-inhibit-auto-reconnect-p t
             circe-server-reconnect-attempts (+ circe-server-reconnect-attempts
                                                1))
       (unwind-protect
           (circe-reconnect--internal)
         (setq circe-server-inhibit-auto-reconnect-p nil)))))
+
+(defun circe--reconnect-p ()
+  (cond
+   (circe-server-inhibit-auto-reconnect-p
+    nil)
+   ((not circe-server-max-reconnect-attempts)
+    t)
+   ((<= circe-server-reconnect-attempts
+        circe-server-max-reconnect-attempts)
+    t)
+   (t
+    nil)))
 
 (defun circe-reconnect--internal ()
   "The internal function called for reconnecting unconditionally.
@@ -1454,7 +1468,7 @@ or if it matches the first word in BODY.
 PATTERNS should be the list of regular expressions."
   (let ((string (format "%s!%s" nick userhost))
         (target (when (and body
-                           (string-match "^\\([^ ]*\\)[:, ]" body))
+                           (string-match "^\\([^ ]*\\)[:,]" body))
                   (match-string 1 body))))
     (catch 'return
       (dolist (regex patterns)
@@ -2431,7 +2445,8 @@ Arguments are IGNORED."
                                             circe-chat-target))
            (topic (when channel
                     (irc-channel-topic channel))))
-      (lui-replace-input (format "/TOPIC %s %s" circe-chat-target topic)))
+      (lui-replace-input (format "/TOPIC %s %s"
+                                 circe-chat-target (or topic ""))))
     (goto-char (point-max))))
 
 (defun circe-command-CLEAR (&optional ignored)
@@ -2479,9 +2494,7 @@ If ARGUMENT is nil, it is interpreted as no argument."
   (interactive "sReason: ")
   (dolist (buf (circe-server-buffers))
     (with-current-buffer buf
-      (when (eq (process-status circe-server-process)
-                'open)
-        (irc-send-AWAY circe-server-process reason)))))
+      (irc-send-AWAY circe-server-process reason))))
 
 (defun circe-command-GQUIT (reason)
   "Quit all servers with reason REASON."
