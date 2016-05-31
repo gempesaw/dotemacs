@@ -1,13 +1,13 @@
 ;;; grunt.el --- Some glue to stick Emacs and Gruntfiles together
 ;; Version: 1.3.2
-;; Package-Version: 20160316.828
+;; Package-Version: 1.3.2
 
 ;; Copyright (C) 2014  Daniel Gempesaw
 
 ;; Author: Daniel Gempesaw <dgempesaw@sharecare.com>
 ;; Keywords: convenience, grunt
 ;; URL: https://github.com/gempesaw/grunt.el
-;; Package-Requires: ((dash "2.9.0") (ansi-color "3.4.2") (emacs "24.3"))
+;; Package-Requires: ((dash "2.9.0") (ansi-color "3.4.2"))
 ;; Created: 2014 Apr 1
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -141,8 +141,6 @@ happening.")
 (defvar grunt-previous-task nil
   "Previous task that was run.")
 
-(defvar grunt-buffer-task nil)
-
 ;;;###autoload
 (defun grunt-exec (&optional pfx)
   "Run tasks from gruntfile.  Calling with PFX will clear the cache of tasks.
@@ -211,10 +209,7 @@ immaterial."
       (set-process-query-on-exit-flag proc nil)
       (kill-buffer bufname))
     (grunt--clear-task-buffer buf)
-    (prog1
-        (get-buffer-create bufname)
-      (with-current-buffer bufname
-        (compilation-mode)))))
+    (get-buffer-create bufname)))
 
 (defun grunt--clear-task-buffer (buf)
   "Clears the task buffer BUF.
