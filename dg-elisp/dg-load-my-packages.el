@@ -4,6 +4,7 @@
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
+                         ("elpy" . "http://jorgenschaefer.github.io/packages/")
                          ;; ("marmalade" . "http://marmalade-repo.org/packages/")
                          ))
 
