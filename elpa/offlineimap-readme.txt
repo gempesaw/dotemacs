@@ -1,30 +1,6 @@
-;;; offlineimap.el --- Run OfflineIMAP from Emacs
-;; Version: 20130331.1641
+M-x offlineimap
 
-;; Copyright (C) 2010 Julien Danjou
-
-;; Author: Julien Danjou <julien@danjou.info>
-;; URL: http://julien.danjou.info/offlineimap-el.html
-
-;; This file is NOT part of GNU Emacs.
-
-;; GNU Emacs is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Commentary:
-;; M-x offlineimap
-
-;; We need comint for `comint-truncate-buffer'
+We need comint for `comint-truncate-buffer'
 (require 'comint)
 
 (defgroup offlineimap nil
@@ -36,7 +12,7 @@
   :group 'offlineimap
   :type 'string)
 
-(defcustom offlineimap-command "offlineimap -u Machine.MachineUI"
+(defcustom offlineimap-command "offlineimap -u machineui"
   "Command to run to launch OfflineIMAP."
   :group 'offlineimap
   :type 'string)
@@ -66,11 +42,20 @@ action as a text in color instead of a single symbol."
   :type '(choice (const :tag "Symbol" symbol)
                  (const :tag "Action text" text)))
 
-(defcustom offlineimap-mode-line-symbol "✉"
-  "Symbol used to display OfflineIMAP status in mode-line.
-This is used when `offlineimap-mode-line-style' is set to 'symbol."
+(defcustom offlineimap-mode-line-symbols '((run . "✉")
+                                           (stop .  "↻")
+                                           (exit .  "×")
+                                           (signal . "⚑")
+                                           (open .  "⊙")
+                                           (listen . "⌥")
+                                           (closed . "●")
+                                           (connect . "…")
+                                           (failed . "⌁"))
+  "Symbols used to display OfflineIMAP status in mode-line.
+These are used when `offlineimap-mode-line-style' is set to
+`symbol'."
   :group 'offlineimap
-  :type 'string)
+  :type '(repeat (cons :tag "Mode line symbol" (symbol :tag "Signal") (string :tag "Symbol"))))
 
 (defcustom offlineimap-mode-line-text "OfflineIMAP: "
   "Text used to display OfflineIMAP status in mode-line."
@@ -205,8 +190,11 @@ This is used when `offlineimap-mode-line-style' is set to 'symbol."
                          (offlineimap-propertize-face msg-type action
                                                       (if (eq offlineimap-mode-line-style 'text)
                                                           action
-                                                        offlineimap-mode-line-symbol)))
-                    (propertize (symbol-name status) 'face 'offlineimap-error-face)))
+                                                        (cdr (assoc 'run offlineimap-mode-line-symbols)))))
+                     (propertize (or (and (eq offlineimap-mode-line-style 'symbol)
+                                          (cdr (assoc status offlineimap-mode-line-symbols)))
+                                     (symbol-name status))
+                                 'face 'offlineimap-error-face)))
                  "]")
          'mouse-face 'mode-line-highlight
          'help-echo "mouse-2: Go to OfflineIMAP buffer"
@@ -268,7 +256,7 @@ This is used when `offlineimap-mode-line-style' is set to 'symbol."
   (when (eval offlineimap-enable-mode-line-p)
     offlineimap-mode-line-string))
 
-;;;###autoload
+###autoload
 (defun offlineimap ()
   "Start OfflineIMAP."
   (interactive)
@@ -306,4 +294,4 @@ This is used when `offlineimap-mode-line-style' is set to 'symbol."
 
 (provide 'offlineimap)
 
-;;; offlineimap.el ends here
+offlineimap.el ends here
