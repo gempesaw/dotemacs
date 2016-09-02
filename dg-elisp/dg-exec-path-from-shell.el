@@ -1,9 +1,12 @@
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
-(setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
-(setq exec-path (append exec-path '("/usr/local/bin")))
-(when (getenv "PERL5LIB")
-  (ignore-errors (exec-path-from-shell-copy-env "PERL5LIB")))
+(when (not (string-equal system-type "windows-nt"))
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+  (setenv "NODE_PATH" (concat (getenv "NODE_PATH") "/Usr/Local/lib/node_modules"))
+  (setq exec-path (append exec-path '("/usr/local/bin")))
+  (when (getenv "PERL5LIB")
+    (ignore-errors (exec-path-from-shell-copy-env "PERL5LIB")))))
 
+(when (string-equal system-type "windows-nt")
+  (setenv "PATH" "C:\\ProgramData\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\Program Files (x86)\\ATI Technologies\\ATI.ACE\\Core-Static;C:\\Program Files (x86)\\Skype\\Phone\\;C:\\Strawberry\\c\\bin;C:\\Strawberry\\perl\\site\\bin;C:\\Strawberry\\perl\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\mingw64\\bin;C:\\Program Files\\Git\\usr\\bin;C:\\emacs\\bin;C:\\Program Files\\nodejs\\;C:\\Program Files (x86)\\AMD\\ATI.ACE\\Core-Static;C:\\Users\\Daniel\\AppData\\Roaming\\npm"))
 ;;; reset the path if necessary
 ;; (setq exec-path '("/usr/local/bin"
 ;;                   "/usr/local/opt/android-sdk/tools"
