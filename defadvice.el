@@ -10,8 +10,8 @@ still function in special-mode"
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
 (advise-commands "auto-save"
-                  (switch-to-buffer other-window switch-window)
-                  (prelude-auto-save-command))
+                 (switch-to-buffer other-window switch-window)
+                 (prelude-auto-save-command))
 
 ;;; save everything when we focus another frame (even potentially
 ;;; another emacs frame)
