@@ -36,3 +36,28 @@ still function in special-mode"
   (window-configuration-to-register 265)
   ad-do-it
   (delete-other-windows))
+
+
+
+(defun let-compile-use-other-frame (orig-fun &rest args)
+  (let ((display-buffer-overriding-action
+         '((display-buffer-reuse-window
+            display-buffer-use-some-frame
+            display-buffer-pop-up-window)
+           (inhibit-switch-frame . t)
+           (inhibit-same-window . t)
+           (reusable-frames . t))))
+    (apply orig-fun args)))
+
+(progn
+  (advice-add 'compile :around #'let-compile-use-other-frame)
+  (advice-add 'compile-again :around #'let-compile-use-other-frame)
+  (advice-add 'ensime-sbt-do-test-only-dwim :around #'let-compile-use-other-frame)
+  (advice-add 'safjave-buffer :around #'let-compile-use-other-frame))
+
+(progn
+  (defun inhibit-auto-balance (orig-fun &rest args)
+    (noflet ((balance-windows () nil))
+      (apply orig-fun args)))
+
+  (advice-add 'magit-ediff-dwim :around #'inhibit-auto-balance))
