@@ -30,24 +30,12 @@ browsers."
                                               )))
               (hostname (ido-completing-read "hostname: "
                                              '("http://localhost"
-                                               "http://www.qa.sharecare.com"
                                                "https://www.mservices.sharecare.com"
-                                               "http://www.stage.sharecare.com"
-                                               "http://www.sharecare.com"
-                                               "http://www.qa.startle.com"
-                                               "http://www.stage.startle.com"
-                                               "http://www.startle.com"
+                                               "https://www.stage.sharecare.com"
+                                               "https://www.sharecare.com"
                                                "http://www.qa.doctoroz.com"
                                                "http://www.stage.doctoroz.com"
-                                               "http://www.doctoroz.com"
-                                               "https://armyfit.dev.sharecare.com"
-                                               "https://armyfit.stage.sharecare.com"
-                                               "https://test.armyfit.army.mil"
-                                               "https://armyfit.army.mil"
-                                               "https://ultimateme.dev.sharecare.com"
-                                               "https://ultimateme.stage.sharecare.com"
-                                               "https://armyfit.army.mil/UltimateMe"
-                                               "http://s.qa.origin.sharecare.com/honeydew/app.zip")))
+                                               "http://www.doctoroz.com")))
               (sauce (ido-completing-read "sauce: " '("nil" "t"))))
           (setq command (concat command
                                 (if (string= sauce "t") " -sauce")
