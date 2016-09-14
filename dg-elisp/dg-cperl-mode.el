@@ -37,7 +37,7 @@
         (setq compile-command "perl /opt/honeydew/bin/makePod.pl")
       (if (string-match-p ".t$" file-name)
           (progn
-            (setq command (concat "I\"./../lib\" -" command))))
+            (setq command (concat "I" (expand-file-name (locate-dominating-file "." "lib")) "lib -" command))))
       (when (eq arg 16)
         ;; debug on C-u C-u
         (setq command (concat "d" command)))
