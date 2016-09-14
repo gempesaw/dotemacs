@@ -154,6 +154,7 @@
         c-electric-brace
         compilation-previous-file
         compile-goto-error
+        complete-symbol
         create-new-shell-here
         delete-other-window
         delete-window
@@ -168,6 +169,7 @@
         dired-up-directory
         end-of-buffer
         ensime-refactor-rename
+        ensime-sbt-do-test-only-dwim
         eval-last-sexp
         execute-perl
         fancy-widen
@@ -194,6 +196,7 @@
         other-frame
         paredit-backslash
         php-send-buffer
+        previous-error-no-select
         projectile-test-project
         revert-buffer
         scroll-up-command
