@@ -169,6 +169,7 @@ If we're waiting for user-input, don't show anyhting."
   ;; show full addresses in view message (instead of just names)
   ;; toggle per name with M-RET
   (setq mu4e-view-show-addresses 't)
+  (setq mu4e-view-split 'horizontal)
 
   ;; don't keep message buffers around
   (setq message-kill-buffer-on-exit t))
