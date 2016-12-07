@@ -73,6 +73,7 @@
         ignore
         indent-for-tab-command
         insert-parentheses
+        isearch-abort
         isearch-delete-char
         isearch-exit
         isearch-forward-regexp
@@ -144,6 +145,7 @@
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
         where-is
+        yaml-electric-backspace
         yas-expand
         yas-expand
         ))
@@ -168,6 +170,7 @@
         dired-undo
         dired-up-directory
         end-of-buffer
+        ensime-format-source
         ensime-refactor-rename
         ensime-sbt-do-test-only-dwim
         eval-last-sexp
@@ -183,6 +186,7 @@
         js2-mode-show-all
         js2-mode-show-node
         jump-to-register
+        kmacro-start-macro
         magit-status
         markdown-dedent-or-delete
         move-to-window-line-top-bottom
@@ -201,6 +205,7 @@
         revert-buffer
         scroll-up-command
         sgml-delete-tag
+        shell-command-on-region
         skewer-eval-defun
         smart-compile
         sql-magic-go
