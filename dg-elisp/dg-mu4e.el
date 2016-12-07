@@ -48,7 +48,7 @@ Titus von der Malsburg."
     func. Note the weekly scope of the command's precision.")
 
   (setq mu4e-get-mail-command "true"
-        mu4e-split-view 'vertical
+        mu4e-split-view 'horizontal
         mu4e-headers-leave-behavior 'apply
         mu4e-update-interval nil
         mu4e-view-prefer-html nil
