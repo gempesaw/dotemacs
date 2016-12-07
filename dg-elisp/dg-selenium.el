@@ -4,7 +4,7 @@
          (selenium-buffer (concat "*" selenium-proc-name "-2.40.0*")))
     (when (eq nil (get-buffer selenium-buffer))
       (set-process-query-on-exit-flag
-       (start-process selenium-proc-name selenium-buffer "webdriver-manager" "start")
+       (start-process selenium-proc-name selenium-buffer "webdriver-manager" "start" "--versions.standalone" "3.0.1")
        nil)
       (switch-to-buffer selenium-buffer))))
 ;; "-Dphantomjs.binary.path=/usr/local/bin/phantomjs"
