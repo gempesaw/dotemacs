@@ -506,7 +506,13 @@ The defvar keeps things from going nuts; it's actually defined
 out side of git, of course.")
   (defun dg-stratopan-password ()
     (interactive)
-    (insert (format "%s" dg-stratopan-password))))
+    (insert (format "%s" dg-stratopan-password)))
+
+  (defun dg-alias-password ()
+    (interactive)
+    (insert (with-temp-buffer
+              (insert-file-contents "~/git-alias-zebra-token")
+              (buffer-string)))))
 
 (progn
   (defun dg-camelcase-to-hyphen (&optional text)
