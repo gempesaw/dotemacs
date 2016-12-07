@@ -5,7 +5,11 @@
      ;; be like dired, use d for killing
      (define-key magit-status-mode-map (kbd "d") 'magit-discard)
      ;; quit magit smartly
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
+     (add-to-list 'git-commit-style-convention-checks
+                  'overlong-summary-line)
+         ))
 
 (magit-auto-revert-mode -1)
 (setq magit-save-repository-buffers nil)
