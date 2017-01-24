@@ -182,6 +182,7 @@
         isearch-backward-regexp
         isearch-other-control-char
         isearch-repeat-backward
+        isearch-yank-kill
         jabber-activity-switch-to
         js2-mode-show-all
         js2-mode-show-node
@@ -211,6 +212,7 @@
         sql-magic-go
         suspend-frame
         switch-to-other-buffer
+        switch-to-shell-or-create
         switch-window
         toggle-input-method
         undefined
