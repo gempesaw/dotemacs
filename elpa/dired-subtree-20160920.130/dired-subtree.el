@@ -1,12 +1,12 @@
 ;;; dired-subtree.el --- Insert subdirectories in a tree-like fashion
 
-;; Copyright (C) 2014 Matus Goljer
+;; Copyright (C) 2014-2015 Matúš Goljer
 
-;; Author: Matus Goljer <matus.goljer@gmail.com>
-;; Maintainer: Matus Goljer <matus.goljer@gmail.com>
+;; Author: Matúš Goljer <matus.goljer@gmail.com>
+;; Maintainer: Matúš Goljer <matus.goljer@gmail.com>
 ;; Keywords: files
-;; Version: 20150109.838
-;; X-Original-Version: 0.0.1
+;; Package-Version: 20160920.130
+;; Version: 0.0.1
 ;; Created: 25th February 2014
 ;; Package-requires: ((dash "2.5.0") (dired-hacks-utils "0.0.1"))
 
@@ -259,7 +259,19 @@ If no SUBTREES are specified, use `dired-subtree-overlays'."
                 (overlay-put ov (car it) (cdr it)))
               (dired-subtree--filter-subtree ov))))))))
 
+(defun dired-subtree--after-insert ()
+  "After inserting the subtree, setup dired-details/dired-hide-details-mode."
+  (if (fboundp 'dired-insert-set-properties)
+      (let ((inhibit-read-only t)
+            (ov (dired-subtree--get-ov)))
+        (dired-insert-set-properties (overlay-start ov) (overlay-end ov)))
+    (when (featurep 'dired-details)
+      (dired-details-delete-overlays)
+      (dired-details-activate))))
+
 (add-hook 'dired-after-readin-hook 'dired-subtree--after-readin)
+
+(add-hook 'dired-subtree-after-insert-hook 'dired-subtree--after-insert)
 
 (defun dired-subtree--unmark ()
   "Unmark a file without moving point."
@@ -269,11 +281,11 @@ If no SUBTREES are specified, use `dired-subtree-overlays'."
   "Return non-nil if directory under point is expanded."
   (save-excursion
     (when (dired-utils-get-filename)
-      ;; TODO: this should work 99% of the time (what about links?).
       ;; We've replaced `file-directory-p' with the regexp test to
       ;; speed up filters over TRAMP.  So long as dired/ls format
       ;; doesn't change, we're good.
-      (and (save-excursion (beginning-of-line) (looking-at "..d"))
+      ;; 'd' for directories, 'l' for potential symlinks to directories.
+      (and (save-excursion (beginning-of-line) (looking-at "..[dl]"))
            (let ((depth (dired-subtree--get-depth (dired-subtree--get-ov))))
              (dired-next-line 1)
              (< depth (dired-subtree--get-depth (dired-subtree--get-ov))))))))
@@ -449,7 +461,12 @@ children."
 
 Return a string suitable for insertion in `dired' buffer."
   (with-temp-buffer
-    (insert-directory dir-name dired-listing-switches nil t)
+    (let ((insert-dir-fun  (if (and (featurep 'tramp)
+                                    (tramp-tramp-file-p dir-name)
+                                    (tramp-sh-handle-file-directory-p dir-name))
+                               #'tramp-handle-insert-directory
+                             #'insert-directory)))
+      (funcall insert-dir-fun dir-name dired-listing-switches nil t))
     (delete-char -1)
     (goto-char (point-min))
     (delete-region
@@ -560,15 +577,15 @@ Return a string suitable for insertion in `dired' buffer."
       (when (and name (file-directory-p name)
                  (<= depth (or max-depth depth))
                  (or (= 1 depth)
-		     (not (string-match-p dired-subtree-ignored-regexp
-					  (file-name-nondirectory name)))))
-	(if (dired-subtree--is-expanded-p)
-	    (dired-next-line 1)
-	  (dired-subtree-insert))
-	(dired-subtree-end)
-	(dired-subtree--insert-recursive (1+ depth) max-depth)
-	(while (dired-subtree-previous-sibling)
-	  (dired-subtree--insert-recursive (1+ depth) max-depth))))))
+                     (not (string-match-p dired-subtree-ignored-regexp
+                                          (file-name-nondirectory name)))))
+        (if (dired-subtree--is-expanded-p)
+            (dired-next-line 1)
+          (dired-subtree-insert))
+        (dired-subtree-end)
+        (dired-subtree--insert-recursive (1+ depth) max-depth)
+        (while (dired-subtree-previous-sibling)
+          (dired-subtree--insert-recursive (1+ depth) max-depth))))))
 
 (defvar dired-subtree--cycle-previous nil
   "Remember previous action for `dired-subtree-cycle'")
@@ -588,8 +605,8 @@ Numeric prefix will set max depth"
      ;; prefix - show subtrees up to max-depth
      (max-depth
       (when (dired-subtree--is-expanded-p)
-	(dired-next-line 1)
-	(dired-subtree-remove))
+        (dired-next-line 1)
+        (dired-subtree-remove))
       (dired-subtree--insert-recursive 1 (if (integerp max-depth) max-depth nil))
       (setq dired-subtree--cycle-previous :full))
      ;; if directory is not expanded, expand one level
@@ -598,7 +615,7 @@ Numeric prefix will set max depth"
       (setq dired-subtree--cycle-previous :insert))
      ;; hide if previous command was not cycle or tree was fully expanded
      ((or (not (eq last-command 'dired-subtree-cycle))
-	  (eq dired-subtree--cycle-previous :full))
+          (eq dired-subtree--cycle-previous :full))
       (dired-next-line 1)
       (dired-subtree-remove)
       (setq dired-subtree--cycle-previous :remove))
