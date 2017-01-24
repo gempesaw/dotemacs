@@ -24,7 +24,7 @@
                     circe
                     dash
                     diminish
-                    dired-details
+                    dired+
                     dired-filter
                     dired-hacks-utils
                     flx-ido
