@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("dev-honeydew.ini"
+(("lockerbox"
+ (filename . "/etc/config/app/")
+ (front-context-string)
+ (rear-context-string . "rbox.properties\n")
+ (position . 448))
+("dev-honeydew.ini"
  (filename . "~/opt/honeydew/honeydew.ini")
  (front-context-string . "[Accounts]\narmy=")
  (rear-context-string)
