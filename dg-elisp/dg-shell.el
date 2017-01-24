@@ -15,6 +15,9 @@
 (global-unset-key (kbd "C-c C-/"))
 (global-set-key (kbd "C-c C-/") 'create-new-shell-here)
 
+(when shell-mode-map
+  (define-key shell-mode-map [remap shell-resync-dirs] 'comint-send-input))
+
 (defun switch-to-shell-or-create ()
   (interactive)
   (let ((shells (mapcar 'buffer-name
