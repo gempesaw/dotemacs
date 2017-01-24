@@ -7,9 +7,9 @@
                            "fit"
                            "expect"
                            "beforeEach"
+                           "afterEach"
                            "module"
                            "inject"
-
                            ))
 
 (delete '("\\.js\\'" . javascript-generic-mode) auto-mode-alist)
