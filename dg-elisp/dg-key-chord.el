@@ -48,6 +48,9 @@
     (key-chord-define emacs-lisp-mode-map "fd" 'edebug-defun)
     (key-chord-define lisp-interaction-mode-map "fd" 'edebug-defun)
 
+    ;; js2
+    (key-chord-define js2-mode-map "fd" 'dg-js2-anon-to-async)
+
     ;; jabber & activity
     (key-chord-define-global "jl" 'jabber-activity-switch-to)
     (key-chord-define-global "hk" 'tracking-next-buffer)
