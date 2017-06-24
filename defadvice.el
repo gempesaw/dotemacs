@@ -53,7 +53,7 @@ still function in special-mode"
   (advice-add 'compile :around #'let-compile-use-other-frame)
   (advice-add 'compile-again :around #'let-compile-use-other-frame)
   (advice-add 'ensime-sbt-do-test-only-dwim :around #'let-compile-use-other-frame)
-  (advice-add 'safjave-buffer :around #'let-compile-use-other-frame))
+  (advice-add 'save-buffer :around #'let-compile-use-other-frame))
 
 (progn
   (defun inhibit-auto-balance (orig-fun &rest args)
