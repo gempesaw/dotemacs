@@ -87,17 +87,17 @@ returns an associative list of the same structure.  Prompting for
 modules is done dynamically, and uses the latter, while other
 prompting requires no evaluation and is done up front."
   (let* ((first-clause (car clauses))
-         (clauses (if (and (sequencep first-clause)
-                           (= 3 (length first-clause)))
-                      clauses
-                    (eval clauses))))
+	 (clauses (if (and (sequencep first-clause)
+			   (= 3 (length first-clause)))
+		      clauses
+		    (eval clauses))))
     (declare (indent 2)
-             (debug (form form &rest (characterp form body))))
+	     (debug (form form &rest (characterp form body))))
     `(pcase (read-char-choice
-             (concat ,prompt
-                     ,(concat (mapconcat 'cadr clauses ", ")
-                              (and verbose ", or [C-g] to abort") " "))
-             ',(mapcar 'car clauses))
+	     (concat ,prompt
+		     ,(concat (mapconcat 'cadr clauses ", ")
+			      (and verbose ", or [C-g] to abort") " "))
+	     ',(mapcar 'car clauses))
        ,@(--map `(,(car it) ,@(cddr it)) clauses))))
 
 (defun ensime-sbt-module-prompt (module abbrev li ri)

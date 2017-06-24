@@ -55,9 +55,12 @@
         dired-mark
         dired-show-file-type
         dired-unmark
+        diredp-next-line
+        diredp-previous-line
         downcase-region
         duplicate-thing
         elpy-shell-send-region-or-buffer
+        end-of-visual-line
         ensure-fullscreen-mode-is-on
         eval-defun
         eval-expression
@@ -146,12 +149,16 @@
         wgrep-finish-edit
         where-is
         yaml-electric-backspace
+        yaml-electric-bar-and-angle
+        yaml-electric-dash-and-dot
         yas-expand
         yas-expand
         ))
 
 (setq mc/cmds-to-run-once
       '(
+        View-scroll-page-backward
+        ace-jump-done
         async-shell-command
         c-electric-brace
         compilation-previous-file
@@ -159,12 +166,14 @@
         complete-symbol
         create-new-shell-here
         delete-other-window
+        delete-other-window-and-buffer
         delete-window
         dg-hsplit-last-buffer
         dired-details-show
         dired-maybe-insert-subdir
         dired-next-line
         dired-previous-line
+        dired-sort-toggle-or-edit
         dired-summary
         dired-toggle-marks
         dired-undo
@@ -206,6 +215,7 @@
         revert-buffer
         scroll-up-command
         sgml-delete-tag
+        sh-assignment
         shell-command-on-region
         skewer-eval-defun
         smart-compile
