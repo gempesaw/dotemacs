@@ -1,6 +1,7 @@
+(setq mu4e-path "/usr/local/Cellar/mu/HEAD-21b637f/share/emacs/site-lisp/mu/mu4e")
 (when (and (eq system-type 'darwin)
-           (file-exists-p "/Users/dgempesaw/opt/mu/mu4e/"))
-  (add-to-list 'load-path "/Users/dgempesaw/opt/mu/mu4e/")
+           (file-exists-p mu4e-path))
+  (add-to-list 'load-path mu4e-path)
   (require 'mu4e)
 
   (set-face-attribute 'variable-pitch nil
@@ -47,14 +48,22 @@ Titus von der Malsburg."
     "Format of date to insert with `insert-current-time'
     func. Note the weekly scope of the command's precision.")
 
-  (setq mu4e-get-mail-command "true"
-        mu4e-split-view 'horizontal
+
+  (setq mu4e-split-view 'horizontal
         mu4e-headers-leave-behavior 'apply
-        mu4e-update-interval nil
+
+        mu4e-get-mail-command "true"
+        mu4e-update-interval 60
+        mu4e-index-cleanup nil
+        mu4e-index-lazy-check nil
+        mu4e-index-update-in-background t
+
         mu4e-view-prefer-html nil
         mu4e-headers-results-limit 50
         mu4e-use-fancy-chars t
         mu4e-view-show-images t
+        mu4e-headers-include-related nil ;; don't show related messages in bookmarks
+        mu4e-headers-skip-duplicates t
         mu4e-mu-binary "/usr/local/bin/mu"
         mu4e-bookmarks '(("from:(JIRA) and flag:unread" "Unread JIRA" ?j)
                          ("from:root and subject:Honeydew and flag:unread and date:14d..now" "Honeydew" ?h)
@@ -63,7 +72,7 @@ Titus von der Malsburg."
                          ("flag:unread AND NOT flag:trashed AND NOT subject:JIRA AND NOT from:uptime" "Unread messages" ?u)
                          ("date:today..now AND NOT subject:JIRA AND NOT subject:confluence" "Today's messages" ?r)
                          ("(subject:mentioned you (JIRA) OR assigned*Daniel Gempesaw) AND from:JIRA" "Tagged in JIRA" ?J)
-                         ("maildir:/INBOX AND date:1m..now AND NOT subject:fitness AND NOT from:squash@sharecare.com AND NOT from:root@sharecare.com AND NOT (from:root@honeydew.be.jamconsultg.com AND NOT subject:ios) AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:noreply@sf-notifications.com AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios@be.jamconsultg.com AND NOT (subject:Build AND subject:Feature) AND NOT to:SC2-Build-Notifications@sharecare.com AND NOT to:devteam@bactes.com AND NOT subject:Sonar AND NOT from:nagios AND NOT subject:Jenkins" "Inbox" ?i)
+                         ("maildir:/INBOX AND date:1m..now AND NOT from:squash@sharecare.com AND NOT from:root@sharecare.com AND NOT (from:root@honeydew.be.jamconsultg.com AND NOT subject:ios) AND NOT (from:dgempesaw AND (to:dgempesaw OR cc:dgempesaw)) AND NOT from:adminui@sharecare.com AND NOT from:noreply@sf-notifications.com AND NOT from:noreply@bactes.com AND NOT from:(JIRA) AND NOT from:nagios@be.jamconsultg.com AND NOT (subject:Build AND subject:Feature) AND NOT to:devteam@bactes.com AND NOT (from:jenkins@sharecare.com AND subject:Sonar) AND NOT from:nagios AND NOT from:noreply@newrelic.com AND NOT from:honeydew@sharecare.com AND NOT (subject:\"Build\" AND subject:\"request\") AND NOT (subject:\"Jenkins\" AND from:jenkins@sharecare.com) AND NOT (from:jenkins@sharecare.com AND to:sc2-build-notifications@sharecare.com)" "Inbox" ?i)
                          ("maildir:/INBOX AND subject:Build and flag:unread" "Build Requests" ?b)
                          ("from:dgempesaw AND (to:cbanks OR cc:cbanks) AND update" "clint" ?c)
                          ("(maildir:/INBOX or maildir:/archive) AND NOT from:(JIRA) AND NOT from:nagios AND NOT subject:honeydew AND NOT from:adminui" "All Inbox" ?I)
@@ -87,7 +96,9 @@ Sharecare, Inc.
 My RealAge is 6.3 years younger. What's yours? Take the test now!
 https://www.sharecare.com/realage-test
 "
-        mu4e-compose-signature message-signature)
+        mu4e-compose-signature message-signature
+        mu4e-compose-format-flowed t
+        fill-flowed-encode-column 66)
 
   (setq smtpmail-stream-type 'starttls
         smtpmail-default-smtp-server "pod51019.outlook.com"
@@ -154,6 +165,7 @@ If we're waiting for user-input, don't show anyhting."
        (define-key mu4e-headers-mode-map (kbd "J") 'mu4e-headers-open-jira-ticket)
        (define-key mu4e-headers-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-headers-mode-map (kbd "q") (lambda () (interactive) (jump-to-register 6245)))
+       (define-key mu4e-headers-mode-map (kbd "z") 'mu4e~headers-quit-buffer)
        (define-key mu4e-view-mode-map (kbd "m") 'mu4e-headers-mark-for-something)
        (define-key mu4e-view-mode-map (kbd "V") 'mu4e-msgv-action-view-in-browser)
        (define-key mu4e-view-mode-map (kbd "J") 'mu4e-message-open-jira-ticket)))
@@ -169,10 +181,21 @@ If we're waiting for user-input, don't show anyhting."
   ;; show full addresses in view message (instead of just names)
   ;; toggle per name with M-RET
   (setq mu4e-view-show-addresses 't)
-  (setq mu4e-view-split 'horizontal)
+  (setq mu4e-split-view 'vertical)
 
   ;; don't keep message buffers around
-  (setq message-kill-buffer-on-exit t))
+  (setq message-kill-buffer-on-exit t)
+
+  (setq ;; setting the cite-style doesn't work???? so we set everything manually
+   message-cite-style message-cite-style-outlook
+   message-cite-function  'message-cite-original
+   message-citation-line-function  'message-insert-formatted-citation-line
+   message-cite-reply-position 'above
+   message-yank-prefix  ""
+   message-yank-cited-prefix  ""
+   message-yank-empty-prefix  ""
+   message-citation-line-format  "\n\n-----------------------\nOn %a, %b %d %Y, %N wrote:\n")
+  )
 
 (unless (executable-find "html2text")
   (message "Missing `html2text`. Maybe try `brew install html2text` ?"))

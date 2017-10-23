@@ -5,7 +5,6 @@
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 (key-chord-define-global "zp" 'projectile-switch-project)
 
-
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
 
 
@@ -60,6 +59,9 @@
 
 ;;; open dired at the root of the directory
 (setq projectile-find-dir-includes-top-level t)
+(when (fboundp 'projectile-discover-projects-in-directory)
+      (projectile-discover-projects-in-directory "/opt"))
+
 
 
 (provide 'dg-projectile)

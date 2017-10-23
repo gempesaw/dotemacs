@@ -41,4 +41,14 @@
           (url (read-from-minibuffer "Repository to clone: " (current-kill 0) )))
       (async-shell-command (format "cd /opt && git clone %s" url) buf buf ))))
 
+(defun dg-magit-browse-remote ()
+  (interactive)
+  (let ((remote (cadr (s-split "[\t\s]" (shell-command-to-string "git remote -v | head -n 1")))))
+    (browse-url remote)))
+
+(defun magit-clone-opt ()
+  (interactive)
+  (let ((default-directory "/opt/"))
+    (call-interactively 'magit-clone)))
+
 (provide 'dg-magit)

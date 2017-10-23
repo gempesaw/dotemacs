@@ -8,6 +8,7 @@
                  '("\\.zip\\'" ".zip" "unzip")))
 
 (define-key dired-mode-map "\M-g" nil)
+(define-key dired-mode-map "\M-b" nil)
 
 ;; Make dired less verbose
 (eval-after-load "dired-details"
@@ -41,21 +42,26 @@
 
 (defun dg-tabulate-gatling-results ()
   (interactive)
-  (let* ((gatling-result-folder (dired-copy-filename-as-kill 0))
-         (results (mapcar (lambda (it) (s-replace "\n" "" it))
-                          (s-split " "
-                                   (shell-command-to-string
-                                    (format "echo 'console.log(stats.stats.meanNumberOfRequestsPerSecond.total, stats.stats.percentiles3.total, stats.stats.meanResponseTime.total)' | cat %s/js/stats.js - | node"
-                                            gatling-result-folder)))))
-         (mean-rps (car results))
-         (95th-per (cadr results))
-         (mean-response (caddr results))
-         (url (format "http://10.10.2.233:8001/provider-server/build/reports/gatling/%s/" gatling-result-folder)))
-    (with-current-buffer "results"
+  (let* ((folder (dired-get-filename 'relative))
+         (abs-path (dired-get-filename))
+         (url (s-concat "http://zebra.local:8080/" (cadr (s-split "zebra/opt/" abs-path))))
+         (source (format "%s/js/stats.json" folder))
+         (stats "/tmp/stats.json")
+         (jq-binary (executable-find "jq"))
+         (jq-filter "'.stats.meanNumberOfRequestsPerSecond.total, .stats.percentiles3.total, .stats.meanResponseTime.total'"))
+    (copy-file source stats t)
+    (let* ((default-directory "/tmp")
+           (results (-filter 's-present?
+                             (s-split "\n"
+                                      (shell-command-to-string (format "%s %s %s" jq-binary jq-filter stats)))))
+           (mean-rps (string-to-number (car results)))
+           (95th-per (cadr results))
+           (mean-response (caddr results)))
+      (with-current-buffer "results"
       (end-of-buffer)
       (newline)
-      (insert (format  "| %s | %s | %s | [link|%s] |" mean-rps mean-response 95th-per url)))
-    (next-line)))
+      (insert (format  "| %.2f | %s | %s | [link|%s]" mean-rps mean-response 95th-per url)))
+    (next-line))))
 
 (defun dg-upload-to-s3 ()
   (interactive)

@@ -27,6 +27,7 @@
                     dired+
                     dired-filter
                     dired-hacks-utils
+                    dracula-theme
                     flx-ido
                     elisp-slime-nav
                     ensime
@@ -53,6 +54,7 @@
                     magit
                     markdown-mode
                     multiple-cursors
+                    nvm
                     noflet
                     offlineimap
                     paredit

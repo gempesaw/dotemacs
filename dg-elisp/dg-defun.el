@@ -506,13 +506,13 @@ The defvar keeps things from going nuts; it's actually defined
 out side of git, of course.")
   (defun dg-stratopan-password ()
     (interactive)
-    (insert (format "%s" dg-stratopan-password)))
+    (kill-new (format "%s" dg-stratopan-password)))
 
   (defun dg-alias-password ()
     (interactive)
-    (insert (with-temp-buffer
-              (insert-file-contents "~/git-alias-zebra-token")
-              (buffer-string)))))
+    (kill-new (with-temp-buffer
+                (insert-file-contents "~/git-alias-zebra-token")
+                (buffer-string)))))
 
 (progn
   (defun dg-camelcase-to-hyphen (&optional text)
@@ -556,5 +556,16 @@ out side of git, of course.")
       (when (s-starts-with-p "/" url)
         (setq url (format "file://%s" url)))
       (browse-url url))))
+
+(defun dg-kubernetes-exec-pod ()
+  (interactive)
+  (let ((pod (thing-at-point 'sexp)))
+    (end-of-buffer)
+    ;; use previous kc alias
+    (comint-previous-input 1)
+    (beginning-of-line)
+    (forward-word)
+    (delete-region (point) (line-end-position))
+    (insert (format " exec -it %s /bin/sh" pod))))
 
 (provide 'dg-defun)
