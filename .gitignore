@@ -35,3 +35,5 @@ archive-contents
 /network-security.data
 /elpa/archives/gnu/archive-contents.signed
 classpath*SNAPSHOT
+ensime/
+image-dired/
