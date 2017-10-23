@@ -84,6 +84,7 @@
         isearch-repeat-forward
         js2-beginning-of-line
         js2-end-of-line
+        js2-indent-bounce
         js2-mode-toggle-element
         kill-region
         magit-discard-item
@@ -124,6 +125,8 @@
         paredit-raise-sexp
         paredit-reindent-defun
         paredit-wrap-round
+        projectile-compile-project
+        projectile-find-file
         python-indent-dedent-line-backspace
         python-indent-electric-colon
         repeat
@@ -169,6 +172,7 @@
         delete-other-window-and-buffer
         delete-window
         dg-hsplit-last-buffer
+        dg-vsplit-last-buffer
         dired-details-show
         dired-maybe-insert-subdir
         dired-next-line
@@ -188,6 +192,7 @@
         grunt-exec
         handle-switch-frame
         hs-show-block
+        ido-dired
         isearch-backward-regexp
         isearch-other-control-char
         isearch-repeat-backward
@@ -224,6 +229,7 @@
         switch-to-other-buffer
         switch-to-shell-or-create
         switch-window
+        text-scale-adjust
         toggle-input-method
         undefined
         wdired-finish-edit

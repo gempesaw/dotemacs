@@ -2,7 +2,17 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("lockerbox"
+((".ivy2"
+ (filename . "~/.ivy2/")
+ (front-context-string . ".credentials\n  -")
+ (rear-context-string . "95 Jul  5 14:42 ")
+ (position . 250))
+("npmrc"
+ (filename . "~/.npmrc")
+ (front-context-string . "_auth =")
+ (rear-context-string)
+ (position . 1))
+("lockerbox"
  (filename . "/etc/config/app/")
  (front-context-string)
  (rear-context-string . "rbox.properties\n")
