@@ -528,26 +528,6 @@ out side of git, of course.")
         (format "-%s" (downcase char))
       char)))
 
-(progn
-  (defvar dg-vpn-list nil)
-
-  (defun dg-vpn ()
-    (interactive)
-    (if dg-vpn-list
-        (let ((code (car dg-vpn-list))
-              (rest (cdr dg-vpn-list)))
-          (kill-new code)
-          (setq dg-vpn-list rest))
-      (let ((codes (read-from-minibuffer "Enter space delimited codes: ")))
-        (setq dg-vpn-list
-              (mapcar 's-trim
-                      (-filter (lambda (it) (string-match "[[:digit:]]+" it))
-                               (s-split " " codes)))))))
-
-  (defun dg-vpn-reset ()
-    (interactive)
-    (setq dg-vpn-list nil)))
-
 (defun dg-browse-url-or-file ()
   (interactive)
   (let ((url (or (thing-at-point 'filename)
