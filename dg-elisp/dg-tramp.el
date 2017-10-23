@@ -51,14 +51,10 @@ raises an error."
 (defun delete-hung-ssh-sessions ()
   (interactive)
   (let* ((dir "~/.ssh/cm/")
-         (cm-socket-files (directory-files dir nil nil t)))
+         (cm-socket-files (directory-files dir t "-" t)))
     (while cm-socket-files
-      (let ((filename (car cm-socket-files)))
-        (if (not (or (string= "." filename)
-                     (string= ".." filename)))
-            (if (string-match "terminus" filename)
-                (delete-file (concat dir filename))))
-        (setq cm-socket-files (cdr cm-socket-files))))))
+      (delete-file (car cm-socket-files))
+      (setq cm-socket-files (cdr cm-socket-files)))))
 
 (defun get-remote-names ()
   (interactive)
@@ -137,13 +133,5 @@ raises an error."
       (with-current-buffer buffer
         (insert "cd")
         (comint-send-input nil t)))))
-
-(defun load-my-tramp-settings ()
-  (interactive)
-  (let ((my-tramp-customization "~/.emacs.d/dg-elisp/dg-tramp.el"))
-    (save-window-excursion
-      (with-temp-buffer
-        (insert-file-contents my-tramp-customization)
-        (eval-buffer)))))
 
 (provide 'dg-tramp)
