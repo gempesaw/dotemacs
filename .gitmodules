@@ -7,3 +7,6 @@
 [submodule "lewang-flx"]
 	path = lewang-flx
 	url = https://github.com/lewang/flx
+[submodule "js-align"]
+	path = js-align
+	url = https://github.com/johnhooks/js-align.git

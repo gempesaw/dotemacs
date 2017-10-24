@@ -8,6 +8,7 @@
 (load "~/.emacs.d/emacs-custom.el" 'noerror)
 
 (add-to-list 'load-path "~/.emacs.d/dg-elisp/")
+(add-to-list 'load-path "~/.emacs.d/js-align/")
 ;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 
 (defvar dg-package-list nil
@@ -25,7 +26,7 @@
                            "dg-modes"
                            "dg-diminish"))
 
-       (dg-other-packages))
+       (dg-other-packages '("js-align")))
   (mapc (lambda (it)
           (setq dg-other-packages (delete it dg-all-packages)))
         (append dg-first-packages dg-last-packages))
