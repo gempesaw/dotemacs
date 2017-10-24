@@ -10,3 +10,6 @@
 [submodule "js-align"]
 	path = js-align
 	url = https://github.com/johnhooks/js-align.git
+[submodule "swagger-jsdoc-edit"]
+	path = swagger-jsdoc-edit
+	url = https://github.com/gempesaw/swagger-jsdoc-edit.el.git
