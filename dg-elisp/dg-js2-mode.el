@@ -2,14 +2,18 @@
                            "angular"
                            "CodeMirror"
                            "describe"
-                           "fdescribe"
                            "it"
-                           "fit"
-                           "expect"
+                           "before"
                            "beforeEach"
                            "afterEach"
+                           "after"
                            "module"
                            "inject"
+                           "process"
+                           "require"
+                           "__dirname"
+                           "setTimeout"
+                           "setInterval"
                            ))
 (setq js2-basic-offset 2)
 
