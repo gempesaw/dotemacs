@@ -51,11 +51,6 @@
     ;; js2
     (key-chord-define js2-mode-map "fd" 'dg-js2-anon-to-async)
 
-    ;; jabber & activity
-    (key-chord-define-global "jl" 'jabber-activity-switch-to)
-    (key-chord-define-global "hk" 'tracking-next-buffer)
-    (key-chord-define-global "zx" 'jabber-connect-all)
-
     (key-chord-define-global ",." (lambda () (interactive) (switch-to-buffer "*<appium>*")))
 
     (defun dg-key-chord-clear (key &optional map)
