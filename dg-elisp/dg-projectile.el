@@ -5,8 +5,9 @@
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 (key-chord-define-global "zp" 'projectile-switch-project)
 
-(define-key projectile-mode-map [?\s-g] 'projectile-grep)
-
+(define-key projectile-mode-map [?\s-g] (lambda () (interactive)
+                                          (setq current-prefix-arg '(4))
+                                          (call-interactively 'projectile-ag)))
 
 (define-key projectile-mode-map [?\s-b] 'projectile-switch-to-buffer)
 (key-chord-define-global "zb"
@@ -61,7 +62,5 @@
 (setq projectile-find-dir-includes-top-level t)
 (when (fboundp 'projectile-discover-projects-in-directory)
       (projectile-discover-projects-in-directory "/opt"))
-
-
 
 (provide 'dg-projectile)
