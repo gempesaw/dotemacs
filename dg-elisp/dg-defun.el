@@ -34,12 +34,13 @@ shell to run, and so it doesn't ask before getting killed.
 If there was no last time, or there is a prefix argument, this acts like
 M-x compile."
   (interactive "p")
-  (if (and (eq pfx 1)
-           compilation-last-buffer)
-      (progn
-        (set-buffer compilation-last-buffer)
-        (revert-buffer t t))
-    (call-interactively 'compile)))
+  (save-window-excursion
+    (if (and (eq pfx 1)
+             compilation-last-buffer)
+        (progn
+          (set-buffer compilation-last-buffer)
+          (revert-buffer t t))
+      (call-interactively 'compile))))
 
 (defun reload-my-init ()
   (interactive)
@@ -478,10 +479,13 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
     (message (format "Auto recompile is now %s" (if ar-auto-recompile "ON" "OFF"))))
 
   (defadvice save-buffer (after ar-auto-recompile activate)
-    (when (and ar-auto-recompile
-               (get-buffer-window "*compilation*" t))
-      (set-buffer compilation-last-buffer)
-      (revert-buffer t t))))
+    (save-window-excursion
+      (when (and ar-auto-recompile
+                 (get-buffer-window "*compilation*" t)
+                 (not (s-matches-p "magit" (buffer-name (current-buffer))))
+                 (not (s-matches-p "COMMIT_EDITMSG" (buffer-name (current-buffer)))))
+        (set-buffer compilation-last-buffer)
+        (revert-buffer t t)))))
 
 (defun dg-remove-remote-items ()
   (interactive)
