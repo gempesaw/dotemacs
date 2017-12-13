@@ -9,6 +9,7 @@
 
      (add-to-list 'git-commit-style-convention-checks
                   'overlong-summary-line)
+     (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
          ))
 
 (magit-auto-revert-mode -1)
