@@ -38,8 +38,9 @@
 (defun dg-js2-smarter-find-definition ()
   (interactive)
   (unless (dg-js2--find-require)
-    (unless (js2-jump-to-definition)
-      (tern-find-definition))))
+    (unless (dumb-jump-go)
+        (unless (js2-jump-to-definition)
+          (tern-find-definition)))))
 
 (defun dg-js2--find-require ()
   (when (s-match "require" (thing-at-point 'line t))
