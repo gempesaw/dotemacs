@@ -44,4 +44,14 @@
     (async-shell-command "ipfw -f flush && ipfw show" "*dg-port*" "*dg-port*")
     (message (buffer-string))))
 
+(defun dg-encode-uri-component ()
+  (interactive)
+  (if (not mark-active)
+      (message "please highlight text to be encoded")
+    (let ((replacement (url-hexify-string (if mark-active
+                                              (buffer-substring-no-properties (region-beginning) (region-end))
+                                            (read-string "String: ")))))
+      (delete-region (region-beginning) (region-end))
+      (insert replacement))))
+
 (provide 'dg-misc)
