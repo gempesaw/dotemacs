@@ -24,7 +24,6 @@
 
 (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
 (add-hook 'js2-mode-hook (lambda () (company-mode t)))
-(add-hook 'js2-mode-hook (lambda () (sje/js-mode t)))
 (add-hook 'js2-mode-hook 'js-align-mode)
 
 (eval-after-load 'tern
