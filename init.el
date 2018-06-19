@@ -27,8 +27,7 @@
                            "dg-modes"
                            "dg-diminish"))
 
-       (dg-other-packages '("js-align"
-                            "swagger-jsdoc-edit")))
+       (dg-other-packages '("js-align")))
   (mapc (lambda (it)
           (setq dg-other-packages (delete it dg-all-packages)))
         (append dg-first-packages dg-last-packages))
@@ -37,12 +36,12 @@
                                 dg-last-packages)))
 
 (mapcar (lambda (it)
+          (message "loading %s" it)
           (unless (require (intern it))
             (message "____****MISSING: %s****____" it)))
         dg-package-list)
 
 (load "~/.emacs.d/customize.el" 'noerror)
 (load "~/.emacs.d/defadvice.el" 'noerror)
-;; (load "~/.emacs.d/feature-mode.el")
 (load "~/.emacs.d/hooks.el" 'noerror)
 (load "~/.emacs.d/my-macros.el" 'noerror)
