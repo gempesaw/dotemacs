@@ -1,5 +1,7 @@
 ;; (when (fboundp 'nvm-use) (nvm-use "v8.4.0"))
 
+(nvm-use "10.1.0")
+
 (when (not (string-equal system-type "windows-nt"))
   (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
   (setq exec-path (append exec-path '("/usr/local/bin")))
