@@ -40,10 +40,6 @@ Titus von der Malsburg."
         display-time-use-mail-icon t
         display-time-mail-face '((t (:background "red"))))
 
-  (defun qa-build-email-pending-p ()
-    (let ((qa-email-file "~/.qa-build-ready"))
-      (> (string-to-number (s-trim (car (get-file-as-string qa-email-file)))) 0)))
-
   (defvar current-time-format "%a %H:%M:%S"
     "Format of date to insert with `insert-current-time'
     func. Note the weekly scope of the command's precision.")
@@ -88,6 +84,7 @@ Titus von der Malsburg."
   ;; otherwise it tries to send through OS associated mail client
   (setq message-send-mail-function 'message-send-mail-with-sendmail
         message-send-mail-function 'smtpmail-send-it
+        send-mail-function 'smtpmail-send-it
         message-signature "Daniel Gempesaw | Software Testing Architect
 M 302.754.1231 - dgempesaw@sharecare.com
 
@@ -101,10 +98,10 @@ https://www.sharecare.com/realage-test
         fill-flowed-encode-column 66)
 
   (setq smtpmail-stream-type 'starttls
-        smtpmail-default-smtp-server "pod51019.outlook.com"
-        smtpmail-smtp-server "pod51019.outlook.com"
+        smtpmail-default-smtp-server "smtp.office365.com"
+        smtpmail-smtp-server "smtp.office365.com"
         smtpmail-smtp-user "dgempesaw@sharecare.com"
-        smtpmail-smtp-service 587)
+        smtpmail-smtp-service "587")
 
   (defun mu4e-message (frm &rest args)
     "Like `message', but prefixed with mu4e.
@@ -191,10 +188,14 @@ If we're waiting for user-input, don't show anyhting."
    message-cite-function  'message-cite-original
    message-citation-line-function  'message-insert-formatted-citation-line
    message-cite-reply-position 'above
-   message-yank-prefix  ""
-   message-yank-cited-prefix  ""
-   message-yank-empty-prefix  ""
-   message-citation-line-format  "\n\n-----------------------\nOn %a, %b %d %Y, %N wrote:\n")
+   message-yank-prefix  #1=""
+   message-yank-cited-prefix #1#
+   message-yank-empty-prefix #1#
+   message-citation-line-format  "
+
+-----------------------
+On %a, %b %d %Y, %N wrote:
+")
   )
 
 (unless (executable-find "html2text")
