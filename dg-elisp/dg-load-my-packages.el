@@ -19,9 +19,7 @@
                     cperl-mode
                     dash
                     diminish
-                    ;; dired+
-                    ;; dired-filter
-                    ;; dired-hacks-utils
+                    dumb-jump
                     dracula-theme
                     flx-ido
                     elisp-slime-nav

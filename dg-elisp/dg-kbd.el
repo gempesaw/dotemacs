@@ -149,7 +149,11 @@
 (global-set-key (kbd "C-c n") 'cleanup-buffer)
 
 (global-unset-key (kbd "M-."))
-(global-set-key (kbd "M-.") (lambda () (interactive) (find-tag (thing-at-point 'symbol))))
+(global-set-key (kbd "M-.") (lambda ()
+                              (interactive)
+                              (unless (dumb-jump-go)
+                                (find-tag (thing-at-point 'symbol)))
+                              ))
 (global-unset-key (kbd "M-,"))
 (global-set-key (kbd "M-,") 'pop-tag-mark)
 
