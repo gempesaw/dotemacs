@@ -131,6 +131,7 @@
         python-indent-electric-colon
         repeat
         replace-last-sexp
+        rjsx-delete-creates-full-tag
         sgml-slash
         smart-tab
         smarter-move-beginning-of-line
@@ -229,6 +230,8 @@
         switch-to-other-buffer
         switch-to-shell-or-create
         switch-window
+        tar-flag-deleted
+        tar-unflag-backwards
         text-scale-adjust
         toggle-input-method
         undefined
