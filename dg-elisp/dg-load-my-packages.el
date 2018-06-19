@@ -4,29 +4,24 @@
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
-                         ("elpy" . "http://jorgenschaefer.github.io/packages/")
-                         ;; ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ))
-
-(package-initialize)
+                         ("elpy" . "http://jorgenschaefer.github.io/packages/")))
 
 (defvar my-packages '() "A list of packages to ensure are installed at launch.")
 
 (setq my-packages '(
+                    ag
                     ace-jump-mode
-                    ack-and-a-half
                     async
                     browse-kill-ring
-                    calfw
                     company
+                    company-go
                     company-tern
                     cperl-mode
-                    circe
                     dash
                     diminish
-                    dired+
-                    dired-filter
-                    dired-hacks-utils
+                    ;; dired+
+                    ;; dired-filter
+                    ;; dired-hacks-utils
                     dracula-theme
                     flx-ido
                     elisp-slime-nav
@@ -46,11 +41,9 @@
                     ido-ubiquitous
                     ido-vertical-mode
                     ido-completing-read+ ;; needed for new magit
-                    impatient-mode
                     js2-mode
                     jujube-theme
                     key-chord
-                    litable
                     magit
                     markdown-mode
                     multiple-cursors
@@ -61,7 +54,6 @@
                     pcre2el
                     projectile
                     php-mode
-                    pretty-mode-plus
                     rainbow-mode
                     rainbow-delimiters
                     regex-tool
@@ -69,7 +61,6 @@
                     s
                     scss-mode
                     simple-httpd
-                    skewer-mode
                     smart-tab
                     smex
                     solarized-theme
@@ -81,7 +72,6 @@
                     which-key
                     wrap-region
                     yasnippet
-                    company
                     ))
 
 (defun my-packages-installed-p (list-of-packages)
@@ -112,8 +102,6 @@
 ;; (mapcar 'write-personalization-templates my-packages)
 
 (load-my-packages my-packages)
-
-(package-initialize)
 
 ;; manually load some packages
 (require 'smart-compile)
