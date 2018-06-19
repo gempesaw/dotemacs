@@ -81,19 +81,19 @@
        (apply 'start-process args) nil))
     buffer))
 
-(if (executable-find "protractor")
-    (start-selenium-server))
+;; (if (executable-find "protractor")
+;;     (start-selenium-server))
 
-(if (executable-find "redis-server")
-    (start-redis-server))
+;; (if (executable-find "redis-server")
+;;     (start-redis-server))
 
-(if (executable-find "appium")
-    (save-window-excursion (restart-appium-server)))
+;; (if (executable-find "appium")
+;;     (save-window-excursion (restart-appium-server)))
 
-(if (executable-find "bitlbee")
-    (save-window-excursion (start-bitlbee-server)))
+;; (if (executable-find "bitlbee")
+;;     (save-window-excursion (start-bitlbee-server)))
 
-(if (executable-find "browsermob-proxy")
-    (save-window-excursion (start-browsermob-proxy)))
+;; (if (executable-find "browsermob-proxy")
+;;     (save-window-excursion (start-browsermob-proxy)))
 
 (provide 'dg-selenium)
