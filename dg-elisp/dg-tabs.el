@@ -1,5 +1,5 @@
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 8)
+(setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
 (setq hippie-expand-try-functions-list '(
