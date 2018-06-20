@@ -8,14 +8,12 @@
      ;; (define-key dired-mode-map "\M-g" nil)
      ;; (define-key dired-mode-map "\M-b" nil)
 
-     ;; ;; Make dired less verbose
-     ;; (eval-after-load "dired-details"
-     ;;   '(progn
-     ;;      (setq-default dired-details-hidden-string "--- ")
-     ;;      (dired-details-install)))
-
      ;; make dired-find-file faster
      ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
+
+
+     (add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode t)))
+     (setq dired-hide-details-hide-symlink-targets nil)
 
      (defun dg-dired-browse-file-at-point ()
        (interactive)
