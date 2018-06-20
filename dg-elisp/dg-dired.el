@@ -3,6 +3,10 @@
        (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
        ))
 
+(eval-after-load "dired-aux"
+   '(add-to-list 'dired-compress-file-suffixes
+                 '("\\.zip\\'" ".zip" "unzip")))
+
 (eval-after-load "dired"
   '(progn
      ;; (define-key dired-mode-map "\M-g" nil)
@@ -11,9 +15,15 @@
      ;; make dired-find-file faster
      ;; http://www.masteringemacs.org/articles/2011/03/25/working-multiple-files-dired/
 
+     ;; backspace to go up
+     (define-key dired-mode-map (kbd "<backspace>") 'dired-up-directory)
 
+     ;; hide details
      (add-hook 'dired-mode-hook (lambda () (dired-hide-details-mode t)))
      (setq dired-hide-details-hide-symlink-targets nil)
+
+     (setq dired-recursive-copies 'always
+           dired-recursive-delete 'always)
 
      (defun dg-dired-browse-file-at-point ()
        (interactive)
@@ -21,6 +31,7 @@
          (unless (string-match "html$" path)
            (setq path (concat path "/index.html")))
          (browse-url path)))
+
 
      (defun dg-tabulate-gatling-results ()
        (interactive)
