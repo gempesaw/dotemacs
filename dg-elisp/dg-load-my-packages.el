@@ -57,6 +57,7 @@
                     rainbow-delimiters
                     regex-tool
                     request
+                    rjsx-mode
                     s
                     scss-mode
                     simple-httpd
