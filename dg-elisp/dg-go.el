@@ -1,7 +1,7 @@
 (require 'go-eldoc)
 (require 'go-mode)
 
-;; go get -u golang.org/x/tools/cmd/... github.com/rogpeppe/godef github.com/nsf/gocode
+;; go get -u golang.org/x/tools/cmd/... github.com/rogpeppe/godef github.com/nsf/gocode github.com/k0kubun/pp
 
 (add-hook 'go-mode-hook 'go-eldoc-setup)
 (add-hook 'go-mode-hook (lambda ()

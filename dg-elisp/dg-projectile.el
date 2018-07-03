@@ -62,7 +62,9 @@
 
 ;;; open dired at the root of the directory
 (setq projectile-find-dir-includes-top-level t)
-(when (fboundp 'projectile-discover-projects-in-directory)
+(when (and
+       (fboundp 'projectile-discover-projects-in-directory)
+       (file-exists-p "/opt"))
       (projectile-discover-projects-in-directory "/opt"))
 
 (provide 'dg-projectile)

@@ -19,7 +19,7 @@
                     cperl-mode
                     dash
                     diminish
-                    ;; dired-subtree
+                    dired-subtree
                     dumb-jump
                     dracula-theme
                     flx-ido
@@ -46,7 +46,7 @@
                     magit
                     markdown-mode
                     multiple-cursors
-                    nvm
+                    ;; nvm
                     noflet
                     offlineimap
                     paredit
