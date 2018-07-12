@@ -162,6 +162,7 @@
 
 (define-key js2-mode-map (kbd "M-.") #'dg-js2-smarter-find-definition)
 (define-key tern-mode-keymap (kbd "M-.") #'dg-js2-smarter-find-definition)
+(define-key tern-mode-keymap (kbd "M-,") #'pop-tag-mark)
 (define-key js2-mode-map (kbd "C-c t i") #'dg-js2-toggle-it-only)
 (define-key js2-mode-map (kbd "C-c t d") #'dg-js2-toggle-describe-only)
 
