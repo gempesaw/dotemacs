@@ -1,8 +1,8 @@
 ;;; dumb-jump.el --- jump to definition for multiple languages without configuration. -*- lexical-binding: t; -*-
 ;; Copyright (C) 2015-2018 jack angers
 ;; Author: jack angers
-;; Version: 0.5.1
-;; Package-Version: 20180108.1229
+;; Version: 0.5.2
+;; Package-Version: 20180615.2114
 ;; Package-Requires: ((emacs "24.3") (f "0.20.0") (s "1.11.0") (dash "2.9.0") (popup "0.5.3"))
 ;; Keywords: programming
 
@@ -415,6 +415,21 @@ or most optimal searcher."
            :tests ("class test:" "public class test implements Something")
            :not ("class testnot:" "public class testnot implements Something"))
 
+    ;; vala (again just like c#, exactly the same..)
+    (:type "function" :supports ("ag" "rg") :language "vala"
+           :regex "^\\s*(?:[^=\\W]+\\s+){1,3}JJJ\\s*\\\("
+           :tests ("int test()" "int test(param)" "static int test()" "static int test(param)"
+                   "public static MyType test()" "private virtual SomeType test(param)" "static int test()")
+           :not ("test()" "testnot()" "blah = new test()"))
+
+    (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "vala"
+           :regex "\\s*\\bJJJ\\s*=[^=\\n)]+" :tests ("int test = 1234") :not ("if test == 1234:" "int nottest = 44"))
+
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "vala"
+           :regex "(class|interface)\\s*JJJ\\b"
+           :tests ("class test:" "public class test : IReadableChannel, I")
+           :not ("class testnot:" "public class testnot : IReadableChannel, I"))
+
     ;; coq
     (:type "function" :supports ("ag" "rg" "git-grep") :language "coq"
            :regex "\\s*Variable\\s+JJJ\\b"
@@ -500,6 +515,16 @@ or most optimal searcher."
            :regex "(^|[^\\w.])module\\s+(\\w*::)*JJJ($|[^\\w|:])"
            :tests ("module test" "module Foo::test"))
 
+    (:type "function" :supports ("ag" "rg" "git-grep") :language "ruby"
+           :regex "(^|\\W)alias(_method)?\\W+JJJ(\\W|$)"
+           :tests ("alias test some_method"
+                   "alias_method :test, :some_method"
+                   "alias_method ’test’ ’some_method’"
+                   "some_class.send(:alias_method, :test, :some_method)")
+           :not ("alias some_method test"
+                 "alias_method :some_method, :test"
+                 "alias test_foo test"))
+
     ;; crystal
     (:type "variable" :supports ("ag" "rg" "git-grep") :language "crystal"
            :regex "^\\s*((\\w+[.])*\\w+,\\s*)*JJJ(,\\s*(\\w+[.])*\\w+)*\\s*=([^=>~]|$)"
@@ -559,9 +584,9 @@ or most optimal searcher."
            :regex "\\bJJJ\\s*=[^=><]" :tests ("test = 1234") :not ("if (test == 1234)"))
 
     (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "r"
-           :regex "\\bJJJ\\s*<-\\s*function"
-           :tests ("test <- function"))
-
+           :regex "\\bJJJ\\s*<-\\s*function\\b"
+           :tests ("test <- function" "test <- function(")
+           :not   ("test <- functionX"))
 
     ;; perl
     (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "perl"
@@ -995,20 +1020,136 @@ or most optimal searcher."
 
     ;; sml
     (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "sml"
-           :regex "\\s*(datatype)\\s+\\bJJJ\\b\\s*="
+           :regex "\\s*(data)?type\\s+.*\\bJJJ\\b"
            :tests ("datatype test ="
-                   "datatype test=")
+                   "datatype test="
+                   "datatype 'a test ="
+                   "type test ="
+                   "type 'a test ="
+                   "type 'a test"
+                   "type test")
            :not ("datatypetest ="))
 
     (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "sml"
-           :regex "\\s*val\\s+\\bJJJ\\b\\s*="
+           :regex "\\s*val\\s+\\bJJJ\\b"
            :tests ("val test ="
-                   "val test="))
+                   "val test="
+                   "val test : bool"))
 
     (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "sml"
-           :regex "\\s*fun\\s+\\bJJJ\\b\\s*(\\w+|\\((\\s*\\w\\s*,?)+\\))\\s*="
+           :regex "\\s*fun\\s+\\bJJJ\\b.*\\s*="
            :tests ("fun test list ="
-                   "fun test (STRING_NIL, a) =")))
+                   "fun test (STRING_NIL, a) ="
+                   "fun test ((s1,s2): 'a queue) : 'a * 'a queue ="
+                   "fun test (var : q) : int ="
+                   "fun test f e xs ="))
+
+    (:type "module" :supports ("ag" "grep" "rg" "git-grep") :language "sml"
+           :regex "\\s*(structure|signature|functor)\\s+\\bJJJ\\b"
+           :tests ("structure test ="
+                   "structure test : MYTEST ="
+                   "signature test ="
+                   "functor test (T:TEST) ="
+                   "functor test(T:TEST) ="))
+
+    ;; sql
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "sql"
+           :regex "(CREATE|create)\\s+(.+?\\s+)?(FUNCTION|function|PROCEDURE|procedure)\\s+JJJ\\s*\\\("
+           :tests ("CREATE FUNCTION test(i INT) RETURNS INT"
+                   "create or replace function test (int)"
+                   "CREATE PROCEDURE test (OUT p INT)"
+                   "create definer = 'test'@'localhost' procedure test()"))
+
+    (:type "table" :supports ("ag" "grep" "rg" "git-grep") :language "sql"
+           :regex "(CREATE|create)\\s+(.+?\\s+)?(TABLE|table)(\\s+(IF NOT EXISTS|if not exists))?\\s+JJJ\\b"
+           :tests ("CREATE TABLE test ("
+                   "create temporary table if not exists test"
+                   "CREATE TABLE IF NOT EXISTS test ("
+                   "create global temporary table test"))
+
+    (:type "view" :supports ("ag" "grep" "rg" "git-grep") :language "sql"
+           :regex "(CREATE|create)\\s+(.+?\\s+)?(VIEW|view)\\s+JJJ\\b"
+           :tests ("CREATE VIEW test ("
+                   "create sql security definer view test"
+                   "CREATE OR REPLACE VIEW test AS foo"))
+
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "sql"
+           :regex "(CREATE|create)\\s+(.+?\\s+)?(TYPE|type)\\s+JJJ\\b"
+           :tests ("CREATE TYPE test"
+                   "CREATE OR REPLACE TYPE test AS foo ("
+                   "create type test as ("))
+
+    ;; systemverilog
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "systemverilog"
+           :regex "\\s*class\\s+\\bJJJ\\b"
+           :tests ("virtual class test;" "class test;" "class test extends some_class")
+           :not ("virtual class testing;" "class test2;"))
+
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "systemverilog"
+           :regex "\\s*task\\s+\\bJJJ\\b"
+           :tests ("task test (" "task test(")
+           :not ("task testing (" "task test2("))
+
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "systemverilog"
+           :regex "\\s*\\bJJJ\\b\\s*="
+           :tests ("assign test =" "assign test=" "int test =" "int test=")
+           :not ("assign testing =" "assign test2="))
+
+    (:type "function" :supports ("ag" "rg" "git-grep") :language "systemverilog"
+           :regex "function\\s[^\\s]+\\s*\\bJJJ\\b"
+           :tests ("function Matrix test ;" "function Matrix test;")
+           :not ("function test blah"))
+
+    ;; vhdl
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "vhdl"
+           :regex "\\s*type\\s+\\bJJJ\\b"
+           :tests ("type test is" "type test  is")
+           :not ("type testing is" "type test2  is"))
+
+    (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "vhdl"
+           :regex "\\s*constant\\s+\\bJJJ\\b"
+           :tests ("constant test :" "constant test:")
+           :not ("constant testing " "constant test2:"))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "vhdl"
+           :regex "function\\s*\"?JJJ\"?\\s*\\\("
+           :tests ("function test(signal)" "function test (signal)" "function \"test\" (signal)")
+           :not ("function testing(signal"))
+
+    ;; latex
+    (:type "command" :supports ("ag" "grep" "rg" "git-grep") :language "tex"
+           :regex "\\\\.*newcommand\\\*?\\s*\\\{\\s*(\\\\)JJJ\\s*}"
+           :tests ("\\newcommand{\\test}" "\\renewcommand{\\test}" "\\renewcommand*{\\test}" "\\newcommand*{\\test}" "\\renewcommand{ \\test }")
+           :not("\\test"  "test"))
+    
+    (:type "command" :supports ("ag" "grep" "rg" "git-grep") :language "tex"
+           :regex "\\\\.*newcommand\\\*?\\s*(\\\\)JJJ\\j"
+           :tests ("\\newcommand\\test {}" "\\renewcommand\\test{}" "\\newcommand \\test")
+           :not("\\test"  "test"))
+    
+    (:type "length" :supports ("ag" "grep" "rg" "git-grep") :language "tex"
+           :regex "\\\\(s)etlength\\s*\\\{\\s*(\\\\)JJJ\\s*}"
+           :tests ("\\setlength { \\test}" "\\setlength{\\test}" "\\setlength{\\test}{morecommands}" )
+           :not("\\test"  "test"))
+    
+    (:type "counter" :supports ("ag" "grep" "rg" "git-grep") :language "tex"
+           :regex "\\\\newcounter\\\{\\s*JJJ\\s*}"
+           :tests ("\\newcounter{test}" )
+           :not("\\test"  "test"))
+    
+    (:type "environment" :supports ("ag" "grep" "rg" "git-grep") :language "tex"
+           :regex "\\\\.*newenvironment\\s*\\\{\\s*JJJ\\s*}"
+           :tests ("\\newenvironment{test}" "\\newenvironment {test}{morecommands}" "\\lstnewenvironment{test}" "\\newenvironment {test}" )
+           :not("\\test"  "test" ))
+
+    ;; pascal (todo: var, type, const)
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "pascal"
+           :regex "\\bfunction\\s+JJJ\\b"
+           :tests ("  function test : "))
+
+    (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "pascal"
+           :regex "\\bprocedure\\s+JJJ\\b"
+           :tests ("  procedure test ; ")))
 
   "List of regex patttern templates organized by language and type to use for generating the grep command."
   :group 'dumb-jump
@@ -1050,6 +1191,8 @@ or most optimal searcher."
     (:language "objc" :ext "m" :agtype "objc" :rgtype "objc")
     (:language "csharp" :ext "cs" :agtype "csharp" :rgtype "csharp")
     (:language "java" :ext "java" :agtype "java" :rgtype "java")
+    (:language "vala" :ext "vala" :agtype "vala" :rgtype "vala")
+    (:language "vala" :ext "vapi" :agtype "vala" :rgtype "vala")
     (:language "julia" :ext "jl" :agtype "julia" :rgtype "julia")
     (:language "clojure" :ext "clj" :agtype "clojure" :rgtype "clojure")
     (:language "clojure" :ext "cljc" :agtype "clojure" :rgtype "clojure")
@@ -1114,12 +1257,22 @@ or most optimal searcher."
     (:language "shell" :ext "ksh" :agtype nil :rgtype nil)
     (:language "shell" :ext "tcsh" :agtype nil :rgtype nil)
     (:language "sml" :ext "sml" :agtype "sml" :rgtype "sml")
+    (:language "sql" :ext "sql" :agtype "sql" :rgtype "sql")
     (:language "swift" :ext "swift" :agtype nil :rgtype "swift")
+    (:language "tex" :ext "tex" :agtype "tex" :rgtype "tex")
     (:language "elixir" :ext "ex" :agtype "elixir" :rgtype "elixir")
     (:language "elixir" :ext "exs" :agtype "elixir" :rgtype "elixir")
     (:language "elixir" :ext "eex" :agtype "elixir" :rgtype "elixir")
     (:language "erlang" :ext "erl" :agtype "erlang" :rgtype "erlang")
-    (:language "scss" :ext "scss" :agtype "css" :rgtype "css"))
+    (:language "systemverilog" :ext "sv" :agtype "verilog" :rgtype "verilog")
+    (:language "systemverilog" :ext "svh" :agtype "verilog" :rgtype "verilog")
+    (:language "vhdl" :ext "vhd" :agtype "vhdl" :rgtype "vhdl")
+    (:language "vhdl" :ext "vhdl" :agtype "vhdl" :rgtype "vhdl")
+    (:language "scss" :ext "scss" :agtype "css" :rgtype "css")
+    (:language "pascal" :ext "pas" :agtype "delphi" :rgtype nil)
+    (:language "pascal" :ext "dpr" :agtype "delphi" :rgtype nil)
+    (:language "pascal" :ext "int" :agtype "delphi" :rgtype nil)
+    (:language "pascal" :ext "dfm" :agtype "delphi" :rgtype nil))
 
   "Mapping of programming language(s) to file extensions."
   :group 'dumb-jump
@@ -1377,13 +1530,12 @@ Optionally pass t for RUN-NOT-TESTS to see a list of all failed rules"
         (when result
           (dumb-jump-result-follow result))))
 
-(defun dumb-jump-helm-persist-action (match)
-  "Previews a MATCH in a temporary buffer at the matched line number when pressing \\<keymap>C-j</keymap> in helm."
-  (let* ((parts (--remove (string= it "")
-                          (s-split "\\(?:^\\|:\\)[0-9]+:"  match)))
-         (file-line-part (s-split ":" (nth 0 parts)))
-         (file (nth 0 file-line-part))
-         (line (string-to-number (nth 1 file-line-part)))
+(defun dumb-jump-helm-persist-action (candidate)
+  "Previews CANDIDATE in a temporary buffer displaying the file at the matched line.
+\\<helm-map>
+This is the persistent action (\\[helm-execute-persistent-action]) for helm."
+  (let* ((file (plist-get candidate :path))
+         (line (plist-get candidate :line))
          (default-directory-old default-directory))
     (switch-to-buffer (get-buffer-create " *helm dumb jump persistent*"))
     (setq default-directory default-directory-old)
@@ -1418,12 +1570,12 @@ for user to select.  Filters PROJ path from files for display."
      ((and (eq dumb-jump-selector 'ivy) (fboundp 'ivy-read))
       (funcall dumb-jump-ivy-jump-to-selected-function results choices proj))
      ((and (eq dumb-jump-selector 'helm) (fboundp 'helm))
-      (dumb-jump-to-selected results choices
-                             (helm :sources
-                                   (helm-build-sync-source "Jump to: "
-                                     :candidates choices
-                                     :persistent-action 'dumb-jump-helm-persist-action)
-                                   :buffer "*helm dumb jump choices*")))
+      (helm :sources
+            (helm-build-sync-source "Jump to: "
+              :action '(("Jump to match" . dumb-jump-result-follow))
+              :candidates (-zip choices results)
+              :persistent-action 'dumb-jump-helm-persist-action)
+            :buffer "*helm dumb jump choices*"))
      (t
       (dumb-jump-to-selected results choices (popup-menu* choices))))))
 
@@ -1707,7 +1859,11 @@ current file."
     (:comment "//" :language "swift")
     (:comment "#" :language "elixir")
     (:comment "%" :language "erlang")
-    (:comment "//" :language "scss"))
+    (:comment "%" :language "tex")
+    (:comment "//" :language "systemverilog")
+    (:comment "--" :language "vhdl")
+    (:comment "//" :language "scss")
+    (:comment "//" :language "pascal"))
   "List of one-line comments organized by language."
   :group 'dumb-jump
   :type
@@ -1861,7 +2017,7 @@ Ffrom the ROOT project CONFIG-FILE."
                (buffer-file-name it)
                (file-exists-p (buffer-file-name it)))
           (buffer-list))))
-    (member path (--map (buffer-file-name it) modified-file-buffers))))
+    (member (f-full path) (--map (buffer-file-name it) modified-file-buffers))))
 
 (defun dumb-jump-result-follow (result &optional use-tooltip proj)
   "Take the RESULT to jump to and record the jump, for jumping back, and then trigger jump.  Prompt if we should continue if destentation has been modified."
