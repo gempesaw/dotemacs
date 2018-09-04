@@ -10,7 +10,7 @@
 
 (setq my-packages '(
                     ag
-                    ace-jump-mode
+                    avy
                     async
                     browse-kill-ring
                     company
