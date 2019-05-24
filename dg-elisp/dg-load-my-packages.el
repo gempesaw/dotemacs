@@ -1,6 +1,7 @@
 (require 'package)
 (require 'cl)
 (require 'tramp)
+(desktop-clear)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
@@ -21,7 +22,6 @@
                     diminish
                     dired-subtree
                     dumb-jump
-                    dracula-theme
                     flx-ido
                     elisp-slime-nav
                     ensime
@@ -41,7 +41,6 @@
                     ido-vertical-mode
                     ido-completing-read+ ;; needed for new magit
                     js2-mode
-                    jujube-theme
                     key-chord
                     magit
                     markdown-mode
@@ -63,7 +62,6 @@
                     simple-httpd
                     smart-tab
                     smex
-                    solarized-theme
                     switch-window
                     tern
                     tumblesocks
@@ -103,6 +101,7 @@
 
 (load-my-packages my-packages)
 
+(load "~/.emacs.d/fairyfloss-theme.el")
 ;; manually load some packages
 (require 'smart-compile)
 

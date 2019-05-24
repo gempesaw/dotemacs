@@ -22,14 +22,22 @@
 (add-to-list 'auto-mode-alist '("\\.es6\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
-(eval-after-load 'tern-mode
-  (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
-(eval-after-load 'company-mode
-  (add-hook 'js2-mode-hook (lambda () (company-mode t))))
-(eval-after-load 'js-align-mode
-  (add-hook 'js2-mode-hook 'js-align-mode))
+(setq js2-mode-hook
+      '(js2-refactor-mode
+        (lambda nil (eval-after-load 'company-mode (company-mode t)))
+        (lambda nil (eval-after-load 'tern-mode (tern-mode t)))
+        ;; (lambda nil (eval-after-load 'js-align-mode (js-align-mode 1)))
+        (lambda nil (electric-pair-mode t))
+        hs-minor-mode
+        flycheck-mode
+        er/add-js2-mode-expansions
+        er/add-js-mode-expansions
+        )
+      )
 
-(eval-after-load 'tern
+(js2r-add-keybindings-with-prefix "C-c C-j")
+
+(eval-after-load `tern
   '(require 'company-tern))
 
 (fset 'dg-js2-anon-to-async
@@ -45,15 +53,16 @@
           (tern-find-definition)))))
 
 (defun dg-js2--find-require ()
-  (when (s-match "require" (thing-at-point 'line t))
-    (save-excursion
-      (end-of-line)
-      (backward-word)
-      (let ((root (locate-dominating-file buffer-file-name ".git"))
-            (needle (s-replace "'" "" (thing-at-point 'sexp t))))
+  (let* ((root (locate-dominating-file buffer-file-name ".git"))
+         (line (thing-at-point 'line t))
+         (needle (or (cadr (s-match "\\(?:require(\\|from \\)'\\(.*?\\)'" line))
+                     (cadr (s-match "\\(?:require(\\|from \\)\"\\(.*?\\)\"" line)))))
+    (when (or (s-match "require" line)
+              (s-match "import" line))
+      (save-excursion
         (dg-js2--try-open (if (s-starts-with-p "." needle)
-                         needle
-                       (format "%snode_modules/%s" root needle)))))))
+                              needle
+                            (format "%snode_modules/%s" root needle)))))))
 
 (defun dg-js2--try-open (path)
   (let* ((indexJs (format "%s/index.js" path))
@@ -165,5 +174,27 @@
 (define-key tern-mode-keymap (kbd "M-,") #'pop-tag-mark)
 (define-key js2-mode-map (kbd "C-c t i") #'dg-js2-toggle-it-only)
 (define-key js2-mode-map (kbd "C-c t d") #'dg-js2-toggle-describe-only)
+(define-key js2-mode-map (kbd "C-c o") #'dg-js2-object-single-to-multi)
 
-(provide 'dg-js2-mode)
+
+(defun dg-js2-object-single-to-multi ()
+  (interactive)
+  (save-excursion
+    (let ((start (line-beginning-position))
+          (end (line-end-position)))
+      (beginning-of-line)
+      (re-search-forward "{ " end)
+      (open-line-and-indent)
+      (while (re-search-forward ", " end t)
+        (open-line-and-indent)
+        (next-line)
+        (beginning-of-line)
+        (setq end (line-end-position)))
+      (end-of-line)
+      (re-search-backward " }" (line-beginning-position))
+      (open-line-and-indent))))
+
+
+
+
+(provide `dg-js2-mode)

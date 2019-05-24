@@ -59,6 +59,7 @@
         diredp-previous-line
         downcase-region
         duplicate-thing
+        electric-pair-delete-pair
         elpy-shell-send-region-or-buffer
         end-of-visual-line
         ensure-fullscreen-mode-is-on
@@ -132,12 +133,15 @@
         repeat
         replace-last-sexp
         rjsx-delete-creates-full-tag
+        rjsx-electric-gt
         sgml-slash
         smart-tab
         smarter-move-beginning-of-line
         smex
         sp--self-insert-command
         subword-right
+        tern-get-type
+        toggle-quotes
         transpose-sexps
         transpose-words
         universal-argument-minus

@@ -552,4 +552,18 @@ out side of git, of course.")
     (delete-region (point) (line-end-position))
     (insert (format " exec -it %s /bin/sh" pod))))
 
+(defun dg-base64-encode-region-no-break ()
+  (interactive)
+  (base64-encode-region (mark) (point) t))
+
+(defun dg-open-curl ()
+  (interactive)
+  (beginning-of-line)
+  (while (search-forward " -H " nil t)
+    (backward-char 3)
+    (insert " \\")
+    (open-line 1)
+    (search-forward " -H "))
+  (beginning-of-line))
+
 (provide 'dg-defun)

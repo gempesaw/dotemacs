@@ -5,10 +5,11 @@
 
 (defun web-mode-hook ()
   "Hooks for Web mode."
-  (setq web-mode-indent-style 2
+  (setq web-mode-enable-auto-quoting nil
+        web-mode-indent-style 2
         web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 4
-        web-mode-code-indent-offset 4))
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2))
 
 (define-key web-mode-map (kbd "M-;") 'web-mode-comment-or-uncomment)
 
@@ -21,5 +22,7 @@
 (add-to-list 'auto-mode-alist '("Amkfile" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.amk$" . web-mode))
 
+(setq web-mode-content-types-alist
+  '(("jsx" . "\\.js[x]?\\'")))
 
 (provide 'dg-web-mode)

@@ -3,7 +3,7 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;(package-initialize)
+;; (package-initialize)
 
 (load "~/.emacs.d/emacs-custom.el" 'noerror)
 
@@ -27,7 +27,7 @@
                            "dg-modes"
                            "dg-diminish"))
 
-       (dg-other-packages '("js-align")))
+       (dg-other-packages '()))
   (mapc (lambda (it)
           (setq dg-other-packages (delete it dg-all-packages)))
         (append dg-first-packages dg-last-packages))
@@ -45,3 +45,6 @@
 (load "~/.emacs.d/defadvice.el" 'noerror)
 (load "~/.emacs.d/hooks.el" 'noerror)
 (load "~/.emacs.d/my-macros.el" 'noerror)
+
+(require 'js-align)
+(require 'swagger-jsdoc-edit)
