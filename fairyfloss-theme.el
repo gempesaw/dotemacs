@@ -203,4 +203,14 @@ Authors:
    `(magit-hash ((t (:foreground ,fairy-space-300))))
    `(magit-section-highlight ((t (:background "#7f789e"))))
 
+   ;; Dired
+   `(dired-subtree-depth-1-face ((t (:foreground nil :background "#7f789e"))))
+   `(dired-subtree-depth-2-face ((t (:foreground nil :background "#716993"))))
+   `(dired-subtree-depth-3-face ((t (:foreground nil :background "#655f84"))))
+   `(dired-subtree-depth-4-face ((t (:foreground nil :background "#5a5475"))))
+   `(dired-subtree-depth-5-face ((t (:foreground nil :background "#4f4966"))))
+   `(dired-subtree-depth-6-face ((t (:foreground nil :background "#433f57"))))
+   ))
+
+
 (provide-theme `fairyfloss)
