@@ -198,5 +198,9 @@ Authors:
    `(rainbow-delimiters-depth-8-face ((t (:foreground ,fairy-mint-500))))
    `(rainbow-delimiters-depth-9-face ((t (:foreground ,fairy-space-1000))))
 
+   ;; Magit
+   `(magit-dimmed ((t (:foreground ,fairy-space-300))))
+   `(magit-hash ((t (:foreground ,fairy-space-300))))
+   `(magit-section-highlight ((t (:background "#7f789e"))))
 
 (provide-theme `fairyfloss)
