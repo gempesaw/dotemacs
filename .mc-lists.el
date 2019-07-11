@@ -144,6 +144,7 @@
         toggle-quotes
         transpose-sexps
         transpose-words
+        typescript-insert-and-indent
         universal-argument-minus
         upcase-region
         wdired-abort-changes
@@ -189,6 +190,7 @@
         dired-up-directory
         end-of-buffer
         ensime-format-source
+        ensime-mouse-motion
         ensime-refactor-rename
         ensime-sbt-do-test-only-dwim
         eval-last-sexp
