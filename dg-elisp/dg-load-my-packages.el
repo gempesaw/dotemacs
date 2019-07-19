@@ -61,6 +61,7 @@
                     which-key
                     wrap-region
                     yasnippet
+                    yaml-mode
                     ))
 
 (defun my-packages-installed-p (list-of-packages)
