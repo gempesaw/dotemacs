@@ -15,7 +15,7 @@
                     browse-kill-ring
                     company
                     company-tern
-		    dash
+                    dash
                     diminish
                     dired-subtree
                     dumb-jump
@@ -25,6 +25,7 @@
                     expand-region
                     f
                     fancy-narrow
+                    flycheck
                     ggtags
                     gist
                     git-timemachine
@@ -35,8 +36,10 @@
                     httprepl
                     ido-completing-read+ ;; needed for new magit
                     js2-mode
+                    js2-refactor
                     key-chord
                     magit
+                    magit-gitflow
                     markdown-mode
                     multiple-cursors
                     paredit
@@ -53,6 +56,7 @@
                     tern
                     tumblesocks
                     tramp
+                    typescript-mode
                     wgrep
                     which-key
                     wrap-region
