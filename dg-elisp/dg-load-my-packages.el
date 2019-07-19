@@ -51,7 +51,6 @@
                     scss-mode
                     simple-httpd
                     smart-tab
-                    smex
                     switch-window
                     tern
                     tumblesocks
