@@ -3,9 +3,7 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;; (package-initialize)
-
-(load "~/.emacs.d/emacs-custom.el" 'noerror)
+(package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d/dg-elisp/")
 (add-to-list 'load-path "~/.emacs.d/js-align/")
@@ -45,6 +43,7 @@
 (load "~/.emacs.d/defadvice.el" 'noerror)
 (load "~/.emacs.d/hooks.el" 'noerror)
 (load "~/.emacs.d/my-macros.el" 'noerror)
+(load "~/.emacs.d/emacs-custom.el" 'noerror)
 
 (require 'js-align)
 (require 'swagger-jsdoc-edit)
