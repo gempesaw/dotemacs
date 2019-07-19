@@ -22,7 +22,6 @@
                     diminish
                     dired-subtree
                     dumb-jump
-                    flx-ido
                     elisp-slime-nav
                     ensime
                     exec-path-from-shell
@@ -37,8 +36,6 @@
                     grunt
                     htmlize
                     httprepl
-                    ido-ubiquitous
-                    ido-vertical-mode
                     ido-completing-read+ ;; needed for new magit
                     js2-mode
                     key-chord
