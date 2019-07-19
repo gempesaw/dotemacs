@@ -12,11 +12,10 @@
 (setq my-packages '(
                     ag
                     avy
-                    async
                     browse-kill-ring
                     company
                     company-tern
-                    dash
+		    dash
                     diminish
                     dired-subtree
                     dumb-jump
@@ -40,17 +39,10 @@
                     magit
                     markdown-mode
                     multiple-cursors
-                    ;; nvm
-                    noflet
-                    offlineimap
                     paredit
-                    pcre2el
                     projectile
-                    php-mode
                     rainbow-mode
                     rainbow-delimiters
-                    regex-tool
-                    request
                     rjsx-mode
                     s
                     scss-mode
