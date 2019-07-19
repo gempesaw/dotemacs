@@ -37,3 +37,5 @@ archive-contents
 classpath*SNAPSHOT
 ensime/
 image-dired/
+/elpa
+/transient
