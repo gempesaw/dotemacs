@@ -15,15 +15,18 @@
                     browse-kill-ring
                     company
                     company-tern
+                    counsel
                     dash
                     diminish
                     dired-subtree
                     dumb-jump
+                    duplicate-thing
                     elisp-slime-nav
                     ensime
                     exec-path-from-shell
                     expand-region
                     f
+                    flx
                     fancy-narrow
                     flycheck
                     ggtags
@@ -35,6 +38,7 @@
                     htmlize
                     httprepl
                     ido-completing-read+ ;; needed for new magit
+                    ivy
                     js2-mode
                     js2-refactor
                     key-chord
