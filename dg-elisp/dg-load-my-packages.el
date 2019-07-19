@@ -16,7 +16,6 @@
                     browse-kill-ring
                     company
                     company-tern
-                    cperl-mode
                     dash
                     diminish
                     dired-subtree
