@@ -15,7 +15,6 @@
                     async
                     browse-kill-ring
                     company
-                    company-go
                     company-tern
                     cperl-mode
                     dash

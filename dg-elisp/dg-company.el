@@ -1,5 +1,4 @@
 (require 'company)
-(require 'company-go)
 (require 'company-tern)
 
 (setq company-idle-delay .275
