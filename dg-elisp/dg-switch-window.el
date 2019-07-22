@@ -1,3 +1,5 @@
+(require 'switch-window)
+
 ;; switch windows using home row keys
 (setq switch-window-shortcut-style 'qwerty
       ;; don't bother running window-configuration-change-hook while `switch-window`-ing

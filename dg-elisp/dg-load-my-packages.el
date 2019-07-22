@@ -55,7 +55,6 @@
                     scss-mode
                     simple-httpd
                     smart-tab
-                    switch-window
                     tern
                     tumblesocks
                     tramp

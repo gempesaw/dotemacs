@@ -7,6 +7,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/dg-elisp/")
 (add-to-list 'load-path "~/.emacs.d/js-align/")
+(add-to-list 'load-path "~/.emacs.d/switch-window/")
 (add-to-list 'load-path "~/.emacs.d/swagger-jsdoc-edit/")
 ;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
 

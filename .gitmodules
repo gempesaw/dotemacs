@@ -13,3 +13,6 @@
 [submodule "swagger-jsdoc-edit"]
 	path = swagger-jsdoc-edit
 	url = https://github.com/gempesaw/swagger-jsdoc-edit.el.git
+[submodule "switch-window"]
+	path = switch-window
+	url = https://github.com/dimitri/switch-window/
