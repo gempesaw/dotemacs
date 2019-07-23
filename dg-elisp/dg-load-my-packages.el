@@ -38,7 +38,7 @@
                     grunt
                     htmlize
                     httprepl
-                    ido-ubiquitous
+                    ido-at-point
                     ido-vertical-mode
                     ido-completing-read+ ;; needed for new magit
                     ivy
@@ -50,6 +50,7 @@
                     markdown-mode
                     multiple-cursors
                     nvm
+                    noflet
                     paredit
                     projectile
                     rainbow-mode
