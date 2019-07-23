@@ -27,6 +27,7 @@
                     expand-region
                     f
                     flx
+                    flx-ido
                     fancy-narrow
                     flycheck
                     ggtags
@@ -37,6 +38,8 @@
                     grunt
                     htmlize
                     httprepl
+                    ido-ubiquitous
+                    ido-vertical-mode
                     ido-completing-read+ ;; needed for new magit
                     ivy
                     js2-mode
