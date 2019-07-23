@@ -59,6 +59,7 @@
                     scss-mode
                     simple-httpd
                     smart-tab
+                    smex
                     tern
                     tumblesocks
                     tramp
