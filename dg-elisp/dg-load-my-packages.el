@@ -46,6 +46,7 @@
                     magit-gitflow
                     markdown-mode
                     multiple-cursors
+                    nvm
                     paredit
                     projectile
                     rainbow-mode
