@@ -3,7 +3,7 @@
 
 (when (file-exists-p "~/.nvm")
   (require 'nvm)
-  (nvm-use "10.12.0")
+  (nvm-use "12.6.0")
 
   (when (not (string-equal system-type "windows-nt"))
     (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
