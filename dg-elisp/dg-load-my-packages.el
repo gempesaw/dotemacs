@@ -15,7 +15,6 @@
                     browse-kill-ring
                     company
                     company-tern
-                    counsel
                     dash
                     diminish
                     dired-subtree
