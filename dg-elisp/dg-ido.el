@@ -1,13 +1,14 @@
 
+
 ;; ido mode
 (ido-mode t) ; enable ido for buffer/file switching
 (ido-everywhere t) ;enable ido everywhere
 
-;; Use ido everywhere
-(ido-ubiquitous 1)
-
 ;;; use vertical mode
 (ido-vertical-mode 1)
+
+;; ido everywhere, but really
+(ido-ubiquitous-mode 1)
 
 ;; auto-completion in minibuffer
 (icomplete-mode 1)
