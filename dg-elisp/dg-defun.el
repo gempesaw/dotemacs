@@ -304,7 +304,7 @@ Including indent-buffer, which should not be called automatically on save."
   (browse-url-of-buffer
    (with-current-buffer (markdown markdown-output-buffer-name)
      (goto-char (point-min))
-     (if (> (length markdown-css-path) 0)
+     (if (> (length markdown-css-paths) 0)
          (insert "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
                  markdown-css-path
                  "\"  />\n"))
