@@ -124,11 +124,11 @@ Authors:
    `(font-lock-string-face ((t (:foreground ,fairy-gold-700))))
    `(font-lock-type-face ((t (:foreground ,fairy-mint-500 :slant italic))))
    `(font-lock-variable-name-face ((t (:foreground ,fairy-gold-400))))
-   `(font-lock-warning-face ((t nil)))
+   `(font-lock-warning-face ((t (:foreground ,fairy-sky-600))))
 
    ;; IDO
-   `(ido-only-match ((t (:foreground "color-84"))))
-   `(ido-subdir ((t (:foreground "color-210"))))
+   `(ido-only-match ((t (:foreground ,fairy-sky-600))))
+   `(ido-subdir ((t (:foreground ,fairy-grape-500))))
 
    ;; Isearch
    `(isearch ((((class color) (min-colors 88) (background light)) (:foreground "lightskyblue1" :background "magenta3")) (((class color) (min-colors 88) (background dark)) (:foreground "brown4" :background "palevioletred2")) (((class color) (min-colors 16)) (:foreground "cyan1" :background "magenta4")) (((class color) (min-colors 8)) (:foreground "cyan1" :background "magenta4")) (t (:inverse-video t))))
@@ -145,7 +145,7 @@ Authors:
 
    ;; Mode-line
    `(mode-line ((t (:box (:color nil :style released-button) :foreground ,fairy-space-1000 :background ,fairy-space-300))))
-   `(mode-line-buffer-id ((t (:foreground "color-161" :weight bold))))
+   `(mode-line-buffer-id ((t (:foreground "black" :weight bold))))
    `(mode-line-emphasis ((t (:weight bold))))
    `(mode-line-highlight ((((class color) (min-colors 88)) (:box (:color "grey40" :style released-button))) (t (:inherit (highlight)))))
    `(mode-line-inactive ((t (:weight light :box (:color "grey40" :style nil) :foreground "grey80" :background "grey30" :inherit (mode-line)))))
