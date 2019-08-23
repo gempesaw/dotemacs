@@ -15,6 +15,7 @@
                     browse-kill-ring
                     company
                     company-tern
+                    company-lsp
                     dash
                     diminish
                     dired-subtree
@@ -44,6 +45,8 @@
                     js2-mode
                     js2-refactor
                     key-chord
+                    lsp-mode
+                    lsp-ui
                     magit
                     magit-gitflow
                     markdown-mode
