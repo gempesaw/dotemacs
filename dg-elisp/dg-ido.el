@@ -44,4 +44,4 @@
      (add-to-list 'ido-ignore-directories "svn_HDEW")
      (add-to-list 'ido-ignore-directories "node_modules")))
 
-(provide 'dg-minibuffer)
+(provide 'dg-ido)
