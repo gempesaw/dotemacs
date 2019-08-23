@@ -24,4 +24,21 @@
      (global-set-key (kbd "<tab>") 'smart-tab)
      (global-smart-tab-mode 1)))
 
+(defun smart-tab-default ()
+  "Indent region if mark is active, or current line otherwise."
+  (interactive)
+  (if smart-tab-debug
+      (message "default"))
+  (let* ((smart-tab-mode nil)
+         (global-smart-tab-mode nil)
+         (ev last-command-event)
+         (triggering-key (cl-case (type-of ev)
+                           (integer (char-to-string ev))
+                           (symbol (vector ev))))
+         (original-func (or 'indent-for-tab-command
+                            (key-binding triggering-key)
+                            (key-binding (lookup-key local-function-key-map
+                                                     triggering-key)))))
+    (call-interactively original-func)))
+
 (provide 'dg-tabs)
