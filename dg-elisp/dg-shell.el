@@ -42,4 +42,6 @@
     (set-process-query-on-exit-flag (get-buffer-process buf) nil)
     buf))
 
+(setq shell-file-name "bash")
+
 (provide 'dg-shell)
