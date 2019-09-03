@@ -70,63 +70,23 @@ raises an error."
       (setq ssh-config (cdr ssh-config)))
     ssh-host-names))
 
-(defun get-user-for-remote-box ()
-  (interactive)
-  (setq ssh-hostname-remote-pairs '())
-  (let ((ssh-config (get-file-as-string ssh-config-path) )
-        (ssh-remote-info)
-        (ssh-user-remote-pairs))
-    (while ssh-config
-      (let ((host-line (car ssh-config))
-            (user-line (caddr ssh-config))
-            (name-line (cadr ssh-config)))
-        (if (and (string-match-p "Host " host-line)
-                 (not (string-match-p "*" host-line))
-                 (not (string-match-p "*" user-line))
-                 (not (string-match-p "^# " host-line))
-                 (not (string-match-p "^# " user-line)))
-            (progn
-              (add-to-list 'ssh-user-remote-pairs
-                           `(,(car (last (split-string host-line " ")))
-                             ,(car (last (split-string user-line " ")))))
-
-              (add-to-list 'ssh-hostname-remote-pairs
-                           `(,(car (last (split-string host-line " ")))
-                             ,(car (last (split-string name-line " ")))))))
-        (setq ssh-config (cdr ssh-config))))
-    ssh-user-remote-pairs))
+(defun get-remote-boxes ()
+  (let ((ssh-config (get-file-as-string ssh-config-path)))
+    (-map
+     (lambda (line) (cadr (s-split " " line)))
+     (-filter
+      (lambda (line) (and (s-matches-p "^Host " line) (not (string-match-p "*" line))))
+      ssh-config))))
 
 (defun open-ssh-connection (&optional pfx)
   (interactive)
   (with-temp-buffer
-    (let* ((remote-info (get-user-for-remote-box))
-           (box (if (eq nil pfx)
-                    (ido-completing-read
-                     "Which box: " (mapcar 'car remote-info))
-                  pfx))
+    (let* ((box (ido-completing-read
+                 "Which box: " (get-remote-boxes)))
            (buffer (concat "*shell<" box ">*"))
-           ;; get tramp to open the ssh connection by opening a folder
-           ;; on the remote box
-           (centos-home-dir
-             (concat "/ssh:" box ":/home/"
-                     (cadr (assoc box remote-info)) "/"))
-           (osx-home-dir
-             (concat "/ssh:" box ":/Users/"
-                     (cadr (assoc box remote-info)) "/"))
-           (default-directory centos-home-dir))
-      ;; open a shell from the tramp ssh buffer created by setting the
-      ;; default directory to a remote directory. I was having trouble
-      ;; connecting to an OS X box that allowed ssh conenctions via
-      ;; user&pass, since this method relies pretty explicitly on the
-      ;; sshconfig, which doesn't really use passwords, only .pem kind
-      ;; of stuff.
-      (condition-case nil
-          (cd default-directory)
-        (error
-         (setq default-directory osx-home-dir)
-         (cd default-directory)))
-      (with-current-buffer (get-buffer-create
-                            (format "*tramp/ssh %s*" box))
+           (default-directory (concat "/ssh:" box ":/")))
+      (cd default-directory)
+      (with-current-buffer (get-buffer-create (format "*tramp/ssh %s*" box))
         (shell buffer))
       (set-process-query-on-exit-flag
        (get-buffer-process buffer) nil)
