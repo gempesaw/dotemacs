@@ -32,7 +32,8 @@
       ido-create-new-buffer 'always
       ido-use-filename-at-point 'guess
       ido-max-prospects 10
-      ido-default-file-method 'selected-window)
+      ido-default-file-method 'selected-window
+      ffap-machine-p-known 'reject)
 
 ;; ignore list http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/
 ;; (add-to-list 'ido-ignore-buffers "buffers")
