@@ -1,11 +1,13 @@
 (require 'package)
 (require 'cl)
 (require 'tramp)
-(desktop-clear)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(setq package-archives '(;; ("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
-                         ("elpy" . "http://jorgenschaefer.github.io/packages/")))
+                         ;; ("elpy" . "http://jorgenschaefer.github.io/packages/")
+             ))
 
 (defvar my-packages '() "A list of packages to ensure are installed at launch.")
 
@@ -17,12 +19,12 @@
                     company-tern
                     company-lsp
                     dash
+                    dap-mode
                     diminish
                     dired-subtree
                     dumb-jump
                     duplicate-thing
                     elisp-slime-nav
-                    ensime
                     exec-path-from-shell
                     expand-region
                     f
@@ -33,6 +35,7 @@
                     ggtags
                     gist
                     git-timemachine
+                    git-link
                     gradle-mode
                     groovy-mode
                     grunt
@@ -66,7 +69,6 @@
                     tern
                     tumblesocks
                     tramp
-                    typescript-mode
                     wgrep
                     which-key
                     wrap-region
@@ -101,6 +103,7 @@
 
 ;; (mapcar 'write-personalization-templates my-packages)
 
+(setq lsp-keymap-prefix "s-i")
 (load-my-packages my-packages)
 
 (load "~/.emacs.d/fairyfloss-theme.el")
