@@ -35,7 +35,8 @@ raises an error."
      (setq tramp-default-method "ssh")
      (setq tramp-auto-save-directory "~/tmp/tramp/")
      (setq tramp-chunksize 2000)
-     (setq ssh-config-path "~/.ssh/config")))
+     (setq ssh-config-path "~/.ssh/config")
+     (setq tramp-ssh-controlmaster-options "")))
 
 (defun reset-ssh-connections ()
   (interactive)
@@ -50,7 +51,7 @@ raises an error."
 
 (defun delete-hung-ssh-sessions ()
   (interactive)
-  (let* ((dir "~/.ssh/cm/")
+  (let* ((dir "~/.ssh/sockets/")
          (cm-socket-files (directory-files dir t "-" t)))
     (while cm-socket-files
       (delete-file (car cm-socket-files))
@@ -93,5 +94,28 @@ raises an error."
       (with-current-buffer buffer
         (insert "cd")
         (comint-send-input nil t)))))
+
+(push
+ (cons
+  "docker"
+  '((tramp-login-program "docker")
+    (tramp-login-args (("exec" "-it") ("%h") ("/bin/bash")))
+    (tramp-remote-shell "/bin/sh")
+    (tramp-remote-shell-args ("-i") ("-c"))))
+ tramp-methods)
+
+(defadvice tramp-completion-handle-file-name-all-completions
+  (around dotemacs-completion-docker activate)
+  "(tramp-completion-handle-file-name-all-completions \"\" \"/docker:\" returns
+    a list of active Docker container names, followed by colons."
+  (if (equal (ad-get-arg 1) "/docker:")
+      (let* ((dockernames-raw (shell-command-to-string "docker ps | awk '$NF != \"NAMES\" { print $NF \":\" }'"))
+             (dockernames (cl-remove-if-not
+                           #'(lambda (dockerline) (string-match ":$" dockerline))
+                           (split-string dockernames-raw "\n"))))
+        (setq ad-return-value dockernames))
+    ad-do-it))
+
+
 
 (provide 'dg-tramp)
