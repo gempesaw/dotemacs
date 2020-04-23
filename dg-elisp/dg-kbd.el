@@ -20,8 +20,8 @@
 (define-key term-raw-map (kbd "C-;") 'term-line-mode)
 
 ;; load file into emacs
-(global-unset-key (kbd "C-c C-l"))
-(global-set-key (kbd "C-c C-l") 'load-file)
+;; (global-unset-key (kbd "C-c C-l"))
+;; (global-set-key (kbd "C-c C-l") 'load-file)
 
 ;; quicker el-get list packages
 (global-unset-key (kbd "C-c C-e l p"))
@@ -135,8 +135,10 @@
 (global-unset-key (kbd "M-."))
 (global-set-key (kbd "M-.") (lambda ()
                               (interactive)
-                              (unless (dumb-jump-go)
-                                (find-tag (thing-at-point 'symbol)))
+                              (if lsp-mode
+                                  (lsp-ui-peek-find-definitions)
+                                (unless (dumb-jump-go)
+                                  (find-tag (thing-at-point 'symbol))))
                               ))
 (global-unset-key (kbd "M-,"))
 (global-set-key (kbd "M-,") 'pop-tag-mark)
