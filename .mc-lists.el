@@ -69,6 +69,7 @@
         fill-paragraph
         forward-sexp
         ggtags-navigation-mode-done
+        git-link
         git-rebase-reword
         haml-electric-backspace
         ibuffer-mark-for-delete
@@ -93,6 +94,7 @@
         markdown-cycle
         markdown-exdent-or-delete
         markdown-indent-region
+        markdown-outdent-or-delete
         mc/mark-next-lines
         message-beginning-of-line
         mu4e-headers-mark-for-read
@@ -103,6 +105,7 @@
         org-delete-char
         org-demote-subtree
         org-end-of-line
+        org-force-self-insert
         org-insert-heading-respect-content
         org-kill-line
         org-meta-return
@@ -196,6 +199,7 @@
         eval-last-sexp
         execute-perl
         fancy-widen
+        google
         grunt-exec
         handle-switch-frame
         hs-show-block
@@ -209,11 +213,14 @@
         js2-mode-show-node
         jump-to-register
         kmacro-start-macro
+        lsp-ui-peek--select-prev
+        lsp-ui-peek-find-references
         magit-status
         markdown-dedent-or-delete
         move-to-window-line-top-bottom
         mu4e-headers-prev
         mu4e-mark-execute-all
+        nxml-electric-slash
         offlineimap-kill
         offlineimap-show-or-start
         org-delete-backward-char
