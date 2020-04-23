@@ -44,4 +44,9 @@
 
 (setq shell-file-name "bash")
 
+(add-hook 'find-file-hook
+          (lambda ()
+            (when (file-remote-p default-directory)
+              (setq-local projectile-mode-line "Projectile"))))
+
 (provide 'dg-shell)
