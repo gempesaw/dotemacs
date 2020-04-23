@@ -6,8 +6,23 @@
 
     (key-chord-mode t)
 
+    ;; (setq minibuffer-setup-hook (cdr minibuffer-setup-hook))
+    ;; (setq minibuffer-exit-hook (cdr minibuffer-exit-hook))
+
+    (add-hook 'minibuffer-setup-hook (lambda ()
+                                       (interactive)
+                                       (setq inhibit-message t)
+                                       (key-chord-mode -1)
+                                       (setq inhibit-message nil)))
+
+    (add-hook 'minibuffer-exit-hook (lambda ()
+                                      (interactive)
+                                      (setq inhibit-message t)
+                                      (key-chord-mode t)
+                                      (setq inhibit-message nil)))
+
     ;; movement, shells, smex
-    (key-chord-define-global "fj" 'avy-goto-char-timer)
+    (key-chord-define-global "fj" 'avy-goto-char)
     (key-chord-define-global ",/" 'smex)
 
     ;; expanding region
