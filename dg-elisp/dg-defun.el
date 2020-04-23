@@ -221,7 +221,9 @@ might be bad."
 Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (cleanup-buffer-safe)
-  (indent-region (point-min) (point-max)))
+  (indent-region (point-min) (point-max))
+  (when 'lsp-mode
+    (lsp-format-buffer)))
 
 (defun magit-toggle-whitespace ()
   (interactive)
