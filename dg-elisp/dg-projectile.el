@@ -4,6 +4,7 @@
 
 (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
 (define-key projectile-mode-map (kbd "C-c p p") 'projectile-test-project)
+(define-key projectile-mode-map (kbd "C-c p c") 'projectile-compile-project)
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 (key-chord-define-global "zp" 'projectile-switch-project)
 
