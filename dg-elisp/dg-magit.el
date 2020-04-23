@@ -1,5 +1,14 @@
 (setq magit-completing-read-function 'magit-ido-completing-read)
 
+;; magit status
+(global-set-key (kbd "C-x g") 'magit-status)
+
+;; magit-svn-mode
+(add-hook 'magit-mode-hook (lambda() (local-set-key (kbd "N") 'magit-svn-mode)))
+
+;; blame mode
+(global-set-key (kbd "C-c g") 'magit-blame)
+
 (eval-after-load 'magit
   '(progn
      ;; be like dired, use d for killing
@@ -49,7 +58,7 @@
 
 (defun magit-clone-opt ()
   (interactive)
-  (let ((default-directory "/opt/"))
+  (let ((default-directory (format "%s/opt/" (getenv "HOME"))))
     (call-interactively 'magit-clone)))
 
 (provide 'dg-magit)

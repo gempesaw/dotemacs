@@ -1,15 +1,6 @@
 ;; rename buffer
 (global-set-key (kbd "C-c r") 'rename-buffer)
 
-;; magit status
-(global-set-key (kbd "C-x g") 'magit-status)
-
-;; magit-svn-mode
-(add-hook 'magit-mode-hook (lambda() (local-set-key (kbd "N") 'magit-svn-mode)))
-
-;; blame mode
-(global-set-key (kbd "C-c g") 'magit-blame-mode)
-
 ;; shortcut for revert buffer
 (global-set-key (kbd "C-x r") (lambda () (interactive) (revert-buffer t t t)))
 
