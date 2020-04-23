@@ -2,6 +2,7 @@
 
 (setq grep-find-ignored-directories '("app/bower_components"
                                       "node_modules"
+                                      "target"
                                       "SCCS"
                                       "RCS"
                                       "CVS"
