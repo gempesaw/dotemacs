@@ -52,7 +52,6 @@ still function in special-mode"
 (progn
   (advice-add 'compile :around #'let-compile-use-other-frame)
   (advice-add 'compile-again :around #'let-compile-use-other-frame)
-  (advice-add 'ensime-sbt-do-test-only-dwim :around #'let-compile-use-other-frame)
   (advice-add 'save-buffer :around #'let-compile-use-other-frame))
 
 (progn

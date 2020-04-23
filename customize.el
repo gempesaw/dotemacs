@@ -89,8 +89,6 @@
 ;; term face settings
 (setq term-default-bg-color nil)
 
-(setq ensime-sbt-compile-on-save nil)
-
 ;;; something turned iedit on, but we don't want it
 (setq iedit-toggle-key-default nil)
 
