@@ -9,7 +9,10 @@
                 (save-window-excursion
                   (tex-file))))))
 
-(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+(add-hook 'scala-mode-hook #'lsp)
+(add-hook 'ruby-mode-hook #'lsp)
+(add-hook 'elixir-mode-hook #'lsp)
+
 
 ;; (setq mu4e-index-updated-hook nil)
 (add-hook 'mu4e-index-updated-hook
