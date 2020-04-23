@@ -39,3 +39,7 @@ ensime/
 image-dired/
 /elpa
 /transient
+eclipse.jdt.ls
+workspace
+.lsp*
+/diary
