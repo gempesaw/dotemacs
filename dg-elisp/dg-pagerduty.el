@@ -9,3 +9,5 @@
                   ))
          (file (file-relative-name buffer-file-name (projectile-project-root))))
       (kill-new (format "bundle exec spring testunit %s -n \"/%s/\"" file regex)))))
+
+(provide 'dg-pagerduty)
