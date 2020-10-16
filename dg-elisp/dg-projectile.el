@@ -55,9 +55,9 @@
 ;;; open a shell at the root of the directory
 (progn
   (defun dg-projectile-open-shell-in-root ()
-         (interactive)
-         (projectile-with-default-dir (projectile-project-root)
-           (call-interactively 'switch-to-shell-or-create)))
+    (interactive)
+    (projectile-with-default-dir (projectile-project-root)
+      (call-interactively 'switch-to-shell-or-create)))
 
   (define-key projectile-mode-map (kbd "C-c p /") 'dg-projectile-open-shell-in-root))
 
@@ -66,6 +66,6 @@
 (when (and
        (fboundp 'projectile-discover-projects-in-directory)
        (file-exists-p "/opt"))
-      (projectile-discover-projects-in-directory "/opt"))
+  (projectile-discover-projects-in-directory "~/opt"))
 
 (provide 'dg-projectile)
