@@ -1,7 +1,7 @@
 ;; (when (fboundp 'nvm-use) (nvm-use "v8.4.0"))
 
-(setenv "PATH" (concat (getenv "PATH") ":/opt/elixir-ls/release"))
-(setq exec-path (append exec-path '("/opt/elixir-ls/release")))
+(setenv "PATH" (concat (getenv "PATH") ":/Users/dgempesaw/opt/elixir-ls/release"))
+(setq exec-path (append exec-path '("/Users/dgempesaw/opt/elixir-ls/release")))
 
 
 (when (file-exists-p "~/.nvm")
