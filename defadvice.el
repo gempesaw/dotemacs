@@ -10,7 +10,7 @@ still function in special-mode"
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
 (advise-commands "auto-save"
-                 (switch-to-buffer other-window switch-window)
+                 (switch-to-buffer other-window switch-window next-error previous-error)
                  (prelude-auto-save-command))
 
 ;;; save everything when we focus another frame (even potentially
