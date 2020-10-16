@@ -7,7 +7,7 @@
 (progn
   (key-chord-define-global "dk" nil)
   (key-chord-define-global
-   "fk"
+   "xk"
    (let ((map (make-sparse-keymap)))
      (define-key map (kbd "t") #'hs-toggle-hiding)
      (define-key map (kbd "j") #'hs-hide-block)
@@ -15,6 +15,7 @@
      (define-key map (kbd "k") #'hs-show-block)
      (define-key map (kbd "p") #'hs-hide-all)
      (define-key map (kbd "n") #'hs-show-all)
-     map)))
+     map))
+  (key-chord-define-global "fk" nil))
 
 (provide 'dg-hs-mode)
