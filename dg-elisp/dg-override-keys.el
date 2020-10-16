@@ -5,7 +5,7 @@
   t "" 'my-keys-minor-mode-map)
 
 (defun my-minibuffer-setup-hook ()
-  (my-keys-minor-mode 0))
+  (my-keys-minor-mode 1))
 
 ;; activate my minor mode to override keybindings
 (my-keys-minor-mode 1)
