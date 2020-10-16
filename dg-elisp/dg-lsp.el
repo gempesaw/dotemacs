@@ -9,7 +9,13 @@
 
      (push 'company-lsp company-backends)
      (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
+     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+
+     ;; elixir puts its deps here, but we don't want to watch them
+     (push "[/\\\\]deps$" lsp-file-watch-ignored)
+     (push "[/\\\\]\\.elixir_ls$" lsp-file-watch-ignored)
+     (push "[/\\\\]_build$" lsp-file-watch-ignored)))
+
 
 
 (provide 'dg-lsp)
