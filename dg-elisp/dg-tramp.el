@@ -35,7 +35,9 @@ raises an error."
      (setq tramp-default-method "ssh")
      (setq tramp-auto-save-directory "~/tmp/tramp/")
      (setq tramp-chunksize 2000)
+     (setq tramp-default-user "dgempesaw")
      (setq ssh-config-path "~/.ssh/config")
+     (setq auth-source-save-behavior nil)
      (setq tramp-ssh-controlmaster-options "")))
 
 (defun reset-ssh-connections ()
@@ -93,6 +95,7 @@ raises an error."
        (get-buffer-process buffer) nil)
       (with-current-buffer buffer
         (insert "cd")
+        (company-mode -1)
         (comint-send-input nil t)))))
 
 (push
