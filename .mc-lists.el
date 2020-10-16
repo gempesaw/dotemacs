@@ -221,8 +221,6 @@
         mu4e-headers-prev
         mu4e-mark-execute-all
         nxml-electric-slash
-        offlineimap-kill
-        offlineimap-show-or-start
         org-delete-backward-char
         org-goto-calendar
         org-self-insert-command
