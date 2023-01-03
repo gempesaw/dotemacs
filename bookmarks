@@ -1,8 +1,43 @@
-;;;; Emacs Bookmark Format Version 1 ;;;;
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-((".ivy2"
+((".pd-kubectx"
+ (filename . "~/.pd-kubectx/")
+ (front-context-string . "aws-okta-config\n")
+ (rear-context-string . "24 Aug  4 10:34 ")
+ (position . 257))
+(".bash_history"
+ (filename . "~/.bash_history")
+ (front-context-string . "pk c stg\npk -v c")
+ (rear-context-string)
+ (position . 1))
+("aws-config"
+ (filename . "~/.aws/config")
+ (front-context-string . "[okta]\naws_saml_")
+ (rear-context-string)
+ (position . 1))
+(".tool-versions"
+ (filename . "~/.tool-versions")
+ (front-context-string . "nodejs 15.4.0\nru")
+ (rear-context-string)
+ (position . 1))
+("profile"
+ (filename . "~/.bashrc")
+ (front-context-string)
+ (rear-context-string . "ctl -n kayenta'\n")
+ (position . 1367))
+(".bashrc"
+ (filename . "~/.bashrc")
+ (front-context-string)
+ (rear-context-string . "ctl -n kayenta'\n")
+ (position . 1367))
+("kube-config"
+ (filename . "~/.kube/config")
+ (front-context-string . "apiVersion: v1\nc")
+ (rear-context-string)
+ (position . 1))
+(".ivy2"
  (filename . "~/.ivy2/")
  (front-context-string . ".credentials\n  -")
  (rear-context-string . "95 Jul  5 14:42 ")
@@ -128,11 +163,6 @@
  (front-context-string . "\n    <key>CFBund")
  (rear-context-string . "g>True</string>\n")
  (position . 310))
-("prod-kabocha"
- (filename . "/ssh:honeydew:/opt/kabocha/")
- (front-context-string . "lib\n  -rw-rw-r--")
- (rear-context-string . "96 Mar 28 15:56 ")
- (position . 1144))
 ("dev-hdew-tests"
  (filename . "~/opt/dev_hdew/honeydew/features/tests/")
  (front-context-string . "url-regex.featur")
@@ -164,11 +194,6 @@
  (front-context-string . "honeydew@server-")
  (rear-context-string . " 0 Nov 15 09:54 ")
  (position . 299))
-("prod-keywords"
- (filename . "/ssh:honeydew:/opt/honeydew/features/keywords.txt")
- (front-context-string . "Given I am on th")
- (rear-context-string)
- (position . 1))
 ("creds"
  (filename . "~/.creds.gpg")
  (front-context-string . "User Name,Access")

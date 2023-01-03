@@ -1,1 +1,0 @@
-(provide 'dg-multiple-cursors)

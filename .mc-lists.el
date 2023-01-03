@@ -42,12 +42,14 @@
         cperl-electric-terminator
         create-newline-from-anywhere
         dabbrev-expand
+        dap-tooltip-mouse-motion
         delete-horizontal-space
         delete-indentation
         describe-key
         dg-dired-browse-file-at-point
         dg-save-buffer
         dired-details-hide
+        dired-do-chmod
         dired-do-delete
         dired-do-flagged-delete
         dired-find-file
@@ -114,6 +116,7 @@
         org-todo
         paredit-backward
         paredit-backward-kill-word
+        paredit-backward-slurp-sexp
         paredit-close-round
         paredit-close-square
         paredit-comment-dwim
@@ -128,11 +131,15 @@
         paredit-open-round
         paredit-raise-sexp
         paredit-reindent-defun
+        paredit-semicolon
+        paredit-split-sexp
         paredit-wrap-round
         projectile-compile-project
         projectile-find-file
         python-indent-dedent-line-backspace
         python-indent-electric-colon
+        python-indent-shift-left
+        python-indent-shift-right
         repeat
         replace-last-sexp
         rjsx-delete-creates-full-tag
@@ -150,6 +157,7 @@
         typescript-insert-and-indent
         universal-argument-minus
         upcase-region
+        wdired--self-insert
         wdired-abort-changes
         wdired-change-to-wdired-mode
         wdired-downcase-word
@@ -213,10 +221,12 @@
         js2-mode-show-node
         jump-to-register
         kmacro-start-macro
+        kubectl-edit-apply
         lsp-ui-peek--select-prev
         lsp-ui-peek-find-references
         magit-status
         markdown-dedent-or-delete
+        mouse-wheel-text-scale
         move-to-window-line-top-bottom
         mu4e-headers-prev
         mu4e-mark-execute-all
@@ -248,6 +258,7 @@
         undefined
         wdired-finish-edit
         wgrep-toggle-readonly-area
+        widen
         win-switch-down
         win-switch-enter
         win-switch-exit

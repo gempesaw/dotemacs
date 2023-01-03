@@ -1,21 +1,3 @@
 [submodule "snippets"]
 	path = snippets
 	url = https://github.com/gempesaw/snippets.git
-[submodule "alert"]
-	path = alert
-	url = https://github.com/jwiegley/alert
-[submodule "lewang-flx"]
-	path = lewang-flx
-	url = https://github.com/lewang/flx
-[submodule "js-align"]
-	path = js-align
-	url = https://github.com/johnhooks/js-align.git
-[submodule "swagger-jsdoc-edit"]
-	path = swagger-jsdoc-edit
-	url = https://github.com/gempesaw/swagger-jsdoc-edit.el.git
-[submodule "switch-window"]
-	path = switch-window
-	url = https://github.com/dimitri/switch-window/
-[submodule "elixir-ls"]
-	path = elixir-ls
-	url = https://github.com/elixir-lsp/elixir-ls.git

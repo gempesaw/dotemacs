@@ -1,50 +1,28 @@
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
 (package-initialize)
 
-(add-to-list 'load-path "~/.emacs.d/dg-elisp/")
-(add-to-list 'load-path "~/.emacs.d/js-align/")
-(add-to-list 'load-path "~/.emacs.d/switch-window/")
-(add-to-list 'load-path "~/.emacs.d/swagger-jsdoc-edit/")
-;; (byte-recompile-directory (expand-file-name "~/.emacs.d/elpa/") 0 t)
+(eval-when-compile
+  (require 'use-package))
 
-(defvar dg-package-list nil
-  "My customization files, split into different files!")
+(require 'package)
+(require 'cl-lib)
 
-(let* ((dg-first-packages '(
-                            "dg-load-my-packages"
-                            "dg-override-keys"
-                            "dg-elisp-macros"
-                            ))
-       (dg-all-packages (mapcar (lambda (it)
-                                  (substring it 20 -3))
-                                (file-expand-wildcards "~/.emacs.d/dg-elisp/dg-*.el")))
-       (dg-last-packages '(
-                           "dg-modes"
-                           "dg-diminish"))
+(setq custom-file "~/.emacs.d/emacs-custom.el"
+      package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
 
-       (dg-other-packages '()))
-  (mapc (lambda (it)
-          (setq dg-other-packages (delete it dg-all-packages)))
-        (append dg-first-packages dg-last-packages))
-  (setq dg-package-list (append dg-first-packages
-                                dg-other-packages
-                                dg-last-packages)))
+(use-package dash :ensure t)
+(use-package f :ensure t)
+(use-package ht :ensure t)
+(use-package loop :ensure t)
+(use-package s :ensure t)
+(use-package bpr :ensure t)
+(use-package duplicate-thing :ensure t)
+(use-package transient :ensure t)
 
-(mapcar (lambda (it)
-          (message "loading %s" it)
-          (unless (require (intern it))
-            (message "____****MISSING: %s****____" it)))
-        dg-package-list)
 
-(load "~/.emacs.d/customize.el" 'noerror)
-(load "~/.emacs.d/defadvice.el" 'noerror)
-(load "~/.emacs.d/hooks.el" 'noerror)
-(load "~/.emacs.d/my-macros.el" 'noerror)
-(load "~/.emacs.d/emacs-custom.el" 'noerror)
-
-(require 'js-align)
-(require 'swagger-jsdoc-edit)
+(->> "~/.emacs.d/packages"
+     (f-files)
+     (--filter (not (or (s-contains-p "#" it)
+                        (s-contains-p "~" it))))
+     (funcall (lambda (files) (--each files (load it)))))

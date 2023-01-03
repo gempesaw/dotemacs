@@ -1,1 +1,0 @@
-(provide 'dg-browse-kill-ring)

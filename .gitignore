@@ -43,3 +43,4 @@ eclipse.jdt.ls
 workspace
 .lsp*
 /diary
+/forge-database.sqlite
