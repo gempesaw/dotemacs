@@ -16,4 +16,3 @@
 ;;; don't use the os x horrible fullscreen method
 (setq ns-use-native-fullscreen nil)
 
-(toggle-frame-fullscreen)

@@ -4,7 +4,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(which-key multiple-cursors org-jira lsp-mode exec-path-from-shell cape switch-window ag duplicate-thing dired-subtree yasnippet diminish flycheck elisp-slime-nav use-package-chords projectile expand-region loop forge dumb-jump browse-kill-ring corfu wrap-region aggressive-indent bpr avy rainbow-delimiters smart-mode-line paredit terraform-mode git-link)))
+   '(marginalia orderless vertico lsp-mode exec-path-from-shell cape switch-window ag duplicate-thing dired-subtree yasnippet diminish flycheck elisp-slime-nav use-package-chords projectile expand-region loop which-key forge dumb-jump org-jira browse-kill-ring corfu wrap-region aggressive-indent bpr avy rainbow-delimiters smart-mode-line multiple-cursors paredit terraform-mode git-link)))
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.

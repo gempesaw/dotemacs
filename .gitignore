@@ -44,3 +44,4 @@ workspace
 .lsp*
 /diary
 /forge-database.sqlite
+/forge-database-v7-20220624-1544.sql
