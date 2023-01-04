@@ -39,7 +39,7 @@
   (setq dired-recursive-copies 'top)
   (setq dired-recursive-deletes 'top)
 
-;;; http://mixandgo.com/blog/how-i-ve-convinced-emacs-to-dance-with-ruby
+  ;; http://mixandgo.com/blog/how-i-ve-convinced-emacs-to-dance-with-ruby
   (progn
     (defun dg-create-non-existent-directory ()
       (let ((parent-directory (file-name-directory buffer-file-name)))

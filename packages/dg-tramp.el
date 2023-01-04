@@ -85,8 +85,7 @@ raises an error."
   (defun open-ssh-connection (&optional pfx)
     (interactive)
     (with-temp-buffer
-      (let* ((box (ido-completing-read
-                   "Which box: " (get-remote-boxes)))
+      (let* ((box (completing-read "Which box: " (get-remote-boxes)))
              (buffer (concat "*shell<" box ">*"))
              (default-directory (concat "/ssh:" box ":/")))
         (cd default-directory)
@@ -96,6 +95,5 @@ raises an error."
          (get-buffer-process buffer) nil)
         (with-current-buffer buffer
           (insert "cd")
-          (company-mode -1)
           (comint-send-input nil t)))))
   )

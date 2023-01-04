@@ -31,7 +31,7 @@
   (key-chord-define-global "jj" (lambda ()
                                   (interactive)
                                   (bookmark-jump
-                                   (ido-completing-read
+                                   (completing-read
                                     "Jump to bookmark: "
                                     (bookmark-all-names)))))
 

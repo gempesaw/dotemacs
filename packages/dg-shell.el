@@ -26,7 +26,7 @@
                                     (not (s-contains-p "comint" it))))))
         (buf))
     (if shells
-        (progn (setq buf (ido-completing-read "Buffer: " shells))
+        (progn (setq buf (completing-read "Buffer: " shells))
                (unless (get-buffer buf )
                  (setq buf (create-new-shell-here)))
                (switch-to-buffer buf))

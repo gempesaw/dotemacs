@@ -25,4 +25,7 @@
      (f-files)
      (--filter (not (or (s-contains-p "#" it)
                         (s-contains-p "~" it))))
-     (funcall (lambda (files) (--each files (load it)))))
+     (funcall (lambda (files) (--each files
+                                (progn
+                                  (load it)
+                                  (load it))))))

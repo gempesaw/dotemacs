@@ -21,7 +21,7 @@
                      (interactive)
                      (let ((projectile-switch-project-action 'projectile-find-file))
                        (projectile-switch-project)))))
-  :config
+  :init
   (setq projectile-project-test-cmd "make test")
   (setq projectile-switch-project-action 'projectile-vc)
   

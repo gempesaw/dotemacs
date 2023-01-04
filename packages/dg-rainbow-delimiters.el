@@ -14,5 +14,6 @@
   (set-face-attribute 'rainbow-delimiters-depth-1-face nil
                       :weight 'bold)
 
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  )
 

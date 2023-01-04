@@ -26,4 +26,6 @@
   ;; the blinking cursor is nothing, but an annoyance
   (blink-cursor-mode -1)
 
-  (global-subword-mode t))
+  (global-subword-mode t)
+
+  (electric-pair-mode t))

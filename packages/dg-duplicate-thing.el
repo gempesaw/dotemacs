@@ -1,3 +1,5 @@
-(define-key my-keys-minor-mode-map (kbd "C-c C-d") 'duplicate-thing)
+(use-package duplicate-thing
+  :ensure t
+  :bind (:map my-keys-minor-mode-map
+              ("C-c C-d" . duplicate-thing)))
 
-(provide 'dg-duplicate-thing)

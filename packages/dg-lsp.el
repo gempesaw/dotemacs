@@ -1,3 +1,6 @@
+(use-package lsp-ui
+  :ensure t)
+
 (use-package lsp-mode
   :requires (lsp-ui)
   :ensure t

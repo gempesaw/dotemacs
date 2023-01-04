@@ -5,7 +5,7 @@
   :chords (("xg" . magit-status))
   :config 
   (setq magit-git-executable "/usr/local/bin/git")
-  ;; (setq magit-completing-read-function 'magit-ido-completing-read)
+  ;; (setq magit-completing-read-function 'magit-completing-read)
 
   ;; be like dired, use d for killing
   (define-key magit-status-mode-map (kbd "d") 'magit-discard)
