@@ -18,6 +18,9 @@
   :ensure t
   :requires (cape)
   :config
-  (add-hook 'terraform-mode-hook (lambda ()
-                                   (add-to-list 'completion-at-point-functions (list (cape-company-to-capf #'company-terraform)))))
+  (global-company-mode -1)
+  (company-mode -1)
+
+  ;; (add-hook 'terraform-mode-hook (lambda ()
+  ;;                                  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-terraform))))
   )
