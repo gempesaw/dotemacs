@@ -42,6 +42,7 @@
         cperl-electric-semi
         cperl-electric-terminator
         create-newline-from-anywhere
+        cycle-spacing
         dabbrev-expand
         dap-tooltip-mouse-motion
         delete-horizontal-space

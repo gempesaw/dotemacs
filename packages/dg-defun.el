@@ -415,12 +415,15 @@ http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-
 
   (defadvice save-buffer (after ar-auto-recompile activate)
     (save-window-excursion
-      (when (and ar-auto-recompile
-                 (get-buffer-window "*compilation*" t)
-                 (not (s-matches-p "magit" (buffer-name (current-buffer))))
-                 (not (s-matches-p "COMMIT_EDITMSG" (buffer-name (current-buffer)))))
-        (set-buffer compilation-last-buffer)
-        (revert-buffer t t)))))
+      (let ((comp-proc (get-buffer-process (get-buffer "*compilation*"))))
+        (when (and ar-auto-recompile
+                   (get-buffer-window "*compilation*" t)
+                   (not (and comp-proc
+                             (eq (process-status comp-proc) 'run)))
+                   (not (s-matches-p "magit" (buffer-name (current-buffer))))
+                   (not (s-matches-p "COMMIT_EDITMSG" (buffer-name (current-buffer)))))
+          (set-buffer compilation-last-buffer)
+          (revert-buffer t t))))))
 
 (defun dg-remove-remote-items ()
   (interactive)

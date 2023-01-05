@@ -1,6 +1,10 @@
 (use-package emacs
   :config
 
+  ;; split vertically all the time
+  (setq split-width-threshold 1)
+  (setq split-height-threshold nil)
+
   ;; No splash screen please ... jeez
   (setq inhibit-startup-message t)
 
@@ -16,7 +20,7 @@
 
   ;; "y or n" instead of "yes or no"
   (fset 'yes-or-no-p 'y-or-n-p)
-  
+
   ;; Explicitly show the end of a buffer
   (set-default 'indicateq-empty-lines t)
 
