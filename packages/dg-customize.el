@@ -4,6 +4,8 @@
   ;; No splash screen please ... jeez
   (setq inhibit-startup-message t)
 
+  (add-hook 'before-save-hook 'cleanup-buffer-safe)
+
   ;; disable mouse scrolling
   (setq mouse-wheel-scroll-amount '(1))
   (setq mouse-wheel-progressive-speed nil)
