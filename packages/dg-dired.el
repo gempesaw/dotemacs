@@ -32,3 +32,7 @@
       (unless (string-match "html$" path)
         (setq path (concat path "/index.html")))
       (browse-url path))))
+
+(use-package wdired
+  :bind (:map dired-mode-map
+              ("C-c C-p" . wdired-change-to-wdired-mode)))
