@@ -29,3 +29,5 @@
                                 (progn
                                   (load it)
                                   (load it))))))
+
+(add-to-list 'load-path (f-expand "~/opt/kubectl.el"))
