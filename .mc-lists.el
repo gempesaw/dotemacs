@@ -19,6 +19,7 @@
         autopair-skip-close-maybe
         backward-sexp
         beginning-of-buffer
+        beginning-of-visual-line
         bookmark-bmenu-delete
         bookmark-bmenu-mark
         c-electric-backspace
@@ -91,6 +92,7 @@
         js2-indent-bounce
         js2-mode-toggle-element
         kill-region
+        kill-visual-line
         magit-discard-item
         mark-whole-buffer
         markdown-cycle
