@@ -8,6 +8,7 @@
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word)
+              ("C-j" . vertico-exit-input)
               ("C-s" . vertico-next)
               ("C-r" . vertico-previous))
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
@@ -47,7 +48,7 @@
     (interactive)
     (let* ((mb (minibuffer-contents-no-properties))
            (lc (if (string= mb "") mb (substring mb -1))))
-      (cond ((string-match-p "^[/~:]" lc) (self-insert-command 1 ?/)) 
+      (cond ((string-match-p "^[/~:]" lc) (self-insert-command 1 ?/))
             ((file-directory-p (vertico--candidate)) (vertico-insert))
             (t (self-insert-command 1 ?/)))))
   )
@@ -96,7 +97,7 @@
     (orderless-matching-styles '(orderless-initialism
                                  orderless-literal
                                  orderless-regexp)))
-  
+
   (setq completion-styles '(orderless flex basic)
         completion-category-defaults nil
         completion-category-overrides '(
