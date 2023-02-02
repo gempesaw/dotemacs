@@ -7,4 +7,7 @@
     (interactive)
     (if (forge-get-repository 'full)
         (call-interactively 'forge-browse-pullreq)
-      (forge-browse-pullreqs))))
+      (forge-browse-pullreqs)))
+
+  (add-hook 'forge-post-mode-hook (lambda ()
+                                    (setq-local auto-fill-function nil))))

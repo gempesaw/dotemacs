@@ -6,18 +6,11 @@
 
 ;; Easier buffer killing
 (global-unset-key (kbd "M-k"))
-(global-set-key (kbd "M-k") 'kill-this-buffer)
+(global-set-key (kbd "M-k") 'kill-current-buffer)
 
 ;; Easier window closing
 (global-unset-key (kbd "M-0"))
 (global-set-key (kbd "M-0") 'delete-window)
-
-;; Start cterm or switch to it if it's active.
-(require 'term)
-(global-unset-key (kbd "C-c '"))
-(global-set-key (kbd "C-c '") 'cterm)
-(define-key term-mode-map (kbd "C-;") 'term-char-mode)
-(define-key term-raw-map (kbd "C-;") 'term-line-mode)
 
 ;; load file into emacs
 ;; (global-unset-key (kbd "C-c C-l"))
@@ -127,12 +120,10 @@
 
 (defun dg-m-dot ()
   (interactive)
-  ;; (when (s-equals-p major-mode "terraform-mode")
-  ;;   (browse-url ""))
-  (if lsp-mode
-      (lsp-ui-peek-find-definitions)
-    (unless (dumb-jump-go)
-      (find-tag (thing-at-point 'symbol)))))
+  (when (s-equals-p major-mode "terraform-mode")
+    (dg-jump-to-terraform-source))
+  (if lsp-mode (lsp-ui-peek-find-definitions)
+    (dumb-jump-go)))
 
 (global-unset-key (kbd "M-."))
 (global-set-key (kbd "M-.") 'dg-m-dot)

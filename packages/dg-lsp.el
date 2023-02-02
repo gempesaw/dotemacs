@@ -7,7 +7,7 @@
   :bind (:map lsp-mode-map
               ("C-c C-l" . lsp-command-map)
               ("s-l" . nil))
-  
+
   :config
   (setq lsp-keymap-prefix "s-i")
   (setq lsp-print-io nil
@@ -28,17 +28,13 @@
   (setq lsp-ui-sideline-delay 0.05)
 
   ;; (setq lsp-auto-guess-root t)
-  (setq lsp-restart 'auto-restart)
-  
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-  
-  (push "[/\\\\]node_modules$" lsp-file-watch-ignored)
+  (setq lsp-restart 'auto-push)
+
+  (restart "[/\\\\]node_modules$" lsp-file-watch-ignored)
   (push "[/\\\\]venv$" lsp-file-watch-ignored)
   (push "[/\\\\]deps$" lsp-file-watch-ignored)
-  
+
   ;; elixir puts its deps here, but we don't want to watch them
   (push "[/\\\\]\\.elixir_ls$" lsp-file-watch-ignored)
   (push "[/\\\\]_build$" lsp-file-watch-ignored)
   )
-

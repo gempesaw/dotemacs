@@ -123,6 +123,7 @@
         paredit-close-round
         paredit-close-square
         paredit-comment-dwim
+        paredit-delete-char
         paredit-doublequote
         paredit-forward
         paredit-forward-barf-sexp
@@ -229,6 +230,7 @@
         lsp-ui-peek-find-references
         magit-status
         markdown-dedent-or-delete
+        mouse-drag-region-rectangle
         mouse-wheel-text-scale
         move-to-window-line-top-bottom
         mu4e-headers-prev

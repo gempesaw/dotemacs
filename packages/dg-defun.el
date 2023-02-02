@@ -477,8 +477,8 @@ out side of git, of course.")
     (when url
       (when (s-starts-with-p "/" url)
         (setq url (format "file://%s" url)))
-      (when (s-starts-with-p "github.com" url)
-        (setq url (s-replace "github.com:" "github.com/" (format "https://%s" (s-replace "//" "/tree/main/" url)))))
+      (when (s-contains-p "github.com" url)
+        (setq url (s-replace "github.com:" "github.com/" (s-replace "[^:]//" "/tree/main/" url))))
       (browse-url url))))
 
 (defun dg-kubernetes-exec-pod ()

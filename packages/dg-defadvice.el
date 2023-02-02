@@ -47,7 +47,10 @@ The body of the advice is in BODY."
   ad-do-it
   (delete-other-windows))
 
-(progn
+(use-package noflet
+  :ensure t
+  :demand t
+  :config
   (defun inhibit-auto-balance (orig-fun &rest args)
     (noflet ((balance-windows () nil))
             (apply orig-fun args)))

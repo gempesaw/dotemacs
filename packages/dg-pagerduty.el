@@ -65,7 +65,16 @@
 
 (defun dg-terraform-console ()
   (interactive)
-  (let* ((default-directory (make-temp-file "" t)))
-    (async-shell-command "terraform console")))
+  (let* ((default-directory (make-temp-file "" t))
+         (temp-file (f-join default-directory "temp.tf")))
+    (window-configuration-to-register ?z)
+    (f-touch temp-file)
+    (f-write (substring-no-properties (car kill-ring)) 'utf-8 temp-file)
+    (find-file temp-file)
+    (let ((buf (create-new-shell-here)))
+      (select-window (display-buffer buf))
+      (insert "terraform console"))))
+
+
 
 (provide 'dg-pagerduty)
