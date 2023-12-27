@@ -31,3 +31,4 @@
                                   (load it))))))
 
 (add-to-list 'load-path (f-expand "~/opt/kubectl.el"))
+(put 'narrow-to-region 'disabled nil)

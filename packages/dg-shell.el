@@ -51,4 +51,4 @@
               (setq-local projectile-mode-line "Projectile"))))
 
 (setq dg-default-comint-password-prompt-regexp comint-password-prompt-regexp)
-(setq comint-password-prompt-regexp (format "%s\\|Press button on your hardware token" comint-password-prompt-regexp))
+(setq comint-password-prompt-regexp (format "%s\\|BECOME password" comint-password-prompt-regexp))

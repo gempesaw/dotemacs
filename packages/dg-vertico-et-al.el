@@ -32,9 +32,11 @@
   (defun dg-vertico-insert-unless-tramp ()
     "Insert current candidate in minibuffer, except for tramp."
     (interactive)
-    (if (vertico--remote-p (vertico--candidate))
-        (minibuffer-complete)
-      (vertico-insert)))
+    (vertico-insert)
+    ;; (if (vertico--remote-p (vertico--candidate))
+    ;;     (minibuffer-complete)
+    ;;   (vertico-insert))
+    )
 
   (defun dg-vertico-restrict-to-matches ()
     (interactive)
@@ -102,7 +104,7 @@
   (setq completion-styles '(orderless+initialism orderless flex basic)
         completion-category-defaults nil
         completion-category-overrides '(
-                                        (file (styles partial-completion))
+                                        (file (styles basic partial-completion))
                                         (command (styles orderless+initialism))
                                         (symbol (styles orderless+initialism))
                                         (variable (styles orderless+initialism))

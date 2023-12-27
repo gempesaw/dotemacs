@@ -1,4 +1,5 @@
 (use-package key-chord
+  :demand t
   :ensure t
   :config
   (key-chord-mode 1)
@@ -22,6 +23,8 @@
 
   ;; expanding region
   (key-chord-define-global "qk" 'er/expand-region)
+
+  (key-chord-define-global "`=" (lambda () (interactive) (key-chord-mode -1)))
 
   (key-chord-define-global "xg" 'magit-status)
   ;; registers
@@ -50,7 +53,7 @@
   (key-chord-define-global "xd" '[?\C-x ?d return])
 
   ;; buffers
-  (key-chord-define-global "bf" 'eval-buffer)
+  (key-chord-define emacs-lisp-mode-map "bf" 'eval-buffer)
   (key-chord-define-global "xb" 'ido-switch-buffer)
   (key-chord-define-global "xv" 'switch-to-other-buffer)
   (key-chord-define-global "xh" 'mark-whole-buffer)

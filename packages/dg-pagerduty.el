@@ -76,5 +76,25 @@
       (insert "terraform console"))))
 
 
+(defun dg-get-mfa ()
+  (interactive)
+  (let ((code (->> "ykman --device 20200898 oath accounts code pagerduty"
+                   (shell-command-to-string)
+                   (s-split " ")
+                   (reverse)
+                   (car)
+                   (s-split "\n")
+                   (car))))
+    (if (s-equals-p major-mode "term-mode")
+        (term-line-mode)
+      (end-of-buffer))
+    (insert code)
+    (if (s-equals-p major-mode "term-mode")
+        (progn
+          (term-send-input)
+          (term-char-mode))
+      (comint-send-input))))
+
+(global-set-key (kbd "C-c M-m") 'dg-get-mfa)
 
 (provide 'dg-pagerduty)

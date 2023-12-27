@@ -91,11 +91,12 @@
          (project (format "--project %s" jira-project))
          (summary (format "--summary '%s'" jira-summary))
          (assignee (if jira-assignee "--assignee 'dgempesaw@pagerduty.com'" ""))
-         (custom "--custom 'type-of-work=Planned - Engineering Roadmap / Proactive Maintenance'")
+         (custom "--custom 'type-of-work=Planned - Engineering Roadmap'")
          (input "--no-input")
          (command-string (format "%s %s %s %s %s %s %s" base-command type parent summary assignee custom input project))
          (response nil)
          (ticket nil))
+    (setq cs command-string)
     (setq response (jira-confirm-shell-command-to-string command-string))
     (setq ticket (s-trim-right (cadr (s-split "/browse/" response))))
     (when jira-assignee

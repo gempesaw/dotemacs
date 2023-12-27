@@ -120,10 +120,9 @@
 
 (defun dg-m-dot ()
   (interactive)
-  (when (s-equals-p major-mode "terraform-mode")
-    (dg-jump-to-terraform-source))
-  (if lsp-mode (lsp-ui-peek-find-definitions)
-    (dumb-jump-go)))
+  (cond ((s-equals-p major-mode "terraform-mode") (dg-jump-to-terraform-source))
+        (lsp-mode (lsp-ui-peek-find-definitions))
+        (t (dumb-jump-go))))
 
 (global-unset-key (kbd "M-."))
 (global-set-key (kbd "M-.") 'dg-m-dot)

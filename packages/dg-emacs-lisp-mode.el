@@ -7,7 +7,7 @@
   (put 'paredit-open-square 'delete-selection t)
   (put 'paredit-doublequote 'delete-selection t)
   (put 'paredit-newline 'delete-selection t)
-  
+
   (add-hook 'lisp-mode-hook 'enable-paredit-mode)
   (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t))
@@ -16,7 +16,9 @@
   :ensure t
   :config
   (autoload 'elisp-slime-nav-mode "elisp-slime-nav")
-  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t))))
+  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
+  (define-key elisp-slime-nav-mode-map "C-c C-d d" nil)
+  (define-key elisp-slime-nav-mode-map "C-c C-d C-d" nil))
 
 (use-package eldoc
   :ensure t

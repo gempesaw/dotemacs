@@ -18,6 +18,8 @@
         autopair-skip-close-maybe
         autopair-skip-close-maybe
         backward-sexp
+        base64-decode-region
+        base64-encode-region
         beginning-of-buffer
         beginning-of-visual-line
         bookmark-bmenu-delete
@@ -31,9 +33,11 @@
         c-electric-slash
         cleanup-buffer
         coffee-dedent-line-backspace
+        combobulate-python-indent-for-tab-command
         comint-copy-old-input
         comint-delchar-or-maybe-eof
         comment-dwim
+        corfu-quit
         cperl-electric-backspace
         cperl-electric-brace
         cperl-electric-lbrace
@@ -50,6 +54,7 @@
         describe-key
         dg-dired-browse-file-at-point
         dg-save-buffer
+        dired
         dired-details-hide
         dired-do-chmod
         dired-do-delete
@@ -136,6 +141,7 @@
         paredit-raise-sexp
         paredit-reindent-defun
         paredit-semicolon
+        paredit-splice-sexp-killing-backward
         paredit-split-sexp
         paredit-wrap-round
         projectile-compile-project
@@ -175,6 +181,8 @@
         yaml-electric-backspace
         yaml-electric-bar-and-angle
         yaml-electric-dash-and-dot
+        yaml-pro-ts-unindent-subtree
+        yaml-pro-ts-yank
         yas-expand
         yas-expand
         ))

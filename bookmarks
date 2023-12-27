@@ -2,7 +2,13 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-((".pd-kubectx"
+((".saml2aws"
+ (filename . "~/.saml2aws")
+ (front-context-string . "[default]\nname  ")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 25722 40321 340889 0))
+(".pd-kubectx"
  (filename . "~/.pd-kubectx/")
  (front-context-string . "aws-okta-config\n")
  (rear-context-string . "24 Aug  4 10:34 ")

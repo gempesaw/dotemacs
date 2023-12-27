@@ -36,5 +36,6 @@
 
 (define-key my-keys-minor-mode-map (kbd "C-c '") 'toggle-quotes)
 (define-key my-keys-minor-mode-map (kbd "C-c C-'") 'toggle-quotes)
+(define-key my-keys-minor-mode-map (kbd "M-k") 'kill-current-buffer)
 
 (provide 'dg-override-keys)

@@ -37,7 +37,7 @@
   (setq iedit-toggle-key-default nil)
 
   ;; todo: add default fonts for windows and linux
-  (set-face-attribute 'default nil :family "Comic Code" :height 130 :weight 'normal)
+  (set-face-attribute 'default nil :font "Comic Code" :family "Comic Code" :height 130 :weight 'normal)
 
   ;; ignore undo-too-big warning
   (push '(undo discard-info) warning-suppress-types)

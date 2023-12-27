@@ -17,9 +17,16 @@
   (remove-hook 'terraform-mode-hook 'lsp-deferred)
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.terraform\\'"))
 
+(defun dg-disable-company-mode ()
+  (interactive)
+  (global-company-mode -1)
+  (company-mode -1)
+  )
+
 (use-package company-terraform
   :ensure t
   :requires (cape)
+  :hook (prog-mode . dg-disable-company-mode)
   :config
   (global-company-mode -1)
   (company-mode -1)
@@ -46,4 +53,4 @@
               (xref-push-marker-stack)
               (find-file (completing-read "jump directly to file: " files nil nil)))
           (let ((target (completing-read "open file in browser" '(main outputs variables) nil nil nil)))
-            (browse-url (format "%s/%s.tf" private-url target))))))))
+            (browse-url (format "%s/blob/main/%s.tf" private-url target))))))))
