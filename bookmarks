@@ -2,7 +2,13 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-((".saml2aws"
+(("drive"
+ (filename . "~/Google Drive/My Drive/dotfiles/")
+ (front-context-string . "  /Users/dgempes")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 26005 48766 600662 0))
+(".saml2aws"
  (filename . "~/.saml2aws")
  (front-context-string . "[default]\nname  ")
  (rear-context-string)

@@ -1,3 +1,6 @@
 [submodule "snippets"]
 	path = snippets
 	url = https://github.com/gempesaw/snippets.git
+[submodule "combobulate"]
+	path = combobulate
+	url = https://github.com/mickeynp/combobulate.git

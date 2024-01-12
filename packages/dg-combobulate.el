@@ -5,7 +5,7 @@
          (yaml-ts-mode . combobulate-mode)
          (typescript-ts-mode . combobulate-mode)
          (tsx-ts-mode . combobulate-mode))
-  :load-path "~/opt/combobulate/"
+  :load-path "../combobulate/"
   :config
   (define-key combobulate-key-map (kbd "M") 'self-insert-command)
   (define-key combobulate-key-map (kbd "M-k") nil))

@@ -5,7 +5,10 @@
   (key-chord-mode 1)
 
   (setq key-chord-two-keys-delay .1
-        key-chord-one-key-delay .2)
+        key-chord-one-key-delay .2
+        key-chord-safety-interval-forward .01
+        key-chord-safety-interval-backward .1)
+
 
   (add-hook 'minibuffer-setup-hook (lambda ()
                                      (interactive)
@@ -57,7 +60,7 @@
   (key-chord-define-global "xb" 'ido-switch-buffer)
   (key-chord-define-global "xv" 'switch-to-other-buffer)
   (key-chord-define-global "xh" 'mark-whole-buffer)
-  (key-chord-define-global "vv" (lambda () (interactive) (switch-to-buffer "*compilation*")))
+  (key-chord-define-global "vv" (lambda () (interactive) (switch-to-buffer "*vterm*")))
   (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
 
   ;; elisp

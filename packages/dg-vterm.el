@@ -1,7 +1,9 @@
-;; (use-package vterm
-;;   :ensure t
-;;   :config
-;;   (setq vterm-kill-buffer-on-exit t))
+(use-package vterm
+  :ensure t
+  :config
+  (setq vterm-kill-buffer-on-exit t)
+  (define-key vterm-mode-map (kbd "TAB") #'vterm-send-tab  )
+  )
 
 
 (use-package term
