@@ -1,0 +1,21 @@
+
+;; ----- smex-history -----
+(
+ dg-test-dotemacs-interactively
+ dg-browse-url-or-file
+ magit-clone-opt
+ open-in-finder
+ toggle-frame-fullscreen
+ treemacs-find-file
+ ag
+)
+
+;; ----- smex-data -----
+(
+ (treemacs-find-file . 1)
+ (toggle-frame-fullscreen . 2)
+ (open-in-finder . 2)
+ (magit-clone-opt . 1)
+ (dg-browse-url-or-file . 1)
+ (dg-test-dotemacs-interactively . 1)
+)
