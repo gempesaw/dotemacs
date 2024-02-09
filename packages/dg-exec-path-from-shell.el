@@ -7,4 +7,6 @@
   (setq exec-path (append exec-path `(,(concat (getenv "HOME") "/.emacs.d/elixir-ls/release"))))
   (push "/opt/homebrew/bin" exec-path)
   (push (format "%s/.asdf/shims" (getenv "HOME")) exec-path)
+
+  (setenv "PATH" (s-join ":" exec-path))
   )

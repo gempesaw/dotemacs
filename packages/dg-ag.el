@@ -4,7 +4,8 @@
   (setq ag-arguments '("--smart-case" "--column" "--stats" "--hidden" "--width" "1000")
         ag-reuse-buffers t
         ag-reuse-window t
-        ag-highlight-search t)
+        ag-highlight-search t
+        ag-ignore-list '(".terraform"))
 
   (set-face-attribute 'ag-match-face nil
                       :weight 'ultra-bold

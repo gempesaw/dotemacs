@@ -45,7 +45,7 @@
 (progn
 
 
-  ;; (transient-define-prefix transient-jira ()
+    ;; (transient-define-prefix transient-jira ()
   ;;   "interactive jira CLI"
   ;;   [("b" "board" "Board manages Jira boards in a project" transient--jira-board)
   ;;    ("e" "epic" "Epic manage epics in a project" transient--jira-epic)
@@ -85,7 +85,7 @@
 
 (defun jira-issue-create (&optional _args)
   (interactive (list (transient-args 'transient--jira-issue-create)))
-  (let* ((base-command "jira issue create")
+  (let* ((base-command "/opt/homebrew/bin/jira issue create")
          (type (format "--type %s" jira-type))
          (parent (format "--parent %s" jira-parent))
          (project (format "--project %s" jira-project))
@@ -135,33 +135,6 @@
 
 (setq jira-parent-issues (s-split "\n" (shell-command-to-string "jira epic list --table --plain --no-headers --columns key,summary")))
 ;; (--map (insert (format "\"%s\"\n" it)) jira-parent-issues)
-;; (setq jira-parent-issues '("SRP-588  backstage migration docs refresh"
-;;                            "SRP-537  Kubernetes tickets that don't belong to a specific project. This epic is separate from Misc Work so tickets here can be capitalized/jellyfished."
-;;                            "SRP-508  External-secrets is dead. Long live external-secrets. https://pagerduty.atlassian.net/wiki/spaces/SREP/pages/2846654673/External+Secrets+Operator+1-Pager"
-;;                            "SRP-507  cluster-sentinel analog for k8s"
-;;                            "SRP-506  One off tickets of varying priority that do not belong to any specific project or initiative. The difference between this epic and "Server Room on Fire" is that this work is planned."
-;;                            "SRP-477  EKS 1.23 upgrade"
-;;                            "SRP-476  Improvements to the way we sync services with Consul"
-;;                            "SRP-457  Golden path for new workloads"
-;;                            "SRP-456  doc, tooling, helm chart improvements for service owners"
-;;                            "SRP-455  k"
-;;                            "SRP-454  Creation of DR clusters"
-;;                            "SRP-443  Server Room on Fire"
-;;                            "SRP-394  eks 1.22 upgrade"
-;;                            "SRP-356  M6.1: Infrastructure Refinement"
-;;                            "SRP-301  Security sprint 2"
-;;                            "SRP-275  M5.5 Production Push"
-;;                            "SRP-259  Service Owner Migration: Sustainability Team (Alpha)"
-;;                            "SRP-208  Security sprint 1"
-;;                            "SRP-76   M6: Cleanup and Polish"
-;;                            "SRP-62   M1: Discovery"
-;;                            "SRP-61   M7: Testing and Validation"
-;;                            "SRP-10   M8: Migration"
-;;                            "SRP-9    M3: Networking"
-;;                            "SRP-8    M5: Productionization"
-;;                            "SRP-7    M4: Service Prototype"
-;;                            "SRP-4    M2: Infrastructure Automation"
-;;                            ))
 
 (jira--define-infix "p" "parent" "Parent issue key can be used to attach epic to an issue." 'string
                     nil

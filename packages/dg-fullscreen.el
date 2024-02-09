@@ -1,7 +1,8 @@
 (defun ensure-fullscreen-mode-is-on ()
   (interactive)
   (toggle-frame-fullscreen)
-  (toggle-frame-fullscreen))
+  (toggle-frame-fullscreen)
+  (posframe-delete-all))
 
 (defun x11-toggle-fullscreen ()
   "Toggle full screen on X11"
@@ -15,4 +16,3 @@
 
 ;;; don't use the os x horrible fullscreen method
 (setq ns-use-native-fullscreen nil)
-

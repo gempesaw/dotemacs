@@ -3,7 +3,8 @@
   :bind
   (:map dired-mode-map
         ("i" . dired-subtree-insert)
-        ("k" . dired-subtree-remove)))
+        ("k" . dired-subtree-remove)
+        ("V" . dg-vterm-exec-at-point)))
 
 (use-package find-dired
   :ensure t

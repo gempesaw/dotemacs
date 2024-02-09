@@ -48,6 +48,9 @@
   (key-chord-define-global "1q" 'delete-other-windows)
   (key-chord-define-global "2w" 'dg-vsplit-last-buffer)
   (key-chord-define-global "3e" 'dg-hsplit-last-buffer)
+  (key-chord-define-global "1w" 'delete-other-windows)
+  (key-chord-define-global "2e" 'dg-vsplit-last-buffer)
+  (key-chord-define-global "3r" 'dg-hsplit-last-buffer)
 
   ;; files
   (key-chord-define-global "xw" 'ido-write-file)

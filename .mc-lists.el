@@ -99,6 +99,7 @@
         js2-mode-toggle-element
         kill-region
         kill-visual-line
+        kmacro-insert-counter
         magit-discard-item
         mark-whole-buffer
         markdown-cycle
