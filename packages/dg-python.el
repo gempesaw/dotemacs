@@ -1,43 +1,33 @@
-(setq dg-python-autoflake-path (executable-find "autoflake"))
-(defun dg-python-autoflake ()
-  (interactive)
-  (when (or (eq major-mode 'python-mode)
-            (eq major-mode 'python-ts-mode))
-    (shell-command (format "%s --remove-all-unused-imports -i %s"
-                           dg-python-autoflake-path
-                           (shell-quote-argument (buffer-file-name))))
-    (revert-buffer t t t)))
+;; (use-package python-black
+;;   :ensure t
+;;   :after (python)
+;;   :hook (
+;;          (python-mode . python-black-on-save-mode)
+;;          (python-ts-mode . python-black-on-save-mode)
+;;          ))
 
-;;; pip install isort autoflake
-(use-package lsp-pyright
-  :ensure t
-  :demand t
-  :hook (
-         (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred)))
-         (python-ts-mode . (lambda ()
-                             (require 'lsp-pyright)
-                             (lsp-deferred)))))
+;; (use-package py-isort
+;;   :ensure t
+;;   :after (python)
+;;   :config
+;;   (setq py-isort-options '("--profile" "black"))
 
-(use-package python-black
-  :ensure t
-  :after (python)
-  :hook (
-         (python-mode . python-black-on-save-mode)
-         (python-ts-mode . python-black-on-save-mode)
-         ))
+;;   (add-hook 'python-ts-mode-hook 'dg-py-isort-enable 90)
+;;   (defun dg-py-isort-enable ()
+;;     (interactive)
+;;     (add-to-list 'before-save-hook 'py-isort-buffer)))
 
-(use-package py-isort
-  :ensure t
-  :after (python)
+
+;; (remove-hook 'before-save-hook 'py-isort-buffer)
+
+(use-package lsp-ruff-lsp
+  :after (lsp python)
   :config
-  (setq py-isort-options '("--profile" "black"))
 
-  (add-hook 'python-ts-mode-hook 'dg-py-isort-enable 90)
-  (defun dg-py-isort-enable ()
-    (interactive)
-    (add-to-list 'before-save-hook 'py-isort-buffer)))
+  ;; (setq lsp-ruff-lsp-log-level "debug")
+  (setq lsp-ruff-lsp-show-notifications 'always)
+  )
 
-
-(remove-hook 'before-save-hook 'py-isort-buffer)
+(use-package python
+  :hook ((python-ts-mode . lsp-deferred)
+         (python-ts-mode . (lambda () (aggressive-indent-mode -1)))))

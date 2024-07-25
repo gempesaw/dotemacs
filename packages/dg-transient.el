@@ -36,16 +36,16 @@
 ;;    ]
 ;;   )
 
-;(require 'transient-posframe)
-;(transient-posframe-mode -1)
-;(setq transient-posframe-poshandler 'posframe-poshandler-frame-top-center
-;      transient-posframe-min-width 120
-;      transient-posframe-border-width 1)
+                                        ;(require 'transient-posframe)
+                                        ;(transient-posframe-mode -1)
+                                        ;(setq transient-posframe-poshandler 'posframe-poshandler-frame-top-center
+                                        ;      transient-posframe-min-width 120
+                                        ;      transient-posframe-border-width 1)
 
 (progn
 
 
-    ;; (transient-define-prefix transient-jira ()
+  ;; (transient-define-prefix transient-jira ()
   ;;   "interactive jira CLI"
   ;;   [("b" "board" "Board manages Jira boards in a project" transient--jira-board)
   ;;    ("e" "epic" "Epic manage epics in a project" transient--jira-epic)
@@ -93,7 +93,7 @@
          (assignee (if jira-assignee "--assignee 'dgempesaw@pagerduty.com'" ""))
          (custom "--custom 'type-of-work=Planned - Engineering Roadmap'")
          (input "--no-input")
-         (command-string (format "%s %s %s %s %s %s %s" base-command type parent summary assignee custom input project))
+         (command-string (format "%s %s %s %s %s %s %s --body 'description'" base-command type parent summary assignee custom input project))
          (response nil)
          (ticket nil))
     (setq cs command-string)

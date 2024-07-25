@@ -4,5 +4,5 @@
   :ensure t
   :hook (nginx-mode . lsp-deferred)
   :config
-  (add-to-list 'auto-mode-alist '("conf"  . nginx-mode))
+  (add-to-list 'auto-mode-alist '("upstream"  . nginx-mode))
   )

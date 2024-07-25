@@ -39,7 +39,11 @@ raises an error."
        (setq tramp-default-user "dgempesaw")
        (setq ssh-config-path "~/.ssh/config")
        (setq auth-source-save-behavior nil)
-       (setq tramp-ssh-controlmaster-options "")))
+       (setq tramp-ssh-controlmaster-options "")
+       (setq vc-ignore-dir-regexp
+             (format "\\(%s\\)\\|\\(%s\\)"
+                     vc-ignore-dir-regexp
+                     tramp-file-name-regexp))))
 
   (defun reset-ssh-connections ()
     (interactive)
@@ -88,6 +92,7 @@ raises an error."
       (let* ((box (completing-read "Which box: " (get-remote-boxes)))
              (buffer (concat "*shell<" box ">*"))
              (default-directory (concat "/ssh:" box ":/")))
+        (shell-command-to-string (format "ssh %s ls -al" box))
         (cd default-directory)
         (with-current-buffer (get-buffer-create (format "*tramp/ssh %s*" box))
           (shell buffer))

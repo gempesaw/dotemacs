@@ -31,4 +31,5 @@
                                   (load it))))))
 
 (add-to-list 'load-path (f-expand "~/opt/kubectl.el"))
+(add-to-list 'load-path (f-expand "~/.emacs.d/combobulate"))
 (put 'narrow-to-region 'disabled nil)

@@ -59,3 +59,15 @@
       (call-interactively 'magit-clone)))
 
   (setq magit-clone-set-remote.pushDefault t))
+
+(use-package magit-todos
+  :ensure t
+  :demand t
+  :after magit
+  :config (magit-todos-mode 1))
+
+
+(defun magit-clone-opt ()
+  (interactive)
+  (let ((default-directory (format "%s/opt/" (getenv "HOME"))))
+    (call-interactively 'magit-clone)))

@@ -41,6 +41,7 @@
                                     "Jump to bookmark: "
                                     (bookmark-all-names)))))
 
+  ;; M-s-k
   (key-chord-define-global "zk" (lambda () (interactive (kubectl 4))))
   (key-chord-define-global "xk" 'kubectl)
 
@@ -60,11 +61,20 @@
 
   ;; buffers
   (key-chord-define emacs-lisp-mode-map "bf" 'eval-buffer)
-  (key-chord-define-global "xb" 'ido-switch-buffer)
+  (key-chord-define-global "xb" 'consult-buffer)
   (key-chord-define-global "xv" 'switch-to-other-buffer)
   (key-chord-define-global "xh" 'mark-whole-buffer)
-  (key-chord-define-global "vv" (lambda () (interactive) (switch-to-buffer "*vterm*")))
-  (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
+  (key-chord-define-global "vv" 'vterm)
+  ;; (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
+  (key-chord-define-global "vc" (lambda () (interactive)
+                                  (setq ar-auto-recompile t)
+                                  (switch-between-buffers "*compilation*")))
+  (key-chord-define-global "lv" (lambda () (interactive)
+                                  (insert "lv")
+                                  (message "disabling key chord mode because you typed lv")
+                                  (dg-toggle-key-chord-mode)))
+
+
 
   ;; elisp
   (key-chord-define emacs-lisp-mode-map "jk" 'eval-defun)
@@ -81,5 +91,24 @@
                                                           (key-chord-mode t)))))
   )
 
-(use-package use-package-chords
-  :ensure t)
+(use-package use-package-chords :ensure t)
+
+(defun dg-toggle-key-chord-mode ()
+  (interactive)
+  (key-chord-mode -1)
+  (when dg-toggle-key-chord-mode-timer
+    (cancel-timer dg-toggle-key-chord-mode-timer))
+  (setq dg-toggle-key-chord-mode-timer (run-at-time 10 nil (lambda ()
+                                                             (message "re-enabling key-chord mode")
+                                                             (key-chord-mode +1)))))
+
+(defun dg-toggle-keychord-for-yubikey (string)
+  (when (let ((case-fold-search nil)) ;; ignore case
+          (string-match "Passcode"
+                        (string-replace "\r" "" string)))
+    ;; `run-at-time` so we don't hold up the shell interactivity
+    (message "disabling keychord mode because we matched something in comint output ")
+    (run-at-time 0 nil #'dg-toggle-keychord)
+    nil))
+
+(add-hook 'comint-output-filter-functions #'dg-toggle-keychord-for-yubikey)

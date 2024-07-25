@@ -28,9 +28,9 @@
   (setq lsp-ui-sideline-delay 0.05)
 
   ;; (setq lsp-auto-guess-root t)
-  (setq lsp-restart 'auto-push)
+  (setq lsp-restart 'auto-restart)
 
-  (restart "[/\\\\]node_modules$" lsp-file-watch-ignored)
+  (push "[/\\\\]node_modules$" lsp-file-watch-ignored)
   (push "[/\\\\]venv$" lsp-file-watch-ignored)
   (push "[/\\\\]deps$" lsp-file-watch-ignored)
 

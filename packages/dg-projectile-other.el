@@ -55,6 +55,6 @@
 (key-chord-define-global "qp" 'dg-transient-projectile-open)
 (key-chord-define-global "qm" 'dg-transient-projectile-switch-open)
 
-(global-set-key (kbd "C-c C-o") 'dg-transient-projectile-open)
+(global-set-key (kbd "M-s-o") 'dg-transient-projectile-open)
 
 (provide 'dg-projectile-other)

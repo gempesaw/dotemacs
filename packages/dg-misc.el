@@ -4,7 +4,7 @@
 
 (defun dg-test-dotemacs-interactively ()
   (interactive)
-  (compile "cd ~/.emacs.d/ && /usr/local/bin/emacs"))
+  (compile "cd ~/.emacs.d/ && /opt/homebrew/bin/emacs"))
 
 (defun dg-start-emacs-q ()
   (interactive)

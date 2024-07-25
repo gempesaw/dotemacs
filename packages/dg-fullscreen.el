@@ -2,7 +2,10 @@
   (interactive)
   (toggle-frame-fullscreen)
   (toggle-frame-fullscreen)
-  (posframe-delete-all))
+  (posframe-delete-all)
+  (save-window-excursion
+    ())
+  (corfu-quit))
 
 (defun x11-toggle-fullscreen ()
   "Toggle full screen on X11"

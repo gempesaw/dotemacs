@@ -1,8 +1,10 @@
 (use-package forge
   :ensure t
   :bind (("C-c p f" . dg-maybe-forge-browse-pullreq)
-         ("C-c p F" . forge-browse-pullreqs))
+         ("C-c p F" . forge-browse-pullreqs)
+         ("M-s-p" . forge-create-pullreq))
   :config
+
   (defun dg-maybe-forge-browse-pullreq ()
     (interactive)
     (if (forge-get-repository 'full)

@@ -17,6 +17,14 @@
   (define-key shell-mode-map [remap shell-resync-dirs] 'comint-send-input))
 
 
+(defun dg-rename-shell-buffer-with-input (&optional no-newline artificial)
+  (let ((buf (buffer-name (current-buffer))))
+    (when (string-match "^*shell" buf)
+      (let ((just-inputted (substring-no-properties (ring-ref comint-input-ring 0))))
+        (rename-buffer (format "%s (%s)" buf (s-trim just-inputted)) t)))))
+
+(advice-add 'comint-send-input :after 'dg-rename-shell-buffer-with-input)
+
 
 (defun switch-to-shell-or-create ()
   (interactive)
@@ -51,4 +59,4 @@
               (setq-local projectile-mode-line "Projectile"))))
 
 (setq dg-default-comint-password-prompt-regexp comint-password-prompt-regexp)
-(setq comint-password-prompt-regexp (format "%s\\|BECOME password\\|sudo.*Password:" comint-password-prompt-regexp))
+;; (setq comint-password-prompt-regexp (format "%s\\|BECOME password\\|sudo.*Password:" comint-password-prompt-regexp))

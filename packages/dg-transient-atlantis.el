@@ -70,6 +70,18 @@
              (setq dg-transient-atlantis--target nil))
          (insert (format "ap %s %s" project options)))))
 
+    ("r p" "push refresh commit, sleep, plan"
+     (lambda (&optional args)
+       (interactive (list (transient-args transient-current-command)))
+       (let ((project (car args))
+             (options (if (eq nil (cdr args))
+                          ""
+                        (format "-- %s" (s-join " " (cdr args))))))
+         (setq dg-transient-atlantis--project project)
+         (if (not (s-matches-p "--target" options))
+             (setq dg-transient-atlantis--target nil))
+         (insert (format "git commit --allow-empty --message \"Refresh\" && git push && sleep 1 && ap %s %s" project options)))))
+
     ("a g" "Get"
      (lambda (&optional args)
        (interactive (list (transient-args transient-current-command)))

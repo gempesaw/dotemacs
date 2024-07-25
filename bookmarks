@@ -2,7 +2,25 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("drive"
+(("docker"
+ (filename . "~/.docker/config.json")
+ (front-context-string . "{\n  \"auths\": {\n\n")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 26206 7421 89921 0))
+("aws-credentials"
+ (filename . "~/.aws/credentials")
+ (front-context-string . "[saml]\naws_acces")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 26171 43628 481415 0))
+("pk-config"
+ (filename . "~/.pd-kubectx/config")
+ (front-context-string . "[DEFAULT]\naws_ok")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 26076 55767 300605 0))
+("drive"
  (filename . "~/Google Drive/My Drive/dotfiles/")
  (front-context-string . "  /Users/dgempes")
  (rear-context-string)

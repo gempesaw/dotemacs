@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t; -*-
+
 (defun dg-pd-run-web-test ()
   (interactive)
   (save-excursion
@@ -15,10 +17,10 @@
   (save-excursion
     (let
         ((line (progn
-                  (end-of-line)
-                  (search-backward "test \"")
-                  (line-number-at-pos)
-                  ))
+                 (end-of-line)
+                 (search-backward "test \"")
+                 (line-number-at-pos)
+                 ))
          (file (file-relative-name buffer-file-name (projectile-project-root))))
       (kill-new (format "mix test %s:%s" file line)))))
 
@@ -86,7 +88,10 @@
                    (s-split "\n")
                    (car))))
     (if (s-equals-p major-mode "vterm-mode")
-        (vterm-send-string code)
+        (progn
+          (vterm-send-string code)
+          (vterm-send-return)
+          (message "Sending code..."))
       (if (s-equals-p major-mode "term-mode")
           (term-line-mode)
         (end-of-buffer))
