@@ -17,5 +17,7 @@
 
 (global-set-key (kbd "C-c \\") 'ensure-fullscreen-mode-is-on)
 
+(toggle-frame-fullscreen)
+
 ;;; don't use the os x horrible fullscreen method
 (setq ns-use-native-fullscreen nil)

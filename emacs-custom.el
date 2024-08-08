@@ -3,9 +3,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
-   '(posframe magit yaml-pro yaml-mode wrap-region which-key wgrep-ag vterm vertico-posframe vc-use-package use-package-chords typescript-mode tumblesocks treesit-auto tree-sitter transient-posframe tide terraform-mode terraform-doc tern switch-window smex smart-tab smart-mode-line simple-httpd scss-mode rjsx-mode repl-driven-development rego-mode rainbow-mode rainbow-delimiters projectile paredit org-jira orderless nvm noflet nginx-mode mini-frame marginalia magit-todos magit-gitflow lsp-ui lsp-pyright loop js2-refactor ivy ido-vertical-mode ido-completing-read+ ido-at-point httprepl highlight-indent-guides helpful grunt groovy-mode graphql gradle-mode go-mode git-timemachine git-link gist ggtags forge flx-ido fancy-narrow expand-region exec-path-from-shell elixir-mode elisp-slime-nav duplicate-thing dumb-jump dired-subtree diminish dap-mode coterm corfu consult cape browse-kill-ring bpr apheleia aggressive-indent ag)))
+   '(ag aggressive-indent apheleia avy bpr browse-kill-ring cape consult corfu
+        coterm diminish dired-subtree dumb-jump duplicate-thing elisp-slime-nav
+        elixir-mode exec-path-from-shell expand-region forge git-link
+        git-timemachine go-mode helpful highlight-indent-guides loop lsp-ui
+        magit-todos marginalia mini-frame multiple-cursors nginx-mode noflet
+        orderless org-jira paredit projectile rainbow-delimiters rainbow-mode
+        rego-mode smart-mode-line switch-window terraform-mode tide
+        transient-posframe tree-sitter treesit-auto typescript-mode
+        use-package-chords vertico-posframe wgrep-ag wrap-region yaml-mode
+        yaml-pro yasnippet)))
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
