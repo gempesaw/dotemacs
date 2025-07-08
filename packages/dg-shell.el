@@ -46,12 +46,15 @@
 
 (defun create-new-shell-here ()
   (interactive)
-  (let ((buf (save-window-excursion (shell (generate-new-buffer "*shell*")))))
+  (let ((buf (save-window-excursion
+               (shell (generate-new-buffer "*shell*")))))
     (set-process-query-on-exit-flag (get-buffer-process buf) nil)
     (switch-to-buffer-other-window buf)
+    (insert "")
+    (comint-send-input nil t)
     buf))
 
-(setq shell-file-name "bash")
+(setq shell-file-name "/opt/homebrew/bin/bash")
 
 (add-hook 'find-file-hook
           (lambda ()

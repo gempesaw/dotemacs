@@ -12,4 +12,14 @@
       (forge-browse-pullreqs)))
 
   (add-hook 'forge-post-mode-hook (lambda ()
-                                    (setq-local auto-fill-function nil))))
+                                    (setq-local auto-fill-function nil)))
+
+  (defun dg-forge-open-pr-in-browser (pr)
+    (message (format "%s" pr))
+    (when-let ((url (forge-get-url pr)))
+      (message (format "%s" url))
+      (browse-url url)))
+
+  (advice-add 'forge-create-pullreq :after
+              (lambda (pr &rest _)
+                (dg-forge-open-pr-in-browser pr))))

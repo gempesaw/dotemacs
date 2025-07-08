@@ -9,7 +9,9 @@
 (setq custom-file "~/.emacs.d/emacs-custom.el"
       package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
+
 
 (use-package dash :ensure t)
 (use-package f :ensure t)

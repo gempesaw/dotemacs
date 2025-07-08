@@ -5,7 +5,13 @@
   (posframe-delete-all)
   (save-window-excursion
     ())
-  (corfu-quit))
+  (corfu-quit)
+  (posframe-delete-all)
+  (corfu-quit)
+  ;; (keyboard-escape-quit)
+  ;; (keyboard-quit)
+  ;; (abort-minibuffers)
+  )
 
 (defun x11-toggle-fullscreen ()
   "Toggle full screen on X11"

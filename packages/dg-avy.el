@@ -2,9 +2,10 @@
   :ensure t
   :after (key-chord)
 
-  :bind (("M-s-j" . avy-goto-char))
+  :bind (("M-s-h" . avy-goto-char))
   :config
   (setq avy-background t
+        avy-all-windows 'all-frames
         avy-keys '(
                    ?q ?w ?e ?r ?t ?y ?u ?i ?o ?p
                    ?z ?x ?c ?v ?b ?n ?m

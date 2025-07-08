@@ -1,6 +1,6 @@
-(use-package tree-sitter
-  :ensure t
-  :config)
+;; (use-package tree-sitter
+;;   :ensure t
+;;   :config)
 
 (use-package treesit-auto
   :ensure t

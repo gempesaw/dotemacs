@@ -12,15 +12,15 @@
       (posframe-delete-frame b)
       (kill-buffer b)))
 
-
-
-  :bind (:map dired-mode-map
-              ("V" . dg-shell-exec-at-point))
+  :bind ((:map comint-mode-map ("C-;" . #'coterm-char-mode-cycle))
+         (:map dired-mode-map
+               ("V" . dg-shell-exec-at-point)))
   )
 
-(defun dg-shell-exec (command &optional sentinel-arg)
+(defun dg-shell-exec (&optional cmd sentinel-arg)
   (interactive)
-  (let* ((sentinel (if sentinel-arg sentinel-arg #'dg-cleanup-posframe))
+  (let* ((command (if cmd (format "%s && exit" cmd) ""))
+         (sentinel (if sentinel-arg sentinel-arg #'dg-cleanup-posframe))
          (buf (save-window-excursion
                 (shell (get-buffer-create (format "*dg-shell-exec-%s: %s*"
                                                   (s-join "." (-map #'number-to-string (current-time)))
@@ -38,7 +38,7 @@
       (with-current-buffer buf
         (set-process-query-on-exit-flag proc nil)
         (set-process-sentinel proc sentinel)
-        (insert (format "%s && exit" command))
+        (insert command)
         (comint-send-input)))))
 
 (defun dg-shell-exec-at-point ()
@@ -48,7 +48,7 @@
 
 (defun dg-shell-open-aws ()
   (interactive)
-  (dg-shell-exec "pk open aws"))
+  (dg-shell-exec "sso"))
 
 
 (define-key my-keys-minor-mode-map (kbd "C-c 7") 'dg-shell-exec)

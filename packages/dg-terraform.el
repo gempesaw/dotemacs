@@ -1,8 +1,7 @@
 (defun dg-disable-company-mode ()
   (interactive)
-  ;; (global-company-mode -1)
-  ;; (company-mode -1)
-  )
+  (when (fboundp 'global-company-mode) (global-company-mode -1))
+  (when (fboundp 'company-mode) (company-mode -1)))
 
 (use-package terraform-mode
   :ensure t

@@ -31,10 +31,10 @@
   (setq lsp-restart 'auto-restart)
 
   (push "[/\\\\]node_modules$" lsp-file-watch-ignored)
-  (push "[/\\\\]venv$" lsp-file-watch-ignored)
+  (push "[/\\\\].venv$" lsp-file-watch-ignored)
   (push "[/\\\\]deps$" lsp-file-watch-ignored)
 
-  ;; elixir puts its deps here, but we don't want to watch them
-  (push "[/\\\\]\\.elixir_ls$" lsp-file-watch-ignored)
-  (push "[/\\\\]_build$" lsp-file-watch-ignored)
+  (push "[/\\\\]\\.venv\\" lsp-file-watch-ignored-directories)
+  (push "[/\\\\]venvs" lsp-file-watch-ignored-directories)
+  (push "[/\\\\]\\.ruff_cache\\" lsp-file-watch-ignored-directories)
   )

@@ -42,7 +42,7 @@
                                     (bookmark-all-names)))))
 
   ;; M-s-k
-  (key-chord-define-global "zk" (lambda () (interactive (kubectl 4))))
+  (key-chord-define-global "zk" 'kubectl-prompt)
   (key-chord-define-global "xk" 'kubectl)
 
   ;; windows
@@ -66,9 +66,7 @@
   (key-chord-define-global "xh" 'mark-whole-buffer)
   (key-chord-define-global "vv" 'vterm)
   ;; (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
-  (key-chord-define-global "vc" (lambda () (interactive)
-                                  (setq ar-auto-recompile t)
-                                  (switch-between-buffers "*compilation*")))
+  (key-chord-define-global "vc" nil)
   (key-chord-define-global "lv" (lambda () (interactive)
                                   (insert "lv")
                                   (message "disabling key chord mode because you typed lv")

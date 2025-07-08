@@ -232,6 +232,15 @@ Including indent-buffer, which should not be called automatically on save."
         (while (re-search-forward "\"" nil t)
           (replace-match "\\\\\"" nil nil)))))
 
+(defun dg-unescape-quotes-in-region ()
+  (interactive)
+  (if (and transient-mark-mode mark-active)
+      (save-restriction
+        (narrow-to-region (region-beginning) (region-end))
+        (goto-char (point-min))
+        (while (re-search-forward "\\\\\"" nil t)
+          (replace-match "\"" nil nil)))))
+
 (defun markdown-preview-with-syntax-highlighting (&optional output-buffer-name)
   "Run `markdown' on the current buffer and preview the output in a browser."
   (interactive)

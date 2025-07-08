@@ -90,9 +90,9 @@ raises an error."
     (interactive)
     (with-temp-buffer
       (let* ((box (completing-read "Which box: " (get-remote-boxes)))
+             (_ (shell-command-to-string (format "ssh %s ls -al" box)))
              (buffer (concat "*shell<" box ">*"))
-             (default-directory (concat "/ssh:" box ":/")))
-        (shell-command-to-string (format "ssh %s ls -al" box))
+             (default-directory (concat "/sshx:ubuntu@" box ":/")))
         (cd default-directory)
         (with-current-buffer (get-buffer-create (format "*tramp/ssh %s*" box))
           (shell buffer))

@@ -60,14 +60,24 @@
 
   (setq magit-clone-set-remote.pushDefault t))
 
-(use-package magit-todos
-  :ensure t
-  :demand t
-  :after magit
-  :config (magit-todos-mode 1))
+;; (use-package magit-todos
+;;   :ensure t
+;;   :demand t
+;;   :after magit
+;;   :config (magit-todos-mode 1))
 
 
 (defun magit-clone-opt ()
   (interactive)
   (let ((default-directory (format "%s/opt/" (getenv "HOME"))))
     (call-interactively 'magit-clone)))
+
+
+(defun my-magit-push-after-branch-checkout (branch &rest args)
+  "Push the newly created BRANCH to origin."
+  (when (and (not (member branch (magit-list-remote-branch-names "origin")))
+             (yes-or-no-p (format "Branch '%s' does not exist on 'origin'. Push it now? " branch)))
+    (magit-run-git "push" "origin" branch)))
+
+
+(advice-add 'magit-branch-and-checkout :after #'my-magit-push-after-branch-checkout)

@@ -20,6 +20,13 @@
 
 ;; (remove-hook 'before-save-hook 'py-isort-buffer)
 
+(use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "basedpyright")
+  :hook (python-ts-mode . (lambda ()
+                            (require 'lsp-pyright)
+                            (lsp-deferred))))
+
 (use-package lsp-ruff-lsp
   :after (lsp python)
   :config
@@ -30,4 +37,21 @@
 
 (use-package python
   :hook ((python-ts-mode . lsp-deferred)
-         (python-ts-mode . (lambda () (aggressive-indent-mode -1)))))
+         (python-ts-mode . (lambda () (aggressive-indent-mode -1))))
+  :bind (("M-i" . python-add-import)))
+
+(use-package pet
+  :ensure
+  :demand
+  :config
+  (add-hook 'python-base-mode-hook 'pet-mode -10))
+
+
+;; (progn
+;;   (require 'lsp-mode)
+;;   (setq lsp-ty-client (make-lsp-client
+;;                        :new-connection (lsp-stdio-connection '("ty" "server"))
+;;                        :major-modes '(python-ts-mode)
+;;                        :server-id 'ty-lsp))
+;;   (lsp-register-client lsp-ty-client)
+;;   (add-hook 'python-ts-mode-hook #'lsp))

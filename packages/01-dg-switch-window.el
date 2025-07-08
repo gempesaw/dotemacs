@@ -4,7 +4,8 @@
   :config
   (setq switch-window-shortcut-style 'qwerty
         switch-window-configuration-change-hook-inhibit t
-        switch-window-shortcut-appearance 'text)
+        switch-window-shortcut-appearance 'text
+        switch-window-multiple-frames t)
 
   (defun dg-switch-window-then-kill-buffer ()
     (interactive)

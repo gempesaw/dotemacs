@@ -1,9 +1,9 @@
 (use-package dired-subtree
   :ensure t
-  :bind
-  (:map dired-mode-map
-        ("i" . dired-subtree-insert)
-        ("k" . dired-subtree-remove)))
+  :requires (dired)
+  :bind (:map dired-mode-map
+              ("i" . dired-subtree-insert)
+              ("k" . dired-subtree-remove)))
 
 (use-package find-dired
   :ensure t
