@@ -1,0 +1,334 @@
+;;; -*- lexical-binding: t; -*-
+
+(defvar dg-transient-micm--project nil)
+(defvar dg-transient-micm--stack nil)
+(defvar dg-transient-micm--profile nil)
+(defvar dg-transient-micm--target nil)
+(defvar dg-transient-aws-login nil)
+
+
+(defun dg-transient-micm-read-projects-stacks ()
+  (->> "~/opt/infra/projects"
+       (f-expand)
+       (funcall (lambda (dirname)
+                  (-concat (f-glob "**/Pulumi*yaml" dirname)
+                           (f-glob "**/*/Pulumi*yaml" dirname)
+                           (f-glob "**/**/*/Pulumi*yaml" dirname))))
+       (--filter (not (s-contains-p "Pulumi.yaml" it)))
+       (--map (->> it
+                   (s-split "/projects/")
+                   (cadr)
+                   (s-split "/Pulumi.")))
+       (--group-by (car it))
+       (--map `(,(car it) . ,(-map (lambda (stack) (s-replace ".yaml" "" (cadr stack))) (cdr it))))))
+
+(defun dg-transient-micm-read-urns ()
+  (->> (buffer-list)
+       (--filter (s-contains-p "*pulumi" (buffer-name it)))
+       (--map (with-current-buffer it
+                (->> (buffer-substring-no-properties (point-min) (point-max))
+                     (s-split "\n")
+                     (--filter (s-contains-p "urn=urn" it))
+                     (--map (cadr (s-match "\\[urn=\\(.*\\)\\]" it))))))
+       (-flatten)
+       (-uniq)))
+
+(defun dg-transient-micm-read-project (prompt initial-input history)
+  (let* ((projects (-map #'car (dg-transient-micm-read-projects-stacks)))
+         (current-project-directory (-->
+                                     (or (buffer-file-name) "/tmp")
+                                     (file-name-directory it)
+                                     (locate-dominating-file it "Pulumi.yaml")))
+         (initial-input (if current-project-directory
+                            (--> current-project-directory
+                                 (s-split "projects/" it)
+                                 (cadr it)
+                                 (s-chop-right 1 it))
+                          initial-input))
+         (project (completing-read prompt projects nil nil initial-input history)))
+    (when project
+      (setq dg-transient-micm--stack nil
+            dg-transient-micm--project project))))
+
+(defun dg-transient-micm-read-stack (prompt initial-input history)
+  (let ((stack (completing-read prompt (cdr (assoc dg-transient-micm--project (dg-transient-micm-read-projects-stacks))) nil nil initial-input history)))
+    (when stack
+      (setq dg-transient-micm--stack stack))))
+
+(defun dg-transient-micm-read-profile (prompt initial-input history)
+  (let ((profile (completing-read prompt
+                                  (->>
+                                   (-concat (--> "aws configure list-profiles"
+                                                 (shell-command-to-string it)
+                                                 (s-split "\n" it t))
+                                            (-map 'cadr dg-transient-micm-aws-account-roles))
+                                   (--filter (or dg-transient-aws-login
+                                                 (s-contains-p "legacy" it)
+                                                 (s-contains-p "automation-access" it))))
+                                  nil
+                                  nil
+                                  initial-input
+                                  history)))
+    (when profile
+      (setq dg-transient-aws-login nil
+            dg-transient-micm--profile profile))))
+
+(defun dg-transient-micm-read-target (prompt initial-input history)
+  (let* ((urns (dg-transient-micm-read-urns))
+         (choices (if urns
+                      (cons "" urns)
+                    '("")))
+         (target (completing-read prompt choices nil nil initial-input history)))
+    (setq dg-transient-micm--target (if (string-empty-p target) nil target))))
+
+(transient-define-argument dg-transient-micm-aws-profile ()
+  :description "which AWS profile to use"
+  :class 'transient-option
+  :key "a"
+  :always-read t
+  :argument ""
+  :init-value (lambda (ob)
+                (setf (slot-value ob 'value) dg-transient-micm--profile))
+  :reader #'dg-transient-micm-read-profile)
+
+(transient-define-argument dg-transient-micm-project ()
+  :description "which pulumi project to operate on"
+  :class 'transient-option
+  :key "p"
+  :always-read t
+  :argument ""
+  :init-value (lambda (ob)
+                (setf (slot-value ob 'value) dg-transient-micm--project))
+  :reader #'dg-transient-micm-read-project)
+
+(transient-define-argument dg-transient-micm-stack ()
+  :description "which pulumi stack to operate on"
+  :class 'transient-option
+  :key "s"
+  :always-read t
+  :argument ""
+  :init-value (lambda (ob)
+                (setf (slot-value ob 'value) dg-transient-micm--stack))
+  :reader #'dg-transient-micm-read-stack)
+
+(transient-define-argument dg-transient-micm-target ()
+  :description "target specific resource URN"
+  :class 'transient-option
+  :key "t"
+  :always-read t
+  :argument ""
+  :init-value (lambda (ob)
+                (setf (slot-value ob 'value) dg-transient-micm--target))
+  :reader #'dg-transient-micm-read-target)
+
+(defun dg-transient-micm-kubie-command (stack)
+  (let ((cluster (cond
+                  ((s-contains-p "dev" stack) "ci-dev-eks-cluster-74fc2c4")
+                  ((and (s-contains-p "github" stack)
+                        (s-contains-p "prod" stack)) "ci-github-prod-eks-cluster-49c02d6")
+                  (t "ci-dev-eks-cluster-74fc2c4")))
+        )
+    (format "export KUBECONFIG=$(kubie export %s default)" cluster)))
+
+(defun dg-transient-micm-ignore-deprecation (string)
+  (if (or (s-contains-p "unique_name" string)
+          (s-contains-p "DeprecationWarning" string))
+      ""
+    string))
+
+(defun dg-transient-micm-execute (pulumi-sub-command &optional args)
+  (interactive (list nil (transient-args transient-current-command)))
+  (save-window-excursion
+    (let* ((project (nth 0 args))
+           (stack (nth 1 args))
+           (target (nth 2 args))
+           (profile (dg-transient-micm--get-aws-role stack))
+           (target-argument (if target
+                                (format "--target '%s'" target)
+                              ""))
+           (pulumi-passthrough-command (if pulumi-sub-command
+                                           (if target
+                                               (format "-- %s %s" pulumi-sub-command target-argument)
+                                             (format "-- %s" pulumi-sub-command))
+                                         ""))
+           (micm-command-prefix (format "export AWS_PROFILE=%s" profile))
+           (micm-command (format
+                          "micm pulumi --project %s --stack %s %s"
+                          project
+                          stack
+                          pulumi-passthrough-command))
+           (kubie-export-command (dg-transient-micm-kubie-command stack))
+           (buffer-name (format "*pulumi* | %s | %s" project stack))
+           (existing-buffer (get-buffer buffer-name))
+           (visible-frames (visible-frame-list)))
+
+      (dg-modular-ensure-aws-profile-login profile)
+
+      (if existing-buffer
+          (with-current-buffer existing-buffer
+            (erase-buffer)
+            (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
+            (comint-simple-send
+             (get-buffer-process (current-buffer))
+             (format "%s; export AWS_PROFILE=%s ; %s" kubie-export-command profile micm-command)))
+
+        (let* ((default-directory (f-expand "~/opt/infra"))
+               (buf (create-new-shell-here)))
+          (with-current-buffer buf
+            (rename-buffer buffer-name t)
+            (insert (format "%s; %s ; %s" kubie-export-command micm-command-prefix micm-command))
+            (comint-send-input nil t))))
+
+      ;; if there's another frame with a pulumi window, switch it to this
+      ;; one.
+      (let ((current-frame (selected-frame))
+            (other-frame (next-frame (selected-frame))))
+        (when other-frame
+          (with-selected-frame other-frame
+            (if-let* ((pulumi-window (--find (let ((buf (window-buffer it)))
+                                               (and (buffer-live-p buf)
+                                                    (string-prefix-p "*pulumi*" (buffer-name buf))))
+                                             (window-list)))
+                      ((not (string= (buffer-name (window-buffer pulumi-window)) buffer-name))))
+                (set-window-buffer pulumi-window buffer-name))))
+        ))))
+
+(defun dg-transient-micm--get-aws-role (stack)
+  (cond
+
+   ((s-contains-p "dev" stack) "legacy-superuser")
+   ((s-contains-p "github" stack) "legacy-superuser")
+   ((s-contains-p "karpenter" stack) "legacy-superuser")
+
+   ((s-contains-p "east1" stack) "aws-internal-dev-workloads-automation-access")
+   ((s-contains-p "prod" stack) "aws-internal-prod-automation-access")
+   ((s-contains-p "staging" stack) "aws-internal-staging-automation-access")
+
+
+
+   (t nil)))
+
+(transient-define-prefix dg-transient-micm ()
+  "choose project, stack, and operation"
+
+  ["Options"
+   (dg-transient-micm-project)
+   (dg-transient-micm-stack)
+   (dg-transient-micm-target)
+   ]
+
+  ["Actions"
+   [("m p" "plan" (lambda (&optional args)
+                    (interactive (list (transient-args transient-current-command)))
+                    (dg-transient-micm-execute "preview --diff --show-secrets" args)))
+
+    ("m s" "preview, summary" (lambda (&optional args)
+                                (interactive (list (transient-args transient-current-command)))
+                                (dg-transient-micm-execute "preview --show-secrets" args)))
+
+    ("m r" "refresh" (lambda (&optional args)
+                       (interactive (list (transient-args transient-current-command)))
+                       (dg-transient-micm-execute "refresh" args)))
+
+    ("m a" "apply" (lambda (&optional args)
+                     (interactive (list (transient-args transient-current-command)))
+                     (dg-transient-micm-execute "up --yes" args)))
+
+    ("m o" "outputs" (lambda (&optional args)
+                       (interactive (list (transient-args transient-current-command)))
+                       (dg-transient-micm-execute "stack output --show-secrets" args)))
+
+    ("m u" "urns" (lambda (&optional args)
+                    (interactive (list (transient-args transient-current-command)))
+                    (dg-transient-micm-execute "stack --show-urns --show-secrets" args)))
+    ]])
+
+(defun dg-transient-micm-refresh-aws-account-roles ()
+  (interactive)
+  (->> "aws-sso"
+       (shell-command-to-string)
+       (s-split "\n")
+       (--map (s-split "\s+|\s+" it))
+       (--filter (s-matches-p "^[[:digit:]]+$" (car it)))
+       (--map (list (car it) (cadddr it)))
+       (setq dg-transient-micm-aws-account-roles)))
+
+(defun dg-transient-aws-profile-open-console (profile)
+
+  (if (s-contains-p ":" profile)
+      (let* ((account-id (caar (--filter (s-equals-p (cadr it) profile) dg-transient-micm-aws-account-roles)))
+             (role-name (nth 1 (s-split ":" profile)))
+             (start-url (if (s-equals-p account-id "466483404629")
+                            "https://d-9067baa9e0.awsapps.com/start/#"
+                          "https://d-906789f3a0.awsapps.com/start/#"))
+             (console-url (format "%s/console?account_id=%s&role_name=%s"
+                                  start-url
+                                  account-id
+                                  role-name))
+             )
+        (browse-url console-url))
+    (let* ((profile (dg-modular-ensure-aws-profile-login profile))
+           (account-id (s-trim (shell-command-to-string "aws configure get sso_account_id")))
+           (role-name (s-trim (shell-command-to-string "aws configure get sso_role_name")))
+           (start-url (if (s-equals-p account-id "466483404629")
+                          "https://d-9067baa9e0.awsapps.com/start/#"
+                        "https://d-906789f3a0.awsapps.com/start/#"))
+           (console-url (format "%s/console?account_id=%s&role_name=%s"
+                                start-url
+                                account-id
+                                role-name)))
+
+      (browse-url console-url)))
+  )
+
+
+
+(transient-define-prefix dg-transient-aws-profile ()
+  ["profile" (dg-transient-micm-aws-profile)]
+
+  ["login"
+   [("SPC" "login" (lambda (&optional args)
+                     (interactive (list (transient-args transient-current-command)))
+                     (let ((profile (nth 0 args)))
+                       (dg-modular-ensure-aws-profile-login profile)
+                       (insert (format "export AWS_PROFILE=%s" profile))
+                       (comint-send-input))))
+
+    ("c" "console" (lambda (&optional args)
+                     (interactive (list (transient-args transient-current-command)))
+                     (let ((profile (nth 0 args)))
+                       (dg-transient-aws-profile-open-console profile))))
+
+    ]])
+
+
+
+(defun dg-transient-aws-profile-login ()
+  (interactive)
+  (setq dg-transient-aws-login t)
+  (run-with-timer 0 nil (lambda () (dg-transient-aws-profile))))
+
+(key-chord-define-global "zp" 'dg-transient-micm)
+(key-chord-define-global ",/" 'dg-transient-aws-profile-login)
+
+(provide 'dg-transient-micm-pulumi)
+
+
+;; (let* ((credentials (->> "aws configure export-credentials --output=json"
+;;                          (shell-command-to-string)
+;;                          (json-read-from-string)))
+;;        (access-key-id (alist-get 'AccessKeyId credentials))
+;;        (secret-access-key (alist-get 'SecretAccessKey credentials))
+;;        (session-token (alist-get 'SessionToken credentials))
+;;        (signin-token-json (json-serialize
+;;                            `((sessionId . ,access-key-id)
+;;                              (sessionKey . ,secret-access-key)
+;;                              (sessionToken . ,session-token))))
+;;        (encoded-signin-token (url-hexify-string signin-token-json))
+;;        (console-url (concat "https://signin.aws.amazon.com/federation"
+;;                             "?Action=login"
+;;                             "&Issuer=Emacs"
+;;                             "&Destination=https%3A%2F%2Fconsole.aws.amazon.com%2F"
+;;                             "&SigninToken=" encoded-signin-token))
+;;        )
+;;   (kill-new console-url))
