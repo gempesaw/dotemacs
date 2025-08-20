@@ -144,7 +144,7 @@
            (target (nth 2 args))
            (profile (dg-transient-micm--get-aws-role stack))
            (target-argument (if target
-                                (format "--target '%s'" target)
+                                (format "--target '%s' --target-dependents" target)
                               ""))
            (pulumi-passthrough-command (if pulumi-sub-command
                                            (if target
