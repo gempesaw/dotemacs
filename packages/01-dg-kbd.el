@@ -121,18 +121,10 @@
 (defun dg-m-dot ()
   (interactive)
   (let ((current-line (substring-no-properties (thing-at-point 'line))))
-    (when (s-equals-p major-mode "terraform-mode")
-      (dg-jump-to-terraform-source))
+    ;; (when (s-equals-p major-mode "terraform-mode")
+    ;;   (dg-jump-to-terraform-source))
     (cond
      (lsp-mode (lsp-ui-peek-find-definitions))
-
-     ((and (s-equals-p major-mode "shell-mode")
-           (s-match "  #.*\\(will\\|must\\)" current-line))
-
-      (let ((terraform-resource (cadr (s-match "..#.\\(.*?\\) " (substring-no-properties (thing-at-point 'line))))))
-        (xref-push-marker-stack)
-        (search-backward (format "%s " terraform-resource))
-        (recenter-top-bottom)))
      (t (dumb-jump-go)))))
 
 (global-unset-key (kbd "M-."))

@@ -215,6 +215,7 @@
 	delete-other-window-and-buffer
 	delete-window
 	dg-hsplit-last-buffer
+	dg-transient-micm
 	dg-vsplit-last-buffer
 	dired-details-show
 	dired-maybe-insert-subdir

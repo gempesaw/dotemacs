@@ -77,7 +77,7 @@
   "Push the newly created BRANCH to origin."
   (when (and (not (member branch (magit-list-remote-branch-names "origin")))
              (yes-or-no-p (format "Branch '%s' does not exist on 'origin'. Push it now? " branch)))
-    (magit-run-git "push" "origin" branch)))
+    (magit-run-git-async "push" "origin" branch)))
 
 
 (advice-add 'magit-branch-and-checkout :after #'my-magit-push-after-branch-checkout)

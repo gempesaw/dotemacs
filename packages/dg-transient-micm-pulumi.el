@@ -5,6 +5,7 @@
 (defvar dg-transient-micm--profile nil)
 (defvar dg-transient-micm--target nil)
 (defvar dg-transient-aws-login nil)
+(defvar dg-transient-micm--export-file nil)
 
 
 (defun dg-transient-micm-read-projects-stacks ()
@@ -61,7 +62,13 @@
                                    (-concat (--> "aws configure list-profiles"
                                                  (shell-command-to-string it)
                                                  (s-split "\n" it t))
-                                            (-map 'cadr dg-transient-micm-aws-account-roles))
+                                            (-map 'cadr (->> "aws-sso list Profile --csv"
+                                                             (shell-command-to-string)
+                                                             (s-split "\n")
+                                                             (--map (s-split "\s+|\s+" it))
+                                                             (--filter (s-matches-p "^[[:digit:]]+$" (car it)))
+                                                             (--map (list (car it) (cadddr it)))
+                                                             (setq dg-transient-micm-aws-account-roles))))
                                    (--filter (or dg-transient-aws-login
                                                  (s-contains-p "legacy" it)
                                                  (s-contains-p "automation-access" it))))
@@ -142,7 +149,7 @@
     (let* ((project (nth 0 args))
            (stack (nth 1 args))
            (target (nth 2 args))
-           (profile (dg-transient-micm--get-aws-role stack))
+           (profile (dg-transient-micm--get-aws-role stack project))
            (target-argument (if target
                                 (format "--target '%s' --target-dependents" target)
                               ""))
@@ -193,20 +200,80 @@
                 (set-window-buffer pulumi-window buffer-name))))
         ))))
 
-(defun dg-transient-micm--get-aws-role (stack)
+(defun dg-transient-micm--get-aws-role (stack &optional project)
+
   (cond
 
    ((s-contains-p "dev" stack) "legacy-superuser")
    ((s-contains-p "github" stack) "legacy-superuser")
    ((s-contains-p "karpenter" stack) "legacy-superuser")
+   ((or (s-contains-p "external" project)
+        (s-contains-p "destination" project))
+    (if (or (s-contains-p "staging" stack)
+            (s-contains-p "external" stack))
+        "aws-external-staging-automation-access"
+      "aws-external-prod-automation-access"))
+
+   ((s-contains-p "networking" project)
+    (if (s-contains-p "staging" stack)
+        "aws-networking-staging-automation-access"
+      "aws-networking-prod-automation-preview"))
 
    ((s-contains-p "east1" stack) "aws-internal-dev-workloads-automation-access")
-   ((s-contains-p "prod" stack) "aws-internal-prod-automation-access")
+   ((and (s-contains-p "prod" stack)
+         (not (s-contains-p "staging" stack))) "aws-internal-prod-automation-access")
    ((s-contains-p "staging" stack) "aws-internal-staging-automation-access")
 
+   (t (completing-read "Select AWS profile: "
+                       (->> (shell-command-to-string "aws configure list-profiles")
+                            (s-split "\n")
+                            (--filter (s-contains-p "automation-access" it)))))))
 
+(defun dg-transient-micm-export-state (&optional args)
+  "Export pulumi state to a temp file and open it in a buffer for editing."
+  (interactive (list (transient-args transient-current-command)))
+  (let* ((project (nth 0 args))
+         (stack (nth 1 args))
+         (sanitized-project (replace-regexp-in-string "[/\\]" "-" project))
+         (sanitized-stack (replace-regexp-in-string "[/\\]" "-" stack))
+         (temp-file (make-temp-file (format "pulumi-state-%s-%s-" sanitized-project sanitized-stack) nil ".json")))
+    (setq dg-transient-micm--export-file temp-file)
+    (message "Exporting state to %s..." temp-file)
+    (dg-transient-micm-execute (format "stack export --show-secrets --file %s && echo 'State exported to %s'"
+                                       (shell-quote-argument temp-file)
+                                       (shell-quote-argument temp-file)) args)
+    ;; Poll for file existence and open when ready
+    (run-with-timer 1 nil 'dg-transient-micm--check-export-ready temp-file)))
 
-   (t nil)))
+(defun dg-transient-micm--check-export-ready (temp-file)
+  "Check if export file is ready and open it, or keep checking."
+  (if (and (file-exists-p temp-file) (> (file-attribute-size (file-attributes temp-file)) 0))
+      (progn
+        (find-file temp-file)
+        (json-mode)
+        (message "Pulumi state exported to buffer. Edit and use 'm i' to import."))
+    ;; Check again in 1 second if file isn't ready
+    (run-with-timer 1 nil 'dg-transient-micm--check-export-ready temp-file)))
+
+(defun dg-transient-micm-import-state (&optional args)
+  "Import pulumi state from the current buffer or exported file."
+  (interactive (list (transient-args transient-current-command)))
+  (let ((import-file
+         (cond
+          ;; If we're in a buffer visiting the export file, use that
+          ((and buffer-file-name
+                dg-transient-micm--export-file
+                (string= buffer-file-name dg-transient-micm--export-file))
+           (save-buffer)
+           buffer-file-name)
+          ;; If we have an export file, use it
+          (dg-transient-micm--export-file
+           dg-transient-micm--export-file)
+          ;; Otherwise prompt for file
+          (t
+           (read-file-name "Import state from file: ")))))
+    (when import-file
+      (dg-transient-micm-execute (format "stack import --file %s" (shell-quote-argument import-file)) args))))
 
 (transient-define-prefix dg-transient-micm ()
   "choose project, stack, and operation"
@@ -241,17 +308,12 @@
     ("m u" "urns" (lambda (&optional args)
                     (interactive (list (transient-args transient-current-command)))
                     (dg-transient-micm-execute "stack --show-urns --show-secrets" args)))
+
+    ("m x" "export state" dg-transient-micm-export-state)
+
+    ("m i" "import state" dg-transient-micm-import-state)
     ]])
 
-(defun dg-transient-micm-refresh-aws-account-roles ()
-  (interactive)
-  (->> "aws-sso"
-       (shell-command-to-string)
-       (s-split "\n")
-       (--map (s-split "\s+|\s+" it))
-       (--filter (s-matches-p "^[[:digit:]]+$" (car it)))
-       (--map (list (car it) (cadddr it)))
-       (setq dg-transient-micm-aws-account-roles)))
 
 (defun dg-transient-aws-profile-open-console (profile)
 
@@ -287,17 +349,31 @@
   ["profile" (dg-transient-micm-aws-profile)]
 
   ["login"
-   [("SPC" "login" (lambda (&optional args)
-                     (interactive (list (transient-args transient-current-command)))
-                     (let ((profile (nth 0 args)))
-                       (dg-modular-ensure-aws-profile-login profile)
-                       (insert (format "export AWS_PROFILE=%s" profile))
-                       (comint-send-input))))
+   [("SPC" "authenticate shell" (lambda (&optional args)
+                                  (interactive (list (transient-args transient-current-command)))
+                                  (let ((profile (nth 0 args)))
+                                    (dg-modular-ensure-aws-profile-login profile)
+                                    (insert (format "eval $(aws-sso eval --no-region --profile=%s) && unset AWS_PROFILE" profile))
+                                    (comint-send-input))))
 
-    ("c" "console" (lambda (&optional args)
-                     (interactive (list (transient-args transient-current-command)))
-                     (let ((profile (nth 0 args)))
-                       (dg-transient-aws-profile-open-console profile))))
+    ("s" "authenticate shell" (lambda (&optional args)
+                                (interactive (list (transient-args transient-current-command)))
+                                (let ((profile (nth 0 args)))
+                                  (dg-modular-ensure-aws-profile-login profile)
+                                  (insert (format "eval $(aws-sso eval --no-region --profile=%s) && unset AWS_PROFILE" profile))
+                                  (comint-send-input))))
+
+
+
+    ("c" "open logged-in browser" (lambda (&optional args)
+                                    (interactive (list (transient-args transient-current-command)))
+                                    (let ((profile (nth 0 args)))
+                                      (dg-transient-aws-profile-open-console profile))))
+
+    ("b" "open logged-in browser" (lambda (&optional args)
+                                    (interactive (list (transient-args transient-current-command)))
+                                    (let ((profile (nth 0 args)))
+                                      (dg-transient-aws-profile-open-console profile))))
 
     ]])
 

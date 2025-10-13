@@ -20,9 +20,8 @@
                                     (let ((inhibit-message t))
                                       (key-chord-mode t))))
 
-  ;; movement, shells, smex
+  ;; movement, shells
   (key-chord-define-global "fj" 'avy-goto-char)
-  (key-chord-define-global ",/" 'smex)
 
   ;; expanding region
   (key-chord-define-global "qk" 'er/expand-region)
