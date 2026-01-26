@@ -1,11 +1,14 @@
 ;;; -*- lexical-binding: t; -*-
 
+(require 'posframe)
+
 (defvar dg-transient-micm--project nil)
 (defvar dg-transient-micm--stack nil)
 (defvar dg-transient-micm--profile nil)
 (defvar dg-transient-micm--target nil)
 (defvar dg-transient-aws-login nil)
 (defvar dg-transient-micm--export-file nil)
+(defvar dg-micm-ssh-posframe-buffer "*micm-ssh-posframe*")
 
 
 (defun dg-transient-micm-read-projects-stacks ()
@@ -56,22 +59,16 @@
     (when stack
       (setq dg-transient-micm--stack stack))))
 
+
+
+
 (defun dg-transient-micm-read-profile (prompt initial-input history)
   (let ((profile (completing-read prompt
-                                  (->>
-                                   (-concat (--> "aws configure list-profiles"
-                                                 (shell-command-to-string it)
-                                                 (s-split "\n" it t))
-                                            (-map 'cadr (->> "aws-sso list Profile --csv"
-                                                             (shell-command-to-string)
-                                                             (s-split "\n")
-                                                             (--map (s-split "\s+|\s+" it))
-                                                             (--filter (s-matches-p "^[[:digit:]]+$" (car it)))
-                                                             (--map (list (car it) (cadddr it)))
-                                                             (setq dg-transient-micm-aws-account-roles))))
-                                   (--filter (or dg-transient-aws-login
-                                                 (s-contains-p "legacy" it)
-                                                 (s-contains-p "automation-access" it))))
+                                  (->> "aws-sso list Profile --csv --sso modular && aws-sso list Profile --csv --sso legacy"
+                                       (shell-command-to-string)
+                                       (s-split "\n")
+                                       (--filter it)
+                                       (setq dg-transient-micm-aws-account-roles))
                                   nil
                                   nil
                                   initial-input
@@ -158,7 +155,10 @@
                                                (format "-- %s %s" pulumi-sub-command target-argument)
                                              (format "-- %s" pulumi-sub-command))
                                          ""))
-           (micm-command-prefix (format "export AWS_PROFILE=%s" profile))
+           (sso-arg (if (and profile (s-contains-p "super-user" profile)) "--sso legacy" ""))
+           (micm-command-prefix (if profile
+                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s); aws sts get-caller-identity" sso-arg profile)
+                                  (format "echo 'No profile found for %s/%s'" project stack)))
            (micm-command (format
                           "micm pulumi --project %s --stack %s %s"
                           project
@@ -169,15 +169,13 @@
            (existing-buffer (get-buffer buffer-name))
            (visible-frames (visible-frame-list)))
 
-      (dg-modular-ensure-aws-profile-login profile)
-
       (if existing-buffer
           (with-current-buffer existing-buffer
             (erase-buffer)
             (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
             (comint-simple-send
              (get-buffer-process (current-buffer))
-             (format "%s; export AWS_PROFILE=%s ; %s" kubie-export-command profile micm-command)))
+             (format "%s; %s ; echo '%s'; %s" kubie-export-command micm-command-prefix micm-command micm-command)))
 
         (let* ((default-directory (f-expand "~/opt/infra"))
                (buf (create-new-shell-here)))
@@ -186,43 +184,110 @@
             (insert (format "%s; %s ; %s" kubie-export-command micm-command-prefix micm-command))
             (comint-send-input nil t))))
 
-      ;; if there's another frame with a pulumi window, switch it to this
-      ;; one.
+      ;; if there's another frame with a pulumi window, switch it to this one.
+      ;; if there's only a single frame, open a new frame and focus the pulumi buffer.
       (let ((current-frame (selected-frame))
             (other-frame (next-frame (selected-frame))))
-        (when other-frame
-          (with-selected-frame other-frame
-            (if-let* ((pulumi-window (--find (let ((buf (window-buffer it)))
-                                               (and (buffer-live-p buf)
-                                                    (string-prefix-p "*pulumi*" (buffer-name buf))))
-                                             (window-list)))
-                      ((not (string= (buffer-name (window-buffer pulumi-window)) buffer-name))))
-                (set-window-buffer pulumi-window buffer-name))))
+        (if other-frame
+            ;; There's another frame - switch its pulumi window to this buffer
+            (with-selected-frame other-frame
+              (if-let* ((pulumi-window (--find (let ((buf (window-buffer it)))
+                                                 (and (buffer-live-p buf)
+                                                      (string-prefix-p "*pulumi*" (buffer-name buf))))
+                                               (window-list)))
+                        ((not (string= (buffer-name (window-buffer pulumi-window)) buffer-name))))
+                  (set-window-buffer pulumi-window buffer-name)))
+          ;; Only one frame - create a new frame and display the pulumi buffer in it
+          (let ((new-frame (make-frame)))
+            (select-frame-set-input-focus new-frame)
+            (switch-to-buffer buffer-name)))
         ))))
 
 (defun dg-transient-micm--get-aws-role (stack &optional project)
+  "Dynamically look up AWS profile for STACK and PROJECT.
+Reads the Pulumi env config to get the AWS account name, looks it up
+in the account mapping to get the account number, then finds the
+appropriate automation role in AWS config."
+  (let* ((pulumi-file (format "~/opt/infra/projects/%s/Pulumi.%s.yaml" project stack))
+         (pulumi-file-expanded (f-expand pulumi-file)))
 
+    (if (not (f-exists-p pulumi-file-expanded))
+        ;; Fallback to legacy dispatch for stacks without Pulumi files
+        (dg-transient-micm--get-aws-role-legacy stack project)
+
+      ;; Dynamic lookup
+      (let* ((pulumi-config (with-temp-buffer
+                              (insert-file-contents pulumi-file-expanded)
+                              (yaml-parse-string (buffer-string)
+                                                 :object-type 'alist
+                                                 :sequence-type 'list)))
+             (aws-stack-name (alist-get 'stack
+                                        (alist-get 'aws
+                                                   (alist-get 'identity
+                                                              (alist-get 'deployment
+                                                                         (alist-get 'modular:platform
+                                                                                    (alist-get 'config pulumi-config))))))))
+
+        ;; If there's no AWS config in the Pulumi file, return nil
+        (if (not aws-stack-name)
+            nil
+
+          (let* ((account-mapping-file (f-expand "~/opt/infra/tools/micm/aws_account_mapping.yaml"))
+                 (account-mapping (with-temp-buffer
+                                    (insert-file-contents account-mapping-file)
+                                    (yaml-parse-string (buffer-string)
+                                                       :object-type 'alist
+                                                       :sequence-type 'list)))
+                 (account-id (alist-get (intern aws-stack-name) account-mapping))
+                 (aws-config-file (f-expand "~/.aws/config"))
+                 (aws-config (with-temp-buffer
+                               (insert-file-contents aws-config-file)
+                               (buffer-string)))
+                 (profile-regex (format "\\[profile \\([^]]+\\)\\]\n[^\[]*sso_account_id = %s\n[^\[]*sso_role_name = \\(automation-access\\|automation-prev-access\\)" account-id))
+                 (profiles (let (result)
+                             (with-temp-buffer
+                               (insert aws-config)
+                               (goto-char (point-min))
+                               (while (re-search-forward profile-regex nil t)
+                                 (let ((profile-name (match-string 1))
+                                       (role-type (match-string 2)))
+                                   (push (cons profile-name role-type) result))))
+                             (nreverse result)))
+                 (automation-access-profile (--find (string= (cdr it) "automation-access") profiles))
+                 (automation-prev-profile (--find (string= (cdr it) "automation-prev-access") profiles)))
+
+            (or (car automation-access-profile)
+                (car automation-prev-profile)
+                (dg-transient-micm--get-aws-role-legacy stack project))))))))
+
+(defun dg-transient-micm--get-aws-role-legacy (stack &optional project)
+  "Legacy manual dispatch for AWS roles based on stack/project names."
   (cond
 
-   ((s-contains-p "dev" stack) "legacy-superuser")
-   ((s-contains-p "github" stack) "legacy-superuser")
-   ((s-contains-p "karpenter" stack) "legacy-superuser")
+   ((s-contains-p "dns" project) "modular.com.super-user-8ed90a7")
+   ((s-contains-p "dev" stack) "modular.com.super-user-8ed90a7")
+   ((s-contains-p "github" stack) "modular.com.super-user-8ed90a7")
+   ((s-contains-p "karpenter" stack) "modular.com.super-user-8ed90a7")
    ((or (s-contains-p "external" project)
-        (s-contains-p "destination" project))
+        (s-contains-p "destination" project)
+        (s-contains-p "mammoth" project))
     (if (or (s-contains-p "staging" stack)
             (s-contains-p "external" stack))
-        "aws-external-staging-automation-access"
-      "aws-external-prod-automation-access"))
+        "external-staging-4afbf9a6.automation-access-91b319d"
+      "external-prod-8e65a7d5.automation-access-91b319d"))
 
    ((s-contains-p "networking" project)
     (if (s-contains-p "staging" stack)
-        "aws-networking-staging-automation-access"
-      "aws-networking-prod-automation-preview"))
+        "networking-staging-2875ef80.automation-access-91b319d"
+      "networking-prod-3bdb3844.automation-prev-access-0a74a01"))
 
-   ((s-contains-p "east1" stack) "aws-internal-dev-workloads-automation-access")
+   ((s-contains-p "workspaces" project) "Management.AdministratorAccess")
+   ((s-contains-p "management" project) "Management.AdministratorAccess")
+
+   ((s-contains-p "east1" stack) "internal-dev-workloads-ef01a06b.automation-access-91b319d")
    ((and (s-contains-p "prod" stack)
-         (not (s-contains-p "staging" stack))) "aws-internal-prod-automation-access")
-   ((s-contains-p "staging" stack) "aws-internal-staging-automation-access")
+         (not (s-contains-p "staging" stack))) "internal-prod-c6646158.automation-access-91b319d")
+   ((s-contains-p "staging" stack) "internal-staging-c56d17e7.automation-access-91b319d")
 
    (t (completing-read "Select AWS profile: "
                        (->> (shell-command-to-string "aws configure list-profiles")
@@ -299,7 +364,7 @@
 
     ("m a" "apply" (lambda (&optional args)
                      (interactive (list (transient-args transient-current-command)))
-                     (dg-transient-micm-execute "up --yes" args)))
+                     (dg-transient-micm-execute "up --yes --skip-preview" args)))
 
     ("m o" "outputs" (lambda (&optional args)
                        (interactive (list (transient-args transient-current-command)))
@@ -351,24 +416,18 @@
   ["login"
    [("SPC" "authenticate shell" (lambda (&optional args)
                                   (interactive (list (transient-args transient-current-command)))
-                                  (let ((profile (nth 0 args)))
+                                  (let* ((profile (nth 0 args))
+                                         (sso-arg (if (s-contains-p "super-user" profile) "--sso legacy" "")))
                                     (dg-modular-ensure-aws-profile-login profile)
-                                    (insert (format "eval $(aws-sso eval --no-region --profile=%s) && unset AWS_PROFILE" profile))
+                                    (dg-transient-aws-sso-set-emacs-env profile)
+                                    (insert (format "eval $(aws-sso eval %s --no-region --profile=%s) && unset AWS_PROFILE" sso-arg profile))
                                     (comint-send-input))))
 
-    ("s" "authenticate shell" (lambda (&optional args)
-                                (interactive (list (transient-args transient-current-command)))
-                                (let ((profile (nth 0 args)))
-                                  (dg-modular-ensure-aws-profile-login profile)
-                                  (insert (format "eval $(aws-sso eval --no-region --profile=%s) && unset AWS_PROFILE" profile))
-                                  (comint-send-input))))
-
-
-
-    ("c" "open logged-in browser" (lambda (&optional args)
-                                    (interactive (list (transient-args transient-current-command)))
-                                    (let ((profile (nth 0 args)))
-                                      (dg-transient-aws-profile-open-console profile))))
+    ("e" "authenticate emacs environment" (lambda (&optional args)
+                                            (interactive (list (transient-args transient-current-command)))
+                                            (let ((profile (nth 0 args)))
+                                              (dg-modular-ensure-aws-profile-login profile)
+                                              (dg-transient-aws-sso-set-emacs-env profile))))
 
     ("b" "open logged-in browser" (lambda (&optional args)
                                     (interactive (list (transient-args transient-current-command)))
@@ -377,7 +436,24 @@
 
     ]])
 
+(defun dg-transient-aws-sso-set-emacs-env (profile)
+  "Set AWS environment variables in Emacs from aws-sso eval output."
+  (let* (;; (reset (->> process-environment
+         ;;             (--filter (s-starts-with? "AWS_" it))
+         ;;             (--map (setenv (car (s-split "=" it)) nil))))
+         (sso-argument (if (s-matches-p "super-user" profile) "--sso legacy" ""))
+         (output (shell-command-to-string
+                  (format "aws-sso eval %s --no-region --profile=%s" sso-argument profile)))
+         (lines (split-string output "\n" t)))
 
+    (dolist (line lines)
+      (when (string-match "^export \\([A-Z_]+\\)=\"\\(.*\\)\"$" line)
+        (let ((var-name (match-string 1 line))
+              (var-value (match-string 2 line)))
+          (setenv var-name var-value)
+          (message "Set %s" var-name))))
+    (message "AWS SSO credentials set in Emacs environment for profile: %s" profile)
+    ))
 
 (defun dg-transient-aws-profile-login ()
   (interactive)
@@ -408,3 +484,50 @@
 ;;                             "&SigninToken=" encoded-signin-token))
 ;;        )
 ;;   (kill-new console-url))
+
+(defun dg-micm-ssh-with-posframe ()
+  "Run micm ssh in a small posframe window for faster fzf+coterm, then switch to normal window."
+  (interactive)
+  (let* ((shell-buffer-name "*micm-ssh-shell*")
+         (shell-buffer (get-buffer shell-buffer-name)))
+
+    ;; Kill existing shell buffer if it exists
+    (when shell-buffer
+      (kill-buffer shell-buffer))
+
+    ;; Create a new shell buffer
+    (let ((new-shell-buffer (shell shell-buffer-name)))
+
+      ;; Show the shell in a small posframe
+      (posframe-show new-shell-buffer
+                     :poshandler #'posframe-poshandler-frame-center
+                     :width 60
+                     :height 15
+                     :border-width 2
+                     :internal-border-width 10
+                     :internal-border-color "#555555"
+                     :background-color "#1e1e1e")
+
+      ;; Switch to the shell buffer in the posframe
+      (with-current-buffer new-shell-buffer
+        ;; Set up a hook to detect when coterm/fzf is done
+        (let ((original-buffer new-shell-buffer))
+          (add-hook 'comint-output-filter-functions
+                    (lambda (text)
+                      ;; When we see a prompt after micm ssh completes, hide posframe
+                      (when (and (get-buffer original-buffer)
+                                 (string-match-p "bash-[0-9.]+\\$\\|\\$" text))
+                        (run-with-timer 0.1 nil
+                                        (lambda ()
+                                          ;; Hide the posframe
+                                          (posframe-hide original-buffer)
+                                          ;; Switch to the shell buffer in a normal window
+                                          (switch-to-buffer original-buffer)
+                                          ;; Clean up the hook
+                                          (remove-hook 'comint-output-filter-functions
+                                                       'dg-micm-ssh-completion-hook)))))
+                    nil t))
+
+        ;; Send the micm ssh command
+        (insert "micm ssh")
+        (comint-send-input)))))
