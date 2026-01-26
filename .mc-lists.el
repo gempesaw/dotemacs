@@ -61,6 +61,7 @@
 	dired
 	dired-details-hide
 	dired-do-chmod
+	dired-do-copy
 	dired-do-delete
 	dired-do-flagged-delete
 	dired-find-file
