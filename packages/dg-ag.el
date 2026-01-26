@@ -5,7 +5,7 @@
         ag-reuse-buffers t
         ag-reuse-window t
         ag-highlight-search t
-        ag-ignore-list '(".terraform"))
+        ag-ignore-list '(".terraform" ".agent-shell"))
 
   (set-face-attribute 'ag-match-face nil
                       :weight 'ultra-bold
