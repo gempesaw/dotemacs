@@ -26,8 +26,6 @@
   ;; expanding region
   (key-chord-define-global "qk" 'er/expand-region)
 
-  (key-chord-define-global "`=" (lambda () (interactive) (key-chord-mode -1)))
-
   (key-chord-define-global "xg" 'magit-status)
   ;; registers
 
@@ -54,7 +52,7 @@
 
   ;; files
   (key-chord-define-global "xw" 'ido-write-file)
-  (key-chord-define-global "xf" 'find-file)
+  (key-chord-define-global "xf" 'consult-snapfile)
   (key-chord-define-global "xr" 'find-file-as-root)
   (key-chord-define-global "xd" '[?\C-x ?d return])
 
@@ -63,14 +61,7 @@
   (key-chord-define-global "xb" 'consult-buffer)
   (key-chord-define-global "xv" 'switch-to-other-buffer)
   (key-chord-define-global "xh" 'mark-whole-buffer)
-  (key-chord-define-global "vv" 'vterm)
   ;; (key-chord-define-global "zs" (lambda () (interactive) (switch-between-buffers "*scratch*")))
-  (key-chord-define-global "vc" nil)
-  (key-chord-define-global "lv" (lambda () (interactive)
-                                  (insert "lv")
-                                  (message "disabling key chord mode because you typed lv")
-                                  (dg-toggle-key-chord-mode)))
-
 
 
   ;; elisp

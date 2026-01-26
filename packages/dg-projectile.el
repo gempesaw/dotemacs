@@ -5,7 +5,7 @@
          ("s-p" . projectile-switch-project)
          ("s-d" . projectile-find-dir)
          ("s-b" . projectile-switch-to-buffer)
-         ("s-f" . projectile-find-file)
+         ("s-f" . consult-snapfile)
          ("s-g" . (lambda () (interactive)
                     (setq current-prefix-arg '(4))
                     (call-interactively 'projectile-ag)))
@@ -19,7 +19,7 @@
                        (projectile-switch-project))))
            ("zf" . (lambda ()
                      (interactive)
-                     (let ((projectile-switch-project-action 'projectile-find-file))
+                     (let ((projectile-switch-project-action 'consult-snapfile))
                        (projectile-switch-project)))))
   :init
   (setq projectile-project-test-cmd "make test")
@@ -32,7 +32,9 @@
     (projectile-discover-projects-in-directory "/Users/dgempesaw/opt"))
   (projectile-mode 1)
   :config
-  (setq projectile-indexing-method 'hybrid)
+  (setq projectile-indexing-method 'alien)
   (setq projectile-enable-caching t)
+
+  (setq compilation-read-command nil)
 
   )
