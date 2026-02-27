@@ -1,3 +1,5 @@
+(require 'consult-snapfile)
+;; -*- lexical-binding: t; -*-
 (use-package projectile
   :ensure t
   :bind (("s-p" . projectile-switch-project)
