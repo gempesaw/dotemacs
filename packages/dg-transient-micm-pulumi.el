@@ -364,7 +364,7 @@ appropriate automation role in AWS config."
 
     ("m r" "refresh" (lambda (&optional args)
                        (interactive (list (transient-args transient-current-command)))
-                       (dg-transient-micm-execute "refresh" args)))
+                       (dg-transient-micm-execute "refresh --run-program " args)))
 
     ("m a" "apply" (lambda (&optional args)
                      (interactive (list (transient-args transient-current-command)))
@@ -381,6 +381,8 @@ appropriate automation role in AWS config."
     ("m x" "export state" dg-transient-micm-export-state)
 
     ("m i" "import state" dg-transient-micm-import-state)
+
+    ("m d" "dashboard" dg-pulumi-stacks)
     ]])
 
 
@@ -464,8 +466,17 @@ appropriate automation role in AWS config."
   (setq dg-transient-aws-login t)
   (run-with-timer 0 nil (lambda () (dg-transient-aws-profile))))
 
-(key-chord-define-global "zp" 'dg-transient-micm)
+(defun dg-transient-micm-open ()
+  (interactive)
+  (window-configuration-to-register ?Z)
+  (setq dg-pulumi-stacks--origin-frame (selected-frame))
+  (dg-transient-micm))
+
+(key-chord-define-global "zp" 'dg-transient-micm-open)
 (key-chord-define-global ",/" 'dg-transient-aws-profile-login)
+
+(load-file (expand-file-name "dg-pulumi-stacks.el"
+                             (file-name-directory load-file-name)))
 
 (provide 'dg-transient-micm-pulumi)
 
