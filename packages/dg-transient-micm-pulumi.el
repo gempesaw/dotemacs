@@ -238,7 +238,10 @@ appropriate automation role in AWS config."
                                     (yaml-parse-string (buffer-string)
                                                        :object-type 'alist
                                                        :sequence-type 'list)))
-                 (account-id (alist-get (intern aws-stack-name) account-mapping))
+                 (account-id-raw (alist-get (intern aws-stack-name) account-mapping))
+                 (account-id (if (integerp account-id-raw)
+                                 (format "%012d" account-id-raw)
+                               account-id-raw))
                  (aws-config-file (f-expand "~/.aws/config"))
                  (aws-config (with-temp-buffer
                                (insert-file-contents aws-config-file)
@@ -268,6 +271,7 @@ appropriate automation role in AWS config."
    ((s-contains-p "dev" stack) "modular.com.super-user-8ed90a7")
    ((s-contains-p "github" stack) "modular.com.super-user-8ed90a7")
    ((s-contains-p "karpenter" stack) "modular.com.super-user-8ed90a7")
+   ((s-contains-p "platform" stack) "modular.com.super-user-8ed90a7")
    ((or (s-contains-p "external" project)
         (s-contains-p "destination" project)
         (s-contains-p "mammoth" project))
