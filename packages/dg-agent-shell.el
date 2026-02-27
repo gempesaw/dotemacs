@@ -41,8 +41,8 @@ Returns empty string if not found."
   :ensure t
   :bind ("C-M-s-/" . dg/agent-shell-transient-menu)
   :custom
-  (markdown-overlays-highlight-blocks nil)
-  (agent-shell-anthropic-default-model-id "claude-opus-4-5-20251101")
+  (markdown-overlays-highlight-blocks t)
+  (agent-shell-anthropic-default-model-id "claude-opus-4-6")
   (agent-shell-anthropic-default-session-mode-id "acceptEdits")
 
   :config
@@ -52,12 +52,6 @@ Returns empty string if not found."
            (url . "https://mcp.linear.app/mcp")
            (headers . (((name . "Authorization")
                         (value . ,(concat "Bearer " (dg/auth-source-get-password "linear.app")))))))))
-  (defun dg/agent-shell--disable-markdown-overlays (orig-fun &rest args)
-    "Skip markdown-overlays-put in agent-shell buffers for avy performance."
-    (unless (derived-mode-p 'agent-shell-mode)
-      (apply orig-fun args)))
-  (advice-add 'markdown-overlays-put :around #'dg/agent-shell--disable-markdown-overlays)
-
   (setq agent-shell-header-style nil)
   (setq agent-shell-show-welcome-message nil)
 
