@@ -66,7 +66,7 @@ Returns empty string if not found."
                              :client (map-elt (agent-shell--state) :client)
                              :request (acp-make-session-set-model-request
                                        :session-id (map-nested-elt (agent-shell--state) '(:session :id))
-                                       :model-id "claude-opus-4-5-20251101")
+                                       :model-id "claude-opus-4-6")
                              :on-success (lambda (response) (message "Switched to Opus model"))
                              :on-failure (lambda (error raw) (message "Failed to switch model: %S" error)))))))))
 
@@ -231,21 +231,22 @@ Calls ORIG-FUN with ARGS, then shows completing-read if it was a permission requ
               (agent-shell-buffers)))
 
 (defun dg/agent-shell--get-buffer ()
-  "Get the agent-shell buffer in the same git repo root as the current buffer.
-If current buffer is not in a repo, prompt to select from existing agent-shell buffers.
+  "Get the agent-shell buffer for the current project.
+When multiple buffers match, prompt with summaries to disambiguate.
 The selection is cached for the duration of the current command."
   (add-hook 'post-command-hook #'dg/agent-shell--clear-selected-buffer nil t)
-  (or dg/agent-shell--selected-buffer
-      (let ((project-buffers (agent-shell-project-buffers)))
-        (setq dg/agent-shell--selected-buffer
-              (if project-buffers
-                  (seq-first project-buffers)
-                (let ((all-buffers (dg/agent-shell--get-all-buffers)))
-                  (cond
-                   ((null all-buffers) nil)
-                   ((= 1 (length all-buffers)) (car all-buffers))
-                   (t (get-buffer (completing-read "Select agent-shell buffer: "
-                                                   (mapcar #'buffer-name all-buffers) nil t))))))))))
+  (if dg/agent-shell--selected-buffer
+      dg/agent-shell--selected-buffer
+    (let ((project-buffers (agent-shell-project-buffers))
+          (current-is-agent (derived-mode-p 'agent-shell-mode)))
+      (setq dg/agent-shell--selected-buffer
+            (cond
+             (current-is-agent
+              (current-buffer))
+             (project-buffers
+              (car project-buffers))
+             (t
+              (car (dg/agent-shell--get-all-buffers))))))))
 
 (defun dg/agent-shell-generate-all-summaries ()
   "Generate summaries for all agent-shell buffers.
@@ -306,22 +307,92 @@ First tries to extract from existing buffer content, then queues new requests if
       (user-error "No agent-shell session available"))))
 
 (defun dg/agent-shell--send-message (message)
-  "Send MESSAGE to the agent-shell buffer."
+  "Send MESSAGE to the agent-shell buffer via the request queue.
+This allows messages to be sent at any time and queued for processing."
   (dg/agent-shell--validate-process)
   (let ((shell-buffer (dg/agent-shell--get-buffer)))
     (with-current-buffer shell-buffer
-      (goto-char (point-max))
-      (insert message)
-      (shell-maker-submit))))
+      (agent-shell-queue-request message))))
+
+(defvar dg/agent-shell--prompt-callback nil
+  "Callback to invoke with the prompt text when submitted.")
+
+(defvar dg/agent-shell--prompt-window-config nil
+  "Saved window configuration to restore after prompt submission.")
+
+(defvar dg/agent-shell--origin-frame nil
+  "Frame that was selected when the transient menu was invoked.")
+
+(defvar dg/agent-shell--prompt-buffer " *agent-shell-prompt*"
+  "Buffer name for composing agent-shell prompts.")
+
+(defvar dg/agent-shell-prompt-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") #'dg/agent-shell-prompt-submit)
+    (define-key map (kbd "C-c C-k") #'dg/agent-shell-prompt-cancel)
+    map))
+
+(define-derived-mode dg/agent-shell-prompt-mode text-mode "AgentPrompt"
+  "Mode for composing agent-shell prompts in a popup window.")
+
+(defun dg/agent-shell--prompt-cleanup ()
+  "Restore window configuration and kill the prompt buffer."
+  (when dg/agent-shell--prompt-window-config
+    (set-window-configuration dg/agent-shell--prompt-window-config)
+    (setq dg/agent-shell--prompt-window-config nil))
+  (when-let* ((buf (get-buffer dg/agent-shell--prompt-buffer)))
+    (kill-buffer buf)))
+
+(defun dg/agent-shell-prompt-submit ()
+  "Submit the prompt buffer content and restore window layout."
+  (interactive)
+  (let ((text (string-trim (buffer-substring-no-properties (point-min) (point-max))))
+        (cb dg/agent-shell--prompt-callback))
+    (dg/agent-shell--prompt-cleanup)
+    (when (and cb (not (string-empty-p text)))
+      (funcall cb text))))
+
+(defun dg/agent-shell-prompt-cancel ()
+  "Cancel the prompt and restore window layout."
+  (interactive)
+  (dg/agent-shell--prompt-cleanup))
+
+(defun dg/agent-shell--show-prompt (shell-buffer callback &optional initial-content)
+  "Pop a window for composing a prompt to send to SHELL-BUFFER.
+CALLBACK receives the prompt text on C-c C-c.
+INITIAL-CONTENT is optional text to pre-fill.
+Window layout is restored on submit or cancel."
+  (setq dg/agent-shell--prompt-callback callback)
+  (let* ((frame (or dg/agent-shell--origin-frame (selected-frame)))
+         (buf (get-buffer-create dg/agent-shell--prompt-buffer))
+         (name (buffer-name shell-buffer))
+         (summary (buffer-local-value 'dg/agent-shell--session-summary shell-buffer))
+         (header (if summary
+                     (format " %s  [%s]  |  C-c C-c: send  C-c C-k: cancel" name summary)
+                   (format " %s  |  C-c C-c: send  C-c C-k: cancel" name))))
+    (with-current-buffer buf
+      (dg/agent-shell-prompt-mode)
+      (erase-buffer)
+      (when initial-content
+        (insert initial-content)
+        (insert "\n\n"))
+      (setq-local header-line-format
+                  (propertize header 'face 'font-lock-comment-face)))
+    (with-selected-frame frame
+      (setq dg/agent-shell--prompt-window-config (current-window-configuration))
+      (pop-to-buffer buf)
+      (goto-char (point-max)))))
 
 (defun dg/agent-shell-ask ()
-  "Send a bare prompt to agent-shell."
+  "Send a bare prompt to agent-shell via a popup window."
   (interactive)
   (dg/agent-shell--validate-process)
-  (let ((prompt (read-string "Ask agent-shell: ")))
-    (when (string-empty-p (string-trim prompt))
-      (user-error "Prompt cannot be empty"))
-    (dg/agent-shell--send-message prompt)))
+  (let ((shell-buffer (dg/agent-shell--get-buffer)))
+    (dg/agent-shell--show-prompt
+     shell-buffer
+     (lambda (text)
+       (with-current-buffer shell-buffer
+         (agent-shell-queue-request text))))))
 
 (defun dg/agent-shell--make-buffer-wrapper (func)
   "Create a wrapper around FUNC that executes in agent-shell buffer without switching focus."
@@ -450,76 +521,51 @@ Returns the selected buffer, or signals error if none available."
       (agent-shell-jump-to-latest-permission-button-row)
       (call-interactively (key-binding "v")))))
 
-(defun dg/agent-shell-execute-request ()
-  "Intelligently send context to agent-shell based on current buffer state.
-If buffer is a file: send file context with line/region
-If buffer is not a file and region is active: send region
-If buffer is not a file and no region: send current line"
-  (interactive)
-  (dg/agent-shell--validate-process)
-  (let* ((shell-buffer (dg/agent-shell--get-buffer))
-         (shell-cwd (with-current-buffer shell-buffer (agent-shell-cwd)))
-         (file-path (buffer-file-name))
+(defun dg/agent-shell--build-context ()
+  "Build context string from the current buffer state.
+For file buffers: absolute path with line number(s).
+For non-file buffers: region text or current line."
+  (let* ((file-path (buffer-file-name))
          (has-region (use-region-p))
          (start-line (if has-region
                          (line-number-at-pos (region-beginning))
                        (line-number-at-pos)))
-         (end-line (if has-region
-                       (line-number-at-pos (region-end))
-                     (line-number-at-pos)))
-         (prompt (read-string "agent-shell additional prompt (optional): "))
-         (file-in-repo (and file-path
-                            (file-in-directory-p file-path shell-cwd)))
-         context-text
-         message-text)
-
+         (end-line (when has-region
+                     (line-number-at-pos (region-end)))))
     (cond
-     ((and file-path file-in-repo)
-      (let ((relative-path (file-relative-name file-path shell-cwd)))
-        (setq context-text
-              (if (and has-region (not (= start-line end-line)))
-                  (format "%s:%d-%d" relative-path start-line end-line)
-                (format "%s:%d" relative-path start-line)))
-        (setq message-text
-              (if (string-empty-p (string-trim prompt))
-                  context-text
-                (format "%s\n\n%s" prompt context-text)))))
-
      (file-path
-      (let ((content (if has-region
-                         (buffer-substring-no-properties (region-beginning) (region-end))
-                       (buffer-substring-no-properties
-                        (line-beginning-position)
-                        (line-end-position)))))
-        (setq message-text
-              (if (string-empty-p (string-trim prompt))
-                  content
-                (format "%s\n\n%s" prompt content)))))
-
+      (if (and has-region (not (= start-line end-line)))
+          (format "%s:%d-%d" file-path start-line end-line)
+        (format "%s:%d" file-path start-line)))
      (has-region
-      (let ((region-text (buffer-substring-no-properties (region-beginning) (region-end))))
-        (setq message-text
-              (if (string-empty-p (string-trim prompt))
-                  region-text
-                (format "%s\n\n%s" prompt region-text)))))
-
+      (buffer-substring-no-properties (region-beginning) (region-end)))
      (t
-      (let ((line-text (buffer-substring-no-properties
-                        (line-beginning-position)
-                        (line-end-position))))
-        (setq message-text
-              (if (string-empty-p (string-trim prompt))
-                  line-text
-                (format "%s\n\n%s" prompt line-text))))))
+      (buffer-substring-no-properties
+       (line-beginning-position) (line-end-position))))))
 
-    (dg/agent-shell--send-message message-text)))
+(defun dg/agent-shell-execute-request ()
+  "Send context to agent-shell with an optional prompt via popup window.
+For file buffers, sends the absolute path with line number(s).
+For non-file buffers, sends region or current line text."
+  (interactive)
+  (dg/agent-shell--validate-process)
+  (let* ((shell-buffer (dg/agent-shell--get-buffer))
+         (context (dg/agent-shell--build-context)))
+    (dg/agent-shell--show-prompt
+     shell-buffer
+     (lambda (text)
+       (with-current-buffer shell-buffer
+         (agent-shell-queue-request text)))
+     context)))
 
 (defun dg/agent-shell-execute-request-pick-buffer ()
-  "Execute request with context, but prompt to pick which agent-shell buffer to send to."
+  "Send context to a specific agent-shell buffer chosen via completing-read."
   (interactive)
-  (let ((dg/agent-shell--selected-buffer
-         (dg/agent-shell--prompt-for-buffer "Send to agent-shell buffer: ")))
-    (dg/agent-shell-execute-request)))
+  (let ((target (dg/agent-shell--prompt-for-buffer "Send to agent-shell buffer: ")))
+    (setq dg/agent-shell--selected-buffer target)
+    (unwind-protect
+        (dg/agent-shell-execute-request)
+      (setq dg/agent-shell--selected-buffer nil))))
 
 (defun dg/agent-shell-send-flycheck-error ()
   "Copy current flycheck error(s) and send to agent-shell with file context.
@@ -528,46 +574,37 @@ Otherwise, copy the error at point and send its line number."
   (interactive)
   (require 'flycheck)
   (dg/agent-shell--validate-process)
-  (let* ((shell-buffer (dg/agent-shell--get-buffer))
-         (shell-cwd (with-current-buffer shell-buffer (agent-shell-cwd)))
-         (file-path (buffer-file-name))
+  (let* ((file-path (buffer-file-name))
          (has-region (use-region-p))
-         (file-in-repo (and file-path
-                            (file-in-directory-p file-path shell-cwd))))
+         (errors (if has-region
+                     (flycheck-overlay-errors-in (region-beginning) (region-end))
+                   (flycheck-overlay-errors-at (point))))
+         (error-messages (delq nil (mapcar #'flycheck-error-message errors))))
 
-    (let* ((errors (if has-region
-                       (flycheck-overlay-errors-in (region-beginning) (region-end))
-                     (flycheck-overlay-errors-at (point))))
-           (error-messages (delq nil (mapcar #'flycheck-error-message errors))))
+    (unless error-messages
+      (user-error "No flycheck errors found"))
 
-      (unless error-messages
-        (user-error "No flycheck errors found"))
+    (let* ((error-text (string-join error-messages "\n"))
+           (context-text
+            (if file-path
+                (if has-region
+                    (let* ((line-numbers (delete-dups
+                                          (mapcar (lambda (err)
+                                                    (line-number-at-pos (flycheck-error-pos err)))
+                                                  errors))))
+                      (if (= (length line-numbers) 1)
+                          (format "%s:%d" file-path (car line-numbers))
+                        (format "%s:%s" file-path
+                                (mapconcat #'number-to-string
+                                           (sort line-numbers #'<)
+                                           ","))))
+                  (format "%s:%d" file-path (line-number-at-pos)))
+              (buffer-substring-no-properties
+               (if has-region (region-beginning) (line-beginning-position))
+               (if has-region (region-end) (line-end-position)))))
+           (message-text (format "%s\n\n%s" error-text context-text)))
 
-      (let* ((error-text (string-join error-messages "\n"))
-             (context-text
-              (if (and file-path file-in-repo)
-                  (let ((relative-path (file-relative-name file-path shell-cwd)))
-                    (if has-region
-                        (let* ((start (region-beginning))
-                               (end (region-end))
-                               (errors (flycheck-overlay-errors-in start end))
-                               (line-numbers (delete-dups
-                                              (mapcar (lambda (err)
-                                                        (line-number-at-pos (flycheck-error-pos err)))
-                                                      errors))))
-                          (if (= (length line-numbers) 1)
-                              (format "%s:%d" relative-path (car line-numbers))
-                            (format "%s:%s" relative-path
-                                    (mapconcat #'number-to-string
-                                               (sort line-numbers #'<)
-                                               ","))))
-                      (format "%s:%d" relative-path (line-number-at-pos))))
-                (buffer-substring-no-properties
-                 (if has-region (region-beginning) (line-beginning-position))
-                 (if has-region (region-end) (line-end-position)))))
-             (message-text (format "%s\n\n%s" error-text context-text)))
-
-        (dg/agent-shell--send-message message-text)))))
+      (dg/agent-shell--send-message message-text))))
 
 (require 'transient)
 
@@ -609,12 +646,31 @@ Otherwise, copy the error at point and send its line number."
 (defun dg/agent-shell-transient-menu ()
   "Save current buffer and invoke agent-shell transient menu."
   (interactive)
+  (setq dg/agent-shell--origin-frame (selected-frame))
   (when (buffer-file-name)
     (save-buffer))
   (dg/agent-shell-transient-menu--internal))
 
 (with-eval-after-load 'key-chord
   (key-chord-define-global "z/" 'dg/agent-shell-transient-menu))
+
+(defface dg/agent-shell-prompt-line-face
+  '((t :background "#6b6590" :extend t))
+  "Face for highlighting user prompt lines in agent-shell buffers.")
+
+(defun dg/agent-shell--highlight-prompt-on-submit (orig-fun &rest args)
+  "Advice around `shell-maker-submit' to highlight the full prompt section."
+  (when (derived-mode-p 'agent-shell-mode)
+    (let* ((prompt-start (save-excursion
+                           (goto-char (shell-maker--prompt-begin-position))
+                           (line-beginning-position)))
+           (input-end (point-max))
+           (ov (make-overlay prompt-start input-end)))
+      (overlay-put ov 'face 'dg/agent-shell-prompt-line-face)
+      (overlay-put ov 'dg/prompt-highlight t)))
+  (apply orig-fun args))
+
+(advice-add 'shell-maker-submit :around #'dg/agent-shell--highlight-prompt-on-submit)
 
 (provide 'dg-agent-shell)
 ;;; dg-agent-shell.el ends here
