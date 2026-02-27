@@ -21,7 +21,10 @@
                                       (key-chord-mode t))))
 
   ;; movement, shells
-  (key-chord-define-global "fj" 'avy-goto-char)
+  (key-chord-define-global "fj" (lambda ()
+                                  (interactive)
+                                  (let ((visual-line-mode nil))
+                                    (call-interactively 'avy-goto-char))))
 
   ;; expanding region
   (key-chord-define-global "qk" 'er/expand-region)
