@@ -31,21 +31,24 @@ Returns empty string if not found."
   "Generate a 3-6 word summary describing what we're working on in this session. Reply with ONLY the summary, no other text."
   "Prompt used to request session summaries.")
 
-(defvar dg/agent-shell--permission-notification-enabled t
-  "When non-nil, show completing-read prompt when agent-shell requests permission.")
+(defvar dg/agent-shell--pending-permissions nil
+  "Alist of (buffer . tool-call-title) for sessions awaiting permission.")
 
 (defvar dg/agent-shell--selected-buffer nil
   "Cached agent-shell buffer selection for the current command.")
 
 (use-package agent-shell
   :ensure t
-  :bind ("C-M-s-/" . dg/agent-shell-transient-menu)
+  :bind (("C-M-s-/" . dg/agent-shell-transient-menu)
+         ("<end>" . dg/agent-shell-transient-menu))
   :custom
   (agent-shell-highlight-blocks t)
   (agent-shell-anthropic-default-model-id "opus")
   (agent-shell-anthropic-default-session-mode-id "bypassPermissions")
 
   :config
+  (setq agent-shell-prefer-viewport-interaction nil)
+
   (setq agent-shell-session-strategy 'prompt)
 
   (setq agent-shell-mcp-servers
@@ -153,64 +156,40 @@ Returns empty string if not found."
 (advice-add 'agent-shell--process-pending-request :around #'dg/agent-shell--after-response-hook)
 (advice-add 'shell-maker-submit :around #'dg/agent-shell--track-prompt-submission)
 
-(defun dg/agent-shell--prompt-permission (buffer state request client)
-  "Show a completing-read prompt for permission request.
-BUFFER is the agent-shell buffer, STATE is the session state,
-REQUEST is the ACP request, CLIENT is the ACP client."
-  (let* ((tool-call (alist-get 'toolCall (alist-get 'params request)))
-         (tool-call-id (alist-get 'toolCallId tool-call))
-         (title (or (alist-get 'title tool-call) "Unknown action"))
-         (kind (or (alist-get 'kind tool-call) ""))
-         (options (alist-get 'options (alist-get 'params request)))
-         (actions (agent-shell--make-permission-actions options))
-         (kind-to-key '(("allow_once" . "y")
-                        ("reject_once" . "n")
-                        ("allow_always" . "!")))
-         (choices (append
-                   (mapcar (lambda (action)
-                             (let* ((action-kind (map-elt action :kind))
-                                    (key (cdr (assoc action-kind kind-to-key))))
-                               (cons (format "%s - %s" (or key "?") (map-elt action :option))
-                                     action-kind)))
-                           actions)
-                   '(("i - Ignore (do nothing)" . nil))))
-         (prompt (format "[%s] %s (%s): "
-                         (buffer-name buffer)
-                         title
-                         kind))
-         (choice (completing-read prompt choices nil t)))
-    (when-let* ((response-type (cdr (assoc choice choices)))
-                (action (seq-find (lambda (a) (string= (map-elt a :kind) response-type)) actions)))
-      (with-current-buffer buffer
-        (agent-shell--send-permission-response
-         :client client
-         :request-id (alist-get 'id request)
-         :option-id (map-elt action :option-id)
-         :state state
-         :tool-call-id tool-call-id
-         :message-text (format "Permission: %s" (map-elt action :option))))
-      (when (string= response-type "reject_once")
-        (with-current-buffer buffer
-          (agent-shell-interrupt t))))))
+(defun dg/agent-shell--on-permission-request (event)
+  "Track permission request from EVENT in `dg/agent-shell--pending-permissions'."
+  (let* ((data (map-elt event :data))
+         (tool-call (map-elt data :tool-call))
+         (title (or (map-elt tool-call :title) "Unknown action"))
+         (buf (map-elt event :shell-buffer)))
+    (when (buffer-live-p buf)
+      (push (cons buf title) dg/agent-shell--pending-permissions))))
 
-(defun dg/agent-shell--notify-permission-request (orig-fun &rest args)
-  "Advice around `agent-shell--on-request' to notify on permission requests.
-Calls ORIG-FUN with ARGS, then shows completing-read if it was a permission request."
-  (let* ((request (plist-get args :request))
-         (method (alist-get 'method request)))
-    (prog1 (apply orig-fun args)
-      (when (and dg/agent-shell--permission-notification-enabled
-                 (equal method "session/request_permission"))
-        (let* ((state (plist-get args :state))
-               (buffer (map-elt state :buffer))
-               (client (map-elt state :client)))
-          (run-with-timer
-           0.1 nil
-           (lambda ()
-             (when (buffer-live-p buffer)
-               (dg/agent-shell--prompt-permission buffer state request client)))))))))
+(defun dg/agent-shell--on-permission-response (event)
+  "Remove resolved permission from `dg/agent-shell--pending-permissions'."
+  (let ((buf (map-elt event :shell-buffer)))
+    (setq dg/agent-shell--pending-permissions
+          (assq-delete-all buf dg/agent-shell--pending-permissions))))
 
-(advice-add 'agent-shell--on-request :around #'dg/agent-shell--notify-permission-request)
+(defun dg/agent-shell--setup-permission-tracking ()
+  "Subscribe to permission events for the current agent-shell buffer."
+  (let ((buf (current-buffer)))
+    (agent-shell-subscribe-to
+     :shell-buffer buf
+     :event 'permission-request
+     :on-event #'dg/agent-shell--on-permission-request)
+    (agent-shell-subscribe-to
+     :shell-buffer buf
+     :event 'permission-response
+     :on-event #'dg/agent-shell--on-permission-response)
+    (agent-shell-subscribe-to
+     :shell-buffer buf
+     :event 'clean-up
+     :on-event (lambda (_event)
+                 (setq dg/agent-shell--pending-permissions
+                       (assq-delete-all buf dg/agent-shell--pending-permissions))))))
+
+(add-hook 'agent-shell-mode-hook #'dg/agent-shell--setup-permission-tracking)
 
 (defun dg/agent-shell--clear-selected-buffer ()
   "Clear the cached agent-shell buffer selection."
@@ -626,24 +605,31 @@ Otherwise, copy the error at point and send its line number."
 
       (dg/agent-shell--send-message message-text))))
 
-(defun dg/agent-shell-sync-env ()
-  "Sync current `process-environment' to all agent-shell buffers.
-Sets buffer-local process-environment so restarted sessions inherit it."
-  (interactive)
-  (let ((buffers (dg/agent-shell--get-all-buffers))
-        (env (copy-sequence process-environment)))
-    (if (null buffers)
-        (user-error "No agent-shell buffers available")
-      (dolist (buf buffers)
-        (with-current-buffer buf
-          (setq-local process-environment env)))
-      (message "Synced process-environment to %d buffer(s)" (length buffers)))))
-
 (require 'transient)
+
+(defun dg/agent-shell--pending-permissions-description ()
+  "Return a string describing pending permission requests, or nil if none."
+  (when dg/agent-shell--pending-permissions
+    (let* ((grouped (seq-group-by #'car dg/agent-shell--pending-permissions))
+           (parts (mapcar
+                   (lambda (group)
+                     (let* ((buf (car group))
+                            (titles (mapcar #'cdr (cdr group)))
+                            (summary (and (buffer-live-p buf)
+                                          (buffer-local-value 'dg/agent-shell--session-summary buf)))
+                            (label (or summary (buffer-name buf))))
+                       (format "%s: %s" label (string-join titles ", "))))
+                   grouped)))
+      (format "Waiting: %s" (string-join parts " | ")))))
 
 (transient-define-prefix dg/agent-shell-transient-menu--internal ()
   "Agent Shell AI Pair Programming Interface."
-  ["Agent Shell: AI pair programming with ACP"
+  [:description
+   (lambda ()
+     (let ((pending (dg/agent-shell--pending-permissions-description)))
+       (if pending
+           (format "Agent Shell\n%s" (propertize pending 'face 'warning))
+         "Agent Shell")))
    ["Core"
     ("S" "Start/Open Session" dg/agent-shell-start-or-switch)
     ("N" "Start NEW Session" dg/agent-shell-start-new-session)
@@ -675,8 +661,7 @@ Sets buffer-local process-environment so restarted sessions inherit it."
     ("L" "Reset Logs" agent-shell-reset-logs)]
    ["Summary"
     ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
-   ["Environment"
-    ("E" "Sync process-environment" dg/agent-shell-sync-env)]])
+   ])
 
 (defun dg/agent-shell-transient-menu ()
   "Save current buffer and invoke agent-shell transient menu."
