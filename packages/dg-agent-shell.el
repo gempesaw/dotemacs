@@ -350,31 +350,58 @@ This allows messages to be sent at any time and queued for processing."
   (interactive)
   (dg/agent-shell--prompt-cleanup))
 
+(defun dg/agent-shell--insert-context (context)
+  "Insert CONTEXT into the prompt buffer before the prompt separator.
+Finds the first blank-line separator and inserts before it,
+keeping the user's typed prompt text after the separator."
+  (goto-char (point-min))
+  (if (re-search-forward "\n\n" nil t)
+      (progn
+        (goto-char (match-beginning 0))
+        (insert "\n" context))
+    (goto-char (point-max))
+    (insert context "\n\n"))
+  (goto-char (point-max)))
+
 (defun dg/agent-shell--show-prompt (shell-buffer callback &optional initial-content)
   "Pop a window for composing a prompt to send to SHELL-BUFFER.
 CALLBACK receives the prompt text on C-c C-c.
 INITIAL-CONTENT is optional text to pre-fill.
+When the prompt buffer is already visible, appends INITIAL-CONTENT
+instead of replacing, preserving the original target session.
 Window layout is restored on submit or cancel."
-  (setq dg/agent-shell--prompt-callback callback)
   (let* ((frame (or dg/agent-shell--origin-frame (selected-frame)))
-         (buf (get-buffer-create dg/agent-shell--prompt-buffer))
-         (name (buffer-name shell-buffer))
-         (summary (buffer-local-value 'dg/agent-shell--session-summary shell-buffer))
-         (header (if summary
-                     (format " %s  [%s]  |  C-c C-c: send  C-c C-k: cancel" name summary)
-                   (format " %s  |  C-c C-c: send  C-c C-k: cancel" name))))
-    (with-current-buffer buf
-      (dg/agent-shell-prompt-mode)
-      (erase-buffer)
-      (when initial-content
-        (insert initial-content)
-        (insert "\n\n"))
-      (setq-local header-line-format
-                  (propertize header 'face 'font-lock-comment-face)))
-    (with-selected-frame frame
-      (setq dg/agent-shell--prompt-window-config (current-window-configuration))
-      (pop-to-buffer buf)
-      (goto-char (point-max)))))
+         (existing-buf (get-buffer dg/agent-shell--prompt-buffer))
+         (already-open (and existing-buf (get-buffer-window existing-buf t))))
+    (cond
+     ((and already-open initial-content)
+      (with-selected-frame frame
+        (pop-to-buffer existing-buf)
+        (dg/agent-shell--insert-context initial-content)))
+     (already-open
+      (with-selected-frame frame
+        (pop-to-buffer existing-buf)
+        (goto-char (point-max))))
+     (t
+      (setq dg/agent-shell--prompt-callback callback)
+      (let* ((buf (get-buffer-create dg/agent-shell--prompt-buffer))
+             (name (buffer-name shell-buffer))
+             (summary (buffer-local-value 'dg/agent-shell--session-summary shell-buffer))
+             (header (if summary
+                         (format " %s  [%s]  |  C-c C-c: send  C-c C-k: cancel" name summary)
+                       (format " %s  |  C-c C-c: send  C-c C-k: cancel" name))))
+        (with-current-buffer buf
+          (dg/agent-shell-prompt-mode)
+          (erase-buffer)
+          (when initial-content
+            (insert initial-content)
+            (insert "\n\n"))
+          (setq-local header-line-format
+                      (propertize header 'face 'font-lock-comment-face)))
+        (with-selected-frame frame
+          (setq dg/agent-shell--prompt-window-config (current-window-configuration))
+          (pop-to-buffer buf)
+          (goto-char (point-max))))))))
 
 (defun dg/agent-shell-ask ()
   "Send a bare prompt to agent-shell via a popup window."
