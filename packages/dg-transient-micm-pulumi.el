@@ -140,6 +140,12 @@
       ""
     string))
 
+(defun dg-transient-micm--get-sso-arg (profile)
+  (if (and profile
+           (s-starts-with-p "modular.com" profile))
+      "--sso legacy"
+    "--sso modular"))
+
 (defun dg-transient-micm-execute (pulumi-sub-command &optional args)
   (interactive (list nil (transient-args transient-current-command)))
   (save-window-excursion
@@ -155,7 +161,7 @@
                                                (format "-- %s %s" pulumi-sub-command target-argument)
                                              (format "-- %s" pulumi-sub-command))
                                          ""))
-           (sso-arg (if (and profile (s-contains-p "super-user" profile)) "--sso legacy" ""))
+           (sso-arg (dg-transient-micm--get-sso-arg profile))
            (micm-command-prefix (if profile
                                     (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s); aws sts get-caller-identity" sso-arg profile)
                                   (format "echo 'No profile found for %s/%s'" project stack)))
@@ -423,7 +429,7 @@ appropriate automation role in AWS config."
    [("SPC" "authenticate shell" (lambda (&optional args)
                                   (interactive (list (transient-args transient-current-command)))
                                   (let* ((profile (nth 0 args))
-                                         (sso-arg (if (s-contains-p "super-user" profile) "--sso legacy" "")))
+                                         (sso-arg (dg-transient-micm--get-sso-arg profile)))
                                     (dg-modular-ensure-aws-profile-login profile)
                                     (dg-transient-aws-sso-set-emacs-env profile)
                                     (insert (format "eval $(aws-sso eval %s --no-region --profile=%s) && unset AWS_PROFILE" sso-arg profile))
@@ -475,8 +481,7 @@ appropriate automation role in AWS config."
 (key-chord-define-global "zp" 'dg-transient-micm-open)
 (key-chord-define-global ",/" 'dg-transient-aws-profile-login)
 
-(load-file (expand-file-name "dg-pulumi-stacks.el"
-                             (file-name-directory load-file-name)))
+(load-file "/Users/gempesaw/.emacs.d/packages/dg-pulumi-stacks.el")
 
 (provide 'dg-transient-micm-pulumi)
 
