@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 
 (require 'posframe)
+(require 'yaml)
 
 (defvar dg-transient-micm--project nil)
 (defvar dg-transient-micm--stack nil)
@@ -350,6 +351,37 @@ appropriate automation role in AWS config."
     (when import-file
       (dg-transient-micm-execute (format "stack import --file %s" (shell-quote-argument import-file)) args))))
 
+(defun dg-transient-micm-fetch-urns (project stack)
+  (let* ((profile (dg-transient-micm--get-aws-role stack project))
+         (sso-arg (dg-transient-micm--get-sso-arg profile))
+         (kubie-export-command (dg-transient-micm-kubie-command stack))
+         (auth-command (if profile
+                           (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s)"
+                                   sso-arg profile)
+                         (error "No profile found for %s/%s" project stack)))
+         (micm-command (format "micm pulumi --project %s --stack %s -- stack --show-urns --show-secrets" project stack))
+         (full-command (format "cd ~/opt/infra && %s; %s; %s 2>/dev/null" kubie-export-command auth-command micm-command))
+         (output (shell-command-to-string full-command)))
+    (->> output
+         (s-split "\n")
+         (--filter (s-contains-p "urn:pulumi" it))
+         (--map (s-trim (car (last (s-split " " (s-trim it))))))
+         (-uniq))))
+
+(defun dg-transient-micm-state-delete (&optional args)
+  (interactive (list (transient-args transient-current-command)))
+  (let* ((project (nth 0 args))
+         (stack (nth 1 args))
+         (buffer-urns (dg-transient-micm-read-urns))
+         (urns (or buffer-urns
+                   (progn
+                     (message "Fetching URNs for %s/%s..." project stack)
+                     (dg-transient-micm-fetch-urns project stack))))
+         (urn (completing-read "Delete resource from state: " urns nil t)))
+    (when (and urn (not (string-empty-p urn))
+               (yes-or-no-p (format "Delete %s from state?" urn)))
+      (dg-transient-micm-execute (format "state delete --yes '%s'" urn) args))))
+
 (transient-define-prefix dg-transient-micm ()
   "choose project, stack, and operation"
 
@@ -387,6 +419,8 @@ appropriate automation role in AWS config."
     ("m x" "export state" dg-transient-micm-export-state)
 
     ("m i" "import state" dg-transient-micm-import-state)
+
+    ("m D" "state delete" dg-transient-micm-state-delete)
 
     ("m d" "dashboard" dg-pulumi-stacks)
     ]])
