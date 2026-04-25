@@ -626,6 +626,19 @@ Otherwise, copy the error at point and send its line number."
 
       (dg/agent-shell--send-message message-text))))
 
+(defun dg/agent-shell-sync-env ()
+  "Sync current `process-environment' to all agent-shell buffers.
+Sets buffer-local process-environment so restarted sessions inherit it."
+  (interactive)
+  (let ((buffers (dg/agent-shell--get-all-buffers))
+        (env (copy-sequence process-environment)))
+    (if (null buffers)
+        (user-error "No agent-shell buffers available")
+      (dolist (buf buffers)
+        (with-current-buffer buf
+          (setq-local process-environment env)))
+      (message "Synced process-environment to %d buffer(s)" (length buffers)))))
+
 (require 'transient)
 
 (transient-define-prefix dg/agent-shell-transient-menu--internal ()
@@ -661,7 +674,9 @@ Otherwise, copy the error at point and send its line number."
     ("l" "Toggle Logging" agent-shell-toggle-logging)
     ("L" "Reset Logs" agent-shell-reset-logs)]
    ["Summary"
-    ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]])
+    ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
+   ["Environment"
+    ("E" "Sync process-environment" dg/agent-shell-sync-env)]])
 
 (defun dg/agent-shell-transient-menu ()
   "Save current buffer and invoke agent-shell transient menu."
