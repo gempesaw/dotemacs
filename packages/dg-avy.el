@@ -11,7 +11,4 @@
                    ?z ?x ?c ?v ?b ?n ?m
                    ?a ?s ?d ?f ?g ?h ?j ?k ?l
                    )
-        avy-timeout-seconds 0.1)
-
-  (with-eval-after-load 'agent-shell
-    (add-to-list 'avy-ignored-modes 'agent-shell-mode)))
+        avy-timeout-seconds 0.1))

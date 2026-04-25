@@ -674,35 +674,5 @@ Otherwise, copy the error at point and send its line number."
 (with-eval-after-load 'key-chord
   (key-chord-define-global "z/" 'dg/agent-shell-transient-menu))
 
-(defface dg/agent-shell-prompt-line-face
-  '((t :background "#6b6590" :extend t))
-  "Face for highlighting user prompt lines in agent-shell buffers.")
-
-(defvar dg/agent-shell-max-prompt-overlays 50
-  "Maximum number of prompt-highlight overlays to keep per buffer.")
-
-(defun dg/agent-shell--highlight-prompt-on-submit (orig-fun &rest args)
-  "Advice around `shell-maker-submit' to highlight the full prompt section."
-  (when (derived-mode-p 'agent-shell-mode)
-    (let* ((prompt-start (save-excursion
-                           (goto-char (shell-maker--prompt-begin-position))
-                           (line-beginning-position)))
-           (input-end (point-max))
-           (ov (make-overlay prompt-start input-end)))
-      (overlay-put ov 'face 'dg/agent-shell-prompt-line-face)
-      (overlay-put ov 'dg/prompt-highlight t)
-      (let* ((all-prompt-ovs (seq-filter
-                              (lambda (o) (overlay-get o 'dg/prompt-highlight))
-                              (overlays-in (point-min) (point-max))))
-             (excess (- (length all-prompt-ovs) dg/agent-shell-max-prompt-overlays)))
-        (when (> excess 0)
-          (let ((sorted (sort all-prompt-ovs
-                              (lambda (a b) (< (overlay-start a) (overlay-start b))))))
-            (dotimes (_ excess)
-              (delete-overlay (pop sorted))))))))
-  (apply orig-fun args))
-
-(advice-add 'shell-maker-submit :around #'dg/agent-shell--highlight-prompt-on-submit)
-
 (provide 'dg-agent-shell)
 ;;; dg-agent-shell.el ends here
