@@ -40,6 +40,7 @@
 	comment-dwim
 	completion-at-point
 	consult-yank-pop
+	corfu-next
 	corfu-quit
 	cperl-electric-backspace
 	cperl-electric-brace
