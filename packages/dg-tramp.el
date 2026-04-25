@@ -78,27 +78,48 @@ raises an error."
         (setq ssh-config (cdr ssh-config)))
       ssh-host-names))
 
+
+  (defvar dg-tramp-micm-ssh-boxes '())
+  (defun get-remote-micm-boxes ()
+    (interactive)
+    (let ((bpr-show-progress nil)
+          (bpr-on-success (lambda (process)
+                            (with-current-buffer (process-buffer process)
+                              (let ((contents (->> (buffer-substring-no-properties (point-min) (point-max))
+                                                   (s-split " ")
+                                                   (--filter (s-contains-p "/" it)))))
+                                (setq dg-tramp-micm-ssh-boxes contents))
+                              )
+                            )))
+      (bpr-spawn "cd ~/opt/infra && uv run micm ssh --list 2>/dev/null")))
+
   (defun get-remote-boxes ()
     (let ((ssh-config (get-file-as-string ssh-config-path)))
-      (-map
-       (lambda (line) (cadr (s-split " " line)))
-       (-filter
-        (lambda (line) (and (s-matches-p "^Host " line) (not (string-match-p "*" line))))
-        ssh-config))))
+      (-concat (-map
+                (lambda (line) (cadr (s-split " " line)))
+                (-filter
+                 (lambda (line) (and (s-matches-p "^Host " line) (not (string-match-p "*" line))))
+                 ssh-config))
+               dg-tramp-micm-ssh-boxes)))
 
   (defun open-ssh-connection (&optional pfx)
     (interactive)
     (with-temp-buffer
-      (let* ((box (completing-read "Which box: " (get-remote-boxes)))
-             (_ (shell-command-to-string (format "ssh %s ls -al" box)))
-             (buffer (concat "*shell<" box ">*"))
-             (default-directory (concat "/sshx:ubuntu@" box ":/")))
-        (cd default-directory)
-        (with-current-buffer (get-buffer-create (format "*tramp/ssh %s*" box))
-          (shell buffer))
-        (set-process-query-on-exit-flag
-         (get-buffer-process buffer) nil)
-        (with-current-buffer buffer
-          (insert "cd")
-          (comint-send-input nil t)))))
+      (let ((box (completing-read "Which box: " (get-remote-boxes))))
+        (if (s-contains-p "/" box)
+            (progn
+              (create-new-shell-here)
+              (insert (format "micm ssh %s" box))
+              (comint-send-input nil t))
+          (let* ((_ (shell-command-to-string (format "ssh %s ls -al" box)))
+                 (buffer (concat "*shell<" box ">*"))
+                 (default-directory (concat "/sshx:ubuntu@" box ":/")))
+            (cd default-directory)
+            (with-current-buffer (get-buffer-create (format "*tramp/ssh %s*" box))
+              (shell buffer))
+            (set-process-query-on-exit-flag
+             (get-buffer-process buffer) nil)
+            (with-current-buffer buffer
+              (insert "cd")
+              (comint-send-input nil t)))))))
   )
