@@ -483,23 +483,63 @@ appropriate automation role in AWS config."
     ]])
 
 (defun dg-transient-aws-sso-set-emacs-env (profile)
-  "Set AWS environment variables in Emacs from aws-sso eval output."
+  "Set AWS environment variables in Emacs from aws-sso eval output.
+Also writes credentials to ~/.aws/credentials under the profile name."
   (let* (;; (reset (->> process-environment
          ;;             (--filter (s-starts-with? "AWS_" it))
          ;;             (--map (setenv (car (s-split "=" it)) nil))))
-         (sso-argument (if (s-matches-p "super-user" profile) "--sso legacy" ""))
+         (sso-argument (dg-transient-micm--get-sso-arg profile))
          (output (shell-command-to-string
                   (format "aws-sso eval %s --no-region --profile=%s" sso-argument profile)))
-         (lines (split-string output "\n" t)))
+         (lines (split-string output "\n" t))
+         (access-key-id nil)
+         (secret-access-key nil)
+         (session-token nil))
 
     (dolist (line lines)
       (when (string-match "^export \\([A-Z_]+\\)=\"\\(.*\\)\"$" line)
         (let ((var-name (match-string 1 line))
               (var-value (match-string 2 line)))
           (setenv var-name var-value)
-          (message "Set %s" var-name))))
-    (message "AWS SSO credentials set in Emacs environment for profile: %s" profile)
-    ))
+          (message "Set %s" var-name)
+          (cond
+           ((string= var-name "AWS_ACCESS_KEY_ID") (setq access-key-id var-value))
+           ((string= var-name "AWS_SECRET_ACCESS_KEY") (setq secret-access-key var-value))
+           ((string= var-name "AWS_SESSION_TOKEN") (setq session-token var-value))))))
+
+    (when (and access-key-id secret-access-key)
+      (dg-transient-aws-sso--update-credentials-file profile access-key-id secret-access-key session-token))
+    (message "AWS SSO credentials set in Emacs environment for profile: %s" profile)))
+
+(defun dg-transient-aws-sso--update-credentials-file (profile access-key-id secret-access-key &optional session-token)
+  "Update ~/.aws/credentials with an agent-prefixed section for PROFILE.
+Preserves other existing sections in the file.
+Uses \"agent-\" prefix to avoid colliding with SSO profiles in ~/.aws/config."
+  (let* ((creds-file (expand-file-name "~/.aws/credentials"))
+         (agent-profile (concat "agent-" profile))
+         (existing (if (file-exists-p creds-file)
+                       (with-temp-buffer
+                         (insert-file-contents creds-file)
+                         (buffer-string))
+                     ""))
+         (section-re (format "^\\[%s\\]" (regexp-quote agent-profile)))
+         (new-section (format "[%s]\naws_access_key_id = %s\naws_secret_access_key = %s\n%s"
+                              agent-profile
+                              access-key-id
+                              secret-access-key
+                              (if session-token
+                                  (format "aws_session_token = %s\n" session-token)
+                                "")))
+         (cleaned (if (string-match-p section-re existing)
+                      (replace-regexp-in-string
+                       (format "\\[%s\\]\n\\(?:[^\[].*\n\\)*" (regexp-quote agent-profile))
+                       ""
+                       existing)
+                    existing))
+         (result (concat (string-trim-right cleaned) "\n\n" new-section "\n")))
+    (with-temp-file creds-file
+      (insert result))
+    (message "Wrote credentials for %s to ~/.aws/credentials [%s]" profile agent-profile)))
 
 (defun dg-transient-aws-profile-login ()
   (interactive)
