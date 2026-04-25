@@ -41,36 +41,29 @@ Returns empty string if not found."
   :ensure t
   :bind ("C-M-s-/" . dg/agent-shell-transient-menu)
   :custom
-  (markdown-overlays-highlight-blocks t)
-  (agent-shell-anthropic-default-model-id "claude-opus-4-6")
-  (agent-shell-anthropic-default-session-mode-id "acceptEdits")
+  (agent-shell-highlight-blocks t)
+  (agent-shell-anthropic-default-model-id "opus")
+  (agent-shell-anthropic-default-session-mode-id "bypassPermissions")
 
   :config
+  (setq agent-shell-session-strategy 'prompt)
+
   (setq agent-shell-mcp-servers
-        `(((name . "linear")
+        `(
+          ((name . "linear")
            (type . "http")
            (url . "https://mcp.linear.app/mcp")
            (headers . (((name . "Authorization")
-                        (value . ,(concat "Bearer " (dg/auth-source-get-password "linear.app")))))))))
+                        (value . ,(concat "Bearer " (dg/auth-source-get-password "linear.app")))))))
+          ;; ((name . "notion")
+          ;;  (type . "http")
+          ;;  (headers . [])
+          ;;  (url . "https://mcp.notion.com/mcp"))
+
+          ))
+
   (setq agent-shell-header-style nil)
   (setq agent-shell-show-welcome-message nil)
-
-  (defun dg/agent-shell--setup-new-session ()
-    "Setup new agent-shell session with Opus model."
-    (run-with-timer 10 nil
-                    (lambda ()
-                      (when (buffer-live-p (current-buffer))
-                        (with-current-buffer (current-buffer)
-                          (when (agent-shell--state)
-                            (acp-send-request
-                             :client (map-elt (agent-shell--state) :client)
-                             :request (acp-make-session-set-model-request
-                                       :session-id (map-nested-elt (agent-shell--state) '(:session :id))
-                                       :model-id "claude-opus-4-6")
-                             :on-success (lambda (response) (message "Switched to Opus model"))
-                             :on-failure (lambda (error raw) (message "Failed to switch model: %S" error)))))))))
-
-  (add-hook 'agent-shell-mode-hook #'dg/agent-shell--setup-new-session)
 
   (defun dg/agent-shell--track-prompt-submission (orig-fun &rest args)
     "Advice around `shell-maker-submit' to track prompts and capture last prompt."
