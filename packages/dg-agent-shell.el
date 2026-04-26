@@ -458,32 +458,63 @@ Window layout is restored on submit or cancel."
   (dg/agent-shell--make-buffer-wrapper #'agent-shell-interrupt)
   "Interrupt agent-shell without switching focus.")
 
-(defalias 'dg/agent-shell-set-model
-  (dg/agent-shell--make-buffer-wrapper #'agent-shell-set-session-model)
-  "Set model in agent-shell buffer without switching focus.")
-
-(defalias 'dg/agent-shell-cycle-mode
-  (dg/agent-shell--make-buffer-wrapper #'agent-shell-cycle-session-mode)
-  "Cycle session mode in agent-shell buffer without switching focus.")
-
-(defun dg/agent-shell-start-or-switch ()
-  "Switch to existing agent-shell buffer for this project, or start a new Claude Code session."
+(defun dg/agent-shell-set-mode-bypass ()
+  "Set the current session's mode to bypassPermissions."
   (interactive)
-  (if-let* ((shell-buffer (agent-shell-project-buffers)))
-      (switch-to-buffer shell-buffer)
-    (agent-shell-anthropic-start-claude-code)))
+  (dg/agent-shell--validate-process)
+  (let ((shell-buffer (dg/agent-shell--get-buffer))
+        (mode-id "bypassPermissions"))
+    (with-current-buffer shell-buffer
+      (unless (map-nested-elt (agent-shell--state) '(:session :id))
+        (user-error "No active session"))
+      (agent-shell--send-request
+       :state (agent-shell--state)
+       :client (map-elt (agent-shell--state) :client)
+       :request (acp-make-session-set-mode-request
+                 :session-id (map-nested-elt (agent-shell--state) '(:session :id))
+                 :mode-id mode-id)
+       :buffer (current-buffer)
+       :on-success (lambda (_acp-response)
+                     (let ((updated-session (map-elt (agent-shell--state) :session)))
+                       (map-put! updated-session :mode-id mode-id)
+                       (map-put! (agent-shell--state) :session updated-session))
+                     (agent-shell--update-header-and-mode-line)
+                     (message "Session mode: bypassPermissions"))
+       :on-failure (lambda (acp-error _raw-message)
+                     (message "Failed to change session mode: %s" acp-error))))))
+
+(defun dg/agent-shell-start-new-session-pick-repo ()
+  "Pick a project root, then start a new Claude Code session there."
+  (interactive)
+  (let* ((dir (cond
+               ((and (boundp 'projectile-known-projects)
+                     projectile-known-projects)
+                (completing-read "Project: " projectile-known-projects nil t))
+               (t (read-directory-name "Project: "))))
+         (default-directory (file-name-as-directory (expand-file-name dir)))
+         (agent-shell-cwd-function (lambda () default-directory)))
+    (dg/agent-shell-start-new-session)))
 
 (defun dg/agent-shell-start-new-session ()
-  "Start a NEW Claude Code session for this directory, even if one exists.
-This creates a uniquely named buffer (with timestamp) allowing multiple
-independent Claude sessions for the same project."
+  "Start a new Claude Code session and pop a compose buffer for the first prompt.
+Buffer is uniquely named (with timestamp) so multiple sessions can
+coexist for the same project."
   (interactive)
   (let* ((config (agent-shell-anthropic-make-claude-code-config))
          (timestamp (format-time-string "%H%M%S"))
-         (original-buffer-name (map-elt config :buffer-name))
-         (unique-buffer-name (format "%s-%s" original-buffer-name timestamp)))
+         (unique-buffer-name (format "%s-%s" (map-elt config :buffer-name) timestamp))
+         (before (dg/agent-shell--get-all-buffers)))
     (map-put! config :buffer-name unique-buffer-name)
-    (agent-shell-start :config config)))
+    (agent-shell-start :config config)
+    (let* ((after (dg/agent-shell--get-all-buffers))
+           (new-buffer (car (seq-difference after before))))
+      (if new-buffer
+          (dg/agent-shell--show-prompt
+           new-buffer
+           (lambda (text)
+             (with-current-buffer new-buffer
+               (agent-shell-queue-request text))))
+        (message "Could not locate new agent-shell buffer")))))
 
 (defun dg/agent-shell--buffer-display-name (buffer)
   "Get display name for BUFFER including summary if available."
@@ -663,34 +694,20 @@ Otherwise, copy the error at point and send its line number."
            (format "Agent Shell\n%s" (propertize pending 'face 'warning))
          "Agent Shell")))
    ["Core"
-    ("S" "Start/Open Session" dg/agent-shell-start-or-switch)
     ("N" "Start NEW Session" dg/agent-shell-start-new-session)
+    ("M" "Start NEW Session (pick repo)" dg/agent-shell-start-new-session-pick-repo)
     ("b" "Switch to Buffer" dg/agent-shell-switch-to-buffer)
-    ("t" "Toggle Buffer" agent-shell-toggle)
-    ("M" "Set Model" dg/agent-shell-set-model)
-    ("m" "Cycle Mode" dg/agent-shell-cycle-mode)
-    ("C-c C-c" "Interrupt" dg/agent-shell-interrupt)]
+    ("m" "Set mode: bypass" dg/agent-shell-set-mode-bypass)]
    ["Send to Agent"
     ("s" "Ask (bare prompt)" dg/agent-shell-ask)
     ("x" "Execute with context" dg/agent-shell-execute-request)
     ("X" "Execute (pick buffer)" dg/agent-shell-execute-request-pick-buffer)
-    ("f" "Send flycheck error" dg/agent-shell-send-flycheck-error)
-    ("F" "Send file" agent-shell-send-file)
-    ("r" "Send region" agent-shell-send-region)
-    ("w" "Send DWIM" agent-shell-send-dwim)]
-   ["Navigation"
-    ("n" "Next Item" dg/agent-shell-next-item)
-    ("p" "Previous Item" dg/agent-shell-previous-item)]
+    ("f" "Send flycheck error" dg/agent-shell-send-flycheck-error)]
    ["Permissions"
     ("y" "Accept (Yes)" dg/agent-shell-accept-permission)
     ("n" "Reject (No)" dg/agent-shell-reject-permission)
     ("!" "Always Accept" dg/agent-shell-always-accept-permission)
     ("v" "View Diff" dg/agent-shell-view-diff)]
-   ["Debug"
-    ("d" "View Traffic" agent-shell-view-traffic)
-    ("V" "Version" agent-shell-version)
-    ("l" "Toggle Logging" agent-shell-toggle-logging)
-    ("L" "Reset Logs" agent-shell-reset-logs)]
    ["Summary"
     ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
    ["Persistence"
