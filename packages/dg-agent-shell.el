@@ -49,7 +49,7 @@ Returns empty string if not found."
          ("<end>" . dg/agent-shell-transient-menu))
   :custom
   (agent-shell-highlight-blocks t)
-  (agent-shell-anthropic-default-model-id "opus")
+  (agent-shell-anthropic-default-model-id "claude-opus-4-7")
   (agent-shell-anthropic-default-session-mode-id "bypassPermissions")
 
   :config
