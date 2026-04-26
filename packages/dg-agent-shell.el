@@ -177,6 +177,17 @@ Returns empty string if not found."
 
 (advice-add 'agent-shell-queue-request :around #'dg/agent-shell--track-queue-request)
 
+(defun dg/agent-shell--safe-clean-up (orig-fun &rest args)
+  "Advice around `agent-shell--clean-up' to prevent errors from blocking buffer kill.
+The upstream clean-up can fail with \"Cannot modify map in-place\" or
+\"Text is read-only\", which prevents killing agent-shell buffers."
+  (let ((inhibit-read-only t))
+    (condition-case err
+        (apply orig-fun args)
+      (error (message "agent-shell clean-up error (ignored): %s" err)))))
+
+(advice-add 'agent-shell--clean-up :around #'dg/agent-shell--safe-clean-up)
+
 (defun dg/agent-shell--on-permission-request (event)
   "Track permission request from EVENT in `dg/agent-shell--pending-permissions'."
   (let* ((data (map-elt event :data))
