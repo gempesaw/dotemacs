@@ -24,6 +24,12 @@ Returns empty string if not found."
 (defvar-local dg/agent-shell--summary-pending nil
   "Non-nil if we're waiting to parse a summary response.")
 
+(defvar-local dg/agent-shell--last-prompt-text nil
+  "Text of the most recently submitted user prompt in this session.")
+
+(defvar-local dg/agent-shell--last-prompt-time nil
+  "Time of the most recently submitted user prompt in this session.")
+
 (defvar dg/agent-shell-summary-interval 10
   "Number of prompts between automatic summary generation.")
 
@@ -76,6 +82,8 @@ Returns empty string if not found."
         (unless (string-empty-p input)
           (if (string= input dg/agent-shell--summary-prompt)
               (setq dg/agent-shell--summary-pending t)
+            (setq dg/agent-shell--last-prompt-text input)
+            (setq dg/agent-shell--last-prompt-time (current-time))
             (cl-incf dg/agent-shell--prompt-count)
             (dg/agent-shell--maybe-queue-summary)))))
     (apply orig-fun args))
@@ -155,6 +163,19 @@ Returns empty string if not found."
 
 (advice-add 'agent-shell--process-pending-request :around #'dg/agent-shell--after-response-hook)
 (advice-add 'shell-maker-submit :around #'dg/agent-shell--track-prompt-submission)
+
+(defun dg/agent-shell--track-queue-request (orig-fun request &rest args)
+  "Advice around `agent-shell-queue-request' to record submitted prompts."
+  (when (and (derived-mode-p 'agent-shell-mode)
+             (stringp request)
+             (let ((trimmed (string-trim request)))
+               (and (not (string-empty-p trimmed))
+                    (not (string= trimmed dg/agent-shell--summary-prompt)))))
+    (setq-local dg/agent-shell--last-prompt-text (string-trim request))
+    (setq-local dg/agent-shell--last-prompt-time (current-time)))
+  (apply orig-fun request args))
+
+(advice-add 'agent-shell-queue-request :around #'dg/agent-shell--track-queue-request)
 
 (defun dg/agent-shell--on-permission-request (event)
   "Track permission request from EVENT in `dg/agent-shell--pending-permissions'."
@@ -662,6 +683,7 @@ Otherwise, copy the error at point and send its line number."
    ["Summary"
     ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
    ["Persistence"
+    ("V" "Dashboard (live)" dg/agent-shell-dashboard)
     ("P" "Save active sessions" dg/agent-shell-save-active-sessions)
     ("R" "Restore active sessions" dg/agent-shell-restore-active-sessions)]
    ])
@@ -753,6 +775,91 @@ EXCLUDE-BUFFER, when non-nil, is omitted (e.g. a buffer being killed)."
                   (with-current-buffer buf
                     (map-nested-elt agent-shell--state '(:session :id))))
                 (dg/agent-shell--get-all-buffers))))
+
+(defun dg/agent-shell--format-relative-time (time)
+  "Format TIME relative to now, e.g. '5m ago', '2h ago'."
+  (when time
+    (let ((seconds (float-time (time-subtract (current-time) time))))
+      (cond
+       ((< seconds 60)    (format "%ds ago"  (truncate seconds)))
+       ((< seconds 3600)  (format "%dm ago"  (truncate (/ seconds 60))))
+       ((< seconds 86400) (format "%dh ago"  (truncate (/ seconds 3600))))
+       (t                 (format "%dd ago"  (truncate (/ seconds 86400))))))))
+
+(defun dg/agent-shell--sort-by-prompt-time (a b)
+  "Compare dashboard entries A and B by buffer's `dg/agent-shell--last-prompt-time'.
+Returned in ascending order; the column flip flag puts newest at top
+and pushes entries with no recorded prompt time to the bottom."
+  (let* ((buf-a (car a))
+         (buf-b (car b))
+         (time-a (and (buffer-live-p buf-a)
+                      (buffer-local-value 'dg/agent-shell--last-prompt-time buf-a)))
+         (time-b (and (buffer-live-p buf-b)
+                      (buffer-local-value 'dg/agent-shell--last-prompt-time buf-b))))
+    (cond
+     ((and time-a time-b) (time-less-p time-a time-b))
+     (time-a nil)
+     (time-b t)
+     (t nil))))
+
+(defun dg/agent-shell--dashboard-entries ()
+  "Build `tabulated-list-entries' for the agent-shell dashboard."
+  (mapcar
+   (lambda (buf)
+     (with-current-buffer buf
+       (let* ((project (file-name-nondirectory
+                        (directory-file-name default-directory)))
+              (summary (or dg/agent-shell--session-summary ""))
+              (activity (or (dg/agent-shell--format-relative-time
+                             dg/agent-shell--last-prompt-time)
+                            "--"))
+              (last-prompt (or dg/agent-shell--last-prompt-text ""))
+              (preview (replace-regexp-in-string
+                        "[ \t\n\r]+" " " last-prompt)))
+         (list buf (vector activity project summary preview)))))
+   (dg/agent-shell--get-all-buffers)))
+
+(defun dg/agent-shell-dashboard-switch ()
+  "Switch to the agent-shell buffer at point in the dashboard."
+  (interactive)
+  (let ((buf (tabulated-list-get-id)))
+    (cond
+     ((not (and buf (buffer-live-p buf)))
+      (user-error "No live buffer at point"))
+     (t (switch-to-buffer buf)))))
+
+(defvar dg/agent-shell-dashboard-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map tabulated-list-mode-map)
+    (define-key map (kbd "RET") #'dg/agent-shell-dashboard-switch)
+    map)
+  "Keymap for `dg/agent-shell-dashboard-mode'.")
+
+(define-derived-mode dg/agent-shell-dashboard-mode tabulated-list-mode "AgentDash"
+  "Dashboard for live agent-shell sessions, sorted by recent activity."
+  (setq tabulated-list-format
+        `[("Activity"    14 ,#'dg/agent-shell--sort-by-prompt-time)
+          ("Project"     25 t)
+          ("Summary"     36 t)
+          ("Last prompt" 80 nil)])
+  (setq tabulated-list-padding 1)
+  (setq tabulated-list-sort-key (cons "Activity" t))
+  (setq-local revert-buffer-function
+              (lambda (&rest _)
+                (setq tabulated-list-entries (dg/agent-shell--dashboard-entries))
+                (tabulated-list-print t)))
+  (tabulated-list-init-header))
+
+(defun dg/agent-shell-dashboard ()
+  "Pop a dashboard of live agent-shell sessions sorted by most recent activity.
+RET on a row switches to that buffer; g refreshes."
+  (interactive)
+  (let ((buf (get-buffer-create "*agent-shell-dashboard*")))
+    (with-current-buffer buf
+      (dg/agent-shell-dashboard-mode)
+      (setq tabulated-list-entries (dg/agent-shell--dashboard-entries))
+      (tabulated-list-print))
+    (pop-to-buffer buf)))
 
 (defun dg/agent-shell-restore-active-sessions ()
   "Restore agent-shell sessions saved in `dg/agent-shell-active-file'.
