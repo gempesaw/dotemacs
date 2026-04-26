@@ -814,6 +814,20 @@ EXCLUDE-BUFFER, when non-nil, is omitted (e.g. a buffer being killed)."
        ((< seconds 86400) (format "%dh ago"  (truncate (/ seconds 3600))))
        (t                 (format "%dd ago"  (truncate (/ seconds 86400))))))))
 
+(defun dg/agent-shell--buffer-status (buf)
+  "Return the activity status of agent-shell BUF: `permission', `working', or `ready'."
+  (cond
+   ((assq buf dg/agent-shell--pending-permissions) 'permission)
+   ((map-elt (buffer-local-value 'agent-shell--state buf) :active-requests) 'working)
+   (t 'ready)))
+
+(defun dg/agent-shell--format-status (status)
+  "Return a propertized label for STATUS."
+  (pcase status
+    ('permission (propertize "permission" 'face 'warning))
+    ('working    (propertize "working"    'face 'font-lock-keyword-face))
+    ('ready      (propertize "ready"      'face 'success))))
+
 (defun dg/agent-shell--sort-by-prompt-time (a b)
   "Compare dashboard entries A and B by buffer's `dg/agent-shell--last-prompt-time'.
 Returned in ascending order; the column flip flag puts newest at top
@@ -835,7 +849,9 @@ and pushes entries with no recorded prompt time to the bottom."
   (mapcar
    (lambda (buf)
      (with-current-buffer buf
-       (let* ((project (file-name-nondirectory
+       (let* ((status (dg/agent-shell--format-status
+                       (dg/agent-shell--buffer-status buf)))
+              (project (file-name-nondirectory
                         (directory-file-name default-directory)))
               (summary (or dg/agent-shell--session-summary ""))
               (activity (or (dg/agent-shell--format-relative-time
@@ -844,7 +860,7 @@ and pushes entries with no recorded prompt time to the bottom."
               (last-prompt (or dg/agent-shell--last-prompt-text ""))
               (preview (replace-regexp-in-string
                         "[ \t\n\r]+" " " last-prompt)))
-         (list buf (vector activity project summary preview)))))
+         (list buf (vector status activity project summary preview)))))
    (dg/agent-shell--get-all-buffers)))
 
 (defun dg/agent-shell-dashboard-switch ()
@@ -866,7 +882,8 @@ and pushes entries with no recorded prompt time to the bottom."
 (define-derived-mode dg/agent-shell-dashboard-mode tabulated-list-mode "AgentDash"
   "Dashboard for live agent-shell sessions, sorted by recent activity."
   (setq tabulated-list-format
-        `[("Activity"    14 ,#'dg/agent-shell--sort-by-prompt-time)
+        `[("Status"      11 t)
+          ("Activity"    14 ,#'dg/agent-shell--sort-by-prompt-time)
           ("Project"     25 t)
           ("Summary"     36 t)
           ("Last prompt" 80 nil)])
