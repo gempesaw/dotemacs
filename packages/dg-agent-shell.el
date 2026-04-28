@@ -131,11 +131,14 @@ Returns empty string if not found."
     (when dg/agent-shell--summary-pending
       (save-excursion
         (goto-char (point-max))
-        (let ((search-pattern (concat "^Claude Code> " (regexp-quote dg/agent-shell--summary-prompt))))
+        (let* ((shell-prompt (or (map-nested-elt agent-shell--state '(:agent-config :shell-prompt))
+                                 "Claude> "))
+               (prompt-line-re (concat "^" (regexp-quote shell-prompt)))
+               (search-pattern (concat prompt-line-re (regexp-quote dg/agent-shell--summary-prompt))))
           (when (re-search-backward search-pattern nil t)
             (when (re-search-forward "<shell-maker-end-of-prompt>\n" nil t)
               (let* ((start (point))
-                     (end (if (re-search-forward "^Claude Code> " nil t)
+                     (end (if (re-search-forward prompt-line-re nil t)
                               (match-beginning 0)
                             (point-max)))
                      (found-summary nil))
