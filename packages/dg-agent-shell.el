@@ -34,7 +34,7 @@ Returns empty string if not found."
   "Number of prompts between automatic summary generation.")
 
 (defconst dg/agent-shell--summary-prompt
-  "Generate a 3-6 word summary describing what we're working on in this session. Reply with ONLY the summary, no other text."
+  "Reply with ONLY: the Linear ticket id if any has been referenced (e.g. INFRA-1234), then a 3-6 word summary of what we're working on. If no ticket, just the summary. No other text."
   "Prompt used to request session summaries.")
 
 (defvar dg/agent-shell--pending-permissions nil
