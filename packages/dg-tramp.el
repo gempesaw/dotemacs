@@ -80,17 +80,26 @@ raises an error."
 
 
   (defvar dg-tramp-micm-ssh-boxes '())
+  (defun dg-tramp--parse-micm-output (output)
+    (->> (s-split "\n" output t)
+         (--map (car (split-string it)))
+         (--filter (s-contains-p "/" it))))
+
+  (defun get-remote-micm-boxes-sync ()
+    (interactive)
+    (let ((default-directory (expand-file-name "~/opt/infra/")))
+      (setq dg-tramp-micm-ssh-boxes
+            (dg-tramp--parse-micm-output
+             (shell-command-to-string "uv run micm ssh --list 2>/dev/null")))))
+
   (defun get-remote-micm-boxes ()
     (interactive)
     (let ((bpr-show-progress nil)
           (bpr-on-success (lambda (process)
                             (with-current-buffer (process-buffer process)
-                              (let ((contents (->> (buffer-substring-no-properties (point-min) (point-max))
-                                                   (s-split " ")
-                                                   (--filter (s-contains-p "/" it)))))
-                                (setq dg-tramp-micm-ssh-boxes contents))
-                              )
-                            )))
+                              (setq dg-tramp-micm-ssh-boxes
+                                    (dg-tramp--parse-micm-output
+                                     (buffer-substring-no-properties (point-min) (point-max))))))))
       (bpr-spawn "cd ~/opt/infra && uv run micm ssh --list 2>/dev/null")))
 
   (defun get-remote-boxes ()
@@ -104,6 +113,9 @@ raises an error."
 
   (defun open-ssh-connection (&optional pfx)
     (interactive)
+    (when (null dg-tramp-micm-ssh-boxes)
+      (get-remote-micm-boxes-sync))
+    (get-remote-micm-boxes)
     (with-temp-buffer
       (let ((box (completing-read "Which box: " (get-remote-boxes))))
         (if (s-contains-p "/" box)
