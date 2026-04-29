@@ -479,6 +479,10 @@ Window layout is restored on submit or cancel."
   (dg/agent-shell--make-buffer-wrapper #'agent-shell-interrupt)
   "Interrupt agent-shell without switching focus.")
 
+(defalias 'dg/agent-shell-reload
+  (dg/agent-shell--make-buffer-wrapper #'agent-shell-reload)
+  "Reload the current session, resuming with its session ID.")
+
 (defun dg/agent-shell-set-mode-bypass ()
   "Set the current session's mode to bypassPermissions."
   (interactive)
@@ -718,6 +722,7 @@ Otherwise, copy the error at point and send its line number."
     ("N" "Start NEW Session" dg/agent-shell-start-new-session)
     ("M" "Start NEW Session (pick repo)" dg/agent-shell-start-new-session-pick-repo)
     ("b" "Switch to Buffer" dg/agent-shell-switch-to-buffer)
+    ("r" "Reload current session" dg/agent-shell-reload)
     ("m" "Set mode: bypass" dg/agent-shell-set-mode-bypass)]
    ["Send to Agent"
     ("s" "Ask (bare prompt)" dg/agent-shell-ask)
