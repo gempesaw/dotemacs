@@ -156,6 +156,9 @@ Returns empty string if not found."
                   (setq dg/agent-shell--summary-pending nil)
                   (setq dg/agent-shell--session-summary
                         (truncate-string-to-width found-summary 60 nil nil "..."))
+                  (when-let ((sid (map-nested-elt agent-shell--state '(:session :id))))
+                    (dg/agent-shell--archive-summary
+                     sid dg/agent-shell--session-summary default-directory))
                   (message "Summary for %s: %s" (buffer-name) dg/agent-shell--session-summary))))))))))
 
 (defun dg/agent-shell--after-response-hook (orig-fun &rest args)
@@ -751,6 +754,13 @@ Otherwise, copy the error at point and send its line number."
   :type 'file
   :group 'dg-agent-shell)
 
+(defcustom dg/agent-shell-summary-archive-file
+  (expand-file-name "agent-shell-summaries.el" user-emacs-directory)
+  "Append-only archive of every captured session summary.
+Survives session close so summaries remain searchable indefinitely."
+  :type 'file
+  :group 'dg-agent-shell)
+
 (defvar dg/agent-shell--identifier-to-config-fn
   '((claude-code . agent-shell-anthropic-make-claude-code-config))
   "Map from saved agent `:identifier' to the function that builds its config.")
@@ -813,6 +823,82 @@ EXCLUDE-BUFFER, when non-nil, is omitted (e.g. a buffer being killed)."
       (condition-case nil
           (read (current-buffer))
         (error nil)))))
+
+(defun dg/agent-shell--read-summary-archive ()
+  "Read the summary archive file as a list of plists."
+  (when (file-exists-p dg/agent-shell-summary-archive-file)
+    (with-temp-buffer
+      (insert-file-contents dg/agent-shell-summary-archive-file)
+      (goto-char (point-min))
+      (condition-case nil
+          (read (current-buffer))
+        (error nil)))))
+
+(defun dg/agent-shell--write-summary-archive (entries)
+  "Write ENTRIES (list of plists) to the summary archive file."
+  (with-temp-file dg/agent-shell-summary-archive-file
+    (let ((print-length nil)
+          (print-level nil))
+      (insert ";; -*- mode: lisp-data; -*-\n")
+      (insert ";; Append-only archive of agent-shell session summaries.\n")
+      (prin1 entries (current-buffer))
+      (insert "\n"))))
+
+(defun dg/agent-shell--archive-summary (session-id summary &optional cwd)
+  "Upsert SESSION-ID's SUMMARY in the archive, optionally with CWD context."
+  (when (and session-id summary (not (string-empty-p summary)))
+    (let* ((existing (or (dg/agent-shell--read-summary-archive) '()))
+           (without (seq-remove (lambda (e)
+                                  (equal (plist-get e :session-id) session-id))
+                                existing))
+           (project (and cwd (file-name-nondirectory
+                              (directory-file-name cwd))))
+           (entry (list :session-id session-id
+                        :summary summary
+                        :project (or project "")
+                        :cwd (or cwd "")
+                        :updated-at (format-time-string "%FT%T%z"))))
+      (dg/agent-shell--write-summary-archive (cons entry without)))))
+
+(defun dg/agent-shell-archive-current-summaries ()
+  "One-shot backfill: archive every live and active-file summary we know about."
+  (interactive)
+  (let* ((existing (or (dg/agent-shell--read-summary-archive) '()))
+         (by-id (let ((m (make-hash-table :test 'equal)))
+                  (dolist (e existing) (puthash (plist-get e :session-id) e m))
+                  m))
+         (added 0))
+    (dolist (buf (dg/agent-shell--get-all-buffers))
+      (with-current-buffer buf
+        (when-let* ((id (map-nested-elt agent-shell--state '(:session :id)))
+                    (s dg/agent-shell--session-summary))
+          (puthash id (list :session-id id
+                            :summary s
+                            :project (file-name-nondirectory
+                                      (directory-file-name default-directory))
+                            :cwd default-directory
+                            :updated-at (format-time-string "%FT%T%z"))
+                   by-id)
+          (cl-incf added))))
+    (dolist (entry (or (ignore-errors (dg/agent-shell--read-active-sessions)) '()))
+      (when-let* ((id (plist-get entry :session-id))
+                  (s (plist-get entry :summary))
+                  ((not (gethash id by-id))))
+        (puthash id (list :session-id id
+                          :summary s
+                          :project (file-name-nondirectory
+                                    (directory-file-name (or (plist-get entry :cwd) "")))
+                          :cwd (or (plist-get entry :cwd) "")
+                          :updated-at (format-time-string "%FT%T%z"))
+                 by-id)
+        (cl-incf added)))
+    (let (out)
+      (maphash (lambda (_ v) (push v out)) by-id)
+      (dg/agent-shell--write-summary-archive out))
+    (message "Archive: %d total entries (%d touched) at %s"
+             (hash-table-count by-id)
+             added
+             (abbreviate-file-name dg/agent-shell-summary-archive-file))))
 
 (defun dg/agent-shell--current-session-ids ()
   "Return session IDs for all currently-open agent-shell buffers."
@@ -926,9 +1012,13 @@ RET on a row switches to that buffer; g refreshes."
 
 (defun dg/agent-shell--all-known-summaries ()
   "Return a hash table mapping session-id to our session summary.
-Live buffers take precedence; the persisted active-sessions file
-fills in summaries for sessions we've closed but not restored."
+Live buffers > active-sessions file > long-term summary archive."
   (let ((map (make-hash-table :test 'equal)))
+    (dolist (entry (or (ignore-errors (dg/agent-shell--read-summary-archive))
+                       '()))
+      (when-let* ((id (plist-get entry :session-id))
+                  (s (plist-get entry :summary)))
+        (puthash id s map)))
     (dolist (entry (or (ignore-errors (dg/agent-shell--read-active-sessions))
                        '()))
       (when-let* ((id (plist-get entry :session-id))
