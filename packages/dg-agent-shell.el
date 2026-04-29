@@ -732,7 +732,7 @@ Otherwise, copy the error at point and send its line number."
    ["Summary"
     ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
    ["Persistence"
-    ("V" "Dashboard (live)" dg/agent-shell-dashboard)
+    ("d" "Dashboard (live)" dg/agent-shell-dashboard)
     ("P" "Save active sessions" dg/agent-shell-save-active-sessions)
     ("R" "Restore active sessions" dg/agent-shell-restore-active-sessions)]
    ])
