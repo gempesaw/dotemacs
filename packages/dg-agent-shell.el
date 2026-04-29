@@ -330,8 +330,18 @@ This allows messages to be sent at any time and queued for processing."
 (defvar dg/agent-shell--origin-frame nil
   "Frame that was selected when the transient menu was invoked.")
 
-(defvar dg/agent-shell--prompt-buffer " *agent-shell-prompt*"
-  "Buffer name for composing agent-shell prompts.")
+(defvar dg/agent-shell--prompt-buffer nil
+  "Name of the currently-active compose buffer, or nil when none.
+Computed per target so the buffer name reveals which session is
+about to receive the prompt.")
+
+(defun dg/agent-shell--prompt-buffer-name (shell-buffer)
+  "Build a compose-buffer name announcing SHELL-BUFFER as the target."
+  (let ((target (buffer-name shell-buffer))
+        (summary (buffer-local-value 'dg/agent-shell--session-summary shell-buffer)))
+    (if summary
+        (format " *compose: %s [%s]*" target summary)
+      (format " *compose: %s*" target))))
 
 (defvar dg/agent-shell-prompt-mode-map
   (let ((map (make-sparse-keymap)))
@@ -347,8 +357,10 @@ This allows messages to be sent at any time and queued for processing."
   (when dg/agent-shell--prompt-window-config
     (set-window-configuration dg/agent-shell--prompt-window-config)
     (setq dg/agent-shell--prompt-window-config nil))
-  (when-let* ((buf (get-buffer dg/agent-shell--prompt-buffer)))
-    (kill-buffer buf)))
+  (when-let* ((name dg/agent-shell--prompt-buffer)
+              (buf (get-buffer name)))
+    (kill-buffer buf))
+  (setq dg/agent-shell--prompt-buffer nil))
 
 (defun dg/agent-shell-prompt-submit ()
   "Submit the prompt buffer content and restore window layout."
@@ -385,7 +397,8 @@ When the prompt buffer is already visible, appends INITIAL-CONTENT
 instead of replacing, preserving the original target session.
 Window layout is restored on submit or cancel."
   (let* ((frame (or dg/agent-shell--origin-frame (selected-frame)))
-         (existing-buf (get-buffer dg/agent-shell--prompt-buffer))
+         (existing-buf (and dg/agent-shell--prompt-buffer
+                            (get-buffer dg/agent-shell--prompt-buffer)))
          (already-open (and existing-buf (get-buffer-window existing-buf t))))
     (cond
      ((and already-open initial-content)
@@ -398,7 +411,9 @@ Window layout is restored on submit or cancel."
         (goto-char (point-max))))
      (t
       (setq dg/agent-shell--prompt-callback callback)
-      (let* ((buf (get-buffer-create dg/agent-shell--prompt-buffer))
+      (let* ((buf-name (dg/agent-shell--prompt-buffer-name shell-buffer))
+             (_ (setq dg/agent-shell--prompt-buffer buf-name))
+             (buf (get-buffer-create buf-name))
              (name (buffer-name shell-buffer))
              (summary (buffer-local-value 'dg/agent-shell--session-summary shell-buffer))
              (header (if summary
