@@ -924,6 +924,55 @@ RET on a row switches to that buffer; g refreshes."
       (tabulated-list-print))
     (pop-to-buffer buf)))
 
+(defun dg/agent-shell--all-known-summaries ()
+  "Return a hash table mapping session-id to our session summary.
+Live buffers take precedence; the persisted active-sessions file
+fills in summaries for sessions we've closed but not restored."
+  (let ((map (make-hash-table :test 'equal)))
+    (dolist (entry (or (ignore-errors (dg/agent-shell--read-active-sessions))
+                       '()))
+      (when-let* ((id (plist-get entry :session-id))
+                  (s (plist-get entry :summary)))
+        (puthash id s map)))
+    (dolist (buf (dg/agent-shell--get-all-buffers))
+      (with-current-buffer buf
+        (when-let* ((id (map-nested-elt agent-shell--state '(:session :id)))
+                    (s dg/agent-shell--session-summary))
+          (puthash id s map))))
+    map))
+
+(defun dg/agent-shell--session-selection-columns-advice (cols)
+  "Append `summary' column to COLS for the session-selection prompt."
+  (append cols '(summary)))
+
+(advice-add 'agent-shell--session-selection-columns
+            :filter-return
+            #'dg/agent-shell--session-selection-columns-advice)
+
+(defun dg/agent-shell--session-column-value-advice (orig-fun column acp-session)
+  "Provide value for our `summary' COLUMN; delegate to ORIG-FUN otherwise.
+ACP-SESSION is the alist describing the session being labelled."
+  (if (eq column 'summary)
+      (let* ((id (map-elt acp-session 'sessionId))
+             (summaries (dg/agent-shell--all-known-summaries))
+             (s (and id (gethash id summaries))))
+        (or s ""))
+    (funcall orig-fun column acp-session)))
+
+(advice-add 'agent-shell--session-column-value
+            :around
+            #'dg/agent-shell--session-column-value-advice)
+
+(defun dg/agent-shell--session-column-face-advice (orig-fun column)
+  "Face for our `summary' COLUMN; delegate to ORIG-FUN otherwise."
+  (if (eq column 'summary)
+      'font-lock-doc-face
+    (funcall orig-fun column)))
+
+(advice-add 'agent-shell--session-column-face
+            :around
+            #'dg/agent-shell--session-column-face-advice)
+
 (defun dg/agent-shell-restore-active-sessions ()
   "Restore agent-shell sessions saved in `dg/agent-shell-active-file'.
 Each session is reopened via ACP session resume/load, replaying
