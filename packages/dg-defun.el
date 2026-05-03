@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defun google ()
   "Googles a query or region if any."
   (interactive)

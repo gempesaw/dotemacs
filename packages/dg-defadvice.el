@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defmacro advise-commands (advice-name commands &rest body)
   "Apply advice named ADVICE-NAME to multiple COMMANDS.
 

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; (progn
 ;;   (global-unset-key (kbd "C-c ;"))
 ;;   (global-unset-key (kbd "C-c C-;"))

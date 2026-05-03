@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defun dg-httprepl-format-json (buffer)
   (httprepl-response-middleware
    (shell-command-on-region (httprepl-find-headers-end buffer) (point-max) "jq '.'" buffer t)))

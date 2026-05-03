@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; (use-package claude-code
 ;;   :demand t
 ;;   :ensure t

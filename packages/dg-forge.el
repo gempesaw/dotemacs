@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (use-package forge
   :ensure t
   :bind (("C-c p f" . dg-maybe-forge-browse-pullreq)

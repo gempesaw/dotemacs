@@ -1,4 +1,4 @@
-;;; via https://gist.github.com/grafov/10985431
+;;; via https://gist.github.com/grafov/10985431 -*- lexical-binding: t; -*-
 
 ;;; go-template-mode.el --- Major mode for Go template language
 

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (use-package tramp
   :config
   ;; Problem with TRAMP mode: Control Path too long error

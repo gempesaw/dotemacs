@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;;; http://stackoverflow.com/a/9846938/1156644
 (use-package ediff
   :config

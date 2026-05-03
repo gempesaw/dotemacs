@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defun ensure-fullscreen-mode-is-on ()
   (interactive)
   (toggle-frame-fullscreen)

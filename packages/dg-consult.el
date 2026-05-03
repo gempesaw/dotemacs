@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (recentf-mode t)
 
 ;; Example configuration for Consult

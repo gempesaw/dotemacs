@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; (define-transient-command dg-help-transient ()
 ;;   "Help commands that I use. A subset of C-h with others thrown in."
 ;;   ["Help Commands"

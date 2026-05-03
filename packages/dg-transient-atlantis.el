@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defvar dg-transient-atlantis--project nil)
 (defvar dg-transient-atlantis--target nil)
 

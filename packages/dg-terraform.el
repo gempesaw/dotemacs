@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (defun dg-disable-company-mode ()
   (interactive)
   (when (fboundp 'global-company-mode) (global-company-mode -1))

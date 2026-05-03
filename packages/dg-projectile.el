@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 (require 'consult-snapfile)
 ;; -*- lexical-binding: t; -*-
 (use-package projectile

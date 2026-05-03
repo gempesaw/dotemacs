@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; Enable vertico
 (use-package vertico
   :ensure t
