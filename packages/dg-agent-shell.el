@@ -44,6 +44,7 @@ Returns empty string if not found."
   "Cached agent-shell buffer selection for the current command.")
 
 (use-package agent-shell
+  :demand t
   :ensure t
   :bind (("C-M-s-/" . dg/agent-shell-transient-menu)
          ("<end>" . dg/agent-shell-transient-menu))
@@ -72,94 +73,93 @@ Returns empty string if not found."
           ))
 
   (setq agent-shell-header-style nil)
-  (setq agent-shell-show-welcome-message nil)
+  (setq agent-shell-show-welcome-message nil))
 
-  (defun dg/agent-shell--track-prompt-submission (orig-fun &rest args)
-    "Advice around `shell-maker-submit' to track prompts and capture last prompt."
-    (when (derived-mode-p 'agent-shell-mode)
-      (let ((input (string-trim (buffer-substring-no-properties
-                                 (shell-maker--prompt-end-position) (point-max)))))
-        (unless (string-empty-p input)
-          (if (string= input dg/agent-shell--summary-prompt)
-              (setq dg/agent-shell--summary-pending t)
-            (setq dg/agent-shell--last-prompt-text input)
-            (setq dg/agent-shell--last-prompt-time (current-time))
-            (cl-incf dg/agent-shell--prompt-count)
-            (dg/agent-shell--maybe-queue-summary)))))
-    (apply orig-fun args))
+(defun dg/agent-shell--track-prompt-submission (orig-fun &rest args)
+  "Advice around `shell-maker-submit' to track prompts and capture last prompt."
+  (when (derived-mode-p 'agent-shell-mode)
+    (let ((input (string-trim (buffer-substring-no-properties
+                               (shell-maker--prompt-end-position) (point-max)))))
+      (unless (string-empty-p input)
+        (if (string= input dg/agent-shell--summary-prompt)
+            (setq dg/agent-shell--summary-pending t)
+          (setq dg/agent-shell--last-prompt-text input)
+          (setq dg/agent-shell--last-prompt-time (current-time))
+          (cl-incf dg/agent-shell--prompt-count)
+          (dg/agent-shell--maybe-queue-summary)))))
+  (apply orig-fun args))
 
-  (defun dg/agent-shell--poll-for-summary (buf attempts)
-    "Poll BUF for summary response, up to ATTEMPTS times."
-    (when (and (buffer-live-p buf) (> attempts 0))
-      (with-current-buffer buf
-        (if (and dg/agent-shell--summary-pending (not (shell-maker-busy)))
-            (progn
-              (dg/agent-shell--check-for-summary-capture)
-              (when dg/agent-shell--summary-pending
-                (run-with-timer 2 nil #'dg/agent-shell--poll-for-summary buf (1- attempts))))
-          (when dg/agent-shell--summary-pending
-            (run-with-timer 2 nil #'dg/agent-shell--poll-for-summary buf (1- attempts)))))))
+(defun dg/agent-shell--poll-for-summary (buf attempts)
+  "Poll BUF for summary response, up to ATTEMPTS times."
+  (when (and (buffer-live-p buf) (> attempts 0))
+    (with-current-buffer buf
+      (if (and dg/agent-shell--summary-pending (not (shell-maker-busy)))
+          (progn
+            (dg/agent-shell--check-for-summary-capture)
+            (when dg/agent-shell--summary-pending
+              (run-with-timer 2 nil #'dg/agent-shell--poll-for-summary buf (1- attempts))))
+        (when dg/agent-shell--summary-pending
+          (run-with-timer 2 nil #'dg/agent-shell--poll-for-summary buf (1- attempts)))))))
 
-  (defun dg/agent-shell--maybe-queue-summary ()
-    "Queue a summary request if conditions are met."
-    (when (and (derived-mode-p 'agent-shell-mode)
-               (not dg/agent-shell--summary-pending)
-               (or (= dg/agent-shell--prompt-count 1)
-                   (= 0 (mod dg/agent-shell--prompt-count dg/agent-shell-summary-interval))))
-      (let ((buf (current-buffer)))
-        (run-with-timer 1 nil
-                        (lambda ()
-                          (when (buffer-live-p buf)
-                            (with-current-buffer buf
-                              (agent-shell-queue-request dg/agent-shell--summary-prompt)
-                              (run-with-timer 5 nil #'dg/agent-shell--poll-for-summary buf 10))))))))
+(defun dg/agent-shell--maybe-queue-summary ()
+  "Queue a summary request if conditions are met."
+  (when (and (derived-mode-p 'agent-shell-mode)
+             (not dg/agent-shell--summary-pending)
+             (or (= dg/agent-shell--prompt-count 1)
+                 (= 0 (mod dg/agent-shell--prompt-count dg/agent-shell-summary-interval))))
+    (let ((buf (current-buffer)))
+      (run-with-timer 1 nil
+                      (lambda ()
+                        (when (buffer-live-p buf)
+                          (with-current-buffer buf
+                            (agent-shell-queue-request dg/agent-shell--summary-prompt)
+                            (run-with-timer 5 nil #'dg/agent-shell--poll-for-summary buf 10))))))))
 
-  (defun dg/agent-shell--status-line-p (line)
-    "Return non-nil if LINE is an agent-shell status message to skip."
-    (or (string-empty-p line)
-        (string-prefix-p "▶" line)
-        (string-equal line "Done")
-        (string-prefix-p "Requesting " line)
-        (string-prefix-p "Creating " line)
-        (string-prefix-p "Subscribing" line)
-        (string-prefix-p "Initializing" line)
-        (string-equal line "Ready")
-        (string-prefix-p "<shell-maker" line)))
+(defun dg/agent-shell--status-line-p (line)
+  "Return non-nil if LINE is an agent-shell status message to skip."
+  (or (string-empty-p line)
+      (string-prefix-p "▶" line)
+      (string-equal line "Done")
+      (string-prefix-p "Requesting " line)
+      (string-prefix-p "Creating " line)
+      (string-prefix-p "Subscribing" line)
+      (string-prefix-p "Initializing" line)
+      (string-equal line "Ready")
+      (string-prefix-p "<shell-maker" line)))
 
-  (defun dg/agent-shell--check-for-summary-capture ()
-    "Check if we should capture a summary from the buffer."
-    (when dg/agent-shell--summary-pending
-      (save-excursion
-        (goto-char (point-max))
-        (let* ((shell-prompt (or (map-nested-elt agent-shell--state '(:agent-config :shell-prompt))
-                                 "Claude> "))
-               (prompt-line-re (concat "^" (regexp-quote shell-prompt)))
-               (search-pattern (concat prompt-line-re (regexp-quote dg/agent-shell--summary-prompt))))
-          (when (re-search-backward search-pattern nil t)
-            (when (re-search-forward "<shell-maker-end-of-prompt>\n" nil t)
-              (let* ((start (point))
-                     (end (if (re-search-forward prompt-line-re nil t)
-                              (match-beginning 0)
-                            (point-max)))
-                     (found-summary nil))
-                (goto-char end)
-                (forward-line -1)
-                ;; Iterate backward through lines, skipping empty and status lines
-                (while (and (>= (point) start) (not found-summary))
-                  (let ((line (string-trim (buffer-substring-no-properties
-                                            (line-beginning-position)
-                                            (line-end-position)))))
-                    (unless (dg/agent-shell--status-line-p line)
-                      (setq found-summary line)))
-                  (forward-line -1))
-                (when found-summary
-                  (setq dg/agent-shell--summary-pending nil)
-                  (setq dg/agent-shell--session-summary
-                        (truncate-string-to-width found-summary 60 nil nil "..."))
-                  (when-let ((sid (map-nested-elt agent-shell--state '(:session :id))))
-                    (dg/agent-shell--archive-summary
-                     sid dg/agent-shell--session-summary default-directory))
-                  (message "Summary for %s: %s" (buffer-name) dg/agent-shell--session-summary))))))))))
+(defun dg/agent-shell--check-for-summary-capture ()
+  "Check if we should capture a summary from the buffer."
+  (when dg/agent-shell--summary-pending
+    (save-excursion
+      (goto-char (point-max))
+      (let* ((shell-prompt (or (map-nested-elt agent-shell--state '(:agent-config :shell-prompt))
+                               "Claude> "))
+             (prompt-line-re (concat "^" (regexp-quote shell-prompt)))
+             (search-pattern (concat prompt-line-re (regexp-quote dg/agent-shell--summary-prompt))))
+        (when (re-search-backward search-pattern nil t)
+          (when (re-search-forward "<shell-maker-end-of-prompt>\n" nil t)
+            (let* ((start (point))
+                   (end (if (re-search-forward prompt-line-re nil t)
+                            (match-beginning 0)
+                          (point-max)))
+                   (found-summary nil))
+              (goto-char end)
+              (forward-line -1)
+              (while (and (>= (point) start) (not found-summary))
+                (let ((line (string-trim (buffer-substring-no-properties
+                                          (line-beginning-position)
+                                          (line-end-position)))))
+                  (unless (dg/agent-shell--status-line-p line)
+                    (setq found-summary line)))
+                (forward-line -1))
+              (when found-summary
+                (setq dg/agent-shell--summary-pending nil)
+                (setq dg/agent-shell--session-summary
+                      (truncate-string-to-width found-summary 60 nil nil "..."))
+                (when-let ((sid (map-nested-elt agent-shell--state '(:session :id))))
+                  (dg/agent-shell--archive-summary
+                   sid dg/agent-shell--session-summary default-directory))
+                (message "Summary for %s: %s" (buffer-name) dg/agent-shell--session-summary)))))))))
 
 (defun dg/agent-shell--after-response-hook (orig-fun &rest args)
   "Advice to capture summary after any response completes."
@@ -1113,3 +1113,4 @@ whose cwd no longer exists."
 
 (provide 'dg-agent-shell)
 ;;; dg-agent-shell.el ends here
+(require 'agent-shell)
