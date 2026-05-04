@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; (use-package python-black
 ;;   :ensure t
 ;;   :after (python)
