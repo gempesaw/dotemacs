@@ -23,10 +23,19 @@
 
 (use-package lsp-pyright
   :ensure t
-  :custom (lsp-pyright-langserver-command "basedpyright")
+  :custom
+  (lsp-pyright-langserver-command "basedpyright")
+  (lsp-pyright-multi-root nil)
   :hook (python-ts-mode . (lambda ()
                             (require 'lsp-pyright)
-                            (lsp-deferred))))
+                            (lsp-deferred)))
+  :init
+  (setenv "NODE_OPTIONS"
+          (string-join
+           (delete-dups
+            (append (split-string (or (getenv "NODE_OPTIONS") "") " " t)
+                    '("--max-old-space-size=8192")))
+           " ")))
 
 (use-package lsp-ruff-lsp
   :after (lsp python)
