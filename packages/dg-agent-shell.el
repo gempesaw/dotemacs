@@ -521,15 +521,10 @@ Window layout is restored on submit or cancel."
     (dg/agent-shell-start-new-session)))
 
 (defun dg/agent-shell-start-new-session ()
-  "Start a new Claude Code session and pop a compose buffer for the first prompt.
-Buffer is uniquely named (with timestamp) so multiple sessions can
-coexist for the same project."
+  "Start a new Claude Code session and pop a compose buffer for the first prompt."
   (interactive)
   (let* ((config (agent-shell-anthropic-make-claude-code-config))
-         (timestamp (format-time-string "%H%M%S"))
-         (unique-buffer-name (format "%s-%s" (map-elt config :buffer-name) timestamp))
          (before (dg/agent-shell--get-all-buffers)))
-    (map-put! config :buffer-name unique-buffer-name)
     (agent-shell-start :config config)
     (let* ((after (dg/agent-shell--get-all-buffers))
            (new-buffer (car (seq-difference after before))))
