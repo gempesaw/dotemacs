@@ -5,7 +5,7 @@
 
 (defun dg-test-dotemacs-interactively ()
   (interactive)
-  (compile "cd ~/.emacs.d/ && /opt/homebrew/bin/emacs"))
+  (compile "cd ~/.emacs.d/ && /opt/homebrew/bin/emacs --no-desktop --eval '(setq desktop-save nil)'"))
 
 (defun dg-start-emacs-q ()
   (interactive)
