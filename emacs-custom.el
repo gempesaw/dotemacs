@@ -9,14 +9,14 @@
         dockerfile-mode dumb-jump duplicate-thing eat edit-server
         elisp-slime-nav elixir-mode epc exec-path-from-shell expand-region forge
         git-commit git-link git-timemachine go-mode gptel helpful
-        highlight-indent-guides jsonnet-mode kubernetes-tramp loop lsp-docker
-        lsp-pyright lsp-ui magit-todos marginalia matisse mini-frame minions
-        mistty moody multiple-cursors nginx-mode noflet orderless org-jira
-        paredit pet projectile quelpa-use-package rainbow-delimiters
-        rainbow-mode rego-mode shell-maker smart-mode-line sqlformat
-        switch-window terraform-mode tide transient-posframe tree-sitter
-        treesit-auto typescript-mode use-package-chords vertico-posframe vterm
-        websocket wgrep-ag wrap-region yaml-mode yaml-pro yasnippet)))
+        highlight-indent-guides js2-mode jsonnet-mode kubernetes-tramp loop
+        lsp-docker lsp-pyright lsp-ui magit-todos marginalia matisse mini-frame
+        minions mistty moody multiple-cursors nginx-mode noflet orderless
+        org-jira paredit pet projectile quelpa-use-package rainbow-delimiters
+        rainbow-mode rego-mode smart-mode-line sqlformat switch-window
+        terraform-mode tide transient-posframe tree-sitter treesit-auto
+        typescript-mode use-package-chords vertico-posframe vterm websocket
+        wgrep-ag wrap-region yaml-mode yaml-pro yasnippet)))
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
