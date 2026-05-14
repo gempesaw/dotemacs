@@ -10,6 +10,11 @@
 
   :config
   (setq lsp-keymap-prefix "s-i")
+
+  ;; we use corfu + capf, not company. skip lsp-mode's company autoconfig
+  ;; so it stops warning "Unable to autoconfigure company-mode."
+  (setq lsp-completion-provider :none)
+
   (setq lsp-print-io nil
         lsp-ui-doc-enable nil)
 

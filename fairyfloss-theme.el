@@ -94,14 +94,6 @@ Authors:
    `(fixed-pitch ((t (:family "Monospace"))))
    `(variable-pitch ((t (:family "Sans Serif"))))
 
-   ;; Company-mode
-   `(company-preview ((t (:foreground "#2aa198" :background "#eee8d5"))))
-   `(company-preview-search ((((background light)) (:inherit (company-tooltip-common-selection))) (((background dark)) (:background "blue1" :inherit (company-preview)))))
-   `(company-tooltip ((t (:background "#39354b" :foreground ,fairy-sky-500))))
-   `(company-tooltip-common ((t (:underline (:color foreground-color :style line) :foreground "#5fafd7" :background "#5f5f5f"))))
-   `(company-tooltip-common-selection ((t (:underline (:color foreground-color :style line) :foreground "#586e75"))))
-   `(company-tooltip-selection ((t (:background "#626262" :foreground "#afd7ff"))))
-
    ;; Enh-ruby mode
    `(enh-ruby-heredoc-delimiter-face ((t (:inherit enh-ruby-string-delimiter-face))))
    `(enh-ruby-op-face ((t (:foreground ,fairy-blush-300))))

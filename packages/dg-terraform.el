@@ -1,14 +1,8 @@
 ;;; -*- lexical-binding: t; -*-
-(defun dg-disable-company-mode ()
-  (interactive)
-  (when (fboundp 'global-company-mode) (global-company-mode -1))
-  (when (fboundp 'company-mode) (company-mode -1)))
-
 (use-package terraform-mode
   :ensure t
   :hook (
          (terraform-mode . lsp-deferred)
-         (terraform-mode . dg-disable-company-mode)
          (terraform-mode . terraform-format-on-save-mode))
   :config
   ;; https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-terraform-ls/
@@ -26,18 +20,6 @@
 
   (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.terraform\\'")
   )
-
-;; (use-package company-terraform
-;;   :ensure t
-;;   :requires (cape)
-;;   :hook (prog-mode . dg-disable-company-mode)
-;;   :config
-;;   (global-company-mode -1)
-;;   (company-mode -1)
-
-;;   ;; (add-hook 'terraform-mode-hook (lambda ()
-;;   ;;                                  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-terraform))))
-;;   )
 
 (defun dg-jump-to-terraform-source ()
   (interactive)
