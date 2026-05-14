@@ -7,9 +7,12 @@
 (defvar dg-transient-micm--stack nil)
 (defvar dg-transient-micm--profile nil)
 (defvar dg-transient-micm--target nil)
+(defvar dg-transient-micm--worktree nil)
 (defvar dg-transient-aws-login nil)
 (defvar dg-transient-micm--export-file nil)
 (defvar dg-micm-ssh-posframe-buffer "*micm-ssh-posframe*")
+
+(defvar dg-transient-micm--worktrees-dir "~/opt/infra/.claude/worktrees")
 
 
 (defun dg-transient-micm-read-projects-stacks ()
@@ -30,12 +33,11 @@
 (defun dg-transient-micm-read-urns ()
   (->> (buffer-list)
        (--filter (s-contains-p "*pulumi" (buffer-name it)))
-       (--map (with-current-buffer it
-                (->> (buffer-substring-no-properties (point-min) (point-max))
-                     (s-split "\n")
-                     (--filter (s-contains-p "urn=urn" it))
-                     (--map (cadr (s-match "\\[urn=\\(.*\\)\\]" it))))))
-       (-flatten)
+       (--mapcat (with-current-buffer it
+                   (->> (s-split "\n" (buffer-substring-no-properties (point-min) (point-max)))
+                        (--map (or (cadr (s-match "\\[urn=\\(urn:[^]]+\\)\\]" it))
+                                   (cadr (s-match "\\(urn:pulumi:[^] \t\"]+\\)" it))))
+                        (-non-nil))))
        (-uniq)))
 
 (defun dg-transient-micm-read-project (prompt initial-input history)
@@ -86,6 +88,46 @@
          (target (completing-read prompt choices nil nil initial-input history)))
     (setq dg-transient-micm--target (if (string-empty-p target) nil target))))
 
+(defun dg-transient-micm-list-worktrees ()
+  "Return absolute worktree paths under `dg-transient-micm--worktrees-dir',
+sorted by modification time (most recent first)."
+  (let ((dir (f-expand dg-transient-micm--worktrees-dir)))
+    (when (f-directory-p dir)
+      (->> (directory-files dir t directory-files-no-dot-files-regexp)
+           (-filter #'f-directory-p)
+           (--sort (time-less-p
+                    (file-attribute-modification-time (file-attributes other))
+                    (file-attribute-modification-time (file-attributes it))))))))
+
+(defun dg-transient-micm-read-worktree (prompt initial-input history)
+  (let* ((paths (dg-transient-micm-list-worktrees))
+         (alist (--map (cons (f-filename it) it) paths))
+         (names (cons "" (-map #'car alist)))
+         (table (lambda (string pred action)
+                  (if (eq action 'metadata)
+                      '(metadata (display-sort-function . identity)
+                                 (cycle-sort-function . identity))
+                    (complete-with-action action names string pred))))
+         (selection (completing-read prompt table nil t initial-input history)))
+    (setq dg-transient-micm--worktree
+          (if (string-empty-p selection)
+              nil
+            (cdr (assoc selection alist))))))
+
+(defclass dg-transient-bare-option (transient-option)
+  ((display-fn :initarg :display-fn :initform nil))
+  "Like `transient-option', but renders only the value (without the
+argument prefix). When `display-fn' is set, it is called on the value
+to produce the displayed string.")
+
+(cl-defmethod transient-format-value ((obj dg-transient-bare-option))
+  (let* ((value (oref obj value))
+         (display-fn (oref obj display-fn))
+         (shown (cond ((null value) "")
+                      (display-fn (funcall display-fn value))
+                      (t value))))
+    (propertize shown 'face (if value 'transient-value 'transient-inactive-value))))
+
 (transient-define-argument dg-transient-micm-aws-profile ()
   :description "which AWS profile to use"
   :class 'transient-option
@@ -98,33 +140,44 @@
 
 (transient-define-argument dg-transient-micm-project ()
   :description "which pulumi project to operate on"
-  :class 'transient-option
+  :class 'dg-transient-bare-option
   :key "p"
   :always-read t
-  :argument ""
+  :argument "--project="
   :init-value (lambda (ob)
                 (setf (slot-value ob 'value) dg-transient-micm--project))
   :reader #'dg-transient-micm-read-project)
 
 (transient-define-argument dg-transient-micm-stack ()
   :description "which pulumi stack to operate on"
-  :class 'transient-option
+  :class 'dg-transient-bare-option
   :key "s"
   :always-read t
-  :argument ""
+  :argument "--stack="
   :init-value (lambda (ob)
                 (setf (slot-value ob 'value) dg-transient-micm--stack))
   :reader #'dg-transient-micm-read-stack)
 
 (transient-define-argument dg-transient-micm-target ()
   :description "target specific resource URN"
-  :class 'transient-option
+  :class 'dg-transient-bare-option
   :key "t"
   :always-read t
-  :argument ""
+  :argument "--target="
   :init-value (lambda (ob)
                 (setf (slot-value ob 'value) dg-transient-micm--target))
   :reader #'dg-transient-micm-read-target)
+
+(transient-define-argument dg-transient-micm-worktree ()
+  :description "run from infra worktree (recency order)"
+  :class 'dg-transient-bare-option
+  :key "w"
+  :always-read t
+  :argument "--worktree="
+  :display-fn #'f-filename
+  :init-value (lambda (ob)
+                (setf (slot-value ob 'value) dg-transient-micm--worktree))
+  :reader #'dg-transient-micm-read-worktree)
 
 (defun dg-transient-micm-kubie-command (stack)
   (let ((cluster (cond
@@ -150,9 +203,10 @@
 (defun dg-transient-micm-execute (pulumi-sub-command &optional args)
   (interactive (list nil (transient-args transient-current-command)))
   (save-window-excursion
-    (let* ((project (nth 0 args))
-           (stack (nth 1 args))
-           (target (nth 2 args))
+    (let* ((project (transient-arg-value "--project=" args))
+           (stack (transient-arg-value "--stack=" args))
+           (target (transient-arg-value "--target=" args))
+           (worktree (transient-arg-value "--worktree=" args))
            (profile (dg-transient-micm--get-aws-role stack project))
            (target-argument (if target
                                 (format "--target '%s' --target-dependents" target)
@@ -166,8 +220,12 @@
            (micm-command-prefix (if profile
                                     (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s); aws sts get-caller-identity" sso-arg profile)
                                   (format "echo 'No profile found for %s/%s'" project stack)))
+           (micm-runner (if worktree
+                            (format "uv run --directory %s micm" (shell-quote-argument worktree))
+                          "micm"))
            (micm-command (format
-                          "micm pulumi --project %s --stack %s %s"
+                          "%s pulumi --project %s --stack %s %s"
+                          micm-runner
                           project
                           stack
                           pulumi-passthrough-command))
@@ -308,8 +366,8 @@ appropriate automation role in AWS config."
 (defun dg-transient-micm-export-state (&optional args)
   "Export pulumi state to a temp file and open it in a buffer for editing."
   (interactive (list (transient-args transient-current-command)))
-  (let* ((project (nth 0 args))
-         (stack (nth 1 args))
+  (let* ((project (transient-arg-value "--project=" args))
+         (stack (transient-arg-value "--stack=" args))
          (sanitized-project (replace-regexp-in-string "[/\\]" "-" project))
          (sanitized-stack (replace-regexp-in-string "[/\\]" "-" stack))
          (temp-file (make-temp-file (format "pulumi-state-%s-%s-" sanitized-project sanitized-stack) nil ".json")))
@@ -370,8 +428,8 @@ appropriate automation role in AWS config."
 
 (defun dg-transient-micm-state-delete (&optional args)
   (interactive (list (transient-args transient-current-command)))
-  (let* ((project (nth 0 args))
-         (stack (nth 1 args))
+  (let* ((project (transient-arg-value "--project=" args))
+         (stack (transient-arg-value "--stack=" args))
          (buffer-urns (dg-transient-micm-read-urns))
          (urns (or buffer-urns
                    (progn
@@ -389,6 +447,7 @@ appropriate automation role in AWS config."
    (dg-transient-micm-project)
    (dg-transient-micm-stack)
    (dg-transient-micm-target)
+   (dg-transient-micm-worktree)
    ]
 
   ["Actions"
