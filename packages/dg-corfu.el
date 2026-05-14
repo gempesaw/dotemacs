@@ -10,13 +10,6 @@
   (setq corfu-popupinfo-delay '(0.4 . 0.2))
   (corfu-popupinfo-mode 1))
 
-(use-package kind-icon
-  :ensure t
-  :after corfu
-  :custom (kind-icon-default-face 'corfu-default)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
