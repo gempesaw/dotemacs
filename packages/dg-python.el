@@ -26,9 +26,9 @@
   :custom
   (lsp-pyright-langserver-command "basedpyright")
   (lsp-pyright-multi-root nil)
-  :hook (python-ts-mode . (lambda ()
-                            (require 'lsp-pyright)
-                            (lsp-deferred)))
+  ;; load lsp-pyright when entering a python buffer so M-x lsp picks it up,
+  ;; but don't start the server automatically — invoke M-x lsp when wanted.
+  :hook (python-ts-mode . (lambda () (require 'lsp-pyright)))
   :init
   (setenv "NODE_OPTIONS"
           (string-join
