@@ -56,7 +56,7 @@ Returns empty string if not found."
   :config
   (setq agent-shell-prefer-viewport-interaction nil)
 
-  (setq agent-shell-session-strategy 'prompt)
+  (setq agent-shell-session-strategy 'new)
 
   (setq agent-shell-mcp-servers
         `(
@@ -483,6 +483,48 @@ Window layout is restored on submit or cancel."
   (dg/agent-shell--make-buffer-wrapper #'agent-shell-reload)
   "Reload the current session, resuming with its session ID.")
 
+(defun dg/agent-shell--resume-session (entry)
+  "Open a new agent-shell buffer resuming the session described by ENTRY.
+ENTRY is a plist as returned by `dg/agent-shell--buffer-session-data'.
+Returns the new buffer, or nil if it could not be located."
+  (let* ((session-id (plist-get entry :session-id))
+         (cwd (plist-get entry :cwd))
+         (identifier (plist-get entry :identifier))
+         (summary (plist-get entry :summary))
+         (config-fn (alist-get identifier dg/agent-shell--identifier-to-config-fn)))
+    (unless session-id
+      (user-error "No session id"))
+    (unless (and config-fn (fboundp config-fn))
+      (user-error "No config builder registered for %S" identifier))
+    (unless (and cwd (file-directory-p cwd))
+      (user-error "cwd no longer exists: %s" cwd))
+    (let ((before (dg/agent-shell--get-all-buffers)))
+      (let* ((default-directory cwd)
+             (agent-shell-cwd-function (lambda () cwd)))
+        (agent-shell-start :config (funcall config-fn) :session-id session-id))
+      (let ((new-buffer (car (seq-difference (dg/agent-shell--get-all-buffers) before))))
+        (when (and new-buffer summary)
+          (with-current-buffer new-buffer
+            (setq-local dg/agent-shell--session-summary summary)))
+        new-buffer))))
+
+(defun dg/agent-shell-fork ()
+  "Open a new agent-shell buffer that resumes the source session.
+Source defaults to the current agent-shell buffer when visiting one;
+otherwise prompts.  This is our replacement for `agent-shell-fork',
+which requires ACP fork support that Claude Code does not advertise."
+  (interactive)
+  (let* ((source (or (and (derived-mode-p 'agent-shell-mode) (current-buffer))
+                     (dg/agent-shell--prompt-for-buffer "Fork from agent-shell buffer: ")))
+         (data (or (dg/agent-shell--buffer-session-data source)
+                   (user-error "Source buffer has no active session")))
+         (new-buffer (dg/agent-shell--resume-session data)))
+    (if new-buffer
+        (progn
+          (pop-to-buffer new-buffer)
+          (message "Forked %s -> %s" (buffer-name source) (buffer-name new-buffer)))
+      (message "Could not locate forked agent-shell buffer"))))
+
 (defun dg/agent-shell-set-mode-bypass ()
   "Set the current session's mode to bypassPermissions."
   (interactive)
@@ -521,20 +563,9 @@ Window layout is restored on submit or cancel."
     (dg/agent-shell-start-new-session)))
 
 (defun dg/agent-shell-start-new-session ()
-  "Start a new Claude Code session and pop a compose buffer for the first prompt."
+  "Start a new Claude Code session."
   (interactive)
-  (let* ((config (agent-shell-anthropic-make-claude-code-config))
-         (before (dg/agent-shell--get-all-buffers)))
-    (agent-shell-start :config config)
-    (let* ((after (dg/agent-shell--get-all-buffers))
-           (new-buffer (car (seq-difference after before))))
-      (if new-buffer
-          (dg/agent-shell--show-prompt
-           new-buffer
-           (lambda (text)
-             (with-current-buffer new-buffer
-               (agent-shell-queue-request text))))
-        (message "Could not locate new agent-shell buffer")))))
+  (agent-shell-start :config (agent-shell-anthropic-make-claude-code-config)))
 
 (defun dg/agent-shell--buffer-display-name (buffer)
   "Get display name for BUFFER including summary if available."
@@ -718,6 +749,7 @@ Otherwise, copy the error at point and send its line number."
     ("M" "Start NEW Session (pick repo)" dg/agent-shell-start-new-session-pick-repo)
     ("b" "Switch to Buffer" dg/agent-shell-switch-to-buffer)
     ("r" "Reload current session" dg/agent-shell-reload)
+    ("F" "Fork (resume in new buffer)" dg/agent-shell-fork)
     ("m" "Set mode: bypass" dg/agent-shell-set-mode-bypass)]
    ["Send to Agent"
     ("s" "Ask (bare prompt)" dg/agent-shell-ask)
@@ -732,7 +764,7 @@ Otherwise, copy the error at point and send its line number."
    ["Summary"
     ("T" "Generate All Summaries" dg/agent-shell-generate-all-summaries)]
    ["Persistence"
-    ("d" "Dashboard (live)" dg/agent-shell-dashboard)
+    ("d" "Dashboard" dg/agent-shell-dashboard)
     ("P" "Save active sessions" dg/agent-shell-save-active-sessions)
     ("R" "Restore active sessions" dg/agent-shell-restore-active-sessions)]
    ])
@@ -925,90 +957,850 @@ EXCLUDE-BUFFER, when non-nil, is omitted (e.g. a buffer being killed)."
    ((map-elt (buffer-local-value 'agent-shell--state buf) :active-requests) 'working)
    (t 'ready)))
 
-(defun dg/agent-shell--format-status (status)
-  "Return a propertized label for STATUS."
-  (pcase status
-    ('permission (propertize "permission" 'face 'warning))
-    ('working    (propertize "working"    'face 'font-lock-keyword-face))
-    ('ready      (propertize "ready"      'face 'success))))
+(defvar dg/agent-shell-dashboard-buffer-name "*agent-shell-dashboard*"
+  "Name of the agent-shell dashboard buffer.")
 
-(defun dg/agent-shell--sort-by-prompt-time (a b)
-  "Compare dashboard entries A and B by buffer's `dg/agent-shell--last-prompt-time'.
-Returned in ascending order; the column flip flag puts newest at top
-and pushes entries with no recorded prompt time to the bottom."
-  (let* ((buf-a (car a))
-         (buf-b (car b))
-         (time-a (and (buffer-live-p buf-a)
-                      (buffer-local-value 'dg/agent-shell--last-prompt-time buf-a)))
-         (time-b (and (buffer-live-p buf-b)
-                      (buffer-local-value 'dg/agent-shell--last-prompt-time buf-b))))
-    (cond
-     ((and time-a time-b) (time-less-p time-a time-b))
-     (time-a nil)
-     (time-b t)
-     (t nil))))
+(defvar-local dg/agent-shell-dashboard--saved-window-config nil
+  "Window configuration saved when the dashboard was opened.")
 
-(defun dg/agent-shell--dashboard-entries ()
-  "Build `tabulated-list-entries' for the agent-shell dashboard."
-  (mapcar
-   (lambda (buf)
-     (with-current-buffer buf
-       (let* ((status (dg/agent-shell--format-status
-                       (dg/agent-shell--buffer-status buf)))
-              (project (file-name-nondirectory
-                        (directory-file-name default-directory)))
-              (summary (or dg/agent-shell--session-summary ""))
-              (activity (or (dg/agent-shell--format-relative-time
-                             dg/agent-shell--last-prompt-time)
-                            "--"))
-              (last-prompt (or dg/agent-shell--last-prompt-text ""))
-              (preview (replace-regexp-in-string
-                        "[ \t\n\r]+" " " last-prompt)))
-         (list buf (vector status activity project summary preview)))))
-   (dg/agent-shell--get-all-buffers)))
+(defvar-local dg/agent-shell-dashboard--row-positions nil
+  "Buffer positions of rendered rows, in display order.")
 
-(defun dg/agent-shell-dashboard-switch ()
-  "Switch to the agent-shell buffer at point in the dashboard."
-  (interactive)
-  (let ((buf (tabulated-list-get-id)))
-    (cond
-     ((not (and buf (buffer-live-p buf)))
-      (user-error "No live buffer at point"))
-     (t (switch-to-buffer buf)))))
+(defvar-local dg/agent-shell-dashboard--columns nil
+  "Per-column metadata: list of plists with :header-pos and :first-row-pos.")
+
+(defvar-local dg/agent-shell-dashboard--highlight-overlays nil
+  "Overlays highlighting the row at point, refreshed in `post-command-hook'.")
+
+(defvar-local dg/agent-shell-dashboard--row-status-overlays nil
+  "Persistent overlays applied to working / permission rows on render.")
+
+(defface dg/agent-shell-dashboard-working-row-face
+  '((((background dark))  :background "#1f2d3d")
+    (((background light)) :background "#e7eef6"))
+  "Persistent row background for sessions currently working."
+  :group 'dg-agent-shell)
+
+(defface dg/agent-shell-dashboard-permission-row-face
+  '((((background dark))  :background "#3a2a1a")
+    (((background light)) :background "#f4ece0"))
+  "Persistent row background for sessions awaiting a permission decision."
+  :group 'dg-agent-shell)
+
+(defface dg/agent-shell-dashboard-awaiting-row-face
+  '((((background dark))  :background "#5e5028")
+    (((background light)) :background "#fef9b8"))
+  "Persistent row background for sessions whose agent finished
+recently and are waiting for the user's next prompt.
+Gold-tinted to read as `your turn' on the fairyfloss palette."
+  :group 'dg-agent-shell)
+
+(defcustom dg/agent-shell-dashboard-awaiting-minutes 15
+  "Promote a ready session to the `awaiting' status when its last
+prompt was submitted within this many minutes."
+  :type 'number
+  :group 'dg-agent-shell)
+
+(defcustom dg/agent-shell-dashboard-jump-keys
+  "asdfjkl;qwertyuiopzxcvbnm"
+  "Letters used as single-key shortcuts in `dg/agent-shell-dashboard-jump'."
+  :type 'string
+  :group 'dg-agent-shell)
 
 (defvar dg/agent-shell-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
-    (define-key map (kbd "RET") #'dg/agent-shell-dashboard-switch)
+    (define-key map (kbd "g")   #'dg/agent-shell-dashboard-refresh)
+    (define-key map (kbd "n")   #'dg/agent-shell-dashboard-next)
+    (define-key map (kbd "p")   #'dg/agent-shell-dashboard-previous)
+    (define-key map (kbd "q")   #'dg/agent-shell-dashboard-quit)
+    (define-key map (kbd "RET") #'dg/agent-shell-dashboard-visit)
+    (define-key map (kbd "o")   #'dg/agent-shell-dashboard-visit-other-window)
+    (define-key map (kbd "f")   #'dg/agent-shell-dashboard-fork)
+    (define-key map (kbd "k")   #'dg/agent-shell-dashboard-kill)
+    (define-key map (kbd "s")   #'dg/agent-shell-dashboard-send)
+    (define-key map (kbd "N")   #'dg/agent-shell-dashboard-new-session-here)
+    (define-key map (kbd "M")   #'dg/agent-shell-start-new-session-pick-repo)
+    (define-key map (kbd "?")   #'dg/agent-shell-transient-menu)
+    (define-key map (kbd "j")   #'dg/agent-shell-dashboard-jump)
+    (define-key map (kbd "r")   #'dg/agent-shell-dashboard-reload)
     map)
   "Keymap for `dg/agent-shell-dashboard-mode'.")
 
-(define-derived-mode dg/agent-shell-dashboard-mode tabulated-list-mode "AgentDash"
-  "Dashboard for live agent-shell sessions, sorted by recent activity."
-  (setq tabulated-list-format
-        `[("Status"      11 t)
-          ("Activity"    14 ,#'dg/agent-shell--sort-by-prompt-time)
-          ("Project"     25 t)
-          ("Summary"     36 t)
-          ("Last prompt" 80 nil)])
-  (setq tabulated-list-padding 1)
-  (setq tabulated-list-sort-key (cons "Activity" t))
+(define-derived-mode dg/agent-shell-dashboard-mode special-mode "AgentDash"
+  "Magit-style dashboard for live and closed agent-shell sessions."
+  (setq truncate-lines t)
   (setq-local revert-buffer-function
-              (lambda (&rest _)
-                (setq tabulated-list-entries (dg/agent-shell--dashboard-entries))
-                (tabulated-list-print t)))
-  (tabulated-list-init-header))
+              (lambda (&rest _) (dg/agent-shell-dashboard-refresh)))
+  (add-hook 'post-command-hook
+            #'dg/agent-shell-dashboard--update-highlight nil t))
+
+(defun dg/agent-shell-dashboard--clear-highlight ()
+  "Remove the row-highlight overlays."
+  (mapc #'delete-overlay dg/agent-shell-dashboard--highlight-overlays)
+  (setq dg/agent-shell-dashboard--highlight-overlays nil))
+
+(defun dg/agent-shell-dashboard--apply-row-status-overlays ()
+  "Tint working / permission rows with a persistent background.
+Cursor's hl-line overlay has higher priority and so wins on the
+row at point."
+  (mapc #'delete-overlay dg/agent-shell-dashboard--row-status-overlays)
+  (setq dg/agent-shell-dashboard--row-status-overlays nil)
+  (let ((pos (point-min))
+        (max (point-max)))
+    (while (< pos max)
+      (let* ((next (or (next-single-property-change pos 'dg-row) max))
+             (row (get-text-property pos 'dg-row))
+             (face (and row
+                        (pcase (plist-get row :status)
+                          ('working    'dg/agent-shell-dashboard-working-row-face)
+                          ('permission 'dg/agent-shell-dashboard-permission-row-face)
+                          ('awaiting   'dg/agent-shell-dashboard-awaiting-row-face)))))
+        (when face
+          (let ((ov (make-overlay pos next)))
+            (overlay-put ov 'face face)
+            (overlay-put ov 'priority -100)
+            (push ov dg/agent-shell-dashboard--row-status-overlays)))
+        (setq pos next)))))
+
+(defun dg/agent-shell-dashboard--update-highlight ()
+  "Highlight just the cell at point — i.e., the single line of the
+row that the cursor is currently on. The other line of the same
+row stays untouched so its persistent status background remains
+visible (working / permission / awaiting tints)."
+  (dg/agent-shell-dashboard--clear-highlight)
+  (when-let ((row (get-text-property (point) 'dg-row)))
+    (let* ((end (or (next-single-property-change (point) 'dg-row) (point-max)))
+           (start (let ((p (point)))
+                    (while (and (> p (point-min))
+                                (eq (get-text-property (1- p) 'dg-row) row))
+                      (setq p (1- p)))
+                    p))
+           (ov (make-overlay start end)))
+      (overlay-put ov 'face 'hl-line)
+      (overlay-put ov 'priority -50)
+      (push ov dg/agent-shell-dashboard--highlight-overlays))))
+
+(defun dg/agent-shell-dashboard--row-from-buffer (buf)
+  "Build a dashboard row plist from live agent-shell BUF, or nil."
+  (with-current-buffer buf
+    (when-let ((id (map-nested-elt agent-shell--state '(:session :id))))
+      (let* ((raw-status (dg/agent-shell--buffer-status buf))
+             (last-time dg/agent-shell--last-prompt-time)
+             (mins-since (and last-time
+                              (/ (float-time
+                                  (time-subtract (current-time) last-time))
+                                 60.0)))
+             (status (if (and (eq raw-status 'ready)
+                              mins-since
+                              (< mins-since
+                                 dg/agent-shell-dashboard-awaiting-minutes))
+                         'awaiting
+                       raw-status)))
+        (list :session-id id
+              :buffer buf
+              :cwd default-directory
+              :identifier (map-elt (map-elt agent-shell--state :agent-config)
+                                   :identifier)
+              :summary dg/agent-shell--session-summary
+              :status status
+              :last-prompt-time dg/agent-shell--last-prompt-time
+              :last-prompt-text dg/agent-shell--last-prompt-text)))))
+
+(defun dg/agent-shell-dashboard--rows ()
+  "Build the list of dashboard rows, deduped by session id.
+Sources, in priority order: live buffers, active-sessions file, summary archive."
+  (let ((seen (make-hash-table :test 'equal))
+        (rows nil))
+    (dolist (buf (dg/agent-shell--get-all-buffers))
+      (when-let ((row (dg/agent-shell-dashboard--row-from-buffer buf)))
+        (puthash (plist-get row :session-id) t seen)
+        (push row rows)))
+    (dolist (entry (or (ignore-errors (dg/agent-shell--read-active-sessions)) '()))
+      (when-let ((id (plist-get entry :session-id))
+                 ((not (gethash id seen))))
+        (puthash id t seen)
+        (push (list :session-id id
+                    :buffer nil
+                    :cwd (plist-get entry :cwd)
+                    :identifier (plist-get entry :identifier)
+                    :summary (plist-get entry :summary)
+                    :status 'closed
+                    :updated-at nil
+                    :last-prompt-time nil
+                    :last-prompt-text nil)
+              rows)))
+    (let ((archive (or (ignore-errors (dg/agent-shell--read-summary-archive)) '())))
+      (dolist (entry archive)
+        (when-let ((id (plist-get entry :session-id))
+                   ((not (gethash id seen))))
+          (puthash id t seen)
+          (push (list :session-id id
+                      :buffer nil
+                      :cwd (plist-get entry :cwd)
+                      ;; Archive entries predate per-agent identifiers.
+                      ;; Default to claude-code since that's our only agent.
+                      :identifier 'claude-code
+                      :summary (plist-get entry :summary)
+                      :status 'closed
+                      :updated-at (plist-get entry :updated-at)
+                      :last-prompt-time nil
+                      :last-prompt-text nil)
+                rows)))
+      ;; Backfill missing summaries on rows from earlier sources.
+      (dolist (row rows)
+        (unless (plist-get row :summary)
+          (when-let ((entry (seq-find
+                             (lambda (e)
+                               (equal (plist-get e :session-id)
+                                      (plist-get row :session-id)))
+                             archive)))
+            (plist-put row :summary (plist-get entry :summary))))))
+    (sort rows #'dg/agent-shell-dashboard--row-less-p)))
+
+(defun dg/agent-shell-dashboard--row-time (row)
+  "Return the most relevant timestamp for ROW, or nil."
+  (or (plist-get row :last-prompt-time)
+      (and (plist-get row :updated-at)
+           (ignore-errors (date-to-time (plist-get row :updated-at))))))
+
+(defun dg/agent-shell-dashboard--row-less-p (a b)
+  "Return non-nil if dashboard row A should sort before B.
+Live ahead of closed; within each group, newest activity first."
+  (let ((live-a (plist-get a :buffer))
+        (live-b (plist-get b :buffer))
+        (ta (dg/agent-shell-dashboard--row-time a))
+        (tb (dg/agent-shell-dashboard--row-time b)))
+    (cond
+     ((and live-a (not live-b)) t)
+     ((and (not live-a) live-b) nil)
+     ((and ta tb) (time-less-p tb ta))
+     (ta t)
+     (tb nil)
+     (t (string< (or (plist-get a :session-id) "")
+                 (or (plist-get b :session-id) ""))))))
+
+(defun dg/agent-shell-dashboard--row-is-today (row)
+  "Return non-nil if ROW's most-recent activity is on today's calendar date."
+  (when-let ((time (dg/agent-shell-dashboard--row-time row)))
+    (string= (format-time-string "%Y-%m-%d" time)
+             (format-time-string "%Y-%m-%d" (current-time)))))
+
+(defun dg/agent-shell-dashboard--status-glyph (status &optional is-today)
+  "Return a propertized one-character glyph for row STATUS.
+If IS-TODAY is non-nil, closed rows are rendered in a brighter face
+to distinguish today's killed sessions from older archived ones."
+  (pcase status
+    ('ready      (propertize "●" 'face 'success))
+    ('awaiting   (propertize "◉" 'face '(:inherit font-lock-variable-name-face
+                                          :weight bold)))
+    ('working    (propertize "▶" 'face '(:inherit font-lock-keyword-face
+                                          :weight bold)))
+    ('permission (propertize "!" 'face '(:inherit warning :weight bold)))
+    ('closed     (propertize "○" 'face (if is-today
+                                            'font-lock-string-face
+                                          'shadow)))
+    (_           (propertize "·" 'face 'shadow))))
+
+(defun dg/agent-shell-dashboard--row-project (row)
+  "Return the project basename for ROW's cwd, or empty string."
+  (or (and (plist-get row :cwd)
+           (file-name-nondirectory
+            (directory-file-name (plist-get row :cwd))))
+      ""))
+
+(defcustom dg/agent-shell-dashboard-column-width 80
+  "Width in characters of each project column in the dashboard."
+  :type 'integer
+  :group 'dg-agent-shell)
+
+(defcustom dg/agent-shell-dashboard-column-gap 2
+  "Number of blank chars between adjacent project columns."
+  :type 'integer
+  :group 'dg-agent-shell)
+
+(defcustom dg/agent-shell-dashboard-pinned-projects '("infra")
+  "Project names rendered as dedicated full-height leftmost columns.
+Pinned columns appear in this list's order, left to right.  All
+remaining projects flow into right-side column bands.  An empty
+list reverts to the uniform banded layout across all projects."
+  :type '(repeat string)
+  :group 'dg-agent-shell)
+
+(defun dg/agent-shell-dashboard--row-cells (row width)
+  "Return two cells (line1 line2) representing ROW, each WIDTH-wide.
+Each cell is a plist with :string and :row keys."
+  (let* ((status (plist-get row :status))
+         (is-today (dg/agent-shell-dashboard--row-is-today row))
+         (glyph (dg/agent-shell-dashboard--status-glyph status is-today))
+         (activity (or (dg/agent-shell--format-relative-time
+                        (dg/agent-shell-dashboard--row-time row))
+                       (if (eq status 'closed) "closed" "—")))
+         (summary (or (plist-get row :summary) ""))
+         (preview (replace-regexp-in-string
+                   "[ \t\n\r]+" " "
+                   (or (plist-get row :last-prompt-text) "")))
+         (line1 (format "  %s  %-7s  %s"
+                        glyph
+                        (propertize activity 'face 'shadow)
+                        summary))
+         (line2 (concat "        "
+                        (propertize "> " 'face 'shadow)
+                        (propertize (if (string-empty-p preview) "—" preview)
+                                    'face 'shadow))))
+    (list (list :string (truncate-string-to-width line1 width nil ?\s)
+                :row row
+                :row-start t)
+          (list :string (truncate-string-to-width line2 width nil ?\s)
+                :row row))))
+
+(defun dg/agent-shell-dashboard--group-cells (group width)
+  "Return list of cells for GROUP rendered in a WIDTH-char column.
+Each cell is a plist with :string and optional :row."
+  (let* ((project (car group))
+         (rows (cdr group))
+         (n-live (seq-count (lambda (r) (plist-get r :buffer)) rows))
+         (n-closed (- (length rows) n-live))
+         (header (concat
+                  (propertize (if (string-empty-p project) "(none)" project)
+                              'face (if (zerop n-live)
+                                        '(:inherit shadow :height 1.4)
+                                      '(:inherit font-lock-function-name-face
+                                        :height 1.4 :weight bold)))
+                  "  "
+                  (propertize (format "(%d live, %d closed)" n-live n-closed)
+                              'face 'shadow)))
+         (cells (list (list :string (truncate-string-to-width header width nil ?\s))
+                      (list :string (make-string width ?\s)))))
+    (dolist (row rows)
+      (setq cells (append cells (dg/agent-shell-dashboard--row-cells row width))))
+    cells))
+
+(defun dg/agent-shell-dashboard--group-rows (rows)
+  "Group ROWS by project. Returns alist of (PROJECT . ROWS).
+Sections are sorted live-first, then by most recent activity."
+  (let ((groups nil))
+    (dolist (row rows)
+      (let* ((project (or (dg/agent-shell-dashboard--row-project row) ""))
+             (cell (assoc project groups)))
+        (if cell
+            (setcdr cell (cons row (cdr cell)))
+          (push (cons project (list row)) groups))))
+    (dolist (cell groups)
+      (setcdr cell (nreverse (cdr cell))))
+    (sort groups #'dg/agent-shell-dashboard--group-less-p)))
+
+(defun dg/agent-shell-dashboard--group-newest-time (rows)
+  "Return the most recent activity time across ROWS, or nil."
+  (car (sort (delq nil (mapcar #'dg/agent-shell-dashboard--row-time rows))
+             (lambda (x y) (time-less-p y x)))))
+
+(defun dg/agent-shell-dashboard--group-less-p (a b)
+  "Sort group A before B by liveness, then most-recent activity, then name."
+  (let* ((rows-a (cdr a))
+         (rows-b (cdr b))
+         (live-a (seq-some (lambda (r) (plist-get r :buffer)) rows-a))
+         (live-b (seq-some (lambda (r) (plist-get r :buffer)) rows-b))
+         (ta (dg/agent-shell-dashboard--group-newest-time rows-a))
+         (tb (dg/agent-shell-dashboard--group-newest-time rows-b)))
+    (cond
+     ((and live-a (not live-b)) t)
+     ((and (not live-a) live-b) nil)
+     ((and ta tb) (time-less-p tb ta))
+     (ta t)
+     (tb nil)
+     (t (string< (car a) (car b))))))
+
+(defun dg/agent-shell-dashboard--insert-cell (cell)
+  "Insert CELL at point, stamping `dg-row' and recording first-row-pos.
+Returns the buffer position where the cell starts."
+  (let ((cell-start (point))
+        (str (plist-get cell :string))
+        (row (plist-get cell :row)))
+    (insert str)
+    (when row
+      (when (plist-get cell :row-start)
+        (push cell-start dg/agent-shell-dashboard--row-positions))
+      (add-text-properties cell-start (point) (list 'dg-row row)))
+    cell-start))
+
+(defun dg/agent-shell-dashboard--insert-column-band (groups width gap)
+  "Insert a band of side-by-side GROUPS, each WIDTH chars wide, GAP between.
+Records each column's header-pos and first-row-pos in
+`dg/agent-shell-dashboard--columns'."
+  (let* ((columns (mapcar (lambda (g) (dg/agent-shell-dashboard--group-cells g width))
+                          groups))
+         (height (apply #'max (mapcar #'length columns)))
+         (blank (list :string (make-string width ?\s)))
+         (gap-str (make-string gap ?\s))
+         (last-col-idx (1- (length columns)))
+         (header-positions (make-vector (length columns) nil))
+         (first-row-positions (make-vector (length columns) nil)))
+    (dotimes (line-idx height)
+      (let ((col-idx 0))
+        (dolist (col columns)
+          (let* ((cell (or (nth line-idx col) blank))
+                 (str (plist-get cell :string))
+                 (row (plist-get cell :row))
+                 (cell-start (point)))
+            (when (= line-idx 0)
+              (aset header-positions col-idx cell-start))
+            (insert str)
+            (when row
+              (when (plist-get cell :row-start)
+                (push cell-start dg/agent-shell-dashboard--row-positions)
+                (unless (aref first-row-positions col-idx)
+                  (aset first-row-positions col-idx cell-start)))
+              (add-text-properties cell-start (point) (list 'dg-row row))))
+          (when (< col-idx last-col-idx)
+            (insert gap-str))
+          (cl-incf col-idx)))
+      (insert "\n"))
+    (insert "\n")
+    (dotimes (col-idx (length columns))
+      (push (list :project (car (nth col-idx groups))
+                  :header-pos (aref header-positions col-idx)
+                  :first-row-pos (aref first-row-positions col-idx))
+            dg/agent-shell-dashboard--columns))))
+
+(defun dg/agent-shell-dashboard--insert-asymmetric (pinned-groups right-groups width gap)
+  "Render PINNED-GROUPS as dedicated full-height left columns.
+RIGHT-GROUPS are laid out in bands to the right of the pinned ones.
+Column metadata is recorded in `dg/agent-shell-dashboard--columns'
+in left-to-right order: pinned first, then right-side band-by-band."
+  (let* ((gap-str (make-string gap ?\s))
+         (blank-cell (list :string (make-string width ?\s)))
+         (pinned-columns (mapcar (lambda (g) (dg/agent-shell-dashboard--group-cells g width))
+                                 pinned-groups))
+         (n-pinned (length pinned-columns))
+         (left-block-width (if (zerop n-pinned)
+                               0
+                             (+ (* width n-pinned) (* gap n-pinned))))
+         (right-area-width (max 80 (- (max 80 (frame-width)) left-block-width)))
+         (cols-per-band (max 1 (/ right-area-width (+ width gap))))
+         (right-bands (seq-partition right-groups cols-per-band))
+         (right-lines nil)
+         (band-idx 0))
+    (dolist (band right-bands)
+      (let* ((cols (mapcar (lambda (g) (dg/agent-shell-dashboard--group-cells g width))
+                           band))
+             (band-h (apply #'max (mapcar #'length cols))))
+        (dotimes (line-idx band-h)
+          (push (list :type 'data
+                      :band-idx band-idx
+                      :line-in-band line-idx
+                      :cells (mapcar (lambda (col) (or (nth line-idx col) blank-cell))
+                                     cols))
+                right-lines))
+        (push (list :type 'spacer) right-lines))
+      (cl-incf band-idx))
+    (setq right-lines (nreverse right-lines))
+    (let* ((max-pinned-h (if (zerop n-pinned)
+                             0
+                           (apply #'max (mapcar #'length pinned-columns))))
+           (total (max max-pinned-h (length right-lines)))
+           ;; Per-pinned-column tracking: vectors indexed by pinned col idx.
+           (pinned-headers (make-vector n-pinned nil))
+           (pinned-firsts  (make-vector n-pinned nil))
+           ;; Right-side tracking, keyed by (band-idx . col-idx).
+           (right-tracker (make-hash-table :test 'equal)))
+      (dotimes (line-idx total)
+        ;; Pinned columns, left to right.
+        (let ((p-idx 0))
+          (dolist (col pinned-columns)
+            (let* ((cell (or (nth line-idx col) blank-cell))
+                   (cell-start (dg/agent-shell-dashboard--insert-cell cell)))
+              (when (= line-idx 0)
+                (aset pinned-headers p-idx cell-start))
+              (when (and (plist-get cell :row-start)
+                         (not (aref pinned-firsts p-idx)))
+                (aset pinned-firsts p-idx cell-start)))
+            (insert gap-str)
+            (cl-incf p-idx)))
+        ;; Right-side cells (one band's worth, per line-idx).
+        (let ((right-line (nth line-idx right-lines)))
+          (when (and right-line (eq (plist-get right-line :type) 'data))
+            (let ((b-idx (plist-get right-line :band-idx))
+                  (line-in-band (plist-get right-line :line-in-band))
+                  (cells (plist-get right-line :cells))
+                  (col-idx 0)
+                  (last-col (1- (length (plist-get right-line :cells)))))
+              (dolist (cell cells)
+                (let ((right-cell-start (dg/agent-shell-dashboard--insert-cell cell))
+                      (key (cons b-idx col-idx)))
+                  (let ((entry (gethash key right-tracker)))
+                    (when (= line-in-band 0)
+                      (puthash key (cons right-cell-start (cdr entry)) right-tracker))
+                    (when (and (plist-get cell :row-start)
+                               (or (not entry) (not (cdr entry))))
+                      (puthash key
+                               (cons (or (car (gethash key right-tracker))
+                                         right-cell-start)
+                                     right-cell-start)
+                               right-tracker))))
+                (when (< col-idx last-col)
+                  (insert gap-str))
+                (cl-incf col-idx)))))
+        (insert "\n"))
+      ;; Pinned columns come first in jump/column order.
+      (dotimes (p-idx n-pinned)
+        (push (list :project (car (nth p-idx pinned-groups))
+                    :header-pos (aref pinned-headers p-idx)
+                    :first-row-pos (aref pinned-firsts p-idx))
+              dg/agent-shell-dashboard--columns))
+      ;; Then right-side columns, band-by-band, col-by-col.
+      (dotimes (b (length right-bands))
+        (dotimes (c (length (nth b right-bands)))
+          (let ((entry (gethash (cons b c) right-tracker)))
+            (push (list :project (car (nth c (nth b right-bands)))
+                        :header-pos (car entry)
+                        :first-row-pos (cdr entry))
+                  dg/agent-shell-dashboard--columns)))))))
+
+(defun dg/agent-shell-dashboard-refresh ()
+  "Re-render the dashboard contents, preserving the row at point.
+Projects are laid out as side-by-side columns; if more projects
+exist than fit horizontally, extra projects wrap to a second band."
+  (interactive)
+  (let* ((inhibit-read-only t)
+         (saved-id (and (eq major-mode 'dg/agent-shell-dashboard-mode)
+                        (plist-get (get-text-property (point) 'dg-row)
+                                   :session-id)))
+         (rows (dg/agent-shell-dashboard--rows))
+         (live (seq-filter (lambda (r) (plist-get r :buffer)) rows))
+         (closed (seq-remove (lambda (r) (plist-get r :buffer)) rows))
+         (groups (dg/agent-shell-dashboard--group-rows rows))
+         (width dg/agent-shell-dashboard-column-width)
+         (gap dg/agent-shell-dashboard-column-gap)
+         (pinned-names dg/agent-shell-dashboard-pinned-projects)
+         ;; Resolve pinned project names to groups, preserving the requested order.
+         (pinned-groups (delq nil (mapcar (lambda (n) (assoc n groups)) pinned-names)))
+         (effective-groups
+          (if pinned-groups
+              (seq-remove (lambda (g) (memq g pinned-groups)) groups)
+            groups))
+         (cols-per-band (max 1 (/ (max 80 (frame-width)) (+ width gap))))
+         (bands (seq-partition effective-groups cols-per-band)))
+    (erase-buffer)
+    (setq dg/agent-shell-dashboard--row-positions nil)
+    (setq dg/agent-shell-dashboard--columns nil)
+    (insert (propertize
+             (format "Agent Shell  —  %d live, %d closed across %d project%s\n\n"
+                     (length live) (length closed) (length groups)
+                     (if (= 1 (length groups)) "" "s"))
+             'face 'shadow))
+    (cond
+     (pinned-groups
+      (dg/agent-shell-dashboard--insert-asymmetric
+       pinned-groups effective-groups width gap))
+     (t
+      (dolist (band bands)
+        (dg/agent-shell-dashboard--insert-column-band band width gap))))
+    (setq dg/agent-shell-dashboard--row-positions
+          (sort dg/agent-shell-dashboard--row-positions #'<))
+    (setq dg/agent-shell-dashboard--columns
+          (nreverse dg/agent-shell-dashboard--columns))
+    (dg/agent-shell-dashboard--apply-row-status-overlays)
+    (cond
+     ((and saved-id
+           (cl-loop for pos in dg/agent-shell-dashboard--row-positions
+                    for r = (get-text-property pos 'dg-row)
+                    when (equal saved-id (plist-get r :session-id))
+                    return (progn (goto-char pos) t))))
+     (dg/agent-shell-dashboard--row-positions
+      (goto-char (car dg/agent-shell-dashboard--row-positions)))
+     (t (goto-char (point-min))))))
+
+(defun dg/agent-shell-dashboard--column-slot (pos)
+  "Return the horizontal column slot index for buffer POS."
+  (save-excursion
+    (goto-char pos)
+    (/ (current-column)
+       (+ dg/agent-shell-dashboard-column-width
+          dg/agent-shell-dashboard-column-gap))))
+
+(defun dg/agent-shell-dashboard-next ()
+  "Move to the next dashboard row in the same column."
+  (interactive)
+  (let* ((cur-slot (dg/agent-shell-dashboard--column-slot (point)))
+         (next (seq-find (lambda (pos)
+                           (and (> pos (point))
+                                (= cur-slot
+                                   (dg/agent-shell-dashboard--column-slot pos))))
+                         dg/agent-shell-dashboard--row-positions)))
+    (when next (goto-char next))))
+
+(defun dg/agent-shell-dashboard-previous ()
+  "Move to the previous dashboard row in the same column."
+  (interactive)
+  (let* ((cur-slot (dg/agent-shell-dashboard--column-slot (point)))
+         (prev (cl-loop for pos in (reverse dg/agent-shell-dashboard--row-positions)
+                        when (and (< pos (point))
+                                  (= cur-slot
+                                     (dg/agent-shell-dashboard--column-slot pos)))
+                        return pos)))
+    (when prev (goto-char prev))))
+
+(defun dg/agent-shell-dashboard--row-at-point ()
+  "Return the row plist at point, or signal a `user-error'."
+  (or (get-text-property (point) 'dg-row)
+      (user-error "No dashboard row at point")))
+
+(defun dg/agent-shell-dashboard--ensure-buffer (row)
+  "Return a live buffer for ROW, resuming the session if it is closed."
+  (let ((buf (plist-get row :buffer)))
+    (if (and buf (buffer-live-p buf))
+        buf
+      (or (dg/agent-shell--resume-session row)
+          (user-error "Could not resume session")))))
+
+(defun dg/agent-shell-dashboard-visit ()
+  "Switch to the row's buffer (resuming first if it is closed)."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (buf (dg/agent-shell-dashboard--ensure-buffer row)))
+    (pop-to-buffer-same-window buf)))
+
+(defun dg/agent-shell-dashboard-visit-other-window ()
+  "Display the row's buffer in another window, keeping focus here."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (buf (dg/agent-shell-dashboard--ensure-buffer row)))
+    (display-buffer buf)))
+
+(defun dg/agent-shell-dashboard-reload ()
+  "Hard-reload the row's session in place.
+Kills the current buffer (if any) and reopens a fresh one
+resuming the same session id under the same cwd.  Use when the
+agent has finished but the buffer didn't return control —
+basically a fork-with-the-same-id-and-close-the-stale-one."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (session-id (or (plist-get row :session-id)
+                         (user-error "Row has no session id")))
+         (buf (plist-get row :buffer))
+         (entry (list :session-id session-id
+                      :cwd (plist-get row :cwd)
+                      :identifier (or (plist-get row :identifier) 'claude-code)
+                      :summary (plist-get row :summary))))
+    (when (and buf (buffer-live-p buf))
+      (let ((windows (get-buffer-window-list buf nil nil)))
+        (kill-buffer buf)
+        (dolist (w windows)
+          (when (window-live-p w)
+            (ignore-errors (delete-window w))))))
+    (let ((new-buf (dg/agent-shell--resume-session entry)))
+      (when new-buf
+        (message "Reloaded session into %s" (buffer-name new-buf))))
+    (dg/agent-shell-dashboard-refresh)))
+
+(defun dg/agent-shell-dashboard-new-session-here ()
+  "Start a new Claude Code session in the project of the row at point.
+Falls back to the dashboard buffer's `default-directory' when the
+cursor isn't on a row (e.g. on a section header)."
+  (interactive)
+  (let* ((row (get-text-property (point) 'dg-row))
+         (cwd (and row (plist-get row :cwd))))
+    (cond
+     ((and cwd (file-directory-p cwd))
+      (let* ((default-directory (file-name-as-directory (expand-file-name cwd)))
+             (agent-shell-cwd-function (lambda () default-directory)))
+        (dg/agent-shell-start-new-session)))
+     (t (dg/agent-shell-start-new-session)))))
+
+(defun dg/agent-shell-dashboard-fork ()
+  "Fork the row's session into a new shell."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (data (or (and (plist-get row :buffer)
+                        (dg/agent-shell--buffer-session-data
+                         (plist-get row :buffer)))
+                   row))
+         (buf (dg/agent-shell--resume-session data)))
+    (when buf
+      (message "Forked into %s" (buffer-name buf)))
+    (dg/agent-shell-dashboard-refresh)))
+
+(defun dg/agent-shell-dashboard--forget-session (session-id)
+  "Remove SESSION-ID from the active-sessions file and summary archive.
+Does not touch the underlying agent's on-disk session log; if the
+agent retains conversation history elsewhere, that needs to be
+cleaned up separately."
+  (let* ((active (or (ignore-errors (dg/agent-shell--read-active-sessions)) '()))
+         (filtered (seq-remove
+                    (lambda (e) (equal (plist-get e :session-id) session-id))
+                    active)))
+    (with-temp-file dg/agent-shell-active-file
+      (let ((print-length nil)
+            (print-level nil))
+        (insert ";; -*- mode: lisp-data; -*-\n")
+        (insert ";; Auto-generated by dg-agent-shell. Do not edit.\n")
+        (prin1 filtered (current-buffer))
+        (insert "\n"))))
+  (let* ((archive (or (ignore-errors (dg/agent-shell--read-summary-archive)) '()))
+         (filtered (seq-remove
+                    (lambda (e) (equal (plist-get e :session-id) session-id))
+                    archive)))
+    (dg/agent-shell--write-summary-archive filtered)))
+
+(defun dg/agent-shell-dashboard-kill ()
+  "Kill or forget the row at point depending on its state.
+On a live row: kill the buffer and any windows displaying it.
+On a closed row: permanently forget the session, removing it
+from the active-sessions file and summary archive."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (buf (plist-get row :buffer))
+         (session-id (plist-get row :session-id))
+         (label (or (plist-get row :summary)
+                    (and session-id
+                         (substring session-id 0 (min 8 (length session-id))))
+                    "this row")))
+    (cond
+     ((and buf (buffer-live-p buf))
+      (when (yes-or-no-p (format "Kill %s? " (buffer-name buf)))
+        (let ((windows (get-buffer-window-list buf nil nil)))
+          (kill-buffer buf)
+          (dolist (w windows)
+            (when (window-live-p w)
+              (ignore-errors (delete-window w)))))
+        (dg/agent-shell-dashboard-refresh)))
+     ((null session-id)
+      (user-error "Row has no session id"))
+     (t
+      (when (yes-or-no-p
+             (format "Forget closed session \"%s\" permanently? " label))
+        (dg/agent-shell-dashboard--forget-session session-id)
+        (dg/agent-shell-dashboard-refresh))))))
+
+(defun dg/agent-shell-dashboard-send ()
+  "Pop a compose buffer to send a prompt to the row's session."
+  (interactive)
+  (let* ((row (dg/agent-shell-dashboard--row-at-point))
+         (buf (dg/agent-shell-dashboard--ensure-buffer row)))
+    (dg/agent-shell--show-prompt
+     buf
+     (lambda (text)
+       (with-current-buffer buf
+         (agent-shell-queue-request text))))))
+
+(defun dg/agent-shell-dashboard--render-jump-view (labeled)
+  "Erase buffer and render only project headers with giant labels.
+Letters are placed at the same horizontal column as the dashboard
+showed each project, so the eye lands in the right place."
+  (let* ((inhibit-read-only t)
+         (descriptors (mapcar #'cdr labeled))
+         (lines (make-hash-table :test 'eql)))
+    ;; Collect (line-num . line-string) per relevant line, before erasing.
+    (dolist (pair labeled)
+      (let* ((ch (car pair))
+             (d (cdr pair))
+             (project (plist-get d :project))
+             (h-pos (plist-get d :header-pos))
+             (fr-pos (plist-get d :first-row-pos)))
+        (when h-pos
+          (let* ((line (line-number-at-pos h-pos))
+                 (col (save-excursion (goto-char h-pos) (current-column)))
+                 (existing (gethash line lines "")))
+            (puthash line
+                     (dg/agent-shell-dashboard--place-at-col
+                      existing col
+                      (propertize (or project "")
+                                  'face '(:inherit font-lock-function-name-face
+                                          :height 1.5 :weight bold)))
+                     lines)))
+        (when fr-pos
+          (let* ((line (line-number-at-pos fr-pos))
+                 (col (save-excursion (goto-char fr-pos) (current-column)))
+                 (existing (gethash line lines "")))
+            (puthash line
+                     (dg/agent-shell-dashboard--place-at-col
+                      existing col
+                      (propertize (format " %c " ch)
+                                  'face '(:foreground "black"
+                                          :background "yellow"
+                                          :weight bold
+                                          :height 5.0)))
+                     lines)))))
+    (erase-buffer)
+    (insert (propertize "Pick a column:\n\n" 'face 'shadow))
+    (let* ((line-keys (sort (hash-table-keys lines) #'<))
+           (max-line (or (car (last line-keys)) 0)))
+      (dotimes (i max-line)
+        (insert (gethash (1+ i) lines "") "\n")))))
+
+(defun dg/agent-shell-dashboard--place-at-col (existing col str)
+  "Return EXISTING line with STR placed starting at column COL.
+Pads with spaces if EXISTING is shorter than COL.  Overwrites
+existing characters at and after COL."
+  (let ((existing-w (string-width existing))
+        (str-w (string-width str)))
+    (cond
+     ((>= col existing-w)
+      (concat existing (make-string (- col existing-w) ?\s) str))
+     (t
+      (concat (substring existing 0 col)
+              str
+              (if (>= (+ col str-w) existing-w)
+                  ""
+                (substring existing (+ col str-w))))))))
+
+(defun dg/agent-shell-dashboard-jump ()
+  "Jump to the first row of a column via single-key shortcuts.
+Replaces the dashboard contents with a switch-window-style label
+view while waiting for input, then restores the dashboard and
+moves point to the chosen column's first row."
+  (interactive)
+  (let* ((targets (seq-filter (lambda (c) (plist-get c :first-row-pos))
+                              dg/agent-shell-dashboard--columns))
+         (keys (string-to-list dg/agent-shell-dashboard-jump-keys)))
+    (when (null targets)
+      (user-error "No columns to jump to"))
+    (let* ((labeled (cl-loop for tgt in targets
+                             for ch in keys
+                             collect (cons ch tgt)))
+           (chosen-idx nil)
+           (saved-point (point)))
+      (unwind-protect
+          (progn
+            (dg/agent-shell-dashboard--render-jump-view labeled)
+            (let* ((ch (read-char "Jump to column: "))
+                   (idx (cl-position ch labeled :key #'car :test #'eq)))
+              (cond
+               ((or (eq ch ?\C-g) (eq ch 7)) nil)
+               (idx (setq chosen-idx idx))
+               (t (message "No such column: %c" ch)))))
+        (dg/agent-shell-dashboard-refresh)
+        (cond
+         (chosen-idx
+          (let* ((new-targets (seq-filter (lambda (c) (plist-get c :first-row-pos))
+                                          dg/agent-shell-dashboard--columns))
+                 (tgt (nth chosen-idx new-targets)))
+            (when tgt (goto-char (plist-get tgt :first-row-pos)))))
+         (t (goto-char (min saved-point (point-max)))))))))
+
+(defun dg/agent-shell-dashboard-quit ()
+  "Bury the dashboard and restore the saved window configuration."
+  (interactive)
+  (let ((cfg dg/agent-shell-dashboard--saved-window-config))
+    (setq dg/agent-shell-dashboard--saved-window-config nil)
+    (quit-window)
+    (when cfg (set-window-configuration cfg))))
 
 (defun dg/agent-shell-dashboard ()
-  "Pop a dashboard of live agent-shell sessions sorted by most recent activity.
-RET on a row switches to that buffer; g refreshes."
+  "Open the agent-shell dashboard, taking over the current frame.
+The pre-existing window layout is restored when you press `q'.
+Keys: RET visit, o open-in-other-window, n/p navigate, f fork,
+k kill, s send prompt, N new session, M new session (pick repo),
+g refresh, q quit and restore."
   (interactive)
-  (let ((buf (get-buffer-create "*agent-shell-dashboard*")))
+  (let ((buf (get-buffer-create dg/agent-shell-dashboard-buffer-name))
+        (cfg (current-window-configuration)))
     (with-current-buffer buf
       (dg/agent-shell-dashboard-mode)
-      (setq tabulated-list-entries (dg/agent-shell--dashboard-entries))
-      (tabulated-list-print))
-    (pop-to-buffer buf)))
+      (setq-local dg/agent-shell-dashboard--saved-window-config cfg)
+      (dg/agent-shell-dashboard-refresh))
+    (pop-to-buffer-same-window buf)
+    (delete-other-windows)))
 
 (defun dg/agent-shell--all-known-summaries ()
   "Return a hash table mapping session-id to our session summary.
