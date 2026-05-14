@@ -43,6 +43,9 @@
   ;; ignore undo-too-big warning
   (push '(undo discard-info) warning-suppress-types)
 
+  ;; don't pop *Warnings* — still logged, check the buffer manually if curious
+  (setq warning-minimum-level :error)
+
   (setq dired-recursive-copies 'top)
   (setq dired-recursive-deletes 'top)
 
