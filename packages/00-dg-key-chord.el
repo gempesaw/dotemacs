@@ -20,6 +20,8 @@
                                     (let ((inhibit-message t))
                                       (key-chord-mode t))))
 
+  (key-chord-define-global "jl" 'dg/agent-shell-dashboard)
+
   ;; movement, shells
   (key-chord-define-global "fj" 'avy-goto-char)
 
