@@ -46,8 +46,7 @@
   )
 
 (use-package python
-  :hook ((python-ts-mode . lsp-deferred)
-         (python-ts-mode . (lambda () (aggressive-indent-mode -1))))
+  :hook ((python-ts-mode . (lambda () (aggressive-indent-mode -1))))
   :bind (("M-i" . python-add-import)))
 
 (use-package pet
