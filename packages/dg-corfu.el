@@ -1,7 +1,21 @@
 (use-package corfu
   :ensure t
   :init
-  (global-corfu-mode))
+  (setq corfu-auto t
+        corfu-auto-prefix 2
+        corfu-auto-delay 0.1)
+  (global-corfu-mode)
+  :config
+  (require 'corfu-popupinfo)
+  (setq corfu-popupinfo-delay '(0.4 . 0.2))
+  (corfu-popupinfo-mode 1))
+
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package emacs
   :init
@@ -21,18 +35,19 @@
 (use-package cape
   :ensure t
   :init
-  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  ;; Global capfs. add-to-list prepends, so list these in reverse priority
+  ;; order; final order is cape-file -> cape-dabbrev -> cape-keyword.
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-history)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-tex)
-  (add-to-list 'completion-at-point-functions #'cape-sgml)
-  (add-to-list 'completion-at-point-functions #'cape-rfc1345)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev)
-  (add-to-list 'completion-at-point-functions #'cape-ispell)
-  (add-to-list 'completion-at-point-functions #'cape-dict)
-  (add-to-list 'completion-at-point-functions #'cape-symbol)
-  (add-to-list 'completion-at-point-functions #'cape-line)
-  )
+
+  ;; Mode-specific capfs added buffer-locally so they only fire where useful.
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda () (add-hook 'completion-at-point-functions #'cape-elisp-symbol nil t)))
+  (add-hook 'text-mode-hook
+            (lambda () (add-hook 'completion-at-point-functions #'cape-dict nil t)))
+  (add-hook 'tex-mode-hook
+            (lambda () (add-hook 'completion-at-point-functions #'cape-tex nil t)))
+  (add-hook 'sgml-mode-hook
+            (lambda () (add-hook 'completion-at-point-functions #'cape-sgml nil t))))
 
