@@ -229,6 +229,16 @@ The upstream clean-up can fail with \"Cannot modify map in-place\" or
 
 (add-hook 'agent-shell-mode-hook #'dg/agent-shell--setup-permission-tracking)
 
+;; corfu's auto-popup is noisy while composing prompts to the agent — too
+;; many false-positive completions on prose. Disable auto-popup here; corfu
+;; still works manually via M-TAB. We also yank the post-command-hook in
+;; case global-corfu-mode's corfu-mode activated before this hook ran (its
+;; auto-trigger is installed at corfu-mode startup, not read live).
+(add-hook 'agent-shell-mode-hook
+          (lambda ()
+            (setq-local corfu-auto nil)
+            (remove-hook 'post-command-hook #'corfu--auto-post-command t)))
+
 (defun dg/agent-shell--clear-selected-buffer ()
   "Clear the cached agent-shell buffer selection."
   (setq dg/agent-shell--selected-buffer nil))
