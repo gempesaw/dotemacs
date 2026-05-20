@@ -390,19 +390,18 @@ about to receive the prompt.")
   (dg/agent-shell--prompt-cleanup))
 
 (defun dg/agent-shell--insert-context (context)
-  "Insert CONTEXT into the prompt buffer.
-If a `\\n\\n' separator already exists, insert just before it so
-CONTEXT joins the existing context block. Otherwise, the buffer
-holds only prose typed by the user — prepend CONTEXT with a
-separator so the prose remains the actual prompt."
-  (goto-char (point-min))
-  (if (re-search-forward "\n\n" nil t)
-      (progn
-        (goto-char (match-beginning 0))
-        (insert "\n" context))
-    (goto-char (point-min))
-    (insert context "\n\n"))
-  (goto-char (point-max)))
+  "Append CONTEXT to the end of the prompt buffer as a fresh ref block.
+Each invocation drops CONTEXT on its own line, separated from
+prior content by exactly one blank line, so file refs interleave
+with the prose the user types about them — preserving proximity
+between each ref and its commentary instead of collecting all
+refs in one block and all prose in another."
+  (goto-char (point-max))
+  (unless (= (point) (point-min))
+    (skip-chars-backward "\n")
+    (delete-region (point) (point-max))
+    (insert "\n\n"))
+  (insert context "\n"))
 
 (defun dg/agent-shell--show-prompt (shell-buffer callback &optional initial-content)
   "Pop a window for composing a prompt to send to SHELL-BUFFER.
@@ -439,8 +438,7 @@ Window layout is restored on submit or cancel."
           (dg/agent-shell-prompt-mode)
           (erase-buffer)
           (when initial-content
-            (insert initial-content)
-            (insert "\n\n"))
+            (insert initial-content "\n"))
           (setq-local header-line-format
                       (propertize header 'face 'font-lock-comment-face)))
         (with-selected-frame frame
