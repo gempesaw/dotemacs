@@ -390,15 +390,17 @@ about to receive the prompt.")
   (dg/agent-shell--prompt-cleanup))
 
 (defun dg/agent-shell--insert-context (context)
-  "Insert CONTEXT into the prompt buffer before the prompt separator.
-Finds the first blank-line separator and inserts before it,
-keeping the user's typed prompt text after the separator."
+  "Insert CONTEXT into the prompt buffer.
+If a `\\n\\n' separator already exists, insert just before it so
+CONTEXT joins the existing context block. Otherwise, the buffer
+holds only prose typed by the user — prepend CONTEXT with a
+separator so the prose remains the actual prompt."
   (goto-char (point-min))
   (if (re-search-forward "\n\n" nil t)
       (progn
         (goto-char (match-beginning 0))
         (insert "\n" context))
-    (goto-char (point-max))
+    (goto-char (point-min))
     (insert context "\n\n"))
   (goto-char (point-max)))
 
@@ -406,19 +408,20 @@ keeping the user's typed prompt text after the separator."
   "Pop a window for composing a prompt to send to SHELL-BUFFER.
 CALLBACK receives the prompt text on C-c C-c.
 INITIAL-CONTENT is optional text to pre-fill.
-When the prompt buffer is already visible, appends INITIAL-CONTENT
-instead of replacing, preserving the original target session.
+When the prompt buffer already exists (whether currently visible
+or buried), append INITIAL-CONTENT to it and refocus, preserving
+the draft. Visibility doesn't matter — what matters is whether
+the user already has an in-progress compose buffer.
 Window layout is restored on submit or cancel."
   (let* ((frame (or dg/agent-shell--origin-frame (selected-frame)))
          (existing-buf (and dg/agent-shell--prompt-buffer
-                            (get-buffer dg/agent-shell--prompt-buffer)))
-         (already-open (and existing-buf (get-buffer-window existing-buf t))))
+                            (get-buffer dg/agent-shell--prompt-buffer))))
     (cond
-     ((and already-open initial-content)
+     ((and existing-buf initial-content)
       (with-selected-frame frame
         (pop-to-buffer existing-buf)
         (dg/agent-shell--insert-context initial-content)))
-     (already-open
+     (existing-buf
       (with-selected-frame frame
         (pop-to-buffer existing-buf)
         (goto-char (point-max))))
