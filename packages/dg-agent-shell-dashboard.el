@@ -246,9 +246,13 @@ new requests for buffers that have no summary yet."
   ;; Bind row commands into the dashboard mode-map
   ;; ----------------------------------------------------------------
 
+  ;; x / X make sense in the dashboard: jumping FROM the dashboard
+  ;; (current-buffer = dashboard) wouldn't yield context, but the user
+  ;; calls these from code buffers via the transient.  f stays on the
+  ;; public `fork' binding — flycheck-send is a code-buffer command
+  ;; reachable via the transient, not the dashboard keymap.
   (define-key agent-shell-dashboard-mode-map (kbd "x") #'dg/agent-shell-dashboard-execute-request)
   (define-key agent-shell-dashboard-mode-map (kbd "X") #'dg/agent-shell-dashboard-execute-request-pick-buffer)
-  (define-key agent-shell-dashboard-mode-map (kbd "f") #'dg/agent-shell-dashboard-send-flycheck-error)
 
   ;; ----------------------------------------------------------------
   ;; Personal transient menu
