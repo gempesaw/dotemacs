@@ -13,12 +13,20 @@
 ;; is the dashboard layer only.
 
 (use-package agent-shell-dashboard
-  :vc (:url "https://github.com/gempesaw/agent-shell-dashboard" :rev :newest)
-  :ensure t
+  ;; Point at the local working clone so edits in
+  ;; ~/opt/agent-shell-dashboard take effect on next emacs restart
+  ;; without round-tripping through GitHub + `package-vc-upgrade'.
+  :load-path "/Users/gempesaw/opt/agent-shell-dashboard"
   :demand t
   :custom
   (agent-shell-dashboard-summary-prompt
-   "Reply with ONLY: any Linear ticket id referenced (e.g. INFRA-1234), then a comma-separated list of distinct topics covered across this entire conversation (not just the recent prompts). Aim for 6-12 items, prioritize search anchors I might remember — specific permissions, ticket ids, error messages, tool names, file paths. No other text.")
+   "Label this ENTIRE session the way I would name a project folder: by what it was opened to accomplish, weighting how it started over the most recent messages. Recent prompts are usually tangents, not the theme.
+
+First line: the densest possible description of the session's core, under 78 characters. Give 2-4 key specifics separated by semicolons, most central first. Prefer concrete nouns — systems, repos, components, error names, and any central id like INFRA-1234. No field labels, no prefixes, no quotes, no trailing period; never write the words ticket, branch, topics, keywords, or summary.
+
+Second line: 6-10 comma-separated search anchors spanning the whole conversation (ids, file paths, tool names, error strings) — extra search terms, not the headline.
+
+Output only those two lines, nothing else.")
   (agent-shell-dashboard-pinned-projects '("infra"))
   ;; Point at the original dg-agent-shell data files so historic
   ;; summaries / active-sessions survive the migration to the public
