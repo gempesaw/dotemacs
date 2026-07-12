@@ -12,6 +12,37 @@
 (defvar dg-transient-micm--export-file nil)
 (defvar dg-micm-ssh-posframe-buffer "*micm-ssh-posframe*")
 
+(defvar-local dg-transient-micm--bl-stamped nil
+  "Non-nil once this buffer has had pulumi transient settings persisted.")
+(defvar-local dg-transient-micm--bl-project nil)
+(defvar-local dg-transient-micm--bl-stack nil)
+(defvar-local dg-transient-micm--bl-target nil)
+(defvar-local dg-transient-micm--bl-worktree nil)
+
+(defvar dg-transient-micm--origin-buffer nil
+  "Buffer the transient was last invoked from, for seeding/persisting settings.")
+
+(defun dg-transient-micm--seed-from-buffer (buffer)
+  "Copy BUFFER's stamped buffer-local pulumi settings into the globals, so
+the transient's init-values auto-populate from them. No-op if BUFFER was
+never stamped, leaving the global last-used values in place."
+  (when (and (buffer-live-p buffer)
+             (buffer-local-value 'dg-transient-micm--bl-stamped buffer))
+    (setq dg-transient-micm--project  (buffer-local-value 'dg-transient-micm--bl-project buffer)
+          dg-transient-micm--stack    (buffer-local-value 'dg-transient-micm--bl-stack buffer)
+          dg-transient-micm--target   (buffer-local-value 'dg-transient-micm--bl-target buffer)
+          dg-transient-micm--worktree (buffer-local-value 'dg-transient-micm--bl-worktree buffer))))
+
+(defun dg-transient-micm--stamp-buffer (buffer project stack target worktree)
+  "Persist PROJECT/STACK/TARGET/WORKTREE as buffer-local settings in BUFFER."
+  (when (buffer-live-p buffer)
+    (with-current-buffer buffer
+      (setq-local dg-transient-micm--bl-stamped t
+                  dg-transient-micm--bl-project project
+                  dg-transient-micm--bl-stack stack
+                  dg-transient-micm--bl-target target
+                  dg-transient-micm--bl-worktree worktree))))
+
 (defvar dg-transient-micm--worktrees-dir "~/opt/infra/.claude/worktrees")
 
 
@@ -194,11 +225,118 @@ to produce the displayed string.")
       ""
     string))
 
+(defun dg-transient-micm-hide-outputs (_string)
+  "Post-output filter: collapse the post-apply pulumi `Outputs:' section.
+Scans the buffer for any complete `^Outputs:' ... `^Resources:' range and
+deletes the inner content (the `Resources:' line is kept). Runs after
+insertion, so output streams normally — collapse only happens once
+`Resources:' actually appears in the buffer. We scan on every output
+chunk because comint can split `Resources:' across chunks, so guarding
+on the chunk's own contents would miss real matches.
+
+The `--outputs:--' marker in `preview --diff' is left alone because it
+can be followed by legitimate resource diffs before the final `Resources:'
+line."
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^Outputs:[[:space:]]*$" nil t)
+        (let ((section-start (match-beginning 0)))
+          (when (re-search-forward "^Resources:[[:space:]]*$" nil t)
+            (goto-char (match-beginning 0))
+            (delete-region section-start (point))))))))
+
 (defun dg-transient-micm--get-sso-arg (profile)
   (if (and profile
            (s-starts-with-p "modular.com" profile))
       "--sso legacy"
     "--sso modular"))
+
+(defun dg-transient-micm--submit-at-prompt (cmd)
+  "Insert CMD at the comint prompt of the current buffer and submit it
+via `comint-send-input', so the command is visible and lands in input
+history (`M-p' / `M-n'). After submitting, scroll any window showing the
+buffer so the prompt line sits at the top — preserving scrollback while
+giving the illusion of a fresh buffer."
+  (let ((proc (get-buffer-process (current-buffer))))
+    (when proc
+      (goto-char (process-mark proc))
+      (delete-region (point) (point-max))
+      (insert cmd)
+      (let ((cmd-line-start (line-beginning-position)))
+        (comint-send-input)
+        (dolist (win (get-buffer-window-list (current-buffer) nil t))
+          (set-window-start win cmd-line-start)
+          (set-window-point win (point-max)))))))
+
+(defvar-local dg-transient-micm--queue nil
+  "Remaining (CMD . MARKER) pairs to submit. MARKER nil = last/plain cmd.")
+
+(defvar-local dg-transient-micm--queue-expecting nil
+  "The marker string the queue watcher is currently waiting for.")
+
+(defun dg-transient-micm--queue-watcher (_output)
+  (when dg-transient-micm--queue-expecting
+    (let ((re (concat (regexp-quote dg-transient-micm--queue-expecting)
+                      "=\\([0-9]+\\)")))
+      (when (save-excursion
+              (goto-char (point-max))
+              (forward-line -30)
+              (re-search-forward re nil t))
+        (let ((exit (string-to-number (match-string 1)))
+              (buf (current-buffer)))
+          (setq dg-transient-micm--queue-expecting nil)
+          (if (zerop exit)
+              (run-at-time
+               0 nil
+               (lambda ()
+                 (when (buffer-live-p buf)
+                   (with-current-buffer buf
+                     (dg-transient-micm--queue-advance)))))
+            (setq dg-transient-micm--queue nil)
+            (remove-hook 'comint-output-filter-functions
+                         #'dg-transient-micm--queue-watcher t)
+            (message "Pulumi presetup failed (exit %d) — chain stopped" exit)))))))
+
+(defun dg-transient-micm--queue-advance ()
+  (let ((next (pop dg-transient-micm--queue)))
+    (if next
+        (let ((cmd (car next))
+              (marker (cdr next)))
+          (setq dg-transient-micm--queue-expecting marker)
+          (unless marker
+            (remove-hook 'comint-output-filter-functions
+                         #'dg-transient-micm--queue-watcher t))
+          (dg-transient-micm--submit-at-prompt
+           (if marker
+               (format "%s ; echo %s=$?" cmd marker)
+             cmd)))
+      (setq dg-transient-micm--queue-expecting nil)
+      (remove-hook 'comint-output-filter-functions
+                   #'dg-transient-micm--queue-watcher t))))
+
+(defun dg-transient-micm--submit-sequence (commands)
+  "Submit COMMANDS one at a time, gating each on the previous one's success.
+Every command except the last is wrapped with an echo-of-exit-code so the
+watcher can detect completion and either advance the queue or bail out. The
+last command is submitted bare, so `M-p' in the buffer recalls just it."
+  (let* ((n (length commands))
+         (queue (cl-loop for cmd in commands
+                         for i from 0
+                         collect
+                         (cons cmd
+                               (and (< i (1- n))
+                                    (format "DG_MICM_MARK_%s"
+                                            (substring
+                                             (md5 (format "%d-%d-%s"
+                                                          i (random) cmd))
+                                             0 8)))))))
+    (setq dg-transient-micm--queue queue
+          dg-transient-micm--queue-expecting nil)
+    (when (> n 1)
+      (add-hook 'comint-output-filter-functions
+                #'dg-transient-micm--queue-watcher nil t))
+    (dg-transient-micm--queue-advance)))
 
 (defun dg-transient-micm-execute (pulumi-sub-command &optional args)
   (interactive (list nil (transient-args transient-current-command)))
@@ -208,6 +346,8 @@ to produce the displayed string.")
            (target (transient-arg-value "--target=" args))
            (worktree (transient-arg-value "--worktree=" args))
            (profile (dg-transient-micm--get-aws-role stack project))
+           (_ (when profile
+                (dg-modular-ensure-aws-profile-login profile)))
            (target-argument (if target
                                 (format "--target '%s' --target-dependents" target)
                               ""))
@@ -218,7 +358,7 @@ to produce the displayed string.")
                                          ""))
            (sso-arg (dg-transient-micm--get-sso-arg profile))
            (micm-command-prefix (if profile
-                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s); aws sts get-caller-identity" sso-arg profile)
+                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'` && aws-sso login %s && eval $(aws-sso eval %s --no-region --profile=%s) && aws sts get-caller-identity" sso-arg sso-arg profile)
                                   (format "echo 'No profile found for %s/%s'" project stack)))
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
@@ -234,20 +374,37 @@ to produce the displayed string.")
            (existing-buffer (get-buffer buffer-name))
            (visible-frames (visible-frame-list)))
 
-      (if existing-buffer
-          (with-current-buffer existing-buffer
-            (erase-buffer)
-            (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
-            (comint-simple-send
-             (get-buffer-process (current-buffer))
-             (format "%s; %s ; echo '%s'; %s" kubie-export-command micm-command-prefix micm-command micm-command)))
+      ;; Persist the chosen settings back to the buffer the transient was
+      ;; invoked from, so re-invoking from there auto-populates them.
+      (dg-transient-micm--stamp-buffer dg-transient-micm--origin-buffer
+                                       project stack target worktree)
 
-        (let* ((default-directory (f-expand "~/opt/infra"))
-               (buf (create-new-shell-here)))
-          (with-current-buffer buf
-            (rename-buffer buffer-name t)
-            (insert (format "%s; %s ; %s" kubie-export-command micm-command-prefix micm-command))
-            (comint-send-input nil t))))
+      (let ((setup-command (format "%s && %s"
+                                   kubie-export-command
+                                   micm-command-prefix)))
+        (if existing-buffer
+            (with-current-buffer existing-buffer
+              (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
+              (add-hook 'comint-output-filter-functions #'dg-transient-micm-hide-outputs nil t)
+              (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
+              (setq-local comint-scroll-show-maximum-output nil
+                          comint-move-point-for-output nil)
+              (setq dg-pulumi-stacks--last-activity (current-time))
+              (dg-transient-micm--stamp-buffer existing-buffer project stack target worktree)
+              (dg-transient-micm--submit-sequence (list setup-command micm-command)))
+
+          (let* ((default-directory (f-expand "~/opt/infra"))
+                 (buf (create-new-shell-here)))
+            (with-current-buffer buf
+              (rename-buffer buffer-name t)
+              (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
+              (add-hook 'comint-output-filter-functions #'dg-transient-micm-hide-outputs nil t)
+              (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
+              (setq-local comint-scroll-show-maximum-output nil
+                          comint-move-point-for-output nil)
+              (setq dg-pulumi-stacks--last-activity (current-time))
+              (dg-transient-micm--stamp-buffer buf project stack target worktree)
+              (dg-transient-micm--submit-sequence (list setup-command micm-command))))))
 
       ;; if there's another frame with a pulumi window, switch it to this one.
       ;; if there's only a single frame, open a new frame and focus the pulumi buffer.
@@ -363,6 +520,28 @@ appropriate automation role in AWS config."
                             (s-split "\n")
                             (--filter (s-contains-p "automation-access" it)))))))
 
+(defvar-local dg-transient-micm--export-signal nil
+  "Token to watch for in comint output to detect export completion.")
+(defvar-local dg-transient-micm--export-target nil
+  "Path of the export temp file the watcher should open on completion.")
+
+(defun dg-transient-micm--export-watcher (output)
+  (when (and dg-transient-micm--export-signal
+             (string-match-p (regexp-quote dg-transient-micm--export-signal) output))
+    (let ((file dg-transient-micm--export-target))
+      (setq dg-transient-micm--export-signal nil
+            dg-transient-micm--export-target nil)
+      (remove-hook 'comint-output-filter-functions
+                   #'dg-transient-micm--export-watcher t)
+      (if (and file (file-readable-p file)
+               (> (file-attribute-size (file-attributes file)) 0))
+          (progn
+            (find-file file)
+            (json-mode)
+            (message "Pulumi state exported to buffer. Edit and use 'm i' to import."))
+        (message "Pulumi export completion echo arrived but %s is missing/empty"
+                 file)))))
+
 (defun dg-transient-micm-export-state (&optional args)
   "Export pulumi state to a temp file and open it in a buffer for editing."
   (interactive (list (transient-args transient-current-command)))
@@ -370,24 +549,39 @@ appropriate automation role in AWS config."
          (stack (transient-arg-value "--stack=" args))
          (sanitized-project (replace-regexp-in-string "[/\\]" "-" project))
          (sanitized-stack (replace-regexp-in-string "[/\\]" "-" stack))
-         (temp-file (make-temp-file (format "pulumi-state-%s-%s-" sanitized-project sanitized-stack) nil ".json")))
+         (temp-file (concat (make-temp-name
+                             (expand-file-name
+                              (format "pulumi-state-%s-%s-"
+                                      sanitized-project sanitized-stack)
+                              temporary-file-directory))
+                            ".json"))
+         (signal-token (format "DG_PULUMI_EXPORT_DONE_%s" (md5 temp-file)))
+         (buffer-name (format "*pulumi* | %s | %s" project stack)))
     (setq dg-transient-micm--export-file temp-file)
     (message "Exporting state to %s..." temp-file)
-    (dg-transient-micm-execute (format "stack export --show-secrets --file %s && echo 'State exported to %s'"
-                                       (shell-quote-argument temp-file)
-                                       (shell-quote-argument temp-file)) args)
-    ;; Poll for file existence and open when ready
-    (run-with-timer 1 nil 'dg-transient-micm--check-export-ready temp-file)))
-
-(defun dg-transient-micm--check-export-ready (temp-file)
-  "Check if export file is ready and open it, or keep checking."
-  (if (and (file-exists-p temp-file) (> (file-attribute-size (file-attributes temp-file)) 0))
-      (progn
-        (find-file temp-file)
-        (json-mode)
-        (message "Pulumi state exported to buffer. Edit and use 'm i' to import."))
-    ;; Check again in 1 second if file isn't ready
-    (run-with-timer 1 nil 'dg-transient-micm--check-export-ready temp-file)))
+    (dg-transient-micm-execute
+     (format "stack export --show-secrets --file %s && echo '%s'"
+             (shell-quote-argument temp-file)
+             signal-token)
+     args)
+    (when-let* ((buf (get-buffer buffer-name)))
+      (with-current-buffer buf
+        (setq dg-transient-micm--export-signal signal-token
+              dg-transient-micm--export-target temp-file)
+        (add-hook 'comint-output-filter-functions
+                  #'dg-transient-micm--export-watcher nil t))
+      (run-with-timer
+       300 nil
+       (lambda ()
+         (when (buffer-live-p buf)
+           (with-current-buffer buf
+             (when (equal dg-transient-micm--export-signal signal-token)
+               (setq dg-transient-micm--export-signal nil
+                     dg-transient-micm--export-target nil)
+               (remove-hook 'comint-output-filter-functions
+                            #'dg-transient-micm--export-watcher t)
+               (message "Pulumi export timed out after 5min — check %s for errors"
+                        buffer-name))))))) ))
 
 (defun dg-transient-micm-import-state (&optional args)
   "Import pulumi state from the current buffer or exported file."
@@ -549,7 +743,7 @@ Also writes credentials to ~/.aws/credentials under the profile name."
          ;;             (--map (setenv (car (s-split "=" it)) nil))))
          (sso-argument (dg-transient-micm--get-sso-arg profile))
          (output (shell-command-to-string
-                  (format "aws-sso eval %s --no-region --profile=%s" sso-argument profile)))
+                  (format "aws-sso login %s && aws-sso eval %s --no-region --profile=%s" sso-argument sso-argument profile)))
          (lines (split-string output "\n" t))
          (access-key-id nil)
          (secret-access-key nil)
@@ -591,7 +785,7 @@ Uses \"agent-\" prefix to avoid colliding with SSO profiles in ~/.aws/config."
                                 "")))
          (cleaned (if (string-match-p section-re existing)
                       (replace-regexp-in-string
-                       (format "\\[%s\\]\n\\(?:[^\[].*\n\\)*" (regexp-quote agent-profile))
+                       (format "\\[%s\\][^\[]*" (regexp-quote agent-profile))
                        ""
                        existing)
                     existing))
@@ -609,6 +803,8 @@ Uses \"agent-\" prefix to avoid colliding with SSO profiles in ~/.aws/config."
   (interactive)
   (window-configuration-to-register ?Z)
   (setq dg-pulumi-stacks--origin-frame (selected-frame))
+  (setq dg-transient-micm--origin-buffer (current-buffer))
+  (dg-transient-micm--seed-from-buffer (current-buffer))
   (dg-transient-micm))
 
 (key-chord-define-global "zp" 'dg-transient-micm-open)
