@@ -73,6 +73,13 @@
       (dg-ghostel-exec cmd sentinel-arg)
     (dg-shell-exec cmd sentinel-arg)))
 
+(defun dg-ghostel-beginning-of-input-or-bol ()
+  (interactive "^")
+  (let ((start (point)))
+    (ghostel-beginning-of-input-or-line)
+    (when (= (point) start)
+      (move-beginning-of-line 1))))
+
 (use-package ghostel
   :ensure t
   :demand t
@@ -82,5 +89,7 @@
   (ghostel-buffer-name-function #'dg-ghostel-name-by-cwd)
   (ghostel-kill-buffer-on-exit t)
   (ghostel-query-before-killing nil)
+  :config
+  (define-key ghostel-line-mode-map (kbd "C-a") #'dg-ghostel-beginning-of-input-or-bol)
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
