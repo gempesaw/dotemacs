@@ -73,29 +73,14 @@
       (dg-ghostel-exec cmd sentinel-arg)
     (dg-shell-exec cmd sentinel-arg)))
 
-(defun dg-ghostel-history-prev ()
-  (interactive)
-  (ghostel-send-key "p" "ctrl"))
-
-(defun dg-ghostel-history-next ()
-  (interactive)
-  (ghostel-send-key "n" "ctrl"))
-
-(defun dg-ghostel-history-search ()
-  (interactive)
-  (ghostel-send-key "r" "ctrl"))
-
 (use-package ghostel
   :ensure t
   :demand t
   :custom
   (ghostel-shell "/opt/homebrew/bin/bash")
+  (ghostel-initial-input-mode 'line)
   (ghostel-buffer-name-function #'dg-ghostel-name-by-cwd)
   (ghostel-kill-buffer-on-exit t)
   (ghostel-query-before-killing nil)
-  :config
-  (define-key ghostel-semi-char-mode-map (kbd "M-p") #'dg-ghostel-history-prev)
-  (define-key ghostel-semi-char-mode-map (kbd "M-n") #'dg-ghostel-history-next)
-  (define-key ghostel-semi-char-mode-map (kbd "M-r") #'dg-ghostel-history-search)
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
