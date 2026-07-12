@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 
+(defvar dg-use-ghostel t)
+
 (defun dg-ghostel-name-by-cwd (_title)
   (format "*ghostel<%s>*" (abbreviate-file-name default-directory)))
 
@@ -20,6 +22,57 @@
             (dg-ghostel-new-here)))
       (dg-ghostel-new-here))))
 
+(defun dg-ghostel-exec (&optional cmd _sentinel-arg)
+  (interactive)
+  (let* ((command (if cmd (format "%s && exit" cmd) ""))
+         (buf (save-window-excursion (ghostel '(4)))))
+    (when (posframe-workable-p)
+      (posframe-show buf
+                     :position (point)
+                     :poshandler #'posframe-poshandler-frame-center
+                     :min-width 180
+                     :min-height 30
+                     :border-width 2
+                     :border-color "white"
+                     :accept-focus t)
+      (with-current-buffer buf
+        (add-hook 'ghostel-exit-functions
+                  (lambda (b _event) (posframe-delete-frame b))
+                  nil t)
+        (unless (string-empty-p command)
+          (ghostel-send-string command)
+          (ghostel-send-key "return"))))))
+
+(defun dg-maybe-ghostel-new-here ()
+  (interactive)
+  (if dg-use-ghostel
+      (dg-ghostel-new-here)
+    (create-new-shell-here)))
+
+(defun dg-maybe-ghostel-switch-or-create ()
+  (interactive)
+  (if dg-use-ghostel
+      (dg-ghostel-switch-or-create)
+    (switch-to-shell-or-create)))
+
+(defun dg-maybe-ghostel-submit (cmd)
+  (if dg-use-ghostel
+      (progn (ghostel-send-string cmd)
+             (ghostel-send-key "return"))
+    (insert cmd)
+    (comint-send-input nil t)))
+
+(defun dg-maybe-ghostel-type (str)
+  (if dg-use-ghostel
+      (ghostel-send-string str)
+    (insert str)))
+
+(defun dg-maybe-ghostel-exec (&optional cmd sentinel-arg)
+  (interactive)
+  (if dg-use-ghostel
+      (dg-ghostel-exec cmd sentinel-arg)
+    (dg-shell-exec cmd sentinel-arg)))
+
 (use-package ghostel
   :ensure t
   :demand t
@@ -28,5 +81,5 @@
   (ghostel-buffer-name-function #'dg-ghostel-name-by-cwd)
   (ghostel-kill-buffer-on-exit t)
   (ghostel-query-before-killing nil)
-  :bind* (("C-c /" . dg-ghostel-switch-or-create)
-          ("C-c C-/" . dg-ghostel-new-here)))
+  :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
+          ("C-c C-/" . dg-maybe-ghostel-new-here)))

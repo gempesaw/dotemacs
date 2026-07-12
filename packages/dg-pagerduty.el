@@ -73,9 +73,9 @@
     (f-touch temp-file)
     (f-write (substring-no-properties (car kill-ring)) 'utf-8 temp-file)
     (find-file temp-file)
-    (let ((buf (create-new-shell-here)))
+    (let ((buf (dg-maybe-ghostel-new-here)))
       (select-window (display-buffer buf))
-      (insert "terraform console"))))
+      (dg-maybe-ghostel-type "terraform console"))))
 
 
 (defun dg-get-mfa ()
@@ -87,11 +87,16 @@
                    (car)
                    (s-split "\n")
                    (car))))
-    (if (s-equals-p major-mode "vterm-mode")
-        (progn
-          (vterm-send-string code)
-          (vterm-send-return)
-          (message "Sending code..."))
+    (cond
+     ((derived-mode-p 'ghostel-mode)
+      (ghostel-send-string code)
+      (ghostel-send-key "return")
+      (message "Sending code..."))
+     ((s-equals-p major-mode "vterm-mode")
+      (vterm-send-string code)
+      (vterm-send-return)
+      (message "Sending code..."))
+     (t
       (if (s-equals-p major-mode "term-mode")
           (term-line-mode)
         (end-of-buffer))
@@ -100,7 +105,7 @@
           (progn
             (term-send-input)
             (term-char-mode))
-        (comint-send-input)))))
+        (comint-send-input))))))
 
 (global-set-key (kbd "C-c m") 'dg-get-mfa)
 

@@ -71,12 +71,12 @@ Detects fzf by looking for its characteristic prompt pattern."
 (defun dg-shell-exec-at-point ()
   (interactive)
   (let* ((filename (car (dired-get-marked-files))))
-    (dg-shell-exec filename)))
+    (dg-maybe-ghostel-exec filename)))
 
 (defun dg-shell-open-aws ()
   (interactive)
-  (dg-shell-exec "sso"))
+  (dg-maybe-ghostel-exec "sso"))
 
 
-(define-key my-keys-minor-mode-map (kbd "C-c 7") 'dg-shell-exec)
+(define-key my-keys-minor-mode-map (kbd "C-c 7") 'dg-maybe-ghostel-exec)
 (define-key my-keys-minor-mode-map (kbd "C-c a") 'dg-shell-open-aws)

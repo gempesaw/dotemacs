@@ -121,11 +121,14 @@ raises an error."
     (get-remote-micm-boxes)
     (with-temp-buffer
       (let ((box (completing-read "Which box: " (get-remote-boxes))))
-        (if (s-contains-p "/" box)
-            (progn
-              (create-new-shell-here)
-              (insert (format "micm ssh %s" box))
-              (comint-send-input nil t))
+        (cond
+         ((s-contains-p "/" box)
+          (dg-maybe-ghostel-new-here)
+          (dg-maybe-ghostel-submit (format "micm ssh %s" box)))
+         (dg-use-ghostel
+          (dg-ghostel-new-here)
+          (dg-maybe-ghostel-submit (format "ssh %s" box)))
+         (t
           (let* ((_ (shell-command-to-string (format "ssh %s ls -al" box)))
                  (buffer (concat "*shell<" box ">*"))
                  (default-directory (concat "/sshx:ubuntu@" box ":/")))
@@ -136,5 +139,5 @@ raises an error."
              (get-buffer-process buffer) nil)
             (with-current-buffer buffer
               (insert "cd")
-              (comint-send-input nil t)))))))
+              (comint-send-input nil t))))))))
   )
