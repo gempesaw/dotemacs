@@ -84,7 +84,8 @@ raises an error."
   (defun dg-tramp--parse-micm-output (output)
     (->> (s-split "\n" output t)
          (--map (car (split-string it)))
-         (--filter (s-contains-p "/" it))))
+         ;; (--filter (s-contains-p "/" it))
+         ))
 
   (defun get-remote-micm-boxes-sync ()
     (interactive)
@@ -95,13 +96,14 @@ raises an error."
 
   (defun get-remote-micm-boxes ()
     (interactive)
-    (let ((bpr-show-progress nil)
+    (let ((default-directory (expand-file-name "~/opt/infra/"))
+          (bpr-show-progress nil)
           (bpr-on-success (lambda (process)
                             (with-current-buffer (process-buffer process)
                               (setq dg-tramp-micm-ssh-boxes
                                     (dg-tramp--parse-micm-output
                                      (buffer-substring-no-properties (point-min) (point-max))))))))
-      (bpr-spawn "cd ~/opt/infra && uv run micm ssh --list 2>/dev/null")))
+      (bpr-spawn "uv run --directory ~/opt/infra micm ssh --list 2>/dev/null")))
 
   (defun get-remote-boxes ()
     (let ((ssh-config (get-file-as-string ssh-config-path)))
