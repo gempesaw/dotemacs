@@ -91,7 +91,10 @@
   (ghostel-query-before-killing nil)
   :config
   (define-key ghostel-line-mode-map (kbd "C-a") #'dg-ghostel-beginning-of-input-or-bol)
-  (dolist (c '(?- ?. ?_ ?=))
-    (modify-syntax-entry c "." ghostel-mode-syntax-table))
+  (dolist (ch (number-sequence ?! ?~))
+    (modify-syntax-entry
+     ch
+     (if (= (with-syntax-table (standard-syntax-table) (char-syntax ch)) ?w) "w" ".")
+     ghostel-mode-syntax-table))
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
