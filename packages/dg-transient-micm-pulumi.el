@@ -719,8 +719,8 @@ appropriate automation role in AWS config."
                                          (sso-arg (dg-transient-micm--get-sso-arg profile)))
                                     (dg-modular-ensure-aws-profile-login profile)
                                     (dg-transient-aws-sso-set-emacs-env profile)
-                                    (insert (format "eval $(aws-sso eval %s --no-region --profile=%s) && unset AWS_PROFILE" sso-arg profile))
-                                    (comint-send-input))))
+                                    (dg-maybe-ghostel-submit
+                                     (format "eval $(aws-sso eval %s --no-region --profile=%s) && unset AWS_PROFILE" sso-arg profile)))))
 
     ("e" "authenticate emacs environment" (lambda (&optional args)
                                             (interactive (list (transient-args transient-current-command)))
