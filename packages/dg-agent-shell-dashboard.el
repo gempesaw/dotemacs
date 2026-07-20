@@ -44,6 +44,12 @@ Output only those two lines, nothing else.")
 
   (agent-shell-dashboard-setup)
 
+  ;; Suppress `agent-shell-viewport--clean-up's "Kill shell session
+  ;; too?" prompt — closing a compose viewport should never offer to
+  ;; nuke its shell.  The var is `defvar-local' so this default
+  ;; carries into every new viewport buffer.
+  (setq-default agent-shell-viewport--clean-up nil)
+
   ;; ----------------------------------------------------------------
   ;; Row-buffer helper used by the row-ops below
   ;; ----------------------------------------------------------------
