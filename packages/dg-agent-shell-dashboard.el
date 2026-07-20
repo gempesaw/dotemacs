@@ -111,10 +111,59 @@ then the first known buffer.  Signals if none exist."
   ;; Context builder + execute-with-context commands
   ;; ----------------------------------------------------------------
 
+  (defun dg/agent-shell-dashboard--magit-file-line (&optional pos)
+    "Resolve the working-tree FILE and LINE for the diff at POS (or point).
+Returns a cons (FILE . LINE); LINE is nil when point is not inside a
+hunk body.  FILE is the on-disk worktree path in whatever checkout the
+magit buffer belongs to — a linked worktree resolves within itself,
+because `magit-diff-visit-file--noselect' keys off this buffer's own
+`magit-toplevel'.  Committed-revision diffs are not handled specially."
+    (save-excursion
+      (when pos (goto-char pos))
+      (pcase-let ((`(,buf ,tpos)
+                   (ignore-errors
+                     (magit-diff-visit-file--noselect nil t))))
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
+            (cons (buffer-file-name)
+                  (and tpos (line-number-at-pos tpos))))))))
+
+  (defun dg/agent-shell-dashboard--magit-context ()
+    "Context string for a magit diff position, or nil when not applicable.
+Default: the working-tree FILE:LINE at point, matching how file
+buffers are referenced so the agent reads live code, not a frozen
+patch fragment.  With an active region inside a hunk: FILE:START-END
+plus the selected lines as a ```diff``` fragment, for when the change
+itself is the subject."
+    (when (and (featurep 'magit)
+               (derived-mode-p 'magit-diff-mode 'magit-status-mode
+                               'magit-revision-mode)
+               (magit-section-match '(hunk file)))
+      (if (and (use-region-p) (magit-section-match 'hunk))
+          (let* ((beg (dg/agent-shell-dashboard--magit-file-line
+                       (region-beginning)))
+                 (end (dg/agent-shell-dashboard--magit-file-line (region-end)))
+                 (file (car beg))
+                 (bl (cdr beg))
+                 (el (cdr end))
+                 (patch (ignore-errors
+                          (magit-diff-hunk-region-patch
+                           (magit-current-section)))))
+            (concat
+             (cond ((and file bl el (/= bl el)) (format "%s:%d-%d" file bl el))
+                   ((and file bl) (format "%s:%d" file bl))
+                   (t (or file "")))
+             (and patch (format "\n\n```diff\n%s```" patch))))
+        (pcase-let ((`(,file . ,line) (dg/agent-shell-dashboard--magit-file-line)))
+          (when file
+            (if line (format "%s:%d" file line) file))))))
+
   (defun dg/agent-shell-dashboard--build-context ()
     "Build context string from the current buffer state.
 For file buffers: absolute path with line number(s).
-For non-file buffers: region text or current line."
+For magit diff buffers: the working-tree FILE:LINE at point (see
+`dg/agent-shell-dashboard--magit-context').
+For other non-file buffers: region text or current line."
     (let* ((file-path (buffer-file-name))
            (has-region (use-region-p))
            (start-line (if has-region
@@ -127,6 +176,7 @@ For non-file buffers: region text or current line."
         (if (and has-region (not (= start-line end-line)))
             (format "%s:%d-%d" file-path start-line end-line)
           (format "%s:%d" file-path start-line)))
+       ((dg/agent-shell-dashboard--magit-context))
        (has-region
         (buffer-substring-no-properties (region-beginning) (region-end)))
        (t
