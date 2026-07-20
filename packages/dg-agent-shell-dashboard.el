@@ -133,12 +133,63 @@ For non-file buffers: region text or current line."
         (buffer-substring-no-properties
          (line-beginning-position) (line-end-position))))))
 
-  (defun dg/agent-shell-dashboard-ask ()
-    "Pop the agent-shell viewport for the default buffer with no context."
+  (defun dg/agent-shell-dashboard--viewport-queue-send ()
+    "Submit the current viewport compose via `agent-shell-queue-request'.
+Always queues — never errors with `Busy, try later'.  Upstream's
+`agent-shell-viewport-compose-send-and-kill' is supposed to do the
+same in 0.55, but in practice still throws `Busy' in some cases
+(its `agent-shell-viewport--busy-p' check disagrees with
+`shell-maker-busy' inside `--insert-to-shell-buffer'); we keep this
+override as the reliable path."
     (interactive)
-    (let ((shell-buffer (dg/agent-shell-dashboard--default-buffer)))
-      (pop-to-buffer shell-buffer)
-      (call-interactively #'agent-shell-prompt-compose)))
+    (let* ((prompt (s-trim (buffer-string)))
+           (shell-buffer (agent-shell-viewport--shell-buffer))
+           (viewport (current-buffer)))
+      (when (s-blank? prompt)
+        (user-error "Nothing to send"))
+      (with-current-buffer shell-buffer
+        (agent-shell-queue-request prompt))
+      (kill-buffer viewport)
+      (pop-to-buffer shell-buffer)))
+
+  (defun dg/agent-shell-dashboard--pop-viewport-edit (shell-buffer)
+    "Pop SHELL-BUFFER's viewport in edit mode, even if the shell is busy.
+Upstream opens the viewport in view-mode while a request is in
+flight; we force edit-mode so composing while busy works.  C-c C-c
+is rebound locally to `dg/agent-shell-dashboard--viewport-queue-send'
+because upstream's compose-send-and-kill still errors `Busy' in
+some shells even on 0.55."
+    (let ((viewport (agent-shell-viewport--buffer :shell-buffer shell-buffer)))
+      (with-current-buffer viewport
+        (unless (derived-mode-p 'agent-shell-viewport-edit-mode)
+          (agent-shell-viewport-edit-mode)
+          (agent-shell-viewport--initialize))
+        (use-local-map (copy-keymap (current-local-map)))
+        (local-set-key (kbd "C-c C-c")
+                       #'dg/agent-shell-dashboard--viewport-queue-send))
+      (pop-to-buffer viewport)))
+
+  (defun dg/agent-shell-dashboard-ask ()
+    "Pop a viewport edit buffer for the default shell, busy-tolerant."
+    (interactive)
+    (dg/agent-shell-dashboard--pop-viewport-edit
+     (dg/agent-shell-dashboard--default-buffer)))
+
+  (defun dg/agent-shell-dashboard-send ()
+    "Override the dashboard's row send: viewport edit mode + queueing.
+The upstream `agent-shell-prompt-compose' refuses while the agent
+is busy; this wrapper bypasses that by submitting on C-c C-c via
+`agent-shell-queue-request'."
+    (interactive)
+    (let* ((row (or (get-text-property (point) 'dg-row)
+                    (user-error "No dashboard row at point")))
+           (cached (plist-get row :buffer))
+           (sid (plist-get row :session-id))
+           (shell-buffer (or (and (buffer-live-p cached) cached)
+                             (agent-shell-dashboard--find-live-buffer-for-session sid)
+                             (agent-shell-dashboard--resume-session row)
+                             (user-error "Could not resume session"))))
+      (dg/agent-shell-dashboard--pop-viewport-edit shell-buffer)))
 
   (defun dg/agent-shell-dashboard-execute-request ()
     "Append current-buffer context into the default agent-shell viewport.
@@ -265,6 +316,7 @@ new requests for buffers that have no summary yet."
   ;; calls these from code buffers via the transient.  f stays on the
   ;; public `fork' binding — flycheck-send is a code-buffer command
   ;; reachable via the transient, not the dashboard keymap.
+  (define-key agent-shell-dashboard-mode-map (kbd "s") #'dg/agent-shell-dashboard-send)
   (define-key agent-shell-dashboard-mode-map (kbd "x") #'dg/agent-shell-dashboard-execute-request)
   (define-key agent-shell-dashboard-mode-map (kbd "X") #'dg/agent-shell-dashboard-execute-request-pick-buffer)
 
