@@ -260,11 +260,15 @@ number."
   ;; Generate all summaries (manual force-capture)
   ;; ----------------------------------------------------------------
 
-  (defun dg/agent-shell-dashboard-generate-all-summaries ()
+  (defun dg/agent-shell-dashboard-generate-all-summaries (&optional force)
     "Generate summaries for all agent-shell buffers.
 First tries to extract from existing buffer content, then queues
-new requests for buffers that have no summary yet."
-    (interactive)
+new requests for buffers that have no summary yet.
+
+With a prefix arg (FORCE non-nil), clears every buffer's existing
+summary first so each one gets a fresh capture.  Useful after
+relaxing the on-store truncation cap to widen existing rows."
+    (interactive "P")
     (let ((all-buffers (agent-shell-dashboard--all-buffers))
           (extracted 0)
           (queued 0)
@@ -273,6 +277,8 @@ new requests for buffers that have no summary yet."
           (user-error "No agent-shell buffers available")
         (dolist (buf all-buffers)
           (with-current-buffer buf
+            (when force
+              (setq agent-shell-dashboard--buffer-summary nil))
             (when (and agent-shell-dashboard--buffer-summary
                        (or (s-starts-with? "<shell-maker" agent-shell-dashboard--buffer-summary)
                            (s-starts-with? "▶" agent-shell-dashboard--buffer-summary)))
