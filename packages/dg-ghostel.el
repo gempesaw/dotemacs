@@ -100,7 +100,13 @@
 
 (defun dg-ghostel-history-search ()
   (interactive)
-  (let ((choice (completing-read "History: " (dg-ghostel--history-candidates) nil nil)))
+  (let* ((cands (dg-ghostel--history-candidates))
+         (table (lambda (string pred action)
+                  (if (eq action 'metadata)
+                      '(metadata (display-sort-function . identity)
+                                 (cycle-sort-function . identity))
+                    (complete-with-action action cands string pred))))
+         (choice (completing-read "History: " table nil nil)))
     (when (and choice (not (string-empty-p choice)))
       (ghostel--line-mode-replace-input choice))))
 
