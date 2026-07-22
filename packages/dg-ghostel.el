@@ -80,6 +80,30 @@
     (when (= (point) start)
       (move-beginning-of-line 1))))
 
+(defvar dg-ghostel-history-file "~/.bash_history")
+
+(defun dg-ghostel--history-file-lines ()
+  (let ((f (expand-file-name dg-ghostel-history-file)))
+    (when (file-readable-p f)
+      (with-temp-buffer
+        (insert-file-contents f)
+        (nreverse
+         (seq-remove (lambda (l) (string-prefix-p "#" l))
+                     (split-string (buffer-string) "\n" t)))))))
+
+(defun dg-ghostel--history-candidates ()
+  (let ((session (seq-mapcat
+                  (lambda (b) (buffer-local-value 'ghostel--line-mode-history b))
+                  (--filter (with-current-buffer it (derived-mode-p 'ghostel-mode))
+                            (buffer-list)))))
+    (delete-dups (append session (dg-ghostel--history-file-lines) nil))))
+
+(defun dg-ghostel-history-search ()
+  (interactive)
+  (let ((choice (completing-read "History: " (dg-ghostel--history-candidates) nil nil)))
+    (when (and choice (not (string-empty-p choice)))
+      (ghostel--line-mode-replace-input choice))))
+
 (use-package ghostel
   :ensure t
   :demand t
@@ -91,6 +115,7 @@
   (ghostel-query-before-killing nil)
   :config
   (define-key ghostel-line-mode-map (kbd "C-a") #'dg-ghostel-beginning-of-input-or-bol)
+  (define-key ghostel-line-mode-map (kbd "M-r") #'dg-ghostel-history-search)
   (dolist (ch (number-sequence ?! ?~))
     (modify-syntax-entry
      ch
