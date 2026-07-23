@@ -110,6 +110,24 @@
     (when (and choice (not (string-empty-p choice)))
       (ghostel--line-mode-replace-input choice))))
 
+(defface dg-ghostel-submitted-input '((t :inherit bold))
+  "Face for command lines submitted to a ghostel terminal.")
+
+(defun dg-ghostel--bold-submitted-input (window &optional _force)
+  (ignore-errors
+    (with-silent-modifications
+      (let ((pos (window-start window))
+            (end (window-end window t)))
+        (while (and pos (< pos end))
+          (let ((next (or (next-single-property-change pos 'ghostel-input nil end) end)))
+            (when (and (get-text-property pos 'ghostel-input)
+                       (let ((f (get-text-property pos 'face)))
+                         (not (or (eq f 'dg-ghostel-submitted-input)
+                                  (and (listp f) (memq 'dg-ghostel-submitted-input f))))))
+              (add-face-text-property pos next 'dg-ghostel-submitted-input))
+            (setq pos next))))))
+  nil)
+
 (use-package ghostel
   :ensure t
   :demand t
@@ -127,5 +145,6 @@
      ch
      (if (= (with-syntax-table (standard-syntax-table) (char-syntax ch)) ?w) "w" ".")
      ghostel-mode-syntax-table))
+  (add-hook 'ghostel-inhibit-anchor-functions #'dg-ghostel--bold-submitted-input)
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
