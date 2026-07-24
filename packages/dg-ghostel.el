@@ -55,10 +55,25 @@
       (dg-ghostel-switch-or-create)
     (switch-to-shell-or-create)))
 
+(defun dg-ghostel--record-input (cmd)
+  (unless (string-empty-p cmd)
+    (when (derived-mode-p 'ghostel-mode)
+      (unless (equal cmd (car ghostel--line-mode-history))
+        (push cmd ghostel--line-mode-history)
+        (when (> (length ghostel--line-mode-history) ghostel-line-mode-history-size)
+          (setcdr (nthcdr (1- ghostel-line-mode-history-size)
+                          ghostel--line-mode-history)
+                  nil)))
+      (setq ghostel--line-mode-history-index nil))
+    (let ((f (expand-file-name dg-ghostel-history-file)))
+      (when (file-writable-p f)
+        (write-region (concat cmd "\n") nil f 'append 'silent)))))
+
 (defun dg-maybe-ghostel-submit (cmd)
   (if dg-use-ghostel
       (progn (ghostel-send-string cmd)
-             (ghostel-send-key "return"))
+             (ghostel-send-key "return")
+             (dg-ghostel--record-input cmd))
     (insert cmd)
     (comint-send-input nil t)))
 
