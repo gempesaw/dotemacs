@@ -143,6 +143,19 @@
             (setq pos next))))))
   nil)
 
+(defvar dg-ghostel-roam-commands
+  '(previous-line next-line
+    scroll-up-command scroll-down-command
+    beginning-of-buffer end-of-buffer
+    isearch-forward isearch-backward))
+
+(defun dg-ghostel--roam-on-nav ()
+  (when (and (eq ghostel--input-mode 'line)
+             (bound-and-true-p ghostel--command-running)
+             (not (bound-and-true-p ghostel--line-mode-paused))
+             (memq this-command dg-ghostel-roam-commands))
+    (ignore-errors (ghostel-emacs-mode))))
+
 (use-package ghostel
   :ensure t
   :demand t
@@ -161,5 +174,7 @@
      (if (= (with-syntax-table (standard-syntax-table) (char-syntax ch)) ?w) "w" ".")
      ghostel-mode-syntax-table))
   (add-hook 'ghostel-inhibit-anchor-functions #'dg-ghostel--bold-submitted-input)
+  (add-hook 'ghostel-mode-hook
+            (lambda () (add-hook 'pre-command-hook #'dg-ghostel--roam-on-nav nil t)))
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
