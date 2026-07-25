@@ -144,8 +144,7 @@
   nil)
 
 (defvar dg-ghostel-roam-commands
-  '(previous-line next-line
-    scroll-up-command scroll-down-command
+  '(scroll-up-command scroll-down-command
     beginning-of-buffer end-of-buffer
     isearch-forward isearch-backward))
 
