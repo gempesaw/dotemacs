@@ -168,6 +168,10 @@
   :config
   (define-key ghostel-line-mode-map (kbd "C-a") #'dg-ghostel-beginning-of-input-or-bol)
   (define-key ghostel-line-mode-map (kbd "M-r") #'dg-ghostel-history-search)
+  (define-key ghostel-line-mode-map (kbd "M-p") #'ghostel-previous-prompt)
+  (define-key ghostel-line-mode-map (kbd "M-n") #'ghostel-next-prompt)
+  (define-key ghostel-readonly-mode-map (kbd "M-p") #'ghostel-previous-prompt)
+  (define-key ghostel-readonly-mode-map (kbd "M-n") #'ghostel-next-prompt)
   (dolist (ch (number-sequence ?! ?~))
     (modify-syntax-entry
      ch
