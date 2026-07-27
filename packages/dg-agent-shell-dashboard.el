@@ -130,30 +130,27 @@ because `magit-diff-visit-file--noselect' keys off this buffer's own
 
   (defun dg/agent-shell-dashboard--magit-context ()
     "Context string for a magit diff position, or nil when not applicable.
-Default: the working-tree FILE:LINE at point, matching how file
-buffers are referenced so the agent reads live code, not a frozen
-patch fragment.  With an active region inside a hunk: FILE:START-END
-plus the selected lines as a ```diff``` fragment, for when the change
-itself is the subject."
+Returns only the working-tree FILE:LINE (or FILE:START-END across a
+region), matching how file buffers are referenced so the agent reads
+the live worktree file itself.
+
+We deliberately send no diff/code fragment.  A `magit-diff' hunk is
+usually `<base>...HEAD', whose `-' and context lines are the base
+(often main) version — pasting them alongside a worktree FILE:LINE
+gives the agent two disagreeing copies and it fixates on the stale
+one.  The bare reference is the single source of truth."
     (when (and (featurep 'magit)
                (derived-mode-p 'magit-diff-mode 'magit-status-mode
                                'magit-revision-mode)
                (magit-section-match '(hunk file)))
       (if (and (use-region-p) (magit-section-match 'hunk))
-          (let* ((beg (dg/agent-shell-dashboard--magit-file-line
-                       (region-beginning)))
-                 (end (dg/agent-shell-dashboard--magit-file-line (region-end)))
-                 (file (car beg))
-                 (bl (cdr beg))
-                 (el (cdr end))
-                 (patch (ignore-errors
-                          (magit-diff-hunk-region-patch
-                           (magit-current-section)))))
-            (concat
-             (cond ((and file bl el (/= bl el)) (format "%s:%d-%d" file bl el))
-                   ((and file bl) (format "%s:%d" file bl))
-                   (t (or file "")))
-             (and patch (format "\n\n```diff\n%s```" patch))))
+          (pcase-let ((`(,file . ,bl) (dg/agent-shell-dashboard--magit-file-line
+                                       (region-beginning)))
+                      (`(,_ . ,el) (dg/agent-shell-dashboard--magit-file-line
+                                    (region-end))))
+            (cond ((and file bl el (/= bl el)) (format "%s:%d-%d" file bl el))
+                  ((and file bl) (format "%s:%d" file bl))
+                  (file file)))
         (pcase-let ((`(,file . ,line) (dg/agent-shell-dashboard--magit-file-line)))
           (when file
             (if line (format "%s:%d" file line) file))))))
