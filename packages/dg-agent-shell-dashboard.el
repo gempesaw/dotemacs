@@ -202,6 +202,50 @@ override as the reliable path."
       (kill-buffer viewport)
       (pop-to-buffer shell-buffer)))
 
+  (defvar dg/agent-shell-dashboard-banner-lines 15
+    "How many trailing session lines the compose banner shows.")
+
+  (defun dg/agent-shell-dashboard--session-tail (shell-buffer n)
+    "Return the last N non-blank-trimmed lines of SHELL-BUFFER's text."
+    (with-current-buffer shell-buffer
+      (save-excursion
+        (goto-char (point-max))
+        (let ((end (point)))
+          (forward-line (- n))
+          (let ((tail (s-trim-right
+                       (buffer-substring-no-properties (point) end))))
+            (if (s-blank? tail) "(empty session)" tail))))))
+
+  (defun dg/agent-shell-dashboard--viewport-banner (shell-buffer)
+    "Read-only banner naming SHELL-BUFFER, its summary, and its tail.
+Rendered as an overlay `before-string' so it is display-only and
+never becomes part of the composed prompt."
+    (let* ((summary (and (boundp 'agent-shell-dashboard--buffer-summary)
+                         (buffer-local-value
+                          'agent-shell-dashboard--buffer-summary shell-buffer)))
+           (tail (dg/agent-shell-dashboard--session-tail
+                  shell-buffer dg/agent-shell-dashboard-banner-lines))
+           (rule (propertize (concat (make-string 64 ?─) "\n") 'face 'shadow)))
+      (concat
+       (propertize (format "COMPOSING TO → %s\n" (buffer-name shell-buffer))
+                   'face '(:inherit success :weight bold))
+       (when (and (stringp summary) (not (s-blank? summary)))
+         (propertize (format "  %s\n" summary) 'face 'font-lock-doc-face))
+       rule
+       (propertize (concat tail "\n") 'face 'shadow)
+       rule
+       "\n")))
+
+  (defun dg/agent-shell-dashboard--install-banner (viewport shell-buffer)
+    "Put a fresh compose banner for SHELL-BUFFER atop VIEWPORT."
+    (when (buffer-live-p viewport)
+      (with-current-buffer viewport
+        (remove-overlays (point-min) (point-max) 'dg-target-banner t)
+        (let ((ov (make-overlay (point-min) (point-min) viewport)))
+          (overlay-put ov 'dg-target-banner t)
+          (overlay-put ov 'before-string
+                       (dg/agent-shell-dashboard--viewport-banner shell-buffer))))))
+
   (defun dg/agent-shell-dashboard--pop-viewport-edit (shell-buffer)
     "Pop SHELL-BUFFER's viewport in edit mode, even if the shell is busy.
 Upstream opens the viewport in view-mode while a request is in
@@ -217,6 +261,7 @@ some shells even on 0.55."
         (use-local-map (copy-keymap (current-local-map)))
         (local-set-key (kbd "C-c C-c")
                        #'dg/agent-shell-dashboard--viewport-queue-send))
+      (dg/agent-shell-dashboard--install-banner viewport shell-buffer)
       (pop-to-buffer viewport)))
 
   (defun dg/agent-shell-dashboard-ask ()
@@ -251,7 +296,9 @@ non-file buffers contribute the active region or current line."
       (pop-to-buffer shell-buffer)
       (agent-shell-viewport--show-buffer
        :shell-buffer shell-buffer
-       :append context)))
+       :append context)
+      (dg/agent-shell-dashboard--install-banner
+       (agent-shell-viewport--buffer :shell-buffer shell-buffer) shell-buffer)))
 
   (defun dg/agent-shell-dashboard-execute-request-pick-buffer ()
     "Same as `dg/agent-shell-dashboard-execute-request' but pick the target."
@@ -262,7 +309,9 @@ non-file buffers contribute the active region or current line."
       (pop-to-buffer shell-buffer)
       (agent-shell-viewport--show-buffer
        :shell-buffer shell-buffer
-       :append context)))
+       :append context)
+      (dg/agent-shell-dashboard--install-banner
+       (agent-shell-viewport--buffer :shell-buffer shell-buffer) shell-buffer)))
 
   (defun dg/agent-shell-dashboard-send-flycheck-error ()
     "Copy current flycheck error(s) and send to agent-shell with file context.
