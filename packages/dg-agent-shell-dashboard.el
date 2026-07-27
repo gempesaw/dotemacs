@@ -372,6 +372,78 @@ number."
           (agent-shell-queue-request message-text)))))
 
   ;; ----------------------------------------------------------------
+  ;; Diff the worktree a session works in
+  ;; ----------------------------------------------------------------
+
+  ;; agent-shell buffers stay rooted at the repo the session launched
+  ;; from (default-directory is the main checkout); the agent creates
+  ;; its `dg/<ticket>-<topic>' worktree itself, so Emacs has no stored
+  ;; pointer to it.  Recover it from the one durable trace: the worktree
+  ;; paths the agent typed into the transcript.  Cross-check those
+  ;; against the repo's real worktrees so we never diff a stale guess.
+
+  (defun dg/agent-shell-dashboard--session-worktrees (shell-buffer)
+    "Worktrees SHELL-BUFFER's transcript mentions, most-recent first.
+Each element is a cons (DIR . LABEL).  Scans the transcript backward
+for `.claude'/`.agent-shell' worktree paths the agent typed, keeps the
+first (most recent) mention of each, and validates it still exists on
+disk.  Deliberately avoids `magit-list-worktrees', which stats every
+worktree in the repo and costs seconds on a repo with many."
+    (with-current-buffer shell-buffer
+      (let ((top (expand-file-name (magit-toplevel)))
+            (seen (make-hash-table :test 'equal))
+            candidates)
+        (save-excursion
+          (goto-char (point-max))
+          (while (re-search-backward
+                  "\\(?:\\.claude\\|\\.agent-shell\\)/worktrees/[A-Za-z0-9._+-]+" nil t)
+            (let ((dir (file-name-as-directory
+                        (expand-file-name (match-string-no-properties 0) top))))
+              (when (and (not (gethash dir seen))
+                         (file-directory-p dir)
+                         ;; A linked worktree has a `.git' file at its
+                         ;; root; a plain directory that merely lives
+                         ;; under .../worktrees/ does not.
+                         (file-exists-p (expand-file-name ".git" dir)))
+                (puthash dir t seen)
+                (push (cons dir (file-name-nondirectory (directory-file-name dir)))
+                      candidates)))))
+        (nreverse candidates))))
+
+  (defun dg/agent-shell-dashboard--diff-base ()
+    "Resolve a base rev for the worktree in `default-directory'."
+    (let ((mb (or (ignore-errors (magit-main-branch)) "main")))
+      (or (cl-find-if #'magit-rev-verify
+                      (list (concat "origin/" mb) mb
+                            "origin/main" "origin/master" "main" "master"))
+          "HEAD~")))
+
+  (defun dg/agent-shell-dashboard-diff-session ()
+    "Show a magit diff of the worktree the chosen session works in.
+Uses the current agent-shell buffer, else prompts for one, finds the
+worktrees its transcript mentions, and opens a range diff of the
+selected worktree against the repo's main branch.  With no worktree
+mentioned, falls back to `magit-status' in the session's directory."
+    (interactive)
+    (let* ((shell-buffer (if (derived-mode-p 'agent-shell-mode)
+                             (current-buffer)
+                           (dg/agent-shell-dashboard--prompt-for-buffer
+                            "Diff worktree of session: ")))
+           (worktrees (dg/agent-shell-dashboard--session-worktrees shell-buffer)))
+      (if (null worktrees)
+          (let ((default-directory (buffer-local-value 'default-directory shell-buffer)))
+            (message "No worktree found in transcript; showing status of %s"
+                     default-directory)
+            (magit-status-setup-buffer default-directory))
+        (let* ((dir (if (= 1 (length worktrees))
+                        (car (car worktrees))
+                      (let ((choice (completing-read
+                                     "Worktree: " (mapcar #'cdr worktrees) nil t)))
+                        (car (rassoc choice worktrees)))))
+               (default-directory dir))
+          (magit-diff-range (concat (dg/agent-shell-dashboard--diff-base) "..."))))))
+
+  ;; ----------------------------------------------------------------
   ;; Generate all summaries (manual force-capture)
   ;; ----------------------------------------------------------------
 
@@ -462,7 +534,7 @@ relaxing the on-store truncation cap to widen existing rows."
      ["Summary"
       ("T" "Generate All Summaries" dg/agent-shell-dashboard-generate-all-summaries)]
      ["Persistence"
-      ("d" "Dashboard" agent-shell-dashboard)
+      ("d" "Diff session worktree" dg/agent-shell-dashboard-diff-session)
       ("P" "Save active sessions" agent-shell-dashboard-save-active-sessions)
       ("R" "Restore active sessions" agent-shell-dashboard-restore-active-sessions)]])
 
