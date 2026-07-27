@@ -246,16 +246,18 @@ never becomes part of the composed prompt."
           (overlay-put ov 'before-string
                        (dg/agent-shell-dashboard--viewport-banner shell-buffer))))))
 
-  (defun dg/agent-shell-dashboard--compose-point-to-end (viewport)
-    "Drop point to the end of the editable compose area in VIEWPORT.
-Point defaults to `point-min', which now renders inside the banner
-overlay; move it past the appended context so typing starts at the
-bottom where the cursor visibly belongs."
+  (defun dg/agent-shell-dashboard--compose-point-to (viewport where)
+    "Put point at WHERE (`start' or `end') of the compose area in VIEWPORT.
+Used to place the cursor sensibly relative to the banner and any
+appended context: `end' for a bare compose (nothing below to sit
+above), `start' when context was appended so typing lands above it."
     (when (buffer-live-p viewport)
-      (with-current-buffer viewport
-        (goto-char (point-max)))
-      (when-let ((win (get-buffer-window viewport t)))
-        (set-window-point win (point-max)))))
+      (let (pos)
+        (with-current-buffer viewport
+          (setq pos (if (eq where 'start) (point-min) (point-max)))
+          (goto-char pos))
+        (when-let ((win (get-buffer-window viewport t)))
+          (set-window-point win pos)))))
 
   (defun dg/agent-shell-dashboard--pop-viewport-edit (shell-buffer)
     "Pop SHELL-BUFFER's viewport in edit mode, even if the shell is busy.
@@ -274,7 +276,7 @@ some shells even on 0.55."
                        #'dg/agent-shell-dashboard--viewport-queue-send))
       (dg/agent-shell-dashboard--install-banner viewport shell-buffer)
       (pop-to-buffer viewport)
-      (dg/agent-shell-dashboard--compose-point-to-end viewport)))
+      (dg/agent-shell-dashboard--compose-point-to viewport 'end)))
 
   (defun dg/agent-shell-dashboard-ask ()
     "Pop a viewport edit buffer for the default shell, busy-tolerant."
@@ -311,7 +313,7 @@ non-file buffers contribute the active region or current line."
        :append context)
       (let ((viewport (agent-shell-viewport--buffer :shell-buffer shell-buffer)))
         (dg/agent-shell-dashboard--install-banner viewport shell-buffer)
-        (dg/agent-shell-dashboard--compose-point-to-end viewport))))
+        (dg/agent-shell-dashboard--compose-point-to viewport 'start))))
 
   (defun dg/agent-shell-dashboard-execute-request-pick-buffer ()
     "Same as `dg/agent-shell-dashboard-execute-request' but pick the target."
@@ -325,7 +327,7 @@ non-file buffers contribute the active region or current line."
        :append context)
       (let ((viewport (agent-shell-viewport--buffer :shell-buffer shell-buffer)))
         (dg/agent-shell-dashboard--install-banner viewport shell-buffer)
-        (dg/agent-shell-dashboard--compose-point-to-end viewport))))
+        (dg/agent-shell-dashboard--compose-point-to viewport 'start))))
 
   (defun dg/agent-shell-dashboard-send-flycheck-error ()
     "Copy current flycheck error(s) and send to agent-shell with file context.
