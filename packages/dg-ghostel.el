@@ -143,6 +143,26 @@
             (setq pos next))))))
   nil)
 
+(defvar-local dg-ghostel--mode-before-readonly nil)
+
+(defun dg-ghostel--capture-mode-before-readonly (&rest _)
+  (unless (memq ghostel--input-mode '(copy emacs))
+    (setq dg-ghostel--mode-before-readonly ghostel--input-mode)))
+
+(defun dg-ghostel--readonly-exit-to-line (orig &rest args)
+  (let ((was dg-ghostel--mode-before-readonly))
+    (apply orig args)
+    (when (and (eq was 'line) (eq ghostel--input-mode 'semi-char))
+      (ghostel-line-mode))))
+
+(defun dg-ghostel--readonly-exit-send-to-line (orig &rest args)
+  (let ((was dg-ghostel--mode-before-readonly)
+        (ev last-command-event))
+    (apply orig args)
+    (when (and (eq was 'line) (eq ghostel--input-mode 'line) (characterp ev))
+      (setq last-command-event ev)
+      (ghostel-line-mode-self-insert 1))))
+
 (defvar dg-ghostel-roam-commands
   '(scroll-up-command scroll-down-command
     beginning-of-buffer end-of-buffer
@@ -179,5 +199,8 @@
   (add-hook 'ghostel-inhibit-anchor-functions #'dg-ghostel--bold-submitted-input)
   (add-hook 'ghostel-mode-hook
             (lambda () (add-hook 'pre-command-hook #'dg-ghostel--roam-on-nav nil t)))
+  (advice-add 'ghostel--enter-readonly :before #'dg-ghostel--capture-mode-before-readonly)
+  (advice-add 'ghostel-readonly-exit :around #'dg-ghostel--readonly-exit-to-line)
+  (advice-add 'ghostel-readonly-exit-and-send :around #'dg-ghostel--readonly-exit-send-to-line)
   :bind* (("C-c /" . dg-maybe-ghostel-switch-or-create)
           ("C-c C-/" . dg-maybe-ghostel-new-here)))
