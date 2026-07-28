@@ -128,32 +128,64 @@ because `magit-diff-visit-file--noselect' keys off this buffer's own
             (cons (buffer-file-name)
                   (and tpos (line-number-at-pos tpos))))))))
 
+  (defvar dg/agent-shell-dashboard-magit-context-lines 5
+    "Diff lines each side of point sent when no region is active.")
+
+  (defun dg/agent-shell-dashboard--magit-diff-snippet ()
+    "Literal diff text for the magit position, straight from the buffer.
+With an active region: the highlighted text verbatim.  Otherwise the
+lines around point (`dg/agent-shell-dashboard-magit-context-lines' each
+side), clamped to the current hunk so it never spills into a
+neighbouring hunk or file header.  Nil when point is not on a hunk and
+no region is active.
+
+Taken from the magit buffer rather than re-read from disk: the buffer
+is exactly what the user is looking at, including staged/unstaged and
+other in-flight state a fresh read would miss."
+    (if (use-region-p)
+        (string-trim-right
+         (buffer-substring-no-properties (region-beginning) (region-end)))
+      (when (magit-section-match 'hunk)
+        (let* ((n dg/agent-shell-dashboard-magit-context-lines)
+               (hunk (magit-current-section))
+               (lo (oref hunk start))
+               (hi (oref hunk end))
+               (beg (max lo (save-excursion (forward-line (- n))
+                                            (line-beginning-position))))
+               (end (min hi (save-excursion (forward-line (1+ n))
+                                            (line-beginning-position)))))
+          (string-trim-right (buffer-substring-no-properties beg end))))))
+
   (defun dg/agent-shell-dashboard--magit-context ()
     "Context string for a magit diff position, or nil when not applicable.
-Returns only the working-tree FILE:LINE (or FILE:START-END across a
-region), matching how file buffers are referenced so the agent reads
-the live worktree file itself.
+Returns the working-tree FILE:LINE (or FILE:START-END across a region)
+as the anchor, followed by the literal diff text from the buffer as a
+```diff``` fragment (see `dg/agent-shell-dashboard--magit-diff-snippet').
 
-We deliberately send no diff/code fragment.  A `magit-diff' hunk is
-usually `<base>...HEAD', whose `-' and context lines are the base
-(often main) version — pasting them alongside a worktree FILE:LINE
-gives the agent two disagreeing copies and it fixates on the stale
-one.  The bare reference is the single source of truth."
+The reference tells the agent where the change lives in the worktree;
+the fragment is the exact diff the user is viewing, so in-flight and
+staged/unstaged state is preserved instead of being re-derived from
+whatever happens to be on disk."
     (when (and (featurep 'magit)
                (derived-mode-p 'magit-diff-mode 'magit-status-mode
                                'magit-revision-mode)
                (magit-section-match '(hunk file)))
-      (if (and (use-region-p) (magit-section-match 'hunk))
-          (pcase-let ((`(,file . ,bl) (dg/agent-shell-dashboard--magit-file-line
-                                       (region-beginning)))
-                      (`(,_ . ,el) (dg/agent-shell-dashboard--magit-file-line
-                                    (region-end))))
-            (cond ((and file bl el (/= bl el)) (format "%s:%d-%d" file bl el))
-                  ((and file bl) (format "%s:%d" file bl))
-                  (file file)))
-        (pcase-let ((`(,file . ,line) (dg/agent-shell-dashboard--magit-file-line)))
-          (when file
-            (if line (format "%s:%d" file line) file))))))
+      (let* ((ref (if (and (use-region-p) (magit-section-match 'hunk))
+                      (pcase-let ((`(,file . ,bl) (dg/agent-shell-dashboard--magit-file-line
+                                                   (region-beginning)))
+                                  (`(,_ . ,el) (dg/agent-shell-dashboard--magit-file-line
+                                                (region-end))))
+                        (cond ((and file bl el (/= bl el)) (format "%s:%d-%d" file bl el))
+                              ((and file bl) (format "%s:%d" file bl))
+                              (file file)))
+                    (pcase-let ((`(,file . ,line) (dg/agent-shell-dashboard--magit-file-line)))
+                      (when file
+                        (if line (format "%s:%d" file line) file)))))
+             (snippet (dg/agent-shell-dashboard--magit-diff-snippet)))
+        (when ref
+          (if (and snippet (not (string-empty-p (string-trim snippet))))
+              (format "%s\n\n```diff\n%s\n```" ref snippet)
+            ref)))))
 
   (defun dg/agent-shell-dashboard--build-context ()
     "Build context string from the current buffer state.
