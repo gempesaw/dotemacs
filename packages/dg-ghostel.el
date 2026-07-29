@@ -106,12 +106,24 @@
          (seq-remove (lambda (l) (string-prefix-p "#" l))
                      (split-string (buffer-string) "\n" t)))))))
 
+(defun dg-ghostel--dedup (list)
+  (let ((seen (make-hash-table :test 'equal)) out)
+    (dolist (x list (nreverse out))
+      (unless (gethash x seen)
+        (puthash x t seen)
+        (push x out)))))
+
 (defun dg-ghostel--history-candidates ()
   (let ((session (seq-mapcat
                   (lambda (b) (buffer-local-value 'ghostel--line-mode-history b))
                   (--filter (with-current-buffer it (derived-mode-p 'ghostel-mode))
                             (buffer-list)))))
-    (delete-dups (append session (dg-ghostel--history-file-lines) nil))))
+    (dg-ghostel--dedup (append session (dg-ghostel--history-file-lines)))))
+
+(defun dg-ghostel--seed-line-history ()
+  (setq ghostel--line-mode-history
+        (seq-take (dg-ghostel--dedup (dg-ghostel--history-file-lines))
+                  ghostel-line-mode-history-size)))
 
 (defun dg-ghostel-history-search ()
   (interactive)
@@ -187,10 +199,8 @@
   :config
   (define-key ghostel-line-mode-map (kbd "C-a") #'dg-ghostel-beginning-of-input-or-bol)
   (define-key ghostel-line-mode-map (kbd "M-r") #'dg-ghostel-history-search)
-  (define-key ghostel-line-mode-map (kbd "M-p") #'ghostel-previous-prompt)
-  (define-key ghostel-line-mode-map (kbd "M-n") #'ghostel-next-prompt)
-  (define-key ghostel-readonly-mode-map (kbd "M-p") #'ghostel-previous-prompt)
-  (define-key ghostel-readonly-mode-map (kbd "M-n") #'ghostel-next-prompt)
+  (define-key ghostel-line-mode-map (kbd "M-p") #'ghostel-line-mode-history-previous)
+  (define-key ghostel-line-mode-map (kbd "M-n") #'ghostel-line-mode-history-next)
   (dolist (ch (number-sequence ?! ?~))
     (modify-syntax-entry
      ch
@@ -198,7 +208,9 @@
      ghostel-mode-syntax-table))
   (add-hook 'ghostel-inhibit-anchor-functions #'dg-ghostel--bold-submitted-input)
   (add-hook 'ghostel-mode-hook
-            (lambda () (add-hook 'pre-command-hook #'dg-ghostel--roam-on-nav nil t)))
+            (lambda ()
+              (add-hook 'pre-command-hook #'dg-ghostel--roam-on-nav nil t)
+              (dg-ghostel--seed-line-history)))
   (advice-add 'ghostel--enter-readonly :before #'dg-ghostel--capture-mode-before-readonly)
   (advice-add 'ghostel-readonly-exit :around #'dg-ghostel--readonly-exit-to-line)
   (advice-add 'ghostel-readonly-exit-and-send :around #'dg-ghostel--readonly-exit-send-to-line)
