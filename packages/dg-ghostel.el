@@ -178,7 +178,8 @@
 (defvar dg-ghostel-roam-commands
   '(scroll-up-command scroll-down-command
     beginning-of-buffer end-of-buffer
-    isearch-forward isearch-backward))
+    isearch-forward isearch-backward
+    isearch-forward-regexp isearch-backward-regexp))
 
 (defun dg-ghostel--roam-on-nav ()
   (when (and (eq ghostel--input-mode 'line)
