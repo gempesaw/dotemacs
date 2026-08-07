@@ -29,7 +29,7 @@ Returns empty string if not found."
   :ensure t
   :custom
   (agent-shell-highlight-blocks t)
-  (agent-shell-anthropic-default-model-id "claude-opus-4-8")
+  (agent-shell-anthropic-default-model-id "claude-opus-5")
   (agent-shell-anthropic-default-session-mode-id "bypassPermissions")
   :config
   (setq agent-shell-prefer-viewport-interaction nil
