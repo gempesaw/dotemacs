@@ -9,8 +9,6 @@
               ("s-l" . nil))
 
   :config
-  (setq lsp-client-packages (delq 'lsp-ts-query lsp-client-packages))
-
   (setq lsp-keymap-prefix "s-i")
 
   ;; we use corfu + capf, not company. skip lsp-mode's company autoconfig
