@@ -45,6 +45,114 @@ never stamped, leaving the global last-used values in place."
 
 (defvar dg-transient-micm--worktrees-dir "~/opt/infra/.claude/worktrees")
 
+(defvar dg-transient-micm--infra-dir "~/opt/infra")
+
+(defun dg-transient-micm--git (&rest args)
+  "Run git ARGS in the infra repo. Return trimmed stdout, or signal on failure."
+  (with-temp-buffer
+    (let ((status (apply #'process-file "git" nil t nil
+                         "-C" (f-expand dg-transient-micm--infra-dir) args)))
+      (if (zerop status)
+          (s-trim (buffer-string))
+        (error "git %s failed: %s" (s-join " " args) (s-trim (buffer-string)))))))
+
+(defun dg-transient-micm--git-ok-p (&rest args)
+  "Return non-nil if git ARGS exits zero in the infra repo."
+  (zerop (apply #'process-file "git" nil nil nil
+                "-C" (f-expand dg-transient-micm--infra-dir) args)))
+
+(defun dg-transient-micm-list-remote-branches ()
+  "Return remote-tracking branches, most recently committed first.
+Filters the `refs/remotes/origin/HEAD' symref, which `refname:short'
+renders as a bare remote name with no branch component."
+  (->> (dg-transient-micm--git "for-each-ref" "--sort=-committerdate"
+                               "--format=%(refname:short)" "refs/remotes/")
+       (s-split "\n")
+       (--remove (s-blank-str-p it))
+       (--filter (s-contains-p "/" it))))
+
+(defun dg-transient-micm--local-branch-of (remote-ref)
+  "Strip the remote name from REMOTE-REF (\"origin/dg/foo\" -> \"dg/foo\")."
+  (->> remote-ref (s-split "/") (cdr) (s-join "/")))
+
+(defun dg-transient-micm--worktree-for-branch (local-branch)
+  "Return the path of an existing worktree that has LOCAL-BRANCH checked out.
+Parses `git worktree list --porcelain' rather than guessing paths, because
+worktree directory names need not match their branch names."
+  (let ((target (format "refs/heads/%s" local-branch))
+        (path nil)
+        (result nil))
+    (dolist (line (s-split "\n" (dg-transient-micm--git "worktree" "list" "--porcelain")))
+      (cond
+       ((s-prefix-p "worktree " line)
+        (setq path (s-chop-prefix "worktree " line)))
+       ((and (s-prefix-p "branch " line)
+             (s-equals-p (s-chop-prefix "branch " line) target))
+        (setq result path))))
+    result))
+
+(defun dg-transient-micm--worktree-path-for-branch (local-branch)
+  (f-expand (s-replace "/" "-" (s-chop-prefix "dg/" local-branch))
+            (f-expand dg-transient-micm--worktrees-dir)))
+
+(defun dg-transient-micm--ensure-worktree-for-remote (remote-ref)
+  "Ensure a worktree exists for REMOTE-REF and return its absolute path.
+Reuses an existing worktree if the branch is already checked out in one.
+Only ever runs `git worktree add', which creates a brand new directory with
+its own HEAD and index — the main ~/opt/infra checkout is never touched."
+  (let* ((local-branch (dg-transient-micm--local-branch-of remote-ref))
+         (existing (dg-transient-micm--worktree-for-branch local-branch))
+         (main-checkout (f-expand dg-transient-micm--infra-dir)))
+    (cond
+     ;; The main checkout is itself a worktree entry. Never hand it back as a
+     ;; worktree to run from — the whole point is an isolated directory. git
+     ;; would also refuse to add a second worktree for an already-checked-out
+     ;; branch, so say so plainly instead of failing cryptically later.
+     ((and existing (f-equal-p existing main-checkout))
+      (error "Branch %s is checked out in the main checkout (%s) — switch it there first, or pick another branch"
+             local-branch main-checkout))
+
+     ((and existing (f-directory-p existing))
+      (message "Reusing existing worktree for %s: %s" local-branch existing)
+      existing)
+
+     (t
+      (let ((path (dg-transient-micm--worktree-path-for-branch local-branch)))
+        (when (f-exists-p path)
+          (error "Path %s already exists but is not a worktree for %s" path local-branch))
+
+        (if (dg-transient-micm--git-ok-p "show-ref" "--verify" "--quiet"
+                                         (format "refs/heads/%s" local-branch))
+            (dg-transient-micm--git "worktree" "add" path local-branch)
+          (dg-transient-micm--git "worktree" "add" "--track"
+                                  "-b" local-branch path remote-ref))
+
+        (message "Created worktree %s for %s" path remote-ref)
+        path)))))
+
+(defun dg-transient-micm-pick-remote-branch ()
+  "Fetch, pick a remote branch, materialize it as a worktree, and select it.
+Sets the transient's `--worktree=' value so the pulumi run happens via
+`uv run --directory <worktree>'."
+  (interactive)
+  (message "Fetching origin...")
+  (dg-transient-micm--git "fetch" "origin")
+  (let* ((branches (dg-transient-micm-list-remote-branches))
+         (table (lambda (string pred action)
+                  (if (eq action 'metadata)
+                      '(metadata (display-sort-function . identity)
+                                 (cycle-sort-function . identity))
+                    (complete-with-action action branches string pred))))
+         (selection (completing-read "Remote branch: " table nil t)))
+    (when (and selection (not (s-blank-str-p selection)))
+      (let ((path (dg-transient-micm--ensure-worktree-for-remote selection)))
+        (setq dg-transient-micm--worktree path)
+        (when-let* ((obj (--first (and (object-of-class-p it 'transient-option)
+                                       (equal (oref it argument) "--worktree="))
+                                  transient--suffixes)))
+          (transient-infix-set obj path)))))
+  (transient--redisplay))
+
 
 (defun dg-transient-micm-read-projects-stacks ()
   (->> "~/opt/infra/projects"
@@ -642,6 +750,8 @@ appropriate automation role in AWS config."
    (dg-transient-micm-stack)
    (dg-transient-micm-target)
    (dg-transient-micm-worktree)
+   ("b" "fetch + pick remote branch as worktree"
+    dg-transient-micm-pick-remote-branch :transient t)
    ]
 
   ["Actions"
