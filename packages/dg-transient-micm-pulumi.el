@@ -383,6 +383,11 @@ giving the illusion of a fresh buffer."
 (defvar-local dg-transient-micm--queue-expecting nil
   "The marker string the queue watcher is currently waiting for.")
 
+(defvar-local dg-transient-micm--on-setup-success nil
+  "Thunk run once, when a gated step in the queue first reports exit 0.
+Used to piggyback Emacs-side AWS env syncing on the shell's login, which
+is the authoritative check.")
+
 (defun dg-transient-micm--queue-watcher (_output)
   (when dg-transient-micm--queue-expecting
     (let ((re (concat (regexp-quote dg-transient-micm--queue-expecting)
@@ -395,12 +400,17 @@ giving the illusion of a fresh buffer."
               (buf (current-buffer)))
           (setq dg-transient-micm--queue-expecting nil)
           (if (zerop exit)
-              (run-at-time
-               0 nil
-               (lambda ()
-                 (when (buffer-live-p buf)
-                   (with-current-buffer buf
-                     (dg-transient-micm--queue-advance)))))
+              (progn
+                (when dg-transient-micm--on-setup-success
+                  (let ((thunk dg-transient-micm--on-setup-success))
+                    (setq dg-transient-micm--on-setup-success nil)
+                    (run-at-time 0 nil thunk)))
+                (run-at-time
+                 0 nil
+                 (lambda ()
+                   (when (buffer-live-p buf)
+                     (with-current-buffer buf
+                       (dg-transient-micm--queue-advance))))))
             (setq dg-transient-micm--queue nil)
             (remove-hook 'comint-output-filter-functions
                          #'dg-transient-micm--queue-watcher t)
@@ -454,8 +464,6 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
            (target (transient-arg-value "--target=" args))
            (worktree (transient-arg-value "--worktree=" args))
            (profile (dg-transient-micm--get-aws-role stack project))
-           (_ (when profile
-                (dg-modular-ensure-aws-profile-login profile)))
            (target-argument (if target
                                 (format "--target '%s' --target-dependents" target)
                               ""))
@@ -487,9 +495,15 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
       (dg-transient-micm--stamp-buffer dg-transient-micm--origin-buffer
                                        project stack target worktree)
 
-      (let ((setup-command (format "%s && %s"
+      ;; The shell chain below is the authoritative login gate: `aws-sso login'
+      ;; runs there, and the queue watcher holds the pulumi command until it
+      ;; exits 0. Doing the login in Emacs too would only duplicate it — and
+      ;; would freeze the UI for the whole browser flow.
+      (let ((setup-command (format "echo '>>> AWS login (%s) — Emacs is not blocked, hang tight...' && %s && %s"
+                                   (or profile "no profile")
                                    kubie-export-command
-                                   micm-command-prefix)))
+                                   micm-command-prefix))
+            (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile))))
         (if existing-buffer
             (with-current-buffer existing-buffer
               (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
@@ -499,6 +513,7 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
                           comint-move-point-for-output nil)
               (setq dg-pulumi-stacks--last-activity (current-time))
               (dg-transient-micm--stamp-buffer existing-buffer project stack target worktree)
+              (setq dg-transient-micm--on-setup-success sync-env)
               (dg-transient-micm--submit-sequence (list setup-command micm-command)))
 
           (let* ((default-directory (f-expand "~/opt/infra"))
@@ -512,6 +527,7 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
                           comint-move-point-for-output nil)
               (setq dg-pulumi-stacks--last-activity (current-time))
               (dg-transient-micm--stamp-buffer buf project stack target worktree)
+              (setq dg-transient-micm--on-setup-success sync-env)
               (dg-transient-micm--submit-sequence (list setup-command micm-command))))))
 
       ;; if there's another frame with a pulumi window, switch it to this one.
@@ -845,33 +861,71 @@ appropriate automation role in AWS config."
 
     ]])
 
-(defun dg-transient-aws-sso-set-emacs-env (profile)
-  "Set AWS environment variables in Emacs from aws-sso eval output.
-Also writes credentials to ~/.aws/credentials under the profile name."
-  (let* (;; (reset (->> process-environment
-         ;;             (--filter (s-starts-with? "AWS_" it))
-         ;;             (--map (setenv (car (s-split "=" it)) nil))))
-         (sso-argument (dg-transient-micm--get-sso-arg profile))
-         (output (shell-command-to-string
-                  (format "aws-sso login %s && aws-sso eval %s --no-region --profile=%s" sso-argument sso-argument profile)))
-         (lines (split-string output "\n" t))
-         (access-key-id nil)
-         (secret-access-key nil)
-         (session-token nil))
-
-    (dolist (line lines)
+(defun dg-transient-micm--apply-aws-eval-output (profile output)
+  "Apply `aws-sso eval' OUTPUT for PROFILE to the Emacs environment.
+Sets the AWS_* variables, records PROFILE as current, and refreshes the
+`[agent-PROFILE]' section of ~/.aws/credentials. Returns non-nil when a
+usable key pair was found. Pure post-processing — does no I/O of its own,
+so it is safe to call from a process sentinel."
+  (let (access-key-id secret-access-key session-token)
+    (dolist (line (split-string output "\n" t))
       (when (string-match "^export \\([A-Z_]+\\)=\"\\(.*\\)\"$" line)
         (let ((var-name (match-string 1 line))
               (var-value (match-string 2 line)))
           (setenv var-name var-value)
-          (message "Set %s" var-name)
           (cond
            ((string= var-name "AWS_ACCESS_KEY_ID") (setq access-key-id var-value))
            ((string= var-name "AWS_SECRET_ACCESS_KEY") (setq secret-access-key var-value))
            ((string= var-name "AWS_SESSION_TOKEN") (setq session-token var-value))))))
 
     (when (and access-key-id secret-access-key)
-      (dg-transient-aws-sso--update-credentials-file profile access-key-id secret-access-key session-token))
+      (dg-transient-aws-sso--update-credentials-file
+       profile access-key-id secret-access-key session-token)
+      (setenv "AWS_PROFILE" profile)
+      (setq dg-modular-aws-profile profile)
+      t)))
+
+(defun dg-transient-micm--sync-aws-env-async (profile)
+  "Refresh Emacs's AWS env and ~/.aws/credentials for PROFILE in the background.
+Assumes an SSO session already exists — call this only after a login has
+succeeded — so `aws-sso eval' returns promptly and never prompts. Uses
+`make-process' so the Emacs UI is never blocked."
+  (when profile
+    (let* ((sso-arg (dg-transient-micm--get-sso-arg profile))
+           (buf (generate-new-buffer " *dg-aws-sso-eval*")))
+      (make-process
+       :name "dg-aws-sso-eval"
+       :buffer buf
+       :noquery t
+       :connection-type 'pipe
+       :command (list shell-file-name "-lc"
+                      (format "aws-sso eval %s --no-region --profile=%s"
+                              sso-arg profile))
+       :sentinel
+       (lambda (proc _event)
+         (when (memq (process-status proc) '(exit signal))
+           (let ((code (process-exit-status proc))
+                 (output (and (buffer-live-p buf)
+                              (with-current-buffer buf (buffer-string)))))
+             (when (buffer-live-p buf) (kill-buffer buf))
+             (cond
+              ((not (zerop code))
+               (message "AWS env sync for %s failed (exit %d)" profile code))
+              ((dg-transient-micm--apply-aws-eval-output profile output)
+               (message "AWS env synced in background for %s" profile))
+              (t
+               (message "AWS env sync for %s returned no credentials" profile))))))))))
+
+(defun dg-transient-aws-sso-set-emacs-env (profile)
+  "Set AWS environment variables in Emacs from aws-sso eval output.
+Also writes credentials to ~/.aws/credentials under the profile name.
+Blocks on the SSO browser flow — used by the interactive profile transient,
+where waiting is the point. Pulumi runs use the async path instead."
+  (let* ((sso-argument (dg-transient-micm--get-sso-arg profile))
+         (output (shell-command-to-string
+                  (format "aws-sso login %s && aws-sso eval %s --no-region --profile=%s"
+                          sso-argument sso-argument profile))))
+    (dg-transient-micm--apply-aws-eval-output profile output)
     (message "AWS SSO credentials set in Emacs environment for profile: %s" profile)))
 
 (defun dg-transient-aws-sso--update-credentials-file (profile access-key-id secret-access-key &optional session-token)
