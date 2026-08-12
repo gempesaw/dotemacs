@@ -5,9 +5,15 @@
 (defun dg-ghostel-name-by-cwd (_title)
   (format "*ghostel<%s>*" (abbreviate-file-name default-directory)))
 
+(defvar dg-ghostel-display-action
+  '((display-buffer-in-direction)
+    (direction . right)
+    (window-width . 0.5)))
+
 (defun dg-ghostel-new-here ()
   (interactive)
-  (ghostel '(4)))
+  (let ((display-buffer-overriding-action dg-ghostel-display-action))
+    (ghostel '(4))))
 
 (defun dg-ghostel-switch-or-create ()
   (interactive)
