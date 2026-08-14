@@ -327,32 +327,36 @@ to produce the displayed string.")
         )
     (format "export KUBECONFIG=$(kubie export %s default)" cluster)))
 
-(defun dg-transient-micm-ignore-deprecation (string)
-  (if (or (s-contains-p "unique_name" string)
-          (s-contains-p "DeprecationWarning" string))
-      ""
-    string))
+(defun dg-transient-micm-hide-outputs (window &optional _force)
+  "Collapse the post-apply pulumi `Outputs:' section in this buffer.
+Runs from `ghostel-inhibit-anchor-functions', which fires after every
+redraw with WINDOW's buffer current.
 
-(defun dg-transient-micm-hide-outputs (_string)
-  "Post-output filter: collapse the post-apply pulumi `Outputs:' section.
-Scans the buffer for any complete `^Outputs:' ... `^Resources:' range and
-deletes the inner content (the `Resources:' line is kept). Runs after
-insertion, so output streams normally — collapse only happens once
-`Resources:' actually appears in the buffer. We scan on every output
-chunk because comint can split `Resources:' across chunks, so guarding
-on the chunk's own contents would miss real matches.
+Ghostel owns the buffer text and repaints the viewport from the terminal
+grid on every frame, so the comint implementation's `delete-region' would
+desync the renderer. Mark the section invisible instead and re-apply it
+per redraw, the same way the submitted-input face is maintained. The scan
+starts at WINDOW's first visible line so the cost stays bounded by the
+window rather than the whole scrollback; the closing `Resources:' line is
+searched for beyond it because the section can run past the window.
 
-The `--outputs:--' marker in `preview --diff' is left alone because it
-can be followed by legitimate resource diffs before the final `Resources:'
-line."
-  (let ((inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^Outputs:[[:space:]]*$" nil t)
-        (let ((section-start (match-beginning 0)))
-          (when (re-search-forward "^Resources:[[:space:]]*$" nil t)
-            (goto-char (match-beginning 0))
-            (delete-region section-start (point))))))))
+Always returns nil, so window anchoring is never vetoed.
+
+The `--outputs:--' marker in `preview --diff' is left alone because it can
+be followed by legitimate resource diffs before the final `Resources:'."
+  (ignore-errors
+    (with-silent-modifications
+      (save-excursion
+        (goto-char (window-start window))
+        (let ((limit (window-end window t)))
+          (while (re-search-forward "^Outputs:[[:space:]]*$" limit t)
+            (let ((section-start (match-beginning 0)))
+              (when (re-search-forward "^Resources:[[:space:]]*$" nil t)
+                (let ((section-end (match-beginning 0)))
+                  (unless (get-text-property section-start 'invisible)
+                    (put-text-property section-start section-end
+                                       'invisible t))))))))))
+  nil)
 
 (defun dg-transient-micm--get-sso-arg (profile)
   (if (and profile
@@ -363,134 +367,100 @@ line."
 (defvar-local dg-transient-micm--run-start nil
   "Marker at the first line of the run currently displayed in this buffer.")
 
-(defun dg-transient-micm-narrow-to-run ()
-  "Narrow the buffer to the current pulumi run.
-Scrollback stays in the buffer, just outside the accessible region, so
-`mark-whole-buffer' (and isearch, and friends) see only this run.
-
-Narrowing must start at the command's own line rather than at `point-max':
-`comint-send-input' and `comint-output-filter' both widen inside a
-`save-restriction', and restoring an empty saved restriction drops the
-narrowing entirely. Anchoring to a non-empty region survives that, and the
-narrowing end tracks streamed output because it behaves like a marker."
-  (interactive)
-  (when (and dg-transient-micm--run-start
-             (marker-position dg-transient-micm--run-start)
-             (< (marker-position dg-transient-micm--run-start) (point-max)))
-    (narrow-to-region dg-transient-micm--run-start (point-max))))
-
-(defun dg-transient-micm-toggle-run-narrowing ()
-  "Toggle between showing only the current pulumi run and the full scrollback."
-  (interactive)
-  (if (buffer-narrowed-p)
-      (progn (widen) (message "Showing full scrollback"))
-    (dg-transient-micm-narrow-to-run)
-    (message (if (buffer-narrowed-p)
-                 "Showing current run only (toggle to widen)"
-               "No run boundary recorded yet"))))
-
 (defun dg-transient-micm--submit-at-prompt (cmd)
-  "Insert CMD at the comint prompt of the current buffer and submit it
-via `comint-send-input', so the command is visible and lands in input
-history (`M-p' / `M-n'). After submitting, narrow to the new run and scroll
-any window showing the buffer so the prompt line sits at the top —
-preserving scrollback while giving the illusion of a fresh buffer."
-  (let ((proc (get-buffer-process (current-buffer))))
-    (when proc
-      ;; Widen first: the previous run's narrowing would otherwise hide the
-      ;; prompt we are about to write to.
-      (widen)
-      (goto-char (process-mark proc))
-      (delete-region (point) (point-max))
-      (insert cmd)
-      (let ((cmd-line-start (line-beginning-position)))
-        (comint-send-input)
-        (setq dg-transient-micm--run-start (copy-marker cmd-line-start))
-        (dg-transient-micm-narrow-to-run)
-        (dolist (win (get-buffer-window-list (current-buffer) nil t))
-          (set-window-start win cmd-line-start)
-          (set-window-point win (point-max)))))))
+  "Send CMD to this buffer's ghostel terminal and scroll it to the top.
+`dg-maybe-ghostel-submit' both writes the line and records it in the
+history ring, so the command stays recallable with `M-p'. Scrolling the
+command line to the top of the window preserves scrollback while giving
+the illusion of a fresh buffer."
+  (let ((start (point-max)))
+    (dg-maybe-ghostel-submit cmd)
+    (setq dg-transient-micm--run-start (copy-marker start))
+    (dolist (win (get-buffer-window-list (current-buffer) nil t))
+      (set-window-start win start)
+      (set-window-point win (point-max)))))
 
 (defvar-local dg-transient-micm--queue nil
-  "Remaining (CMD . MARKER) pairs to submit. MARKER nil = last/plain cmd.")
+  "Commands still to submit in this buffer, in order.")
 
-(defvar-local dg-transient-micm--queue-expecting nil
-  "The marker string the queue watcher is currently waiting for.")
+(defvar-local dg-transient-micm--saw-command-start nil
+  "Non-nil once an OSC 133 C marker arrived for the command in flight.
+Bash emits a D (finish) marker on bare prompt redraws too, so a finish
+only counts as ours when a start preceded it.")
 
 (defvar-local dg-transient-micm--on-setup-success nil
   "Thunk run once, when a gated step in the queue first reports exit 0.
 Used to piggyback Emacs-side AWS env syncing on the shell's login, which
 is the authoritative check.")
 
-(defun dg-transient-micm--queue-watcher (_output)
-  (when dg-transient-micm--queue-expecting
-    (let ((re (concat (regexp-quote dg-transient-micm--queue-expecting)
-                      "=\\([0-9]+\\)")))
-      (when (save-excursion
-              (goto-char (point-max))
-              (forward-line -30)
-              (re-search-forward re nil t))
-        (let ((exit (string-to-number (match-string 1)))
-              (buf (current-buffer)))
-          (setq dg-transient-micm--queue-expecting nil)
-          (if (zerop exit)
-              (progn
-                (when dg-transient-micm--on-setup-success
-                  (let ((thunk dg-transient-micm--on-setup-success))
-                    (setq dg-transient-micm--on-setup-success nil)
-                    (run-at-time 0 nil thunk)))
-                (run-at-time
-                 0 nil
-                 (lambda ()
-                   (when (buffer-live-p buf)
-                     (with-current-buffer buf
-                       (dg-transient-micm--queue-advance))))))
-            (setq dg-transient-micm--queue nil)
-            (remove-hook 'comint-output-filter-functions
-                         #'dg-transient-micm--queue-watcher t)
-            (message "Pulumi presetup failed (exit %d) — chain stopped" exit)))))))
+(defvar-local dg-transient-micm--on-complete nil
+  "Thunk run once, after the final queued command exits 0.")
+
+(defun dg-transient-micm--queue-cleanup ()
+  (setq dg-transient-micm--queue nil
+        dg-transient-micm--saw-command-start nil)
+  (remove-hook 'ghostel-command-start-functions
+               #'dg-transient-micm--command-started t)
+  (remove-hook 'ghostel-command-finish-functions
+               #'dg-transient-micm--command-finished t))
+
+(defun dg-transient-micm--command-started (&rest _)
+  (setq dg-transient-micm--saw-command-start t
+        dg-pulumi-stacks--last-activity (current-time)))
+
+(defun dg-transient-micm--command-finished (buffer exit)
+  "Advance the queue when the command in flight finishes.
+EXIT is the real status reported by OSC 133, so no output scraping is
+needed. Ignores the bare prompt redraws bash also reports as finishes."
+  (setq dg-pulumi-stacks--last-activity (current-time))
+  (when (and dg-transient-micm--saw-command-start (buffer-live-p buffer))
+    (setq dg-transient-micm--saw-command-start nil)
+    (if (and exit (not (zerop exit)))
+        (let ((remaining dg-transient-micm--queue))
+          (dg-transient-micm--queue-cleanup)
+          (message (if remaining
+                       "Pulumi step failed (exit %d) — chain stopped"
+                     "Pulumi command failed (exit %d)")
+                   exit))
+      (when dg-transient-micm--on-setup-success
+        (let ((thunk dg-transient-micm--on-setup-success))
+          (setq dg-transient-micm--on-setup-success nil)
+          (run-at-time 0 nil thunk)))
+      ;; The hook fires synchronously from the terminal parser, so defer
+      ;; until the buffer is fully rendered before writing into it.
+      (run-at-time
+       0 nil
+       (lambda ()
+         (when (buffer-live-p buffer)
+           (with-current-buffer buffer
+             (dg-transient-micm--queue-advance))))))))
 
 (defun dg-transient-micm--queue-advance ()
   (let ((next (pop dg-transient-micm--queue)))
     (if next
-        (let ((cmd (car next))
-              (marker (cdr next)))
-          (setq dg-transient-micm--queue-expecting marker)
-          (unless marker
-            (remove-hook 'comint-output-filter-functions
-                         #'dg-transient-micm--queue-watcher t))
-          (dg-transient-micm--submit-at-prompt
-           (if marker
-               (format "%s ; echo %s=$?" cmd marker)
-             cmd)))
-      (setq dg-transient-micm--queue-expecting nil)
-      (remove-hook 'comint-output-filter-functions
-                   #'dg-transient-micm--queue-watcher t))))
+        (dg-transient-micm--submit-at-prompt next)
+      (let ((thunk dg-transient-micm--on-complete))
+        (setq dg-transient-micm--on-complete nil)
+        (dg-transient-micm--queue-cleanup)
+        (when thunk (run-at-time 0 nil thunk))))))
 
 (defun dg-transient-micm--submit-sequence (commands)
-  "Submit COMMANDS one at a time, gating each on the previous one's success.
-Every command except the last is wrapped with an echo-of-exit-code so the
-watcher can detect completion and either advance the queue or bail out. The
-last command is submitted bare, so `M-p' in the buffer recalls just it."
-  (let* ((n (length commands))
-         (queue (cl-loop for cmd in commands
-                         for i from 0
-                         collect
-                         (cons cmd
-                               (and (< i (1- n))
-                                    (format "DG_MICM_MARK_%s"
-                                            (substring
-                                             (md5 (format "%d-%d-%s"
-                                                          i (random) cmd))
-                                             0 8)))))))
-    (setq dg-transient-micm--queue queue
-          dg-transient-micm--queue-expecting nil)
-    (when (> n 1)
-      (add-hook 'comint-output-filter-functions
-                #'dg-transient-micm--queue-watcher nil t))
-    (dg-transient-micm--queue-advance)))
+  "Submit COMMANDS one at a time, gating each on the previous one's exit code.
+Ghostel reports exit status natively through OSC 133, so unlike the comint
+implementation this needs no `echo $?' wrapping and no output scraping —
+the finish hook hands us the real status. A non-zero status stops the chain
+and leaves the failure on screen."
+  (setq dg-transient-micm--queue commands
+        dg-transient-micm--saw-command-start nil)
+  (add-hook 'ghostel-command-start-functions
+            #'dg-transient-micm--command-started nil t)
+  (add-hook 'ghostel-command-finish-functions
+            #'dg-transient-micm--command-finished nil t)
+  (dg-transient-micm--queue-advance))
 
-(defun dg-transient-micm-execute (pulumi-sub-command &optional args)
+(defun dg-transient-micm-execute (pulumi-sub-command &optional args on-complete)
+  "Run PULUMI-SUB-COMMAND for the project/stack in ARGS in a ghostel terminal.
+ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
   (interactive (list nil (transient-args transient-current-command)))
   (save-window-excursion
     (let* ((project (transient-arg-value "--project=" args))
@@ -513,8 +483,12 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
                           "micm"))
+           ;; Suppress the deprecation noise at the source. The comint
+           ;; implementation stripped these lines with a preoutput filter;
+           ;; ghostel renders from the terminal grid, so there is no text to
+           ;; rewrite before it lands — tell Python not to emit them instead.
            (micm-command (format
-                          "%s pulumi --project %s --stack %s %s"
+                          "PYTHONWARNINGS=ignore::DeprecationWarning %s pulumi --project %s --stack %s %s"
                           micm-runner
                           project
                           stack
@@ -538,33 +512,27 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
                                    kubie-export-command
                                    micm-command-prefix))
             (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile))))
-        (if existing-buffer
-            (with-current-buffer existing-buffer
-              (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
-              (add-hook 'comint-output-filter-functions #'dg-transient-micm-hide-outputs nil t)
-              (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
-              (setq-local comint-scroll-show-maximum-output nil
-                          comint-move-point-for-output nil)
-              (local-set-key (kbd "C-c n") #'dg-transient-micm-toggle-run-narrowing)
-              (setq dg-pulumi-stacks--last-activity (current-time))
-              (dg-transient-micm--stamp-buffer existing-buffer project stack target worktree)
-              (setq dg-transient-micm--on-setup-success sync-env)
-              (dg-transient-micm--submit-sequence (list setup-command micm-command)))
-
-          (let* ((default-directory (f-expand "~/opt/infra"))
-                 (buf (create-new-shell-here)))
-            (with-current-buffer buf
-              (rename-buffer buffer-name t)
-              (add-hook 'comint-preoutput-filter-functions #'dg-transient-micm-ignore-deprecation nil t)
-              (add-hook 'comint-output-filter-functions #'dg-transient-micm-hide-outputs nil t)
-              (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
-              (setq-local comint-scroll-show-maximum-output nil
-                          comint-move-point-for-output nil)
-              (local-set-key (kbd "C-c n") #'dg-transient-micm-toggle-run-narrowing)
-              (setq dg-pulumi-stacks--last-activity (current-time))
-              (dg-transient-micm--stamp-buffer buf project stack target worktree)
-              (setq dg-transient-micm--on-setup-success sync-env)
-              (dg-transient-micm--submit-sequence (list setup-command micm-command))))))
+        ;; Reuse the terminal only while it still has a live shell; a dead
+        ;; ghostel buffer cannot be typed into, so start a fresh one.
+        (let ((buf (if (and existing-buffer
+                            (buffer-live-p existing-buffer)
+                            (buffer-local-value 'ghostel--term existing-buffer))
+                       existing-buffer
+                     (let ((default-directory (f-expand "~/opt/infra")))
+                       (dg-ghostel-new-here)))))
+          (with-current-buffer buf
+            ;; Renaming also pins the name: ghostel only auto-renames a
+            ;; buffer whose name it still owns, so the OSC 7 directory
+            ;; tracker stops renaming this one out from under us.
+            (unless (equal (buffer-name) buffer-name)
+              (rename-buffer buffer-name t))
+            (add-hook 'ghostel-inhibit-anchor-functions
+                      #'dg-transient-micm-hide-outputs nil t)
+            (setq dg-pulumi-stacks--last-activity (current-time))
+            (dg-transient-micm--stamp-buffer buf project stack target worktree)
+            (setq dg-transient-micm--on-setup-success sync-env
+                  dg-transient-micm--on-complete on-complete)
+            (dg-transient-micm--submit-sequence (list setup-command micm-command)))))
 
       ;; if there's another frame with a pulumi window, switch it to this one.
       ;; if there's only a single frame, open a new frame and focus the pulumi buffer.
@@ -680,30 +648,21 @@ appropriate automation role in AWS config."
                             (s-split "\n")
                             (--filter (s-contains-p "automation-access" it)))))))
 
-(defvar-local dg-transient-micm--export-signal nil
-  "Token to watch for in comint output to detect export completion.")
-(defvar-local dg-transient-micm--export-target nil
-  "Path of the export temp file the watcher should open on completion.")
-
-(defun dg-transient-micm--export-watcher (output)
-  (when (and dg-transient-micm--export-signal
-             (string-match-p (regexp-quote dg-transient-micm--export-signal) output))
-    (let ((file dg-transient-micm--export-target))
-      (setq dg-transient-micm--export-signal nil
-            dg-transient-micm--export-target nil)
-      (remove-hook 'comint-output-filter-functions
-                   #'dg-transient-micm--export-watcher t)
-      (if (and file (file-readable-p file)
-               (> (file-attribute-size (file-attributes file)) 0))
-          (progn
-            (find-file file)
-            (json-mode)
-            (message "Pulumi state exported to buffer. Edit and use 'm i' to import."))
-        (message "Pulumi export completion echo arrived but %s is missing/empty"
-                 file)))))
+(defun dg-transient-micm--open-export (file)
+  "Open FILE, the just-written pulumi state export, for editing."
+  (if (and file (file-readable-p file)
+           (> (file-attribute-size (file-attributes file)) 0))
+      (progn
+        (find-file file)
+        (json-mode)
+        (message "Pulumi state exported to buffer. Edit and use 'm i' to import."))
+    (message "Pulumi export reported success but %s is missing or empty" file)))
 
 (defun dg-transient-micm-export-state (&optional args)
-  "Export pulumi state to a temp file and open it in a buffer for editing."
+  "Export pulumi state to a temp file and open it in a buffer for editing.
+The export command's own exit status decides when (and whether) the file
+is opened, so this needs no echoed completion token, no output scraping,
+and no timeout — a failed export simply never fires the callback."
   (interactive (list (transient-args transient-current-command)))
   (let* ((project (transient-arg-value "--project=" args))
          (stack (transient-arg-value "--stack=" args))
@@ -714,34 +673,14 @@ appropriate automation role in AWS config."
                               (format "pulumi-state-%s-%s-"
                                       sanitized-project sanitized-stack)
                               temporary-file-directory))
-                            ".json"))
-         (signal-token (format "DG_PULUMI_EXPORT_DONE_%s" (md5 temp-file)))
-         (buffer-name (format "*pulumi* | %s | %s" project stack)))
+                            ".json")))
     (setq dg-transient-micm--export-file temp-file)
     (message "Exporting state to %s..." temp-file)
     (dg-transient-micm-execute
-     (format "stack export --show-secrets --file %s && echo '%s'"
-             (shell-quote-argument temp-file)
-             signal-token)
-     args)
-    (when-let* ((buf (get-buffer buffer-name)))
-      (with-current-buffer buf
-        (setq dg-transient-micm--export-signal signal-token
-              dg-transient-micm--export-target temp-file)
-        (add-hook 'comint-output-filter-functions
-                  #'dg-transient-micm--export-watcher nil t))
-      (run-with-timer
-       300 nil
-       (lambda ()
-         (when (buffer-live-p buf)
-           (with-current-buffer buf
-             (when (equal dg-transient-micm--export-signal signal-token)
-               (setq dg-transient-micm--export-signal nil
-                     dg-transient-micm--export-target nil)
-               (remove-hook 'comint-output-filter-functions
-                            #'dg-transient-micm--export-watcher t)
-               (message "Pulumi export timed out after 5min — check %s for errors"
-                        buffer-name))))))) ))
+     (format "stack export --show-secrets --file %s"
+             (shell-quote-argument temp-file))
+     args
+     (lambda () (dg-transient-micm--open-export temp-file)))))
 
 (defun dg-transient-micm-import-state (&optional args)
   "Import pulumi state from the current buffer or exported file."
@@ -1035,48 +974,36 @@ Uses \"agent-\" prefix to avoid colliding with SSO profiles in ~/.aws/config."
 ;;   (kill-new console-url))
 
 (defun dg-micm-ssh-with-posframe ()
-  "Run micm ssh in a small posframe window for faster fzf+coterm, then switch to normal window."
+  "Run micm ssh in a small centered posframe, then switch to a normal window.
+The posframe originally existed to keep fzf usable under comint, which was
+slow enough to need a tiny window. Ghostel gives fzf a real TTY, so the
+posframe is now only about keeping the picker compact — and the session
+moves to a normal window once the command exits, reported by OSC 133
+rather than sniffed out of the output stream."
   (interactive)
-  (let* ((shell-buffer-name "*micm-ssh-shell*")
-         (shell-buffer (get-buffer shell-buffer-name)))
-
-    ;; Kill existing shell buffer if it exists
-    (when shell-buffer
-      (kill-buffer shell-buffer))
-
-    ;; Create a new shell buffer
-    (let ((new-shell-buffer (shell shell-buffer-name)))
-
-      ;; Show the shell in a small posframe
-      (posframe-show new-shell-buffer
-                     :poshandler #'posframe-poshandler-frame-center
-                     :width 60
-                     :height 15
-                     :border-width 2
-                     :internal-border-width 10
-                     :internal-border-color "#555555"
-                     :background-color "#1e1e1e")
-
-      ;; Switch to the shell buffer in the posframe
-      (with-current-buffer new-shell-buffer
-        ;; Set up a hook to detect when coterm/fzf is done
-        (let ((original-buffer new-shell-buffer))
-          (add-hook 'comint-output-filter-functions
-                    (lambda (text)
-                      ;; When we see a prompt after micm ssh completes, hide posframe
-                      (when (and (get-buffer original-buffer)
-                                 (string-match-p "bash-[0-9.]+\\$\\|\\$" text))
-                        (run-with-timer 0.1 nil
-                                        (lambda ()
-                                          ;; Hide the posframe
-                                          (posframe-hide original-buffer)
-                                          ;; Switch to the shell buffer in a normal window
-                                          (switch-to-buffer original-buffer)
-                                          ;; Clean up the hook
-                                          (remove-hook 'comint-output-filter-functions
-                                                       'dg-micm-ssh-completion-hook)))))
-                    nil t))
-
-        ;; Send the micm ssh command
-        (insert "micm ssh")
-        (comint-send-input)))))
+  (when-let* ((existing (get-buffer "*micm-ssh-shell*")))
+    (kill-buffer existing))
+  (let ((buf (save-window-excursion (dg-ghostel-new-here))))
+    (with-current-buffer buf
+      (rename-buffer "*micm-ssh-shell*" t)
+      (when (posframe-workable-p)
+        (posframe-show buf
+                       :poshandler #'posframe-poshandler-frame-center
+                       :width 60
+                       :height 15
+                       :border-width 2
+                       :internal-border-width 10
+                       :internal-border-color "#555555"
+                       :background-color "#1e1e1e"
+                       :accept-focus t))
+      (add-hook 'ghostel-command-finish-functions
+                (lambda (b &optional _exit)
+                  (run-at-time
+                   0 nil
+                   (lambda ()
+                     (when (buffer-live-p b)
+                       (posframe-delete-frame b)
+                       (switch-to-buffer b)))))
+                nil t)
+      (dg-maybe-ghostel-submit "micm ssh"))
+    buf))
