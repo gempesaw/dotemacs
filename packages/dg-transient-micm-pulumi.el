@@ -360,19 +360,53 @@ line."
       "--sso legacy"
     "--sso modular"))
 
+(defvar-local dg-transient-micm--run-start nil
+  "Marker at the first line of the run currently displayed in this buffer.")
+
+(defun dg-transient-micm-narrow-to-run ()
+  "Narrow the buffer to the current pulumi run.
+Scrollback stays in the buffer, just outside the accessible region, so
+`mark-whole-buffer' (and isearch, and friends) see only this run.
+
+Narrowing must start at the command's own line rather than at `point-max':
+`comint-send-input' and `comint-output-filter' both widen inside a
+`save-restriction', and restoring an empty saved restriction drops the
+narrowing entirely. Anchoring to a non-empty region survives that, and the
+narrowing end tracks streamed output because it behaves like a marker."
+  (interactive)
+  (when (and dg-transient-micm--run-start
+             (marker-position dg-transient-micm--run-start)
+             (< (marker-position dg-transient-micm--run-start) (point-max)))
+    (narrow-to-region dg-transient-micm--run-start (point-max))))
+
+(defun dg-transient-micm-toggle-run-narrowing ()
+  "Toggle between showing only the current pulumi run and the full scrollback."
+  (interactive)
+  (if (buffer-narrowed-p)
+      (progn (widen) (message "Showing full scrollback"))
+    (dg-transient-micm-narrow-to-run)
+    (message (if (buffer-narrowed-p)
+                 "Showing current run only (toggle to widen)"
+               "No run boundary recorded yet"))))
+
 (defun dg-transient-micm--submit-at-prompt (cmd)
   "Insert CMD at the comint prompt of the current buffer and submit it
 via `comint-send-input', so the command is visible and lands in input
-history (`M-p' / `M-n'). After submitting, scroll any window showing the
-buffer so the prompt line sits at the top — preserving scrollback while
-giving the illusion of a fresh buffer."
+history (`M-p' / `M-n'). After submitting, narrow to the new run and scroll
+any window showing the buffer so the prompt line sits at the top —
+preserving scrollback while giving the illusion of a fresh buffer."
   (let ((proc (get-buffer-process (current-buffer))))
     (when proc
+      ;; Widen first: the previous run's narrowing would otherwise hide the
+      ;; prompt we are about to write to.
+      (widen)
       (goto-char (process-mark proc))
       (delete-region (point) (point-max))
       (insert cmd)
       (let ((cmd-line-start (line-beginning-position)))
         (comint-send-input)
+        (setq dg-transient-micm--run-start (copy-marker cmd-line-start))
+        (dg-transient-micm-narrow-to-run)
         (dolist (win (get-buffer-window-list (current-buffer) nil t))
           (set-window-start win cmd-line-start)
           (set-window-point win (point-max)))))))
@@ -511,6 +545,7 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
               (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
               (setq-local comint-scroll-show-maximum-output nil
                           comint-move-point-for-output nil)
+              (local-set-key (kbd "C-c n") #'dg-transient-micm-toggle-run-narrowing)
               (setq dg-pulumi-stacks--last-activity (current-time))
               (dg-transient-micm--stamp-buffer existing-buffer project stack target worktree)
               (setq dg-transient-micm--on-setup-success sync-env)
@@ -525,6 +560,7 @@ last command is submitted bare, so `M-p' in the buffer recalls just it."
               (add-hook 'comint-output-filter-functions #'dg-pulumi-stacks--track-activity nil t)
               (setq-local comint-scroll-show-maximum-output nil
                           comint-move-point-for-output nil)
+              (local-set-key (kbd "C-c n") #'dg-transient-micm-toggle-run-narrowing)
               (setq dg-pulumi-stacks--last-activity (current-time))
               (dg-transient-micm--stamp-buffer buf project stack target worktree)
               (setq dg-transient-micm--on-setup-success sync-env)
