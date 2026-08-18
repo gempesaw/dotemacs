@@ -473,6 +473,229 @@ mentioned, falls back to `magit-status' in the session's directory."
           (magit-diff-range (concat (dg/agent-shell-dashboard--diff-base) "..."))))))
 
   ;; ----------------------------------------------------------------
+  ;; Restore a session's context from its saved transcript
+  ;; ----------------------------------------------------------------
+
+  ;; Claude prunes the session state behind `--resume', but agent-shell's
+  ;; own `<repo>/.agent-shell/transcripts/<timestamp>.md' files outlive
+  ;; it by a wide margin (754 vs 142 for infra when this was written), so
+  ;; they are the durable record.  They are named by start time rather
+  ;; than session id, but each carries a `**Session ID:**' header line —
+  ;; so a cheap scan of the first couple KB of each file recovers the
+  ;; mapping even for sessions whose buffer is long gone.
+
+  (defvar dg/agent-shell-dashboard--transcript-index-cache (make-hash-table :test 'equal)
+    "Cache of DIR -> (MTIME . HASH of session-id -> transcript path).")
+
+  (defvar dg/agent-shell-dashboard-transcript-tail-exchanges 6
+    "How many trailing exchanges a prefix-arg restore inlines.")
+
+  (defun dg/agent-shell-dashboard--transcript-dir (cwd)
+    "Return the transcripts directory for CWD, or nil when absent.
+Falls back to the enclosing repo root, since a session started in a
+subdirectory still writes to the project's transcripts directory."
+    (when cwd
+      (cl-find-if
+       #'file-directory-p
+       (delq nil
+             (list (expand-file-name ".agent-shell/transcripts/" cwd)
+                   (when-let* ((top (ignore-errors
+                                      (let ((default-directory cwd))
+                                        (magit-toplevel)))))
+                     (expand-file-name ".agent-shell/transcripts/" top)))))))
+
+  (defun dg/agent-shell-dashboard--transcript-index (dir)
+    "Hash of session-id -> transcript paths for DIR, cached on DIR's mtime.
+Each value is a list of paths, newest first: resuming a session starts a
+fresh transcript under the same id, so one session commonly spans several
+files and the older ones still hold context the newest lacks.  Only the
+head of each file is read, keeping a scan of several hundred transcripts
+well under a keypress's worth of latency.
+
+Transcripts written before agent-shell began stamping a `**Session ID:**'
+header cannot be matched at all; those are reachable only through the
+interactive picker."
+    (let* ((mtime (file-attribute-modification-time (file-attributes dir)))
+           (cached (gethash dir dg/agent-shell-dashboard--transcript-index-cache)))
+      (if (and cached (equal (car cached) mtime))
+          (cdr cached)
+        (let ((index (make-hash-table :test 'equal)))
+          ;; `directory-files' sorts ascending and filenames are start
+          ;; timestamps, so pushing yields newest-first per id.
+          (dolist (file (directory-files dir t "\\.md\\'"))
+            (with-temp-buffer
+              (ignore-errors
+                (insert-file-contents file nil 0 2048)
+                (goto-char (point-min))
+                (when (re-search-forward "^\\*\\*Session ID:\\*\\* +\\([0-9a-fA-F-]+\\)"
+                                         nil t)
+                  (let ((id (match-string 1)))
+                    (puthash id (cons file (gethash id index)) index))))))
+          (puthash dir (cons mtime index)
+                   dg/agent-shell-dashboard--transcript-index-cache)
+          index))))
+
+  (defun dg/agent-shell-dashboard--jsonl-for-session (session-id cwd)
+    "Path to Claude's raw JSONL log for SESSION-ID under CWD, if it survives.
+Claude mangles the cwd into the directory name by replacing `/' and
+`.' with `-'."
+    (when (and session-id cwd agent-shell-dashboard-claude-projects-dir)
+      (let* ((mangled (replace-regexp-in-string
+                       "[/.]" "-" (directory-file-name (expand-file-name cwd))))
+             (path (expand-file-name
+                    (format "%s/%s.jsonl" mangled session-id)
+                    agent-shell-dashboard-claude-projects-dir)))
+        (and (file-exists-p path) path))))
+
+  (defun dg/agent-shell-dashboard--pick-transcript (dir)
+    "Prompt for a transcript in DIR, newest first, annotated with its topic."
+    (let* ((files (nreverse
+                   (sort (directory-files dir t "\\.md\\'") #'string<)))
+           (choices
+            (mapcar
+             (lambda (file)
+               (cons (format "%s  %s"
+                             (file-name-base file)
+                             (or (dg/agent-shell-dashboard--transcript-topic file) ""))
+                     file))
+             files)))
+      (unless choices
+        (user-error "No transcripts in %s" dir))
+      (cdr (assoc (completing-read "Transcript: " (mapcar #'car choices) nil t)
+                  choices))))
+
+  (defun dg/agent-shell-dashboard--transcript-topic (file)
+    "First non-blank line of FILE's opening user message, for annotation."
+    (with-temp-buffer
+      (ignore-errors
+        (insert-file-contents file nil 0 8192)
+        (goto-char (point-min))
+        (when (re-search-forward "^## User (" nil t)
+          (forward-line 1)
+          (while (and (looking-at-p "^[[:space:]]*$") (not (eobp)))
+            (forward-line 1))
+          (truncate-string-to-width
+           (buffer-substring-no-properties
+            (line-beginning-position) (line-end-position))
+           90)))))
+
+  (defun dg/agent-shell-dashboard--transcript-tail (file n)
+    "Last N exchanges of FILE as a string, or nil.
+Anchors on the timestamped `## User (' / `## Agent (' headers that
+delimit exchanges; a bare `^## ' would match headings inside the
+agent's own prose."
+    (with-temp-buffer
+      (ignore-errors
+        (insert-file-contents file)
+        (goto-char (point-max))
+        (let ((count 0)
+              (pos nil))
+          (while (and (< count n)
+                      (re-search-backward "^## \\(?:User\\|Agent\\) (" nil t))
+            (setq pos (point))
+            (cl-incf count))
+          (when pos
+            (buffer-substring-no-properties pos (point-max)))))))
+
+  (defun dg/agent-shell-dashboard--restore-target ()
+    "Resolve (BUFFER SESSION-ID CWD) for the restore command.
+From the dashboard, uses the row at point — resuming it when its
+buffer is gone, which is the usual state for a session old enough to
+have lost its context.  Elsewhere uses the current agent-shell buffer
+or prompts."
+    (if-let* ((row (and (derived-mode-p 'agent-shell-dashboard-mode)
+                        (get-text-property (point) 'dg-row))))
+        (let* ((cached (plist-get row :buffer))
+               (sid (plist-get row :session-id))
+               (buf (or (and (buffer-live-p cached) cached)
+                        (agent-shell-dashboard--find-live-buffer-for-session sid)
+                        (agent-shell-dashboard--resume-session row)
+                        (user-error "Could not resume session"))))
+          (list buf sid (or (plist-get row :cwd)
+                            (buffer-local-value 'default-directory buf))))
+      (let ((buf (if (derived-mode-p 'agent-shell-mode)
+                     (current-buffer)
+                   (dg/agent-shell-dashboard--prompt-for-buffer
+                    "Restore context in session: "))))
+        (list buf
+              (with-current-buffer buf
+                (map-nested-elt agent-shell--state '(:session :id)))
+              (buffer-local-value 'default-directory buf)))))
+
+  (defun dg/agent-shell-dashboard-restore-context-from-transcript (&optional with-tail)
+    "Inject a prompt telling the session to restore context from its transcript.
+Finds the transcript via the live buffer's own `agent-shell--transcript-file'
+when available, else by session id through the transcript index, else by
+prompting.  The prompt is injected into the compose viewport rather than
+sent, so it can be edited or extended before submitting.
+
+We hand over the path rather than the contents: transcripts average a
+couple hundred KB and run to several MB, so the agent should read and
+slice the file itself.  With a prefix arg (WITH-TAIL), the last
+`dg/agent-shell-dashboard-transcript-tail-exchanges' exchanges are also
+inlined for immediate orientation."
+    (interactive "P")
+    (pcase-let* ((`(,shell-buffer ,session-id ,cwd)
+                  (dg/agent-shell-dashboard--restore-target))
+                 (dir (dg/agent-shell-dashboard--transcript-dir cwd))
+                 (live-file (and (buffer-live-p shell-buffer)
+                                 (buffer-local-value 'agent-shell--transcript-file
+                                                     shell-buffer)))
+                 (indexed (and dir session-id
+                               (gethash session-id
+                                        (dg/agent-shell-dashboard--transcript-index dir))))
+                 ;; Newest first, with the live buffer's own transcript
+                 ;; promoted to the front when it is not already there.
+                 (transcripts
+                  (or (let ((all (if (and live-file (file-exists-p live-file))
+                                     (cons live-file (remove live-file indexed))
+                                   indexed)))
+                        (and all (delq nil all)))
+                      (and dir
+                           (progn
+                             (message "No transcript matched session %s; pick one"
+                                      (or session-id "?"))
+                             (list (dg/agent-shell-dashboard--pick-transcript dir))))
+                      (user-error "No transcripts directory for %s" cwd)))
+                 (transcript (car transcripts))
+                 (jsonl (dg/agent-shell-dashboard--jsonl-for-session session-id cwd))
+                 (tail (and with-tail
+                            (dg/agent-shell-dashboard--transcript-tail
+                             transcript
+                             dg/agent-shell-dashboard-transcript-tail-exchanges)))
+                 (context
+                  (concat
+                   "If you have lost the context of this session, restore it from"
+                   " the transcript saved at:\n\n  " transcript
+                   "\n\nRead it before answering — start from the end and work"
+                   " backward, since the most recent exchanges matter most."
+                   (when (cdr transcripts)
+                     (concat "\n\nThis session was resumed, so earlier stretches of"
+                             " it live in these transcripts too, newest first:\n"
+                             (mapconcat (lambda (f) (concat "  " f))
+                                        (cdr transcripts) "\n")))
+                   (when jsonl
+                     (concat "\n\nA raw JSONL log with tool-call detail is also at:\n  "
+                             jsonl))
+                   (when tail
+                     (concat "\n\nThe last few exchanges, inline:\n\n"
+                             "--- BEGIN TRANSCRIPT TAIL ---\n"
+                             tail
+                             "\n--- END TRANSCRIPT TAIL ---")))))
+      (pop-to-buffer shell-buffer)
+      (agent-shell-viewport--show-buffer
+       :shell-buffer shell-buffer
+       :append context)
+      (let ((viewport (agent-shell-viewport--buffer :shell-buffer shell-buffer)))
+        (dg/agent-shell-dashboard--install-banner viewport shell-buffer)
+        (dg/agent-shell-dashboard--compose-point-to viewport 'start))
+      (message "Transcript: %s%s"
+               (file-name-nondirectory transcript)
+               (if (cdr transcripts)
+                   (format " (+%d earlier)" (length (cdr transcripts)))
+                 ""))))
+
+  ;; ----------------------------------------------------------------
   ;; Generate all summaries (manual force-capture)
   ;; ----------------------------------------------------------------
 
@@ -539,6 +762,8 @@ relaxing the on-store truncation cap to widen existing rows."
   ;; public `fork' binding — flycheck-send is a code-buffer command
   ;; reachable via the transient, not the dashboard keymap.
   (define-key agent-shell-dashboard-mode-map (kbd "s") #'dg/agent-shell-dashboard-send)
+  (define-key agent-shell-dashboard-mode-map (kbd "t")
+              #'dg/agent-shell-dashboard-restore-context-from-transcript)
   (define-key agent-shell-dashboard-mode-map (kbd "x") #'dg/agent-shell-dashboard-execute-request)
   (define-key agent-shell-dashboard-mode-map (kbd "X") #'dg/agent-shell-dashboard-execute-request-pick-buffer)
 
@@ -559,7 +784,9 @@ relaxing the on-store truncation cap to widen existing rows."
       ("s" "Ask (bare prompt)" dg/agent-shell-dashboard-ask)
       ("x" "Execute with context" dg/agent-shell-dashboard-execute-request)
       ("X" "Execute (pick buffer)" dg/agent-shell-dashboard-execute-request-pick-buffer)
-      ("f" "Send flycheck error" dg/agent-shell-dashboard-send-flycheck-error)]
+      ("f" "Send flycheck error" dg/agent-shell-dashboard-send-flycheck-error)
+      ("t" "Restore context from transcript"
+       dg/agent-shell-dashboard-restore-context-from-transcript)]
      ["Summary"
       ("T" "Generate All Summaries" dg/agent-shell-dashboard-generate-all-summaries)]
      ["Persistence"
