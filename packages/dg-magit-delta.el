@@ -47,6 +47,62 @@ fix is to let magit's faces do the filling.")
 (defvar dg-magit-delta--base-args nil
   "`magit-delta-delta-args' as the package shipped it, before our additions.")
 
+(defvar dg-magit-delta-added-accent "#63C74D"
+  "Hue the added background is tinted toward.
+Deliberately yellow-green: fairyfloss's own mint is so blue that a wash
+of it over a purple frame comes out teal rather than green.")
+
+(defvar dg-magit-delta-removed-accent "#f84034"
+  "Hue the removed background is tinted toward -- fairy-carrot-900.")
+
+(defvar dg-magit-delta-background-alpha 0.30
+  "How far the diff backgrounds are washed toward their accent, 0.0 to 1.0.
+Emacs faces have no alpha channel, so this is composited by hand against
+the frame background and stored as a flat color.  The -highlight faces,
+which magit uses for the section under point, get half again as much.")
+
+(defun dg-magit-delta--blend (accent alpha)
+  "Composite ACCENT over the frame background at ALPHA, as a hex string."
+  (let ((over (color-name-to-rgb accent))
+        (under (color-name-to-rgb (face-attribute 'default :background nil t))))
+    (apply #'color-rgb-to-hex
+           (append (cl-mapcar (lambda (a b) (+ b (* alpha (- a b)))) over under)
+                   (list 2)))))
+
+(defun dg-magit-delta-apply-faces ()
+  "Tint magit's diff backgrounds toward `dg-magit-delta-background-alpha'.
+Magit's stock #335533 and #553333 were picked for a near-black frame;
+against fairyfloss's #5A5475 they read as holes punched in the buffer."
+  (let ((strong (min 1.0 (* 1.5 dg-magit-delta-background-alpha))))
+    (set-face-attribute 'magit-diff-added nil :extend t
+                        :background (dg-magit-delta--blend
+                                     dg-magit-delta-added-accent
+                                     dg-magit-delta-background-alpha))
+    (set-face-attribute 'magit-diff-added-highlight nil :extend t
+                        :background (dg-magit-delta--blend
+                                     dg-magit-delta-added-accent strong))
+    (set-face-attribute 'magit-diff-removed nil :extend t
+                        :background (dg-magit-delta--blend
+                                     dg-magit-delta-removed-accent
+                                     dg-magit-delta-background-alpha))
+    (set-face-attribute 'magit-diff-removed-highlight nil :extend t
+                        :background (dg-magit-delta--blend
+                                     dg-magit-delta-removed-accent strong))))
+
+(defun dg-magit-delta-set-alpha (alpha)
+  "Set `dg-magit-delta-background-alpha' to ALPHA and recolor immediately.
+Called with no prefix it nudges by 0.05, so you can dial it in by eye."
+  (interactive (list (read-number "Background alpha: "
+                                  dg-magit-delta-background-alpha)))
+  (setq dg-magit-delta-background-alpha (max 0.0 (min 1.0 alpha)))
+  (dg-magit-delta-apply-faces)
+  (message "delta background alpha: %.2f  (added %s, removed %s)"
+           dg-magit-delta-background-alpha
+           (dg-magit-delta--blend dg-magit-delta-added-accent
+                                  dg-magit-delta-background-alpha)
+           (dg-magit-delta--blend dg-magit-delta-removed-accent
+                                  dg-magit-delta-background-alpha)))
+
 (use-package magit-delta
   :ensure t
   :demand t
@@ -55,15 +111,7 @@ fix is to let magit's faces do the filling.")
   :config
   (setq dg-magit-delta--base-args magit-delta-delta-args)
   (dg-magit-delta-refresh-settings)
-
-  ;; Magit's stock diff backgrounds are a near-black green and red picked for
-  ;; a near-black frame; against fairyfloss's #5A5475 they read as holes
-  ;; punched in the buffer.  Nudge them toward the purple while keeping them
-  ;; dark enough that delta's Monokai foreground stays legible on top.
-  (set-face-attribute 'magit-diff-added nil :background "#364A3C" :extend t)
-  (set-face-attribute 'magit-diff-added-highlight nil :background "#425A48" :extend t)
-  (set-face-attribute 'magit-diff-removed nil :background "#4A3642" :extend t)
-  (set-face-attribute 'magit-diff-removed-highlight nil :background "#5A4252" :extend t))
+  (dg-magit-delta-apply-faces))
 
 (defun dg-magit-delta-refresh-settings ()
   "Push `dg-magit-delta-background' into the settings delta reads."
