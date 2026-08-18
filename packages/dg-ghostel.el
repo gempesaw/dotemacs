@@ -5,15 +5,16 @@
 (defun dg-ghostel-name-by-cwd (_title)
   (format "*ghostel<%s>*" (abbreviate-file-name default-directory)))
 
-(defvar dg-ghostel-display-action
-  '((display-buffer-in-direction)
-    (direction . right)
-    (window-width . 0.5)))
-
 (defun dg-ghostel-new-here ()
+  "Open a new ghostel in a fresh window to the right of the current one.
+Split first with `split-window-right' — the balance-windows advice lives
+on that command, so the layout stays even — then let ghostel display into
+the already-selected new window, which its own same-window display action
+does natively. No `display-buffer-overriding-action': overriding ghostel's
+display produced extra splits and crushed windows."
   (interactive)
-  (let ((display-buffer-overriding-action dg-ghostel-display-action))
-    (ghostel '(4))))
+  (select-window (split-window-right))
+  (ghostel '(4)))
 
 (defun dg-ghostel-switch-or-create ()
   (interactive)
