@@ -458,11 +458,32 @@ and leaves the failure on screen."
             #'dg-transient-micm--command-finished nil t)
   (dg-transient-micm--queue-advance))
 
+(defun dg-transient-micm--display-pulumi-buffer (buf)
+  "Show BUF in the other frame's pulumi window, or somewhere guaranteed.
+Operates on the buffer object — never its name, which may have been
+uniquified out from under a string lookup. Always leaves BUF displayed:
+a ghostel terminal that has never had a window renders nothing and never
+reports OSC 133 command start/finish, so a run submitted into an
+undisplayed buffer stalls silently."
+  (let ((other-frame (next-frame (selected-frame))))
+    (if (not (eq other-frame (selected-frame)))
+        (with-selected-frame other-frame
+          (if-let* ((pulumi-window (--find (let ((wb (window-buffer it)))
+                                             (and (buffer-live-p wb)
+                                                  (string-prefix-p "*pulumi*" (buffer-name wb))))
+                                           (window-list))))
+              (unless (eq (window-buffer pulumi-window) buf)
+                (set-window-buffer pulumi-window buf))
+            (display-buffer buf)))
+      (let ((new-frame (make-frame)))
+        (select-frame-set-input-focus new-frame)
+        (switch-to-buffer buf)))))
+
 (defun dg-transient-micm-execute (pulumi-sub-command &optional args on-complete)
   "Run PULUMI-SUB-COMMAND for the project/stack in ARGS in a ghostel terminal.
 ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
   (interactive (list nil (transient-args transient-current-command)))
-  (save-window-excursion
+  (progn
     (let* ((project (transient-arg-value "--project=" args))
            (stack (transient-arg-value "--stack=" args))
            (target (transient-arg-value "--target=" args))
@@ -511,47 +532,48 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                                    (or profile "no profile")
                                    kubie-export-command
                                    micm-command-prefix))
-            (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile))))
-        ;; Reuse the terminal only while it still has a live shell; a dead
-        ;; ghostel buffer cannot be typed into, so start a fresh one.
-        (let ((buf (if (and existing-buffer
-                            (buffer-live-p existing-buffer)
-                            (buffer-local-value 'ghostel--term existing-buffer))
-                       existing-buffer
-                     (let ((default-directory (f-expand "~/opt/infra")))
-                       (dg-ghostel-new-here)))))
+            (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile)))
+            (buf nil))
+        ;; Acquire the buffer inside an excursion: `dg-ghostel-new-here'
+        ;; displays into the current frame, and that layout change should
+        ;; not stick — the authoritative display happens below.
+        (save-window-excursion
+          ;; Reuse the terminal only while it still has a live shell; a dead
+          ;; ghostel buffer cannot be typed into, so start a fresh one.
+          (setq buf (if (and existing-buffer
+                             (buffer-live-p existing-buffer)
+                             (buffer-local-value 'ghostel--term existing-buffer))
+                        existing-buffer
+                      (let ((default-directory (f-expand "~/opt/infra")))
+                        (dg-ghostel-new-here))))
           (with-current-buffer buf
             ;; Renaming also pins the name: ghostel only auto-renames a
             ;; buffer whose name it still owns, so the OSC 7 directory
             ;; tracker stops renaming this one out from under us.
             (unless (equal (buffer-name) buffer-name)
+              ;; A dead pulumi buffer can squat on the canonical name (its
+              ;; shell exited but the buffer survived). Renaming would then
+              ;; uniquify to a <N> name, the run would land in a buffer no
+              ;; window ever shows, and ghostel never renders or reports
+              ;; OSC 133 for an undisplayed buffer — the silent stall this
+              ;; eviction exists to prevent.
+              (when-let* ((squatter (get-buffer buffer-name)))
+                (unless (buffer-local-value 'ghostel--term squatter)
+                  (let ((kill-buffer-query-functions nil))
+                    (kill-buffer squatter))))
               (rename-buffer buffer-name t))
             (add-hook 'ghostel-inhibit-anchor-functions
                       #'dg-transient-micm-hide-outputs nil t)
             (setq dg-pulumi-stacks--last-activity (current-time))
-            (dg-transient-micm--stamp-buffer buf project stack target worktree)
-            (setq dg-transient-micm--on-setup-success sync-env
-                  dg-transient-micm--on-complete on-complete)
-            (dg-transient-micm--submit-sequence (list setup-command micm-command)))))
+            (dg-transient-micm--stamp-buffer buf project stack target worktree)))
 
-      ;; if there's another frame with a pulumi window, switch it to this one.
-      ;; if there's only a single frame, open a new frame and focus the pulumi buffer.
-      (let ((current-frame (selected-frame))
-            (other-frame (next-frame (selected-frame))))
-        (if other-frame
-            ;; There's another frame - switch its pulumi window to this buffer
-            (with-selected-frame other-frame
-              (if-let* ((pulumi-window (--find (let ((buf (window-buffer it)))
-                                                 (and (buffer-live-p buf)
-                                                      (string-prefix-p "*pulumi*" (buffer-name buf))))
-                                               (window-list)))
-                        ((not (string= (buffer-name (window-buffer pulumi-window)) buffer-name))))
-                  (set-window-buffer pulumi-window buffer-name)))
-          ;; Only one frame - create a new frame and display the pulumi buffer in it
-          (let ((new-frame (make-frame)))
-            (select-frame-set-input-focus new-frame)
-            (switch-to-buffer buffer-name)))
-        ))))
+        ;; Display before submitting, outside the excursion so it persists.
+        (dg-transient-micm--display-pulumi-buffer buf)
+
+        (with-current-buffer buf
+          (setq dg-transient-micm--on-setup-success sync-env
+                dg-transient-micm--on-complete on-complete)
+          (dg-transient-micm--submit-sequence (list setup-command micm-command)))))))
 
 (defun dg-transient-micm--get-aws-role (stack &optional project)
   "Dynamically look up AWS profile for STACK and PROJECT.
