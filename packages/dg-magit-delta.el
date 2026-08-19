@@ -58,19 +58,32 @@ merely possible; re-evaluating the buffer by hand still would."
         (eval (car (get 'magit-delta-delta-args 'standard-value)) t))
       magit-delta-delta-args))
 
-(defvar dg-magit-delta-added-accent "#63C74D"
+(defvar dg-magit-delta-added-accent "#2a5c38"
   "Hue the added background is tinted toward.
-Deliberately yellow-green: fairyfloss's own mint is so blue that a wash
-of it over a purple frame comes out teal rather than green.")
+Dark and saturated, for two reasons.  Saturated because the frame is
+blue-dominant, so a pastel wash over it comes out teal rather than green.
+Dark because delta's foreground comes from a bat theme built for a
+near-black terminal, and its dim tokens -- comments above all -- need the
+background under them to stay well below the frame's own luminance.")
 
-(defvar dg-magit-delta-removed-accent "#f84034"
-  "Hue the removed background is tinted toward -- fairy-carrot-900.")
+(defvar dg-magit-delta-removed-accent "#5c2a38"
+  "Hue the removed background is tinted toward.  See the added accent.")
 
-(defvar dg-magit-delta-background-alpha 0.30
+(defvar dg-magit-delta-context-accent "#000000"
+  "Hue `magit-diff-context-highlight' is tinted toward.
+Magit ships grey20 for it, a near-black band that has nothing to do with
+the frame; a touch of black keeps the highlight legible as a highlight
+without leaving the purple.")
+
+(defvar dg-magit-delta-background-alpha 0.60
   "How far the diff backgrounds are washed toward their accent, 0.0 to 1.0.
 Emacs faces have no alpha channel, so this is composited by hand against
 the frame background and stored as a flat color.  The -highlight faces,
-which magit uses for the section under point, get half again as much.")
+which magit uses for the section under point, get half again as much.
+
+Higher than reads \"subtle\" in isolation, and deliberately so: see the
+accent docstrings.  Below about 0.45 the backgrounds lighten past the
+frame and delta's comment color stops being legible on them.")
 
 (defun dg-magit-delta--frame-background (&optional frame)
   "FRAME's background as an RGB triple, or nil if it has no usable one."
@@ -110,7 +123,10 @@ a color.  Wait for a real frame rather than signalling out of :config."
                                          dg-magit-delta-removed-accent weak under))
         (set-face-attribute 'magit-diff-removed-highlight nil :extend t
                             :background (dg-magit-delta--blend
-                                         dg-magit-delta-removed-accent strong under))))))
+                                         dg-magit-delta-removed-accent strong under))
+        (set-face-attribute 'magit-diff-context-highlight nil :extend t
+                            :background (dg-magit-delta--blend
+                                         dg-magit-delta-context-accent 0.15 under))))))
 
 (defun dg-magit-delta-set-alpha (alpha)
   "Set `dg-magit-delta-background-alpha' to ALPHA and recolor immediately.
@@ -212,6 +228,10 @@ present breaks every magit buffer rather than degrading to plain magit."
   :after magit
   :hook (magit-mode . dg-magit-delta-maybe-enable)
   :config
+  ;; Measured, not chosen by taste: of the themes delta ships, zenburn's
+  ;; comment colour has by far the best contrast on this frame.  Monokai's
+  ;; #75715e scores 1.01 against the added background -- invisible.
+  (setq magit-delta-default-dark-theme "zenburn")
   (dg-magit-delta-refresh-settings)
   (dg-magit-delta-apply-faces)
   (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences
