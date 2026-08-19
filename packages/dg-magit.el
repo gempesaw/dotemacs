@@ -74,9 +74,20 @@
     (call-interactively 'magit-clone)))
 
 
-(defun my-magit-push-after-branch-checkout (branch &rest args)
-  "Push the newly created BRANCH to origin."
-  (when (and (not (member branch (magit-list-remote-branch-names "origin")))
+(defvar dg-magit-push-branch-prefix "dg/"
+  "Only branches under this prefix are offered up to origin on creation.")
+
+(defun my-magit-push-after-branch-checkout (branch &rest _args)
+  "Offer to push BRANCH to origin, when it is mine and new there.
+
+Restricted to `dg-magit-push-branch-prefix'.  Without that, creating a
+local main, master, or a colleague's branch put a push prompt in front of
+you, where a reflexive RET pushes to a branch you do not own."
+  (when (and (string-prefix-p dg-magit-push-branch-prefix branch)
+             ;; RELATIVE matters: without it every name comes back as
+             ;; "origin/dg/foo", never matches BRANCH, and the guard silently
+             ;; passes for branches that are already on the remote.
+             (not (member branch (magit-list-remote-branch-names "origin" t)))
              (yes-or-no-p (format "Branch '%s' does not exist on 'origin'. Push it now? " branch)))
     (magit-run-git-async "push" "origin" branch)))
 
