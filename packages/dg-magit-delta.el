@@ -44,8 +44,17 @@ exactly why delta's blocks stop dead at the end of the text instead of
 extending.  Emacs' own way to say this is a face with :extend t, so the
 fix is to let magit's faces do the filling.")
 
-(defvar dg-magit-delta--base-args nil
-  "`magit-delta-delta-args' as the package shipped it, before our additions.")
+(defun dg-magit-delta--pristine-args ()
+  "The delta args magit-delta shipped with, read from the defcustom itself.
+
+Never build on the live value of `magit-delta-delta-args': init.el loads
+every package file twice, so a second pass would append the style args on
+top of themselves, and delta refuses a repeated --plus-style outright --
+`call-process-region' then replaces the diff with delta's usage message,
+which magit washes down to an empty buffer."
+  (or (ignore-errors
+        (eval (car (get 'magit-delta-delta-args 'standard-value)) t))
+      magit-delta-delta-args))
 
 (defvar dg-magit-delta-added-accent "#63C74D"
   "Hue the added background is tinted toward.
@@ -109,16 +118,47 @@ Called with no prefix it nudges by 0.05, so you can dial it in by eye."
   :after magit
   :hook (magit-mode . dg-magit-delta-maybe-enable)
   :config
-  (setq dg-magit-delta--base-args magit-delta-delta-args)
   (dg-magit-delta-refresh-settings)
-  (dg-magit-delta-apply-faces))
+  (dg-magit-delta-apply-faces)
+  (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences
+              :override #'dg-magit-delta-call-delta-safely))
+
+(defun dg-magit-delta-call-delta-safely ()
+  "Pipe the diff through delta, keeping the raw diff if delta fails.
+
+Same as the function it overrides, except it checks the exit status.
+magit-delta pipes the buffer through `call-process-region' with REPLACE,
+so a delta that rejects its arguments swaps the diff for its own usage
+message, which magit then washes down to an empty buffer -- no error, no
+diff, nothing to go on."
+  (let* ((raw (buffer-string))
+         (status (apply #'call-process-region
+                        (point-min) (point-max)
+                        magit-delta-delta-executable t t nil
+                        (magit-delta--make-delta-args)))
+         (buffer-read-only nil))
+    (if (eq status 0)
+        (progn
+          (xterm-color-colorize-buffer 'use-overlays)
+          (when magit-delta-hide-plus-minus-markers
+            (magit-delta-hide-plus-minus-markers)))
+      (let ((complaint (string-trim (buffer-string))))
+        (erase-buffer)
+        (insert raw)
+        ;; `magit-diff-wash-diffs' picks up with a forward search from point,
+        ;; so leaving it at end-of-buffer costs every section.  The success
+        ;; path lands at point-min because that is where
+        ;; `xterm-color-colorize-buffer' finishes.
+        (goto-char (point-min))
+        (message "delta exited %s, showing the plain diff: %s"
+                 status (car (split-string complaint "\n")))))))
 
 (defun dg-magit-delta-refresh-settings ()
   "Push `dg-magit-delta-background' into the settings delta reads."
   (setq magit-delta-hide-plus-minus-markers
         (not (eq dg-magit-delta-background 'none)))
   (setq magit-delta-delta-args
-        (append dg-magit-delta--base-args
+        (append (dg-magit-delta--pristine-args)
                 (unless (eq dg-magit-delta-background 'delta)
                   dg-magit-delta--flat-style-args))))
 
