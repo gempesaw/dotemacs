@@ -47,11 +47,13 @@ fix is to let magit's faces do the filling.")
 (defun dg-magit-delta--pristine-args ()
   "The delta args magit-delta shipped with, read from the defcustom itself.
 
-Never build on the live value of `magit-delta-delta-args': init.el loads
-every package file twice, so a second pass would append the style args on
-top of themselves, and delta refuses a repeated --plus-style outright --
-`call-process-region' then replaces the diff with delta's usage message,
-which magit washes down to an empty buffer."
+Never build on the live value of `magit-delta-delta-args'.  Doing so
+appends the style args on top of themselves every time this file is
+evaluated a second time, and delta refuses a repeated --plus-style
+outright -- `call-process-region' then replaces the diff with delta's
+usage message, which magit washes down to an empty buffer.  init.el used
+to load every package file twice, which made that certain rather than
+merely possible; re-evaluating the buffer by hand still would."
   (or (ignore-errors
         (eval (car (get 'magit-delta-delta-args 'standard-value)) t))
       magit-delta-delta-args))
@@ -70,33 +72,45 @@ Emacs faces have no alpha channel, so this is composited by hand against
 the frame background and stored as a flat color.  The -highlight faces,
 which magit uses for the section under point, get half again as much.")
 
-(defun dg-magit-delta--blend (accent alpha)
-  "Composite ACCENT over the frame background at ALPHA, as a hex string."
-  (let ((over (color-name-to-rgb accent))
-        (under (color-name-to-rgb (face-attribute 'default :background nil t))))
-    (apply #'color-rgb-to-hex
-           (append (cl-mapcar (lambda (a b) (+ b (* alpha (- a b)))) over under)
-                   (list 2)))))
+(defun dg-magit-delta--frame-background (&optional frame)
+  "FRAME's background as an RGB triple, or nil if it has no usable one."
+  (color-name-to-rgb (face-attribute 'default :background frame t)))
 
-(defun dg-magit-delta-apply-faces ()
+(defun dg-magit-delta--blend (accent alpha &optional under)
+  "Composite ACCENT over UNDER at ALPHA, as a hex string.
+UNDER is an RGB triple, defaulting to the selected frame's background."
+  (apply #'color-rgb-to-hex
+         (append (color-blend (color-name-to-rgb accent)
+                              (or under (dg-magit-delta--frame-background))
+                              alpha)
+                 (list 2))))
+
+(defun dg-magit-delta-apply-faces (&optional frame)
   "Tint magit's diff backgrounds toward `dg-magit-delta-background-alpha'.
 Magit's stock #335533 and #553333 were picked for a near-black frame;
-against fairyfloss's #5A5475 they read as holes punched in the buffer."
-  (let ((strong (min 1.0 (* 1.5 dg-magit-delta-background-alpha))))
-    (set-face-attribute 'magit-diff-added nil :extend t
-                        :background (dg-magit-delta--blend
-                                     dg-magit-delta-added-accent
-                                     dg-magit-delta-background-alpha))
-    (set-face-attribute 'magit-diff-added-highlight nil :extend t
-                        :background (dg-magit-delta--blend
-                                     dg-magit-delta-added-accent strong))
-    (set-face-attribute 'magit-diff-removed nil :extend t
-                        :background (dg-magit-delta--blend
-                                     dg-magit-delta-removed-accent
-                                     dg-magit-delta-background-alpha))
-    (set-face-attribute 'magit-diff-removed-highlight nil :extend t
-                        :background (dg-magit-delta--blend
-                                     dg-magit-delta-removed-accent strong))))
+against fairyfloss's #5A5475 they read as holes punched in the buffer.
+
+Blending needs a background to blend against, and a daemon's initial
+frame has none -- `face-attribute' answers `unspecified-bg', which is not
+a color.  Wait for a real frame rather than signalling out of :config."
+  (let ((under (dg-magit-delta--frame-background frame)))
+    (if (not under)
+        (add-hook 'after-make-frame-functions #'dg-magit-delta-apply-faces)
+      (remove-hook 'after-make-frame-functions #'dg-magit-delta-apply-faces)
+      (let ((weak dg-magit-delta-background-alpha)
+            (strong (min 1.0 (* 1.5 dg-magit-delta-background-alpha))))
+        (set-face-attribute 'magit-diff-added nil :extend t
+                            :background (dg-magit-delta--blend
+                                         dg-magit-delta-added-accent weak under))
+        (set-face-attribute 'magit-diff-added-highlight nil :extend t
+                            :background (dg-magit-delta--blend
+                                         dg-magit-delta-added-accent strong under))
+        (set-face-attribute 'magit-diff-removed nil :extend t
+                            :background (dg-magit-delta--blend
+                                         dg-magit-delta-removed-accent weak under))
+        (set-face-attribute 'magit-diff-removed-highlight nil :extend t
+                            :background (dg-magit-delta--blend
+                                         dg-magit-delta-removed-accent strong under))))))
 
 (defun dg-magit-delta-set-alpha (alpha)
   "Set `dg-magit-delta-background-alpha' to ALPHA and recolor immediately.
@@ -111,17 +125,6 @@ Called with no prefix it nudges by 0.05, so you can dial it in by eye."
                                   dg-magit-delta-background-alpha)
            (dg-magit-delta--blend dg-magit-delta-removed-accent
                                   dg-magit-delta-background-alpha)))
-
-(use-package magit-delta
-  :ensure t
-  :demand t
-  :after magit
-  :hook (magit-mode . dg-magit-delta-maybe-enable)
-  :config
-  (dg-magit-delta-refresh-settings)
-  (dg-magit-delta-apply-faces)
-  (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences
-              :override #'dg-magit-delta-call-delta-safely))
 
 (defun dg-magit-delta-call-delta-safely ()
   "Pipe the diff through delta, keeping the raw diff if delta fails.
@@ -198,3 +201,18 @@ present breaks every magit buffer rather than degrading to plain magit."
   (when (derived-mode-p 'magit-mode)
     (magit-refresh))
   (message "delta background: %s" dg-magit-delta-background))
+
+;; Last in the file on purpose: :config calls
+;; `dg-magit-delta-refresh-settings' directly, and `:after magit' means that
+;; runs the instant magit is already loaded.  Declared above the defuns, that
+;; is a void-function on any startup where something pulled magit in first.
+(use-package magit-delta
+  :ensure t
+  :demand t
+  :after magit
+  :hook (magit-mode . dg-magit-delta-maybe-enable)
+  :config
+  (dg-magit-delta-refresh-settings)
+  (dg-magit-delta-apply-faces)
+  (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences
+              :override #'dg-magit-delta-call-delta-safely))
