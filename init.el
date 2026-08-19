@@ -59,15 +59,56 @@
                        dg-elc-compiled-version emacs-version)
                :error))))
 
-(let ((inhibit-message t))
-  (->> "~/.emacs.d/packages"
-       (f-files)
-       (--filter (not (or (s-contains-p "#" it)
-                          (s-contains-p "~" it))))
-       (funcall (lambda (files) (--each files
-                                  (progn
-                                    (load it nil t)
-                                    (load it nil t)))))))
+(defvar dg-package-load-failures nil
+  "Files under packages/ that would not load, as (FILE . ERROR).")
+
+(defun dg-load-package-files (&optional directory)
+  "Load every file in DIRECTORY, retrying the ones that error.
+DIRECTORY defaults to the packages/ directory.
+
+Each file used to be loaded twice, back to back.  That doubled startup
+and quietly broke any top level that was not idempotent -- a `push', or
+a `setq' that appends to its own variable -- while never fixing the
+ordering problem it looked like it was for: a load running immediately
+after the first still cannot see anything a later-sorted file defines.
+
+Retrying only the failures, once the whole directory has been through,
+does fix that.  It also keeps one bad file from truncating the rest of
+startup, which is what an error mid-loop used to do -- silently, since
+`inhibit-message' is bound here."
+  (let ((inhibit-message t)
+        (retry nil))
+    (dolist (file (--filter (not (or (s-contains-p "#" it)
+                                     (s-contains-p "~" it)))
+                            (f-files (or directory "~/.emacs.d/packages"))))
+      (condition-case nil
+          (load file nil t)
+        (error (push file retry))))
+
+    (setq dg-package-load-failures nil)
+    (dolist (file (nreverse retry))
+      (condition-case err
+          (load file nil t)
+        (error (push (cons file err) dg-package-load-failures))))
+    (setq dg-package-load-failures (nreverse dg-package-load-failures))))
+
+(dg-load-package-files)
+
+;; Deferred to startup for the same reason as the staleness warning above:
+;; drawing to the echo area during the load phase can deadlock AppKit.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (when dg-package-load-failures
+              (display-warning
+               'dg-packages
+               (concat "These files failed to load, twice:\n"
+                       (mapconcat (lambda (failure)
+                                    (format "  %s\n    %s"
+                                            (f-filename (car failure))
+                                            (error-message-string (cdr failure))))
+                                  dg-package-load-failures
+                                  "\n"))
+               :error))))
 
 (add-to-list 'load-path (f-expand "~/opt/kubectl.el"))
 (add-to-list 'load-path (f-expand "~/opt/aws.el"))
