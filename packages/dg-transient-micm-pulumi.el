@@ -325,7 +325,9 @@ to produce the displayed string.")
                         (s-contains-p "prod" stack)) "ci-github-prod-eks-cluster-49c02d6")
                   (t "ci-dev-eks-cluster-74fc2c4")))
         )
-    (format "export KUBECONFIG=$(kubie export %s default)" cluster)))
+    ;; Assignment first, export second: `export V=$(cmd)' exits 0 even when
+    ;; cmd fails, but a plain assignment propagates the substitution's status.
+    (format "KUBECONFIG=\"$(kubie export %s default)\" && export KUBECONFIG" cluster)))
 
 (defun dg-transient-micm-hide-outputs (window &optional _force)
   "Collapse the post-apply pulumi `Outputs:' section in this buffer.
@@ -444,6 +446,27 @@ needed. Ignores the bare prompt redraws bash also reports as finishes."
         (dg-transient-micm--queue-cleanup)
         (when thunk (run-at-time 0 nil thunk))))))
 
+(defun dg-transient-micm--start-queue-when-ready (buffer &optional tries)
+  "Kick off BUFFER's queue once its shell has drawn a prompt.
+A brand-new ghostel accepts sent keys before bash has even started
+reading input, so submitting immediately races shell startup — the
+command text lands ahead of the login banner and may be dropped. Poll
+`ghostel--prompt-positions' (populated at the first OSC 133 prompt)
+instead of hooking command-finish, because the very first prompt of a
+session emits no finish marker to hook onto."
+  (when (buffer-live-p buffer)
+    (with-current-buffer buffer
+      (cond
+       (ghostel--prompt-positions
+        (dg-transient-micm--queue-advance))
+       ((> (or tries 0) 50)
+        (dg-transient-micm--queue-cleanup)
+        (message "Pulumi: shell in %s never drew a prompt — chain abandoned"
+                 (buffer-name buffer)))
+       (t
+        (run-at-time 0.2 nil #'dg-transient-micm--start-queue-when-ready
+                     buffer (1+ (or tries 0))))))))
+
 (defun dg-transient-micm--submit-sequence (commands)
   "Submit COMMANDS one at a time, gating each on the previous one's exit code.
 Ghostel reports exit status natively through OSC 133, so unlike the comint
@@ -456,28 +479,61 @@ and leaves the failure on screen."
             #'dg-transient-micm--command-started nil t)
   (add-hook 'ghostel-command-finish-functions
             #'dg-transient-micm--command-finished nil t)
-  (dg-transient-micm--queue-advance))
+  (dg-transient-micm--start-queue-when-ready (current-buffer)))
+
+(defun dg-transient-micm--real-frames ()
+  "Return the visible top-level frames.
+`frame-list' is not a list of the user's windows onto the world: it also
+reports the invisible minibuffer frame and the child frames corfu and
+posframe keep permanently allocated. Counting those makes the
+single-frame case unreachable — there are always four or five of them —
+and a visible completion popup would read as somebody's workspace."
+  (--filter (not (frame-parent it)) (visible-frame-list)))
 
 (defun dg-transient-micm--display-pulumi-buffer (buf)
-  "Show BUF in the other frame's pulumi window, or somewhere guaranteed.
+  "Show BUF without disturbing frames that are not already showing pulumi.
+A frame already displaying a `*pulumi*' buffer is the user's monitor for
+these runs, so reuse its window. A frame showing anything else is not:
+leave it alone entirely and display here instead.
+
 Operates on the buffer object — never its name, which may have been
 uniquified out from under a string lookup. Always leaves BUF displayed:
 a ghostel terminal that has never had a window renders nothing and never
 reports OSC 133 command start/finish, so a run submitted into an
 undisplayed buffer stalls silently."
-  (let ((other-frame (next-frame (selected-frame))))
-    (if (not (eq other-frame (selected-frame)))
-        (with-selected-frame other-frame
-          (if-let* ((pulumi-window (--find (let ((wb (window-buffer it)))
-                                             (and (buffer-live-p wb)
-                                                  (string-prefix-p "*pulumi*" (buffer-name wb))))
-                                           (window-list))))
-              (unless (eq (window-buffer pulumi-window) buf)
-                (set-window-buffer pulumi-window buf))
-            (display-buffer buf)))
+  (let* ((other-frames (--remove (eq it (selected-frame))
+                                 (dg-transient-micm--real-frames)))
+         ;; Scan every other frame, not just `next-frame': with three frames
+         ;; the pulumi monitor is often not the next one round the ring.
+         (pulumi-window
+          (car (delq nil
+                     (--map (--find (let ((wb (window-buffer it)))
+                                      (and (buffer-live-p wb)
+                                           (string-prefix-p "*pulumi*" (buffer-name wb))))
+                                    (window-list it 'no-mini))
+                            other-frames)))))
+    (cond
+     ;; A frame already showing some pulumi run is the monitor — reuse it.
+     (pulumi-window
+      (unless (eq (window-buffer pulumi-window) buf)
+        (set-window-buffer pulumi-window buf)))
+
+     ;; Already on screen somewhere: nothing to disturb.
+     ((get-buffer-window buf t))
+
+     ;; Sole frame: a dedicated frame for the run is welcome.
+     ((null other-frames)
       (let ((new-frame (make-frame)))
         (select-frame-set-input-focus new-frame)
-        (switch-to-buffer buf)))))
+        (switch-to-buffer buf)))
+
+     ;; Other frames exist but none of them is showing pulumi, so they are
+     ;; somebody else's workspace — display here rather than stealing one of
+     ;; their windows. `inhibit-switch-frame' keeps `display-buffer' from
+     ;; wandering off to another frame to do it.
+     (t
+      (display-buffer buf (append dg-ghostel-display-action
+                                  '((inhibit-switch-frame . t))))))))
 
 (defun dg-transient-micm-execute (pulumi-sub-command &optional args on-complete)
   "Run PULUMI-SUB-COMMAND for the project/stack in ARGS in a ghostel terminal.
@@ -498,8 +554,14 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                                              (format "-- %s" pulumi-sub-command))
                                          ""))
            (sso-arg (dg-transient-micm--get-sso-arg profile))
+           ;; Assign the eval output to a variable before eval-ing it: the
+           ;; assignment's exit status is the command substitution's, so a
+           ;; failed `aws-sso eval' stops the chain with its real error on
+           ;; screen. A bare `eval $(...)' evaluates empty output with exit 0
+           ;; and the failure surfaces later as a baffling NoCredentials from
+           ;; sts — after the chain already moved on.
            (micm-command-prefix (if profile
-                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'` && aws-sso login %s && eval $(aws-sso eval %s --no-region --profile=%s) && aws sts get-caller-identity" sso-arg sso-arg profile)
+                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'` && aws-sso login %s && DG_AWS_CREDS=\"$(aws-sso eval %s --no-region --profile=%s)\" && eval \"$DG_AWS_CREDS\" && unset DG_AWS_CREDS && aws sts get-caller-identity" sso-arg sso-arg profile)
                                   (format "echo 'No profile found for %s/%s'" project stack)))
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
@@ -516,8 +578,7 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                           pulumi-passthrough-command))
            (kubie-export-command (dg-transient-micm-kubie-command stack))
            (buffer-name (format "*pulumi* | %s | %s" project stack))
-           (existing-buffer (get-buffer buffer-name))
-           (visible-frames (visible-frame-list)))
+           (existing-buffer (get-buffer buffer-name)))
 
       ;; Persist the chosen settings back to the buffer the transient was
       ;; invoked from, so re-invoking from there auto-populates them.
