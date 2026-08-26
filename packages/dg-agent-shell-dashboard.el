@@ -313,6 +313,132 @@ some shells even on 0.55."
     (dg/agent-shell-dashboard--pop-viewport-edit
      (dg/agent-shell-dashboard--default-buffer)))
 
+  ;; ----------------------------------------------------------------
+  ;; Route context from a worktree back to the session that owns it
+  ;; ----------------------------------------------------------------
+
+  ;; Sending a worktree file:line to whichever session happens to be
+  ;; handy is worse than useless — that session has no idea why the
+  ;; worktree exists.  Sessions almost always run from the main checkout,
+  ;; so cwd does not identify the owner; the signal is which transcript
+  ;; talks about the worktree.
+  ;;
+  ;; That signal is learned once, incrementally, off the hot path: after
+  ;; each response we scan only the text that arrived since the last scan
+  ;; and cache the result buffer-locally.  Dispatch then reads a variable.
+  ;; Never scan on a keypress — Emacs is single threaded and a sweep
+  ;; across a few dozen multi-hundred-KB session buffers locks the UI.
+
+  (defvar-local dg/agent-shell-dashboard--buffer-worktree nil
+    "Worktree this session is working in, as an absolute directory.
+Learned incrementally by `dg/agent-shell-dashboard--learn-worktree'.")
+
+  (defvar-local dg/agent-shell-dashboard--worktree-scan-pos nil
+    "Position this buffer's worktree scan has already covered.")
+
+  (defvar-local dg/agent-shell-dashboard--diff-session-buffer nil
+    "agent-shell buffer this magit diff buffer was opened on behalf of.")
+
+  (defun dg/agent-shell-dashboard--linked-worktree-p (dir)
+    "Non-nil when DIR is a linked git worktree rather than a main checkout.
+A linked worktree's `.git' is a file pointing at the real gitdir; a
+primary checkout's is a directory."
+    (let ((dotgit (expand-file-name ".git" dir)))
+      (and (file-exists-p dotgit) (not (file-directory-p dotgit)))))
+
+  (defun dg/agent-shell-dashboard--learn-worktree ()
+    "Record the newest worktree mentioned in text added since the last scan.
+Cheap by construction: each call looks only at what arrived since the
+previous call, so the cost is spread across a session's lifetime instead
+of landing on whoever asks the question."
+    (when (derived-mode-p 'agent-shell-mode)
+      (save-excursion
+        (let ((start (max (point-min)
+                          (or dg/agent-shell-dashboard--worktree-scan-pos
+                              (point-min))))
+              (found nil))
+          (goto-char start)
+          (while (re-search-forward
+                  "\\(?:\\.claude\\|\\.agent-shell\\)/worktrees/[A-Za-z0-9._+-]+"
+                  nil t)
+            (setq found (match-string-no-properties 0)))
+          (setq dg/agent-shell-dashboard--worktree-scan-pos (point-max))
+          (when found
+            (let ((dir (file-name-as-directory
+                        (expand-file-name
+                         found (or (ignore-errors (magit-toplevel))
+                                   default-directory)))))
+              (when (dg/agent-shell-dashboard--linked-worktree-p dir)
+                (setq dg/agent-shell-dashboard--buffer-worktree dir))))))))
+
+  (advice-add 'agent-shell-dashboard--check-for-summary-capture
+              :after #'dg/agent-shell-dashboard--learn-worktree)
+
+  (defun dg/agent-shell-dashboard--backfill-worktrees-step (buffers)
+    "Learn one buffer's worktree, then reschedule for the rest of BUFFERS.
+Chained rather than queued: timers that are all due run back to back
+without yielding, so scheduling every buffer up front would still hand
+Emacs one long uninterruptible block."
+    (when buffers
+      (let ((buf (car buffers)))
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
+            (dg/agent-shell-dashboard--learn-worktree))))
+      (run-with-idle-timer
+       0.2 nil #'dg/agent-shell-dashboard--backfill-worktrees-step (cdr buffers))))
+
+  (defun dg/agent-shell-dashboard-backfill-worktrees ()
+    "Learn every live session's worktree in the background.
+Sessions that predate the incremental scan have nothing cached; this
+walks them one buffer per idle slice so nothing blocks the UI."
+    (interactive)
+    (let ((buffers (agent-shell-dashboard--all-buffers)))
+      (run-with-idle-timer
+       0.2 nil #'dg/agent-shell-dashboard--backfill-worktrees-step buffers)
+      (message "Learning worktrees for %d sessions in the background"
+               (length buffers))))
+
+  (defun dg/agent-shell-dashboard--context-worktree ()
+    "Linked worktree the current buffer belongs to, or nil.
+Checks `default-directory' before asking git, so the common case of a
+magit diff already rooted in the worktree costs a single file test."
+    (when (and (featurep 'magit)
+               (derived-mode-p 'magit-diff-mode 'magit-status-mode
+                               'magit-revision-mode))
+      (let ((dir (file-name-as-directory (expand-file-name default-directory))))
+        (if (dg/agent-shell-dashboard--linked-worktree-p dir)
+            dir
+          (when-let* ((top (ignore-errors (magit-toplevel))))
+            (and (dg/agent-shell-dashboard--linked-worktree-p top)
+                 (file-name-as-directory (expand-file-name top))))))))
+
+  (defun dg/agent-shell-dashboard--session-for-worktree (dir)
+    "Return the session whose cached worktree is DIR, or nil.
+Reads buffer-local variables only — no buffer text is searched."
+    (let ((dir (file-name-as-directory (expand-file-name dir))))
+      (cl-find-if
+       (lambda (buf)
+         (or (equal dir (file-name-as-directory
+                         (expand-file-name
+                          (buffer-local-value 'default-directory buf))))
+             (equal dir (buffer-local-value
+                         'dg/agent-shell-dashboard--buffer-worktree buf))))
+       (agent-shell-dashboard--all-buffers))))
+
+  (defun dg/agent-shell-dashboard--context-target-buffer ()
+    "Session that should receive context from the current buffer.
+Prefers the session a diff was explicitly opened for, then the session
+that owns the worktree the context comes from, then the default."
+    (or (let ((stamped dg/agent-shell-dashboard--diff-session-buffer))
+          (and (buffer-live-p stamped) stamped))
+        (when-let* ((worktree (dg/agent-shell-dashboard--context-worktree))
+                    (buf (dg/agent-shell-dashboard--session-for-worktree worktree)))
+          (message "Routing to %s (owns %s)"
+                   (buffer-name buf)
+                   (file-name-nondirectory (directory-file-name worktree)))
+          buf)
+        (dg/agent-shell-dashboard--default-buffer)))
+
   (defun dg/agent-shell-dashboard-send ()
     "Override the dashboard's row send: viewport edit mode + queueing.
 The upstream `agent-shell-prompt-compose' refuses while the agent
@@ -330,11 +456,15 @@ is busy; this wrapper bypasses that by submitting on C-c C-c via
       (dg/agent-shell-dashboard--pop-viewport-edit shell-buffer)))
 
   (defun dg/agent-shell-dashboard-execute-request ()
-    "Append current-buffer context into the default agent-shell viewport.
+    "Append current-buffer context into an agent-shell viewport.
 File buffers contribute their absolute path with line number(s);
-non-file buffers contribute the active region or current line."
+non-file buffers contribute the active region or current line.
+
+Context coming out of a linked worktree is routed to the session that
+owns that worktree rather than to the default session — see
+`dg/agent-shell-dashboard--context-target-buffer'."
     (interactive)
-    (let* ((shell-buffer (dg/agent-shell-dashboard--default-buffer))
+    (let* ((shell-buffer (dg/agent-shell-dashboard--context-target-buffer))
            (context (dg/agent-shell-dashboard--build-context)))
       (pop-to-buffer shell-buffer)
       (agent-shell-viewport--show-buffer
@@ -470,7 +600,14 @@ mentioned, falls back to `magit-status' in the session's directory."
                                      "Worktree: " (mapcar #'cdr worktrees) nil t)))
                         (car (rassoc choice worktrees)))))
                (default-directory dir))
-          (magit-diff-range (concat (dg/agent-shell-dashboard--diff-base) "..."))))))
+          (magit-diff-range (concat (dg/agent-shell-dashboard--diff-base) "..."))
+          ;; Remember who this diff was opened for, so sending context
+          ;; back from it needs no lookup at all.
+          (when-let* ((diff-buffer (magit-get-mode-buffer 'magit-diff-mode)))
+            (with-current-buffer diff-buffer
+              (setq dg/agent-shell-dashboard--diff-session-buffer shell-buffer)))
+          (with-current-buffer shell-buffer
+            (setq dg/agent-shell-dashboard--buffer-worktree dir))))))
 
   ;; ----------------------------------------------------------------
   ;; Restore a session's context from its saved transcript
