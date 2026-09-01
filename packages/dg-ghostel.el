@@ -5,6 +5,24 @@
 (defun dg-ghostel-name-by-cwd (_title)
   (format "*ghostel<%s>*" (abbreviate-file-name default-directory)))
 
+(defun dg-ghostel-display-split-right (buffer alist)
+  "Display BUFFER in a window right of the selected one, then balance.
+A `display-buffer' action function. Balances explicitly because display
+actions split through the internal `split-window', which the
+balance-windows advice on the interactive `split-window-right' never
+sees. Deliberately not `display-buffer-in-direction': that nests the old
+and new windows in a sealed combination which `balance-windows' then
+treats as a single unit, leaving the original window crushed."
+  (let ((win (or (get-buffer-window buffer)
+                 (split-window (selected-window) nil 'right))))
+    (window--display-buffer buffer win 'window alist)
+    (balance-windows)
+    win))
+
+(defvar dg-ghostel-display-action
+  (list #'dg-ghostel-display-split-right)
+  "`display-buffer' action putting a terminal beside the current window.")
+
 (defun dg-ghostel-new-here ()
   "Open a new ghostel in a fresh window to the right of the current one.
 Split first with `split-window-right' — the balance-windows advice lives
