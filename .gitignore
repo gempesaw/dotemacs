@@ -26,6 +26,7 @@ nil
 /whee
 archive-contents
 /projectile-bookmarks.eld
+/projectile-bookmarks.eld.bak
 /ido.last
 .cask
 /mockSauceTunnel
@@ -44,6 +45,30 @@ workspace
 .lsp*
 /diary
 /forge-database.sqlite
-/forge-database-v7-20220624-1544.sql
+/forge-database-v*.sql
+/forge-database-v*.sqlite
 /tree-sitter/
 /.dap-breakpoints
+
+# agent-shell / agent-recall runtime state
+/.agent-shell/
+/agent-recall/
+/agent-shell-active.el
+/agent-shell-summaries.el
+/agent-shell-dashboard-active.el
+/agent-shell-dashboard-forgotten.el
+/agent-shell-dashboard-marks.el
+/agent-shell-dashboard-summaries.el
+
+# per-machine state written by packages
+/.chatgpt-shell.el
+/kubectl-cached-namespaces
+/kubectl-connection-history
+/kubectl-sort-overrides
+/projects
+/tutorial/
+
+# downloaded binaries and build trees, not portable across machines
+/codeium/
+/quelpa/
+/jsonnet-language-server
