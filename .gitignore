@@ -68,6 +68,5 @@ workspace
 /projects
 /tutorial/
 
-# downloaded binaries and build trees, not portable across machines
-/quelpa/
+# downloaded binaries, not portable across machines
 /jsonnet-language-server
