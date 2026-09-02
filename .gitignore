@@ -61,7 +61,6 @@ workspace
 /agent-shell-dashboard-summaries.el
 
 # per-machine state written by packages
-/.chatgpt-shell.el
 /kubectl-cached-namespaces
 /kubectl-connection-history
 /kubectl-sort-overrides
