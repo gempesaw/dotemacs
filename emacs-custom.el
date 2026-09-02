@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(ag agent-recall aggressive-indent apheleia avy bazel bpr browse-kill-ring cape
-        chatgpt-shell codeium consult corfu coterm diminish dired-subtree docker
+        chatgpt-shell consult corfu coterm diminish dired-subtree docker
         dockerfile-mode dumb-jump duplicate-thing eat edit-server
         elisp-slime-nav elixir-mode epc exec-path-from-shell expand-region forge
         ghostel git-commit git-link git-timemachine go-mode gptel helpful
