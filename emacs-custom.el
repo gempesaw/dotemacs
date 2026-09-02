@@ -9,7 +9,7 @@
         dockerfile-mode dumb-jump duplicate-thing eat edit-server
         elisp-slime-nav elixir-mode epc exec-path-from-shell expand-region forge
         ghostel git-commit git-link git-timemachine go-mode gptel helpful
-        highlight-indent-guides js2-mode jsonnet-mode kubernetes-tramp loop
+        highlight-indent-guides js2-mode kubernetes-tramp loop
         lsp-docker lsp-pyright lsp-ui magit-delta magit-todos marginalia matisse
         mini-frame minions moody multiple-cursors nginx-mode noflet
         orderless org-jira paredit pet projectile

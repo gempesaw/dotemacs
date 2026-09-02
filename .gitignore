@@ -67,6 +67,3 @@ workspace
 /kubectl-sort-overrides
 /projects
 /tutorial/
-
-# downloaded binaries, not portable across machines
-/jsonnet-language-server
