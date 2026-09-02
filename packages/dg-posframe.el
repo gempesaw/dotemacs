@@ -11,7 +11,3 @@
   :config
   (vertico-posframe-mode)
   (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center))
-
-(use-package mini-frame
-  :ensure t
-  :demand t)

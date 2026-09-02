@@ -11,7 +11,7 @@
         ghostel git-commit git-link git-timemachine go-mode gptel helpful
         highlight-indent-guides js2-mode kubernetes-tramp loop
         lsp-docker lsp-pyright lsp-ui magit-delta magit-todos marginalia
-        mini-frame minions moody multiple-cursors nginx-mode noflet
+        minions moody multiple-cursors nginx-mode noflet
         orderless org-jira paredit pet projectile
         rainbow-delimiters rainbow-mode rego-mode smart-mode-line sqlformat
         switch-window terraform-mode tide transient-posframe tree-sitter
