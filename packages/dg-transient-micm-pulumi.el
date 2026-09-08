@@ -329,41 +329,57 @@ to produce the displayed string.")
     ;; cmd fails, but a plain assignment propagates the substitution's status.
     (format "KUBECONFIG=\"$(kubie export %s default)\" && export KUBECONFIG" cluster)))
 
-(defun dg-transient-micm--login-command (profile account-id)
-  "Shell chain that authenticates to PROFILE and proves it landed in ACCOUNT-ID.
+(defvar dg-transient-micm--unset-aws-env
+  "unset `env | awk -F= '/^AWS_/ { print $1 }'`"
+  "Strip inherited AWS_* variables from the shell.
+Anchored to `^AWS_' so it matches variable names. The old pattern matched
+anywhere in `env' output, so a variable whose *value* mentioned AWS_ got
+its own name printed and unset instead.")
+
+(defun dg-transient-micm--login-command (profile &optional account-id)
+  "Shell chain that authenticates to PROFILE, asserting ACCOUNT-ID when known.
 
 Every step is `&&'-joined so the queue watcher's exit-status gate stops
-the chain the moment one fails, and the last step is the proof: pulumi
-never runs unless `sts get-caller-identity' reports the expected account.
+the chain the moment one fails. With ACCOUNT-ID the last step is a proof:
+pulumi does not start unless `sts get-caller-identity' reports it.
+Without that check the chain only established that *some* credentials
+existed, which a stale AWS_* pair inherited from Emacs satisfies happily.
 
-Without that final check the chain only established that *some*
-credentials existed. A stale AWS_* pair inherited from the Emacs
-environment satisfied every earlier step and quietly sent the run at
-whatever account it belonged to.
+ACCOUNT-ID is nil for the identities micm's aws_account_mapping.yaml does
+not name. `ensure_local_aws_account_matches_stack' returns early on those
+too, so asserting here would refuse runs micm is content to make."
+  (let ((sso (dg-transient-micm--get-sso-arg profile)))
+    (s-join
+     " && "
+     (-non-nil
+      (list dg-transient-micm--unset-aws-env
+            (format "aws-sso login %s" sso)
+            ;; Assign before eval: `eval $(cmd)' evaluates empty output with
+            ;; exit 0 when cmd fails, and the failure resurfaces later as a
+            ;; baffling NoCredentials from sts, after the chain moved on.
+            (format "DG_AWS_CREDS=\"$(aws-sso eval %s --no-region --profile=%s)\"" sso profile)
+            "eval \"$DG_AWS_CREDS\""
+            "unset DG_AWS_CREDS"
+            (when account-id
+              "DG_AWS_ACCOUNT=\"$(aws sts get-caller-identity --query Account --output text)\"")
+            (when account-id
+              (format
+               (concat "{ [ \"$DG_AWS_ACCOUNT\" = %s ] "
+                       "|| { echo \">>> WRONG AWS ACCOUNT: wanted %s (%s), got $DG_AWS_ACCOUNT\" >&2; false; }; }")
+               (shell-quote-argument account-id) account-id profile))
+            (when account-id "unset DG_AWS_ACCOUNT")
+            (format "echo \">>> authenticated as %s%s\""
+                    profile
+                    (if account-id (format " in %s" account-id) " (account unverified)")))))))
 
-The unset anchors its match to `^AWS_' so it strips variables by name.
-The old pattern matched anywhere in `env' output, so any variable whose
-*value* mentioned AWS_ got its own name printed and unset instead."
-  (s-join
-   " && "
-   (list "unset `env | awk -F= '/^AWS_/ { print $1 }'`"
-         (format "aws-sso login %s" (dg-transient-micm--get-sso-arg profile))
-         ;; Assign before eval: `eval $(cmd)' evaluates empty output with
-         ;; exit 0 when cmd fails, and the failure resurfaces later as a
-         ;; baffling NoCredentials from sts, after the chain moved on.
-         (format "DG_AWS_CREDS=\"$(aws-sso eval %s --no-region --profile=%s)\""
-                 (dg-transient-micm--get-sso-arg profile) profile)
-         "eval \"$DG_AWS_CREDS\""
-         "unset DG_AWS_CREDS"
-         "DG_AWS_ACCOUNT=\"$(aws sts get-caller-identity --query Account --output text)\""
-         (format
-          (concat "{ [ \"$DG_AWS_ACCOUNT\" = %s ] "
-                  "|| { echo \">>> WRONG AWS ACCOUNT: wanted %s (%s), got $DG_AWS_ACCOUNT\" >&2; false; }; }")
-          (shell-quote-argument account-id)
-          account-id
-          profile)
-         "unset DG_AWS_ACCOUNT"
-         (format "echo \">>> authenticated to %s (%s)\"" account-id profile))))
+(defun dg-transient-micm--no-identity-command (project stack)
+  "Shell command for a stack that declares no AWS identity.
+Such a stack needs no credentials, so it gets none: the inherited AWS_*
+variables are stripped and no login runs. Passing through is what micm
+does -- it is only stacks with a *declared* account that it checks -- and
+refusing here would block the ones that legitimately touch no AWS."
+  (format "%s && echo \">>> %s/%s declares no AWS identity — running without credentials\""
+          dg-transient-micm--unset-aws-env project stack))
 
 (defun dg-transient-micm-hide-outputs (window &optional _force)
   "Collapse the post-apply pulumi `Outputs:' section in this buffer.
@@ -592,17 +608,14 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                                                (format "-- %s %s" pulumi-sub-command target-argument)
                                              (format "-- %s" pulumi-sub-command))
                                          ""))
-           ;; Refuse the run rather than describe the problem in a command the
-           ;; shell reports as success. The old no-profile branch echoed a
-           ;; message and exited 0, so the queue advanced and pulumi applied
-           ;; against whatever credentials the shell had lying around.
-           (_ (unless identity
-                (error "%s/%s declares no deployment.identity.aws.stack in %s — refusing to run pulumi without a verifiable account"
-                       project stack
-                       (f-join (f-expand (or worktree dg-transient-micm--infra-dir))
-                               "projects" project (format "Pulumi.%s.yaml" stack)))))
-           (account-id (cdr identity))
-           (micm-command-prefix (dg-transient-micm--login-command profile account-id))
+           ;; No declared identity means the stack touches no AWS, so it runs
+           ;; with the inherited AWS_* stripped and no login. The old branch
+           ;; here echoed "No profile found" and exited 0, which let the queue
+           ;; advance into pulumi with whatever credentials were lying around
+           ;; -- the pass-through has to clear them, not merely skip the login.
+           (micm-command-prefix (if identity
+                                    (dg-transient-micm--login-command profile (cdr identity))
+                                  (dg-transient-micm--no-identity-command project stack)))
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
                           "micm"))
@@ -630,10 +643,12 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
       ;; exits 0. Doing the login in Emacs too would only duplicate it — and
       ;; would freeze the UI for the whole browser flow.
       (let ((setup-command (format "echo '>>> AWS login (%s) — Emacs is not blocked, hang tight...' && %s && %s"
-                                   profile
+                                   (or profile "none declared")
                                    kubie-export-command
                                    micm-command-prefix))
-            (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile)))
+            ;; Nothing to sync back when the stack authenticates to nothing.
+            (sync-env (and profile
+                           (lambda () (dg-transient-micm--sync-aws-env-async profile))))
             (buf nil))
         ;; Acquire the buffer inside an excursion: `dg-ghostel-new-here'
         ;; displays into the current frame, and that layout change should
@@ -757,7 +772,13 @@ that has none."
             ;; Pair the profile with the *declared* account, not with its own.
             ;; Asserting a guessed profile against the account that profile
             ;; belongs to would compare a number to itself and always pass.
-            (when (and profile account-id)
+            ;;
+            ;; account-id is nil for the identities the mapping does not name
+            ;; -- prod-aws-global and aws-global between them cover 86 stacks,
+            ;; and both point at identity stacks whose account lives in pulumi
+            ;; state rather than any yaml. Still log in; just do not claim to
+            ;; have verified where. micm returns early on these as well.
+            (when profile
               (cons profile account-id))))))))
 
 (defun dg-transient-micm--get-aws-role (stack &optional project root)
@@ -858,20 +879,18 @@ and no timeout — a failed export simply never fires the callback."
 (defun dg-transient-micm-fetch-urns (project stack &optional worktree)
   "Read the URNs in PROJECT/STACK, authenticating first.
 Resolves the identity from WORKTREE when given, for the same reason
-`dg-transient-micm--get-aws-role' takes a root.
+`dg-transient-micm--resolve-identity' takes a root.
 
-Shares `dg-transient-micm--login-command' with the run path, so this
-reaches `--show-secrets' only after the same account assertion. The steps
-are `&&'-joined for that reason: the old `;' separators ran the micm
-command even when the login before it had failed."
+Shares the login chain with the run path, so this reaches
+`--show-secrets' only after the same account assertion. The steps are
+`&&'-joined for that reason: the old `;' separators ran the micm command
+even when the login before it had failed."
   (let* ((root (or worktree dg-transient-micm--infra-dir))
-         (identity (or (dg-transient-micm--resolve-identity stack project worktree)
-                       (error "%s/%s declares no deployment.identity.aws.stack — refusing to read state without a verifiable account"
-                              project stack)))
-         (profile (car identity))
-         (account-id (cdr identity))
+         (identity (dg-transient-micm--resolve-identity stack project worktree))
          (kubie-export-command (dg-transient-micm-kubie-command stack))
-         (auth-command (dg-transient-micm--login-command profile account-id))
+         (auth-command (if identity
+                           (dg-transient-micm--login-command (car identity) (cdr identity))
+                         (dg-transient-micm--no-identity-command project stack)))
          (micm-command (format "micm pulumi --project %s --stack %s -- stack --show-urns --show-secrets" project stack))
          (full-command (format "cd %s && %s && %s && %s 2>/dev/null"
                                (shell-quote-argument (f-expand root))
