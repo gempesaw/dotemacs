@@ -58,6 +58,7 @@
         describe-key
         dg-base64-encode-region-no-break
         dg-dired-browse-file-at-point
+        dg-ghostel-beginning-of-input-or-bol
         dg-save-buffer
         dired
         dired-details-hide
@@ -85,6 +86,7 @@
         fill-paragraph
         forward-sexp
         ggtags-navigation-mode-done
+        ghostel-line-mode-delete-char-or-eof
         ghostel-line-mode-self-insert
         git-link
         git-rebase-reword
