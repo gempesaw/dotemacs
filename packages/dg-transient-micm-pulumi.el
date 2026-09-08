@@ -692,7 +692,7 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
           (dg-transient-micm--submit-sequence (list setup-command micm-command)))))))
 
 (defun dg-transient-micm--resolve-identity (stack &optional project root)
-  "Return (PROFILE . ACCOUNT-ID) for STACK and PROJECT, or nil to refuse.
+  "Return (PROFILE . ACCOUNT-ID) for STACK and PROJECT, or nil for no AWS.
 
 ACCOUNT-ID comes from the stack's own `deployment.identity.aws.stack'
 resolved through micm's account mapping, so it is what the stack declares
@@ -705,9 +705,9 @@ one. When it does not, the legacy name dispatch supplies a profile but
 ACCOUNT-ID stays the declared one, so a wrong guess trips the assertion
 instead of quietly satisfying it.
 
-Returns nil when the stack declares no AWS identity. There is nothing to
-verify against then, and inferring an account from the stack's name is
-how a run lands somewhere it was never meant to.
+Returns nil when the stack declares no AWS identity, which callers treat
+as "needs no credentials" rather than as an error -- see
+`dg-transient-micm--no-identity-command'.
 
 ROOT is the infra checkout to read from, defaulting to the main one. The
 run itself happens under `uv run --directory <worktree>', so reading the
