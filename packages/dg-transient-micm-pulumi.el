@@ -329,6 +329,63 @@ to produce the displayed string.")
     ;; cmd fails, but a plain assignment propagates the substitution's status.
     (format "KUBECONFIG=\"$(kubie export %s default)\" && export KUBECONFIG" cluster)))
 
+(defun dg-transient-micm--sso-account-id (profile)
+  "Return the `sso_account_id' ~/.aws/config records for PROFILE, or nil.
+This is the account the run is *supposed* to land in, and it is what
+`dg-transient-micm--login-command' asserts against once the shell has
+authenticated."
+  (when profile
+    (let ((config (f-expand "~/.aws/config")))
+      (when (f-exists-p config)
+        (with-temp-buffer
+          (insert-file-contents config)
+          (goto-char (point-min))
+          (when (re-search-forward
+                 (format "^\\[profile %s\\]" (regexp-quote profile)) nil t)
+            ;; Stop at the next section header so a later profile's account
+            ;; id is never attributed to this one.
+            (let ((end (or (save-excursion (re-search-forward "^\\[" nil t))
+                           (point-max))))
+              (when (re-search-forward "^[ \t]*sso_account_id[ \t]*=[ \t]*\\([0-9]+\\)"
+                                       end t)
+                (match-string 1)))))))))
+
+(defun dg-transient-micm--login-command (profile account-id)
+  "Shell chain that authenticates to PROFILE and proves it landed in ACCOUNT-ID.
+
+Every step is `&&'-joined so the queue watcher's exit-status gate stops
+the chain the moment one fails, and the last step is the proof: pulumi
+never runs unless `sts get-caller-identity' reports the expected account.
+
+Without that final check the chain only established that *some*
+credentials existed. A stale AWS_* pair inherited from the Emacs
+environment satisfied every earlier step and quietly sent the run at
+whatever account it belonged to.
+
+The unset anchors its match to `^AWS_' so it strips variables by name.
+The old pattern matched anywhere in `env' output, so any variable whose
+*value* mentioned AWS_ got its own name printed and unset instead."
+  (s-join
+   " && "
+   (list "unset `env | awk -F= '/^AWS_/ { print $1 }'`"
+         (format "aws-sso login %s" (dg-transient-micm--get-sso-arg profile))
+         ;; Assign before eval: `eval $(cmd)' evaluates empty output with
+         ;; exit 0 when cmd fails, and the failure resurfaces later as a
+         ;; baffling NoCredentials from sts, after the chain moved on.
+         (format "DG_AWS_CREDS=\"$(aws-sso eval %s --no-region --profile=%s)\""
+                 (dg-transient-micm--get-sso-arg profile) profile)
+         "eval \"$DG_AWS_CREDS\""
+         "unset DG_AWS_CREDS"
+         "DG_AWS_ACCOUNT=\"$(aws sts get-caller-identity --query Account --output text)\""
+         (format
+          (concat "{ [ \"$DG_AWS_ACCOUNT\" = %s ] "
+                  "|| { echo \">>> WRONG AWS ACCOUNT: wanted %s (%s), got $DG_AWS_ACCOUNT\" >&2; false; }; }")
+          (shell-quote-argument account-id)
+          account-id
+          profile)
+         "unset DG_AWS_ACCOUNT"
+         (format "echo \">>> authenticated to %s (%s)\"" account-id profile))))
+
 (defun dg-transient-micm-hide-outputs (window &optional _force)
   "Collapse the post-apply pulumi `Outputs:' section in this buffer.
 Runs from `ghostel-inhibit-anchor-functions', which fires after every
@@ -553,16 +610,17 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                                                (format "-- %s %s" pulumi-sub-command target-argument)
                                              (format "-- %s" pulumi-sub-command))
                                          ""))
-           (sso-arg (dg-transient-micm--get-sso-arg profile))
-           ;; Assign the eval output to a variable before eval-ing it: the
-           ;; assignment's exit status is the command substitution's, so a
-           ;; failed `aws-sso eval' stops the chain with its real error on
-           ;; screen. A bare `eval $(...)' evaluates empty output with exit 0
-           ;; and the failure surfaces later as a baffling NoCredentials from
-           ;; sts — after the chain already moved on.
-           (micm-command-prefix (if profile
-                                    (format "unset `env | awk -F= '/AWS_/ { print $1 }'` && aws-sso login %s && DG_AWS_CREDS=\"$(aws-sso eval %s --no-region --profile=%s)\" && eval \"$DG_AWS_CREDS\" && unset DG_AWS_CREDS && aws sts get-caller-identity" sso-arg sso-arg profile)
-                                  (format "echo 'No profile found for %s/%s'" project stack)))
+           ;; Refuse the run rather than describe the problem in a command the
+           ;; shell reports as success. The old no-profile branch echoed a
+           ;; message and exited 0, so the queue advanced and pulumi applied
+           ;; against whatever credentials the shell had lying around.
+           (_ (unless profile
+                (error "No AWS profile resolved for %s/%s — refusing to run pulumi"
+                       project stack)))
+           (account-id (or (dg-transient-micm--sso-account-id profile)
+                           (error "No sso_account_id in ~/.aws/config for %s — cannot verify the account, refusing to run pulumi"
+                                  profile)))
+           (micm-command-prefix (dg-transient-micm--login-command profile account-id))
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
                           "micm"))
@@ -590,7 +648,7 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
       ;; exits 0. Doing the login in Emacs too would only duplicate it — and
       ;; would freeze the UI for the whole browser flow.
       (let ((setup-command (format "echo '>>> AWS login (%s) — Emacs is not blocked, hang tight...' && %s && %s"
-                                   (or profile "no profile")
+                                   profile
                                    kubie-export-command
                                    micm-command-prefix))
             (sync-env (lambda () (dg-transient-micm--sync-aws-env-async profile)))
@@ -661,9 +719,14 @@ appropriate automation role in AWS config."
                                                                          (alist-get 'modular:platform
                                                                                     (alist-get 'config pulumi-config))))))))
 
-        ;; If there's no AWS config in the Pulumi file, return nil
+        ;; A Pulumi file that names no AWS identity is not an authoritative
+        ;; "this stack needs no AWS" -- 91 of the 410 stacks in infra simply
+        ;; predate the identity block. Returning nil here handed the caller a
+        ;; missing profile, which it turned into an echo that exits 0, so the
+        ;; run proceeded against whatever credentials the shell happened to
+        ;; inherit. Fall through to the legacy dispatch instead.
         (if (not aws-stack-name)
-            nil
+            (dg-transient-micm--get-aws-role-legacy stack project)
 
           (let* ((account-mapping-file (f-expand "~/opt/infra/tools/micm/aws_account_mapping.yaml"))
                  (account-mapping (with-temp-buffer
@@ -786,15 +849,19 @@ and no timeout — a failed export simply never fires the callback."
       (dg-transient-micm-execute (format "stack import --file %s" (shell-quote-argument import-file)) args))))
 
 (defun dg-transient-micm-fetch-urns (project stack)
-  (let* ((profile (dg-transient-micm--get-aws-role stack project))
-         (sso-arg (dg-transient-micm--get-sso-arg profile))
+  "Read the URNs in PROJECT/STACK, authenticating first.
+Shares `dg-transient-micm--login-command' with the run path, so this
+reaches `--show-secrets' only after the same account assertion. The steps
+are `&&'-joined for that reason: the old `;' separators ran the micm
+command even when the login before it had failed."
+  (let* ((profile (or (dg-transient-micm--get-aws-role stack project)
+                      (error "No AWS profile resolved for %s/%s" project stack)))
+         (account-id (or (dg-transient-micm--sso-account-id profile)
+                         (error "No sso_account_id in ~/.aws/config for %s" profile)))
          (kubie-export-command (dg-transient-micm-kubie-command stack))
-         (auth-command (if profile
-                           (format "unset `env | awk -F= '/AWS_/ { print $1 }'`; eval $(aws-sso eval %s --no-region --profile=%s)"
-                                   sso-arg profile)
-                         (error "No profile found for %s/%s" project stack)))
+         (auth-command (dg-transient-micm--login-command profile account-id))
          (micm-command (format "micm pulumi --project %s --stack %s -- stack --show-urns --show-secrets" project stack))
-         (full-command (format "cd ~/opt/infra && %s; %s; %s 2>/dev/null" kubie-export-command auth-command micm-command))
+         (full-command (format "cd ~/opt/infra && %s && %s && %s 2>/dev/null" kubie-export-command auth-command micm-command))
          (output (shell-command-to-string full-command)))
     (->> output
          (s-split "\n")
