@@ -329,27 +329,6 @@ to produce the displayed string.")
     ;; cmd fails, but a plain assignment propagates the substitution's status.
     (format "KUBECONFIG=\"$(kubie export %s default)\" && export KUBECONFIG" cluster)))
 
-(defun dg-transient-micm--sso-account-id (profile)
-  "Return the `sso_account_id' ~/.aws/config records for PROFILE, or nil.
-This is the account the run is *supposed* to land in, and it is what
-`dg-transient-micm--login-command' asserts against once the shell has
-authenticated."
-  (when profile
-    (let ((config (f-expand "~/.aws/config")))
-      (when (f-exists-p config)
-        (with-temp-buffer
-          (insert-file-contents config)
-          (goto-char (point-min))
-          (when (re-search-forward
-                 (format "^\\[profile %s\\]" (regexp-quote profile)) nil t)
-            ;; Stop at the next section header so a later profile's account
-            ;; id is never attributed to this one.
-            (let ((end (or (save-excursion (re-search-forward "^\\[" nil t))
-                           (point-max))))
-              (when (re-search-forward "^[ \t]*sso_account_id[ \t]*=[ \t]*\\([0-9]+\\)"
-                                       end t)
-                (match-string 1)))))))))
-
 (defun dg-transient-micm--login-command (profile account-id)
   "Shell chain that authenticates to PROFILE and proves it landed in ACCOUNT-ID.
 
@@ -601,7 +580,10 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
            (stack (transient-arg-value "--stack=" args))
            (target (transient-arg-value "--target=" args))
            (worktree (transient-arg-value "--worktree=" args))
-           (profile (dg-transient-micm--get-aws-role stack project))
+           ;; Resolve the identity from the same tree the run executes in --
+           ;; see `dg-transient-micm--resolve-identity'.
+           (identity (dg-transient-micm--resolve-identity stack project worktree))
+           (profile (car identity))
            (target-argument (if target
                                 (format "--target '%s' --target-dependents" target)
                               ""))
@@ -614,12 +596,12 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
            ;; shell reports as success. The old no-profile branch echoed a
            ;; message and exited 0, so the queue advanced and pulumi applied
            ;; against whatever credentials the shell had lying around.
-           (_ (unless profile
-                (error "No AWS profile resolved for %s/%s — refusing to run pulumi"
-                       project stack)))
-           (account-id (or (dg-transient-micm--sso-account-id profile)
-                           (error "No sso_account_id in ~/.aws/config for %s — cannot verify the account, refusing to run pulumi"
-                                  profile)))
+           (_ (unless identity
+                (error "%s/%s declares no deployment.identity.aws.stack in %s — refusing to run pulumi without a verifiable account"
+                       project stack
+                       (f-join (f-expand (or worktree dg-transient-micm--infra-dir))
+                               "projects" project (format "Pulumi.%s.yaml" stack)))))
+           (account-id (cdr identity))
            (micm-command-prefix (dg-transient-micm--login-command profile account-id))
            (micm-runner (if worktree
                             (format "uv run --directory %s micm" (shell-quote-argument worktree))
@@ -694,17 +676,37 @@ ON-COMPLETE, when given, is a thunk run after the pulumi command exits 0."
                 dg-transient-micm--on-complete on-complete)
           (dg-transient-micm--submit-sequence (list setup-command micm-command)))))))
 
-(defun dg-transient-micm--get-aws-role (stack &optional project)
-  "Dynamically look up AWS profile for STACK and PROJECT.
-Reads the Pulumi env config to get the AWS account name, looks it up
-in the account mapping to get the account number, then finds the
-appropriate automation role in AWS config."
-  (let* ((pulumi-file (format "~/opt/infra/projects/%s/Pulumi.%s.yaml" project stack))
+(defun dg-transient-micm--resolve-identity (stack &optional project root)
+  "Return (PROFILE . ACCOUNT-ID) for STACK and PROJECT, or nil to refuse.
+
+ACCOUNT-ID comes from the stack's own `deployment.identity.aws.stack'
+resolved through micm's account mapping, so it is what the stack declares
+it targets -- never merely the account whichever profile we picked happens
+to belong to. `dg-transient-micm--login-command' asserts against it, which
+is only meaningful because the two are derived independently.
+
+PROFILE is the automation role for that account when ~/.aws/config has
+one. When it does not, the legacy name dispatch supplies a profile but
+ACCOUNT-ID stays the declared one, so a wrong guess trips the assertion
+instead of quietly satisfying it.
+
+Returns nil when the stack declares no AWS identity. There is nothing to
+verify against then, and inferring an account from the stack's name is
+how a run lands somewhere it was never meant to.
+
+ROOT is the infra checkout to read from, defaulting to the main one. The
+run itself happens under `uv run --directory <worktree>', so reading the
+identity from anywhere else answers a question about a different revision
+of the stack: a branch that adds the identity block looks like a stack
+that has none."
+  (let* ((root (or root dg-transient-micm--infra-dir))
+         (pulumi-file (f-join (f-expand root) "projects" project
+                              (format "Pulumi.%s.yaml" stack)))
          (pulumi-file-expanded (f-expand pulumi-file)))
 
     (if (not (f-exists-p pulumi-file-expanded))
-        ;; Fallback to legacy dispatch for stacks without Pulumi files
-        (dg-transient-micm--get-aws-role-legacy stack project)
+        ;; No file, so no declared identity and nothing to assert against.
+        nil
 
       ;; Dynamic lookup
       (let* ((pulumi-config (with-temp-buffer
@@ -719,16 +721,10 @@ appropriate automation role in AWS config."
                                                                          (alist-get 'modular:platform
                                                                                     (alist-get 'config pulumi-config))))))))
 
-        ;; A Pulumi file that names no AWS identity is not an authoritative
-        ;; "this stack needs no AWS" -- 91 of the 410 stacks in infra simply
-        ;; predate the identity block. Returning nil here handed the caller a
-        ;; missing profile, which it turned into an echo that exits 0, so the
-        ;; run proceeded against whatever credentials the shell happened to
-        ;; inherit. Fall through to the legacy dispatch instead.
         (if (not aws-stack-name)
-            (dg-transient-micm--get-aws-role-legacy stack project)
+            nil
 
-          (let* ((account-mapping-file (f-expand "~/opt/infra/tools/micm/aws_account_mapping.yaml"))
+          (let* ((account-mapping-file (f-join (f-expand root) "tools/micm/aws_account_mapping.yaml"))
                  (account-mapping (with-temp-buffer
                                     (insert-file-contents account-mapping-file)
                                     (yaml-parse-string (buffer-string)
@@ -753,11 +749,22 @@ appropriate automation role in AWS config."
                                    (push (cons profile-name role-type) result))))
                              (nreverse result)))
                  (automation-access-profile (--find (string= (cdr it) "automation-access") profiles))
-                 (automation-prev-profile (--find (string= (cdr it) "automation-prev-access") profiles)))
+                 (automation-prev-profile (--find (string= (cdr it) "automation-prev-access") profiles))
+                 (profile (or (car automation-access-profile)
+                              (car automation-prev-profile)
+                              (dg-transient-micm--get-aws-role-legacy stack project))))
 
-            (or (car automation-access-profile)
-                (car automation-prev-profile)
-                (dg-transient-micm--get-aws-role-legacy stack project))))))))
+            ;; Pair the profile with the *declared* account, not with its own.
+            ;; Asserting a guessed profile against the account that profile
+            ;; belongs to would compare a number to itself and always pass.
+            (when (and profile account-id)
+              (cons profile account-id))))))))
+
+(defun dg-transient-micm--get-aws-role (stack &optional project root)
+  "Return just the AWS profile for STACK and PROJECT under ROOT.
+See `dg-transient-micm--resolve-identity', which also yields the account
+the run must land in."
+  (car (dg-transient-micm--resolve-identity stack project root)))
 
 (defun dg-transient-micm--get-aws-role-legacy (stack &optional project)
   "Legacy manual dispatch for AWS roles based on stack/project names."
@@ -848,20 +855,27 @@ and no timeout — a failed export simply never fires the callback."
     (when import-file
       (dg-transient-micm-execute (format "stack import --file %s" (shell-quote-argument import-file)) args))))
 
-(defun dg-transient-micm-fetch-urns (project stack)
+(defun dg-transient-micm-fetch-urns (project stack &optional worktree)
   "Read the URNs in PROJECT/STACK, authenticating first.
+Resolves the identity from WORKTREE when given, for the same reason
+`dg-transient-micm--get-aws-role' takes a root.
+
 Shares `dg-transient-micm--login-command' with the run path, so this
 reaches `--show-secrets' only after the same account assertion. The steps
 are `&&'-joined for that reason: the old `;' separators ran the micm
 command even when the login before it had failed."
-  (let* ((profile (or (dg-transient-micm--get-aws-role stack project)
-                      (error "No AWS profile resolved for %s/%s" project stack)))
-         (account-id (or (dg-transient-micm--sso-account-id profile)
-                         (error "No sso_account_id in ~/.aws/config for %s" profile)))
+  (let* ((root (or worktree dg-transient-micm--infra-dir))
+         (identity (or (dg-transient-micm--resolve-identity stack project worktree)
+                       (error "%s/%s declares no deployment.identity.aws.stack — refusing to read state without a verifiable account"
+                              project stack)))
+         (profile (car identity))
+         (account-id (cdr identity))
          (kubie-export-command (dg-transient-micm-kubie-command stack))
          (auth-command (dg-transient-micm--login-command profile account-id))
          (micm-command (format "micm pulumi --project %s --stack %s -- stack --show-urns --show-secrets" project stack))
-         (full-command (format "cd ~/opt/infra && %s && %s && %s 2>/dev/null" kubie-export-command auth-command micm-command))
+         (full-command (format "cd %s && %s && %s && %s 2>/dev/null"
+                               (shell-quote-argument (f-expand root))
+                               kubie-export-command auth-command micm-command))
          (output (shell-command-to-string full-command)))
     (->> output
          (s-split "\n")
@@ -873,11 +887,12 @@ command even when the login before it had failed."
   (interactive (list (transient-args transient-current-command)))
   (let* ((project (transient-arg-value "--project=" args))
          (stack (transient-arg-value "--stack=" args))
+         (worktree (transient-arg-value "--worktree=" args))
          (buffer-urns (dg-transient-micm-read-urns))
          (urns (or buffer-urns
                    (progn
                      (message "Fetching URNs for %s/%s..." project stack)
-                     (dg-transient-micm-fetch-urns project stack))))
+                     (dg-transient-micm-fetch-urns project stack worktree))))
          (urn (completing-read "Delete resource from state: " urns nil t)))
     (when (and urn (not (string-empty-p urn))
                (yes-or-no-p (format "Delete %s from state?" urn)))
