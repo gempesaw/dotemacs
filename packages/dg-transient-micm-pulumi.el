@@ -1133,7 +1133,11 @@ Uses \"agent-\" prefix to avoid colliding with SSO profiles in ~/.aws/config."
 (key-chord-define-global "zp" 'dg-transient-micm-open)
 (key-chord-define-global ",/" 'dg-transient-aws-profile-login)
 
-(load-file "/Users/gempesaw/.emacs.d/packages/dg-pulumi-stacks.el")
+;; The directory loader gets to dg-pulumi-stacks on its own, but not
+;; necessarily before this file, and the transient's `m d' entry needs
+;; `dg-pulumi-stacks' bound at definition time.
+(require 'dg-pulumi-stacks
+         (expand-file-name "packages/dg-pulumi-stacks.el" user-emacs-directory))
 
 (provide 'dg-transient-micm-pulumi)
 

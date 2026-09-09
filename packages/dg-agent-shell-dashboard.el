@@ -16,7 +16,7 @@
   ;; Point at the local working clone so edits in
   ;; ~/opt/agent-shell-dashboard take effect on next emacs restart
   ;; without round-tripping through GitHub + `package-vc-upgrade'.
-  :load-path "/Users/gempesaw/opt/agent-shell-dashboard"
+  :load-path "~/opt/agent-shell-dashboard"
   :demand t
   :custom
   (agent-shell-dashboard-summary-prompt
