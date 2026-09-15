@@ -218,6 +218,13 @@ display produced extra splits and crushed windows."
   :demand t
   :custom
   (ghostel-shell "/opt/homebrew/bin/bash")
+  ;; TERM is xterm-ghostty, which remote hosts have never heard of, so
+  ;; ncurses there falls back to dumb — "terminal is not fully functional".
+  ;; This installs the terminfo entry on first ssh to a host (cached), and
+  ;; downgrades that connection to xterm-256color when it cannot. Defaults
+  ;; to `auto', which deceptively means off: auto follows
+  ;; ghostel-tramp-shell-integration, and that is nil.
+  (ghostel-ssh-install-terminfo t)
   (ghostel-initial-input-mode 'line)
   (ghostel-buffer-name-function #'dg-ghostel-name-by-cwd)
   (ghostel-kill-buffer-on-exit t)
