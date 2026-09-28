@@ -47,19 +47,26 @@ never stamped, leaving the global last-used values in place."
 
 (defvar dg-transient-micm--infra-dir "~/opt/infra")
 
-(defun dg-transient-micm--git (&rest args)
-  "Run git ARGS in the infra repo. Return trimmed stdout, or signal on failure."
+(defun dg-transient-micm--git-in (dir &rest args)
+  "Run git ARGS in DIR. Return trimmed stdout, or signal on failure."
   (with-temp-buffer
     (let ((status (apply #'process-file "git" nil t nil
-                         "-C" (f-expand dg-transient-micm--infra-dir) args)))
+                         "-C" (f-expand dir) args)))
       (if (zerop status)
           (s-trim (buffer-string))
         (error "git %s failed: %s" (s-join " " args) (s-trim (buffer-string)))))))
 
+(defun dg-transient-micm--git (&rest args)
+  "Run git ARGS in the infra repo. Return trimmed stdout, or signal on failure."
+  (apply #'dg-transient-micm--git-in dg-transient-micm--infra-dir args))
+
+(defun dg-transient-micm--git-in-ok-p (dir &rest args)
+  "Return non-nil if git ARGS exits zero in DIR."
+  (zerop (apply #'process-file "git" nil nil nil "-C" (f-expand dir) args)))
+
 (defun dg-transient-micm--git-ok-p (&rest args)
   "Return non-nil if git ARGS exits zero in the infra repo."
-  (zerop (apply #'process-file "git" nil nil nil
-                "-C" (f-expand dg-transient-micm--infra-dir) args)))
+  (apply #'dg-transient-micm--git-in-ok-p dg-transient-micm--infra-dir args))
 
 (defun dg-transient-micm-list-remote-branches ()
   "Return remote-tracking branches, most recently committed first.
@@ -95,6 +102,37 @@ worktree directory names need not match their branch names."
   (f-expand (s-replace "/" "-" (s-chop-prefix "dg/" local-branch))
             (f-expand dg-transient-micm--worktrees-dir)))
 
+(defvar dg-transient-micm--base-ref "origin/main"
+  "Ref that materialized worktrees are rebased onto after reset.")
+
+(defun dg-transient-micm--reset-worktree-to-remote (worktree local-branch remote-ref)
+  "Make WORKTREE an exact copy of REMOTE-REF, then rebase it onto the base ref.
+
+Destructive by design. A picked remote branch is a request to run that
+code, so uncommitted edits, local commits and stray untracked files in
+WORKTREE are all discarded -- these worktrees are scratch space for
+previewing someone else's branch, not somewhere work lives.
+
+`clean -fd' deliberately omits -x, so gitignored build output (the
+.venv_p directories uv populates) survives; recreating those on every
+pick would cost minutes per run and none of it is tracked anyway.
+
+The rebase puts the branch's commits on top of the freshly fetched base,
+which is what CI would do, so the preview reflects the merged result
+rather than a stale fork point. It is purely local: nothing is pushed,
+and the remote is never modified. A conflicting rebase is aborted,
+leaving WORKTREE at the remote tip unrebased."
+  (dg-transient-micm--git-in worktree "reset" "--hard" remote-ref)
+  (dg-transient-micm--git-in worktree "clean" "-fd")
+  (if (equal remote-ref dg-transient-micm--base-ref)
+      (message "Worktree %s reset to %s" (f-filename worktree) remote-ref)
+    (if (dg-transient-micm--git-in-ok-p worktree "rebase" dg-transient-micm--base-ref)
+        (message "Worktree %s reset to %s and rebased onto %s"
+                 (f-filename worktree) remote-ref dg-transient-micm--base-ref)
+      (dg-transient-micm--git-in worktree "rebase" "--abort")
+      (message "Worktree %s is at %s; rebase onto %s conflicts, left unrebased"
+               (f-filename worktree) remote-ref dg-transient-micm--base-ref))))
+
 (defun dg-transient-micm--ensure-worktree-for-remote (remote-ref)
   "Ensure a worktree exists for REMOTE-REF and return its absolute path.
 Reuses an existing worktree if the branch is already checked out in one.
@@ -112,8 +150,10 @@ its own HEAD and index — the main ~/opt/infra checkout is never touched."
       (error "Branch %s is checked out in the main checkout (%s) — switch it there first, or pick another branch"
              local-branch main-checkout))
 
+     ;; Reuse only the directory, never its contents -- the reset below
+     ;; makes it an exact copy of the ref regardless of what was left here.
      ((and existing (f-directory-p existing))
-      (message "Reusing existing worktree for %s: %s" local-branch existing)
+      (dg-transient-micm--reset-worktree-to-remote existing local-branch remote-ref)
       existing)
 
      (t
@@ -128,6 +168,10 @@ its own HEAD and index — the main ~/opt/infra checkout is never touched."
                                   "-b" local-branch path remote-ref))
 
         (message "Created worktree %s for %s" path remote-ref)
+        ;; Reset unconditionally: a pre-existing local branch is as stale as
+        ;; it was left, and even the fresh --track case still wants the
+        ;; rebase onto the base ref.
+        (dg-transient-micm--reset-worktree-to-remote path local-branch remote-ref)
         path)))))
 
 (defun dg-transient-micm-pick-remote-branch ()
@@ -136,7 +180,9 @@ Sets the transient's `--worktree=' value so the pulumi run happens via
 `uv run --directory <worktree>'."
   (interactive)
   (message "Fetching origin...")
-  (dg-transient-micm--git "fetch" "origin")
+  ;; --prune so branches deleted upstream stop being offered, and so a
+  ;; force-pushed ref is replaced rather than rejected as non-fast-forward.
+  (dg-transient-micm--git "fetch" "--prune" "origin")
   (let* ((branches (dg-transient-micm-list-remote-branches))
          (table (lambda (string pred action)
                   (if (eq action 'metadata)
@@ -706,7 +752,7 @@ ACCOUNT-ID stays the declared one, so a wrong guess trips the assertion
 instead of quietly satisfying it.
 
 Returns nil when the stack declares no AWS identity, which callers treat
-as "needs no credentials" rather than as an error -- see
+as `needs no credentials' rather than as an error -- see
 `dg-transient-micm--no-identity-command'.
 
 ROOT is the infra checkout to read from, defaulting to the main one. The
